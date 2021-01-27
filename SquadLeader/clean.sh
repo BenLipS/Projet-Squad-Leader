@@ -1,5 +1,5 @@
 # Light script for code cleaning
-rm BattleFront.sln
+rm SquadLeader.sln
 rm -r .vs/
 rm -r Intermediate/
 rm -r Binaries/
