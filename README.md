@@ -1,5 +1,5 @@
 # Projet Squad
 
-*Date : Winter 2021*
+*Winter 2021*
 
-FPS games for DDJV project. Make whith Unreal.
+FPS game as a project for the DDJV. Made with Unreal by the *NoNameYet* team.
