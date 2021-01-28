@@ -8,6 +8,7 @@ ASoldier::ASoldier()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	initStats();
 	initCameras();
 	initMeshes();
 }
@@ -36,6 +37,8 @@ void ASoldier::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 	InputComponent->BindAxis("Turn", this, &ASoldier::AddControllerYawInput);
 	InputComponent->BindAxis("LookUp", this, &ASoldier::AddControllerPitchInput);
+
+	InputComponent->BindAction("SwitchCamera", IE_Pressed, this, &ASoldier::OnSwitchCamera);
 }
 
 void ASoldier::initCameras()

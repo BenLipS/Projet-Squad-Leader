@@ -13,5 +13,8 @@ UCLASS()
 class SQUADLEADER_API ASquadLeaderGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
-	
+
+public:
+	virtual void StartPlay() override;
+	ASquadLeaderGameModeBase();
 };
