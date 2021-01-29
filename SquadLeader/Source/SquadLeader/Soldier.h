@@ -21,7 +21,6 @@ protected:
 
 public:	
 	virtual void Tick(float DeltaTime) override;
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 //////////////// Inits
 private:
@@ -61,7 +60,7 @@ public:
 	void onMoveForward(const float _val);
 
 	UFUNCTION()
-	void MoveRight(const float _val);
+	void onMoveRight(const float _val);
 
 ////////////////  PlayerCondition
 	UPROPERTY(BluePrintReadWrite, Category = "PlayerCondition")

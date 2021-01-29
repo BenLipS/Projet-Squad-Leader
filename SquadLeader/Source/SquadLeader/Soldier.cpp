@@ -5,7 +5,6 @@
 
 ASoldier::ASoldier()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	initStats();
@@ -26,19 +25,6 @@ void ASoldier::BeginPlay()
 void ASoldier::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-}
-
-void ASoldier::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-	InputComponent->BindAxis("MoveForward", this, &ASoldier::onMoveForward);
-	InputComponent->BindAxis("MoveRight", this, &ASoldier::MoveRight);
-
-	InputComponent->BindAxis("Turn", this, &ASoldier::AddControllerYawInput);
-	InputComponent->BindAxis("LookUp", this, &ASoldier::AddControllerPitchInput);
-
-	InputComponent->BindAction("SwitchCamera", IE_Pressed, this, &ASoldier::OnSwitchCamera);
 }
 
 void ASoldier::initCameras()
@@ -128,7 +114,7 @@ void ASoldier::onMoveForward(const float _val)
 	}
 }
 
-void ASoldier::MoveRight(const float _val) {
+void ASoldier::onMoveRight(const float _val) {
 	if ((Controller != NULL) && (_val != 0.0f))
 	{
 		FRotator Rotation = Controller->GetControlRotation();
