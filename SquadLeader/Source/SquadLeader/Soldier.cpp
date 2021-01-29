@@ -81,7 +81,7 @@ void ASoldier::initMovements()
 	GetCharacterMovement()->MaxWalkSpeedCrouched = 200;
 }
 
-void ASoldier::OnSwitchCamera()
+void ASoldier::onSwitchCamera()
 {
 	if (bIsFirstPerson)
 		setToThirdCameraPerson();
@@ -131,22 +131,39 @@ void ASoldier::onMoveRight(const float _val) {
 	}
 }
 
-void ASoldier::OnStartJumping()
+void ASoldier::onStartJumping()
 {
 	Jump();
 }
 
-void ASoldier::OnStopJumping()
+void ASoldier::onStopJumping()
 {
 	StopJumping();
 }
 
-void ASoldier::OnStartCrouching()
+void ASoldier::onStartCrouching()
 {
 	Crouch();
 }
 
-void ASoldier::OnStopCrouching()
+void ASoldier::onStopCrouching()
 {
 	UnCrouch();
+}
+
+void ASoldier::onStartRunning()
+{
+	GetCharacterMovement()->MaxWalkSpeed = 1200;
+	bIsRunning = true;
+}
+
+void ASoldier::onStopRunning()
+{
+	GetCharacterMovement()->MaxWalkSpeed = 600;
+	bIsRunning = false;
+}
+
+bool ASoldier::isRunning() const noexcept
+{
+	return bIsRunning;
 }

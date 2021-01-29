@@ -48,7 +48,7 @@ public:
 	bool bIsFirstPerson;
 
 	UFUNCTION()
-	void OnSwitchCamera();
+	void onSwitchCamera();
 
 ////////////////  Meshes
 public:
@@ -65,17 +65,32 @@ public:
 
 	// Jump
 	UFUNCTION()
-	void OnStartJumping();
+	void onStartJumping();
 
 	UFUNCTION()
-	void OnStopJumping();
+	void onStopJumping();
 
 	// Crouch
 	UFUNCTION()
-	void OnStartCrouching();
+	void onStartCrouching();
 
 	UFUNCTION()
-	void OnStopCrouching();
+	void onStopCrouching();
+
+	// Run
+	UFUNCTION()
+	void onStartRunning();
+
+	UFUNCTION()
+	void onStopRunning();
+
+protected:
+	UPROPERTY(VisibleAnywhere, BluePrintReadWrite, Category = "Movement")
+	bool bIsRunning;
+
+public:
+	UFUNCTION(BlueprintCallable, Category = "Movement")
+	bool isRunning() const noexcept;
 
 ////////////////  PlayerCondition
 	UPROPERTY(BluePrintReadWrite, Category = "PlayerCondition")

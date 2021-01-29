@@ -23,25 +23,30 @@ void ASoldierPlayerController::SetupInputComponent()
 
 	check(InputComponent);
 
+	// Cameras
+	InputComponent->BindAction("SwitchCamera", IE_Pressed, this, &ASoldierPlayerController::onSwitchCamera);
+
+	// Movements
 	InputComponent->BindAxis("MoveForward", this, &ASoldierPlayerController::onMoveForward);
-	InputComponent->BindAxis("MoveRight", this, &ASoldierPlayerController::MoveRight);
+	InputComponent->BindAxis("MoveRight", this, &ASoldierPlayerController::onMoveRight);
 
 	InputComponent->BindAxis("Turn", this, &ASoldierPlayerController::AddYawInput);
 	InputComponent->BindAxis("LookUp", this, &ASoldierPlayerController::AddPitchInput);
 
-	InputComponent->BindAction("Jump", IE_Pressed, this, &ASoldierPlayerController::OnStartJumping);
-	InputComponent->BindAction("Jump", IE_Released, this, &ASoldierPlayerController::OnStopJumping);
+	InputComponent->BindAction("Jump", IE_Pressed, this, &ASoldierPlayerController::onStartJumping);
+	InputComponent->BindAction("Jump", IE_Released, this, &ASoldierPlayerController::onStopJumping);
 
-	InputComponent->BindAction("Crouch", IE_Pressed, this, &ASoldierPlayerController::OnStartCrouching);
-	InputComponent->BindAction("Crouch", IE_Released, this, &ASoldierPlayerController::OnStopCrouching);
+	InputComponent->BindAction("Crouch", IE_Pressed, this, &ASoldierPlayerController::onStartCrouching);
+	InputComponent->BindAction("Crouch", IE_Released, this, &ASoldierPlayerController::onStopCrouching);
 
-	InputComponent->BindAction("SwitchCamera", IE_Pressed, this, &ASoldierPlayerController::OnSwitchCamera);
+	InputComponent->BindAction("Run", IE_Pressed, this, &ASoldierPlayerController::onStartRunning);
+	InputComponent->BindAction("Run", IE_Released, this, &ASoldierPlayerController::onStopRunning);
 }
 
-void ASoldierPlayerController::OnSwitchCamera()
+void ASoldierPlayerController::onSwitchCamera()
 {
 	if (ASoldier* soldier = Cast<ASoldier>(K2_GetPawn()))
-		soldier->OnSwitchCamera();
+		soldier->onSwitchCamera();
 }
 
 void ASoldierPlayerController::onMoveForward(const float _val)
@@ -50,32 +55,44 @@ void ASoldierPlayerController::onMoveForward(const float _val)
 		soldier->onMoveForward(_val);
 }
 
-void ASoldierPlayerController::MoveRight(const float _val) {
+void ASoldierPlayerController::onMoveRight(const float _val) {
 
 	if (ASoldier* soldier = Cast<ASoldier>(K2_GetPawn()))
 		soldier->onMoveRight(_val);
 }
 
-void ASoldierPlayerController::OnStartJumping()
+void ASoldierPlayerController::onStartJumping()
 {
 	if (ASoldier* soldier = Cast<ASoldier>(K2_GetPawn()))
-		soldier->OnStartJumping();
+		soldier->onStartJumping();
 }
 
-void ASoldierPlayerController::OnStopJumping()
+void ASoldierPlayerController::onStopJumping()
 {
 	if (ASoldier* soldier = Cast<ASoldier>(K2_GetPawn()))
-		soldier->OnStopJumping();
+		soldier->onStopJumping();
 }
 
-void ASoldierPlayerController::OnStartCrouching()
+void ASoldierPlayerController::onStartCrouching()
 {
 	if (ASoldier* soldier = Cast<ASoldier>(K2_GetPawn()))
-		soldier->OnStartCrouching();
+		soldier->onStartCrouching();
 }
 
-void ASoldierPlayerController::OnStopCrouching()
+void ASoldierPlayerController::onStopCrouching()
 {
 	if (ASoldier* soldier = Cast<ASoldier>(K2_GetPawn()))
-		soldier->OnStopCrouching();
+		soldier->onStopCrouching();
+}
+
+void ASoldierPlayerController::onStartRunning()
+{
+	if (ASoldier* soldier = Cast<ASoldier>(K2_GetPawn()))
+		soldier->onStartRunning();
+}
+
+void ASoldierPlayerController::onStopRunning()
+{
+	if (ASoldier* soldier = Cast<ASoldier>(K2_GetPawn()))
+		soldier->onStopRunning();
 }

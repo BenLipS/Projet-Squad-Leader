@@ -39,7 +39,7 @@ protected:
 	bool bIsFirstPerson;
 
 	UFUNCTION()
-	void OnSwitchCamera();
+	void onSwitchCamera();
 
 //////////////// Movements
 	// Move direction
@@ -47,19 +47,26 @@ protected:
 	void onMoveForward(const float _val);
 
 	UFUNCTION()
-	void MoveRight(const float _val);
+	void onMoveRight(const float _val);
 
 	// Jump
 	UFUNCTION()
-	void OnStartJumping();
+	void onStartJumping();
 
 	UFUNCTION()
-	void OnStopJumping();
+	void onStopJumping();
 
 	// Crouch
 	UFUNCTION()
-	void OnStartCrouching();
+	void onStartCrouching();
 
 	UFUNCTION()
-	void OnStopCrouching();
+	void onStopCrouching();
+
+	// Run
+	UFUNCTION()
+	void onStartRunning();
+
+	UFUNCTION()
+	void onStopRunning();
 };
