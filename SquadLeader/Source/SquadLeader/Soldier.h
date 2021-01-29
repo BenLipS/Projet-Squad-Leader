@@ -44,9 +44,11 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
 	USpringArmComponent* SpringArmComponent;
 
+protected:
 	UPROPERTY(VisibleAnywhere, BluePrintReadWrite, Category = "Camera")
 	bool bIsFirstPerson;
 
+public:
 	UFUNCTION()
 	void onSwitchCamera();
 
