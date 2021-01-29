@@ -27,6 +27,7 @@ private:
 	void initCameras();
 	void initMeshes();
 	void initStats();
+	void initMovements();
 
 //////////////// Cameras
 private:
@@ -68,6 +69,13 @@ public:
 
 	UFUNCTION()
 	void OnStopJumping();
+
+	// Crouch
+	UFUNCTION()
+	void OnStartCrouching();
+
+	UFUNCTION()
+	void OnStopCrouching();
 
 ////////////////  PlayerCondition
 	UPROPERTY(BluePrintReadWrite, Category = "PlayerCondition")

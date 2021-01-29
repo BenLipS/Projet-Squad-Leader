@@ -32,6 +32,9 @@ void ASoldierPlayerController::SetupInputComponent()
 	InputComponent->BindAction("Jump", IE_Pressed, this, &ASoldierPlayerController::OnStartJumping);
 	InputComponent->BindAction("Jump", IE_Released, this, &ASoldierPlayerController::OnStopJumping);
 
+	InputComponent->BindAction("Crouch", IE_Pressed, this, &ASoldierPlayerController::OnStartCrouching);
+	InputComponent->BindAction("Crouch", IE_Released, this, &ASoldierPlayerController::OnStopCrouching);
+
 	InputComponent->BindAction("SwitchCamera", IE_Pressed, this, &ASoldierPlayerController::OnSwitchCamera);
 }
 
@@ -63,4 +66,16 @@ void ASoldierPlayerController::OnStopJumping()
 {
 	if (ASoldier* soldier = Cast<ASoldier>(K2_GetPawn()))
 		soldier->OnStopJumping();
+}
+
+void ASoldierPlayerController::OnStartCrouching()
+{
+	if (ASoldier* soldier = Cast<ASoldier>(K2_GetPawn()))
+		soldier->OnStartCrouching();
+}
+
+void ASoldierPlayerController::OnStopCrouching()
+{
+	if (ASoldier* soldier = Cast<ASoldier>(K2_GetPawn()))
+		soldier->OnStopCrouching();
 }

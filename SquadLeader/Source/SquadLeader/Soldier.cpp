@@ -10,6 +10,7 @@ ASoldier::ASoldier()
 	initStats();
 	initCameras();
 	initMeshes();
+	initMovements();
 }
 
 void ASoldier::BeginPlay()
@@ -72,6 +73,14 @@ void ASoldier::initStats()
 	fieldOfViewAim = 50.f;
 }
 
+void ASoldier::initMovements()
+{
+	GetCharacterMovement()->GetNavAgentPropertiesRef().bCanCrouch = true;
+	GetCharacterMovement()->GravityScale = 1.5f;
+	GetCharacterMovement()->bCanWalkOffLedgesWhenCrouching = true;
+	GetCharacterMovement()->MaxWalkSpeedCrouched = 200;
+}
+
 void ASoldier::OnSwitchCamera()
 {
 	if (bIsFirstPerson)
@@ -130,4 +139,14 @@ void ASoldier::OnStartJumping()
 void ASoldier::OnStopJumping()
 {
 	StopJumping();
+}
+
+void ASoldier::OnStartCrouching()
+{
+	Crouch();
+}
+
+void ASoldier::OnStopCrouching()
+{
+	UnCrouch();
 }

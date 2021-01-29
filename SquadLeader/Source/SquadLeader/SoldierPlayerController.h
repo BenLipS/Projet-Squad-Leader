@@ -55,4 +55,11 @@ protected:
 
 	UFUNCTION()
 	void OnStopJumping();
+
+	// Crouch
+	UFUNCTION()
+	void OnStartCrouching();
+
+	UFUNCTION()
+	void OnStopCrouching();
 };
