@@ -42,10 +42,17 @@ protected:
 	void OnSwitchCamera();
 
 //////////////// Movements
-// Move direction
+	// Move direction
 	UFUNCTION()
 	void onMoveForward(const float _val);
 
 	UFUNCTION()
 	void MoveRight(const float _val);
+
+	// Jump
+	UFUNCTION()
+	void OnStartJumping();
+
+	UFUNCTION()
+	void OnStopJumping();
 };

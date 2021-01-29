@@ -29,6 +29,9 @@ void ASoldierPlayerController::SetupInputComponent()
 	InputComponent->BindAxis("Turn", this, &ASoldierPlayerController::AddYawInput);
 	InputComponent->BindAxis("LookUp", this, &ASoldierPlayerController::AddPitchInput);
 
+	InputComponent->BindAction("Jump", IE_Pressed, this, &ASoldierPlayerController::OnStartJumping);
+	InputComponent->BindAction("Jump", IE_Released, this, &ASoldierPlayerController::OnStopJumping);
+
 	InputComponent->BindAction("SwitchCamera", IE_Pressed, this, &ASoldierPlayerController::OnSwitchCamera);
 }
 
@@ -48,4 +51,16 @@ void ASoldierPlayerController::MoveRight(const float _val) {
 
 	if (ASoldier* soldier = Cast<ASoldier>(K2_GetPawn()))
 		soldier->onMoveRight(_val);
+}
+
+void ASoldierPlayerController::OnStartJumping()
+{
+	if (ASoldier* soldier = Cast<ASoldier>(K2_GetPawn()))
+		soldier->OnStartJumping();
+}
+
+void ASoldierPlayerController::OnStopJumping()
+{
+	if (ASoldier* soldier = Cast<ASoldier>(K2_GetPawn()))
+		soldier->OnStopJumping();
 }

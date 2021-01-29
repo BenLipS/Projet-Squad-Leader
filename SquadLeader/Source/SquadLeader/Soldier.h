@@ -62,6 +62,13 @@ public:
 	UFUNCTION()
 	void onMoveRight(const float _val);
 
+	// Jump
+	UFUNCTION()
+	void OnStartJumping();
+
+	UFUNCTION()
+	void OnStopJumping();
+
 ////////////////  PlayerCondition
 	UPROPERTY(BluePrintReadWrite, Category = "PlayerCondition")
 	float fieldOfViewNormal;

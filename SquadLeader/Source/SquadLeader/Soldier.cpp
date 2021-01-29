@@ -121,3 +121,13 @@ void ASoldier::onMoveRight(const float _val) {
 		AddMovementInput(FRotationMatrix(Rotation).GetScaledAxis(EAxis::Y), _val);
 	}
 }
+
+void ASoldier::OnStartJumping()
+{
+	Jump();
+}
+
+void ASoldier::OnStopJumping()
+{
+	StopJumping();
+}
