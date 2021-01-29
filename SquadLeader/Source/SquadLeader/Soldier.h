@@ -2,10 +2,11 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+#include "Core.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "camera/cameracomponent.h"
+#include "Net/UnrealNetwork.h"
 #include "Soldier.generated.h"
 
 UCLASS()
@@ -19,7 +20,8 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-public:	
+public:
+	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 	virtual void Tick(float DeltaTime) override;
 
 //////////////// Inits
@@ -87,8 +89,13 @@ public:
 	void onStopRunning();
 
 protected:
-	UPROPERTY(VisibleAnywhere, BluePrintReadWrite, Category = "Movement")
-	bool bIsRunning;
+	UPROPERTY(VisibleAnywhere, BluePrintReadWrite, Transient, Replicated, Category = "Movement")
+	bool bWantsToRun;
+
+	void setRunning(const bool _wantsToRun);
+
+	UFUNCTION(reliable, server, WithValidation)
+	void ServerSetRunning(const bool _wantsToRun);
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Movement")

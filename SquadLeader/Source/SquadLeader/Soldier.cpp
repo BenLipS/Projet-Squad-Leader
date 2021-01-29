@@ -23,6 +23,20 @@ void ASoldier::BeginPlay()
 		setToThirdCameraPerson();
 }
 
+void ASoldier::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	// only to local owner: weapon change requests are locally instigated, other clients don't need it
+	//DOREPLIFETIME_CONDITION(ASoldier, Inventory, COND_OwnerOnly);
+
+	// everyone except local owner: flag change is locally instigated
+	DOREPLIFETIME_CONDITION(ASoldier, bWantsToRun, COND_SkipOwner);
+
+	// everyone
+	//DOREPLIFETIME(AShooterCharacter, CurrentWeapon);
+}
+
 void ASoldier::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -153,17 +167,34 @@ void ASoldier::onStopCrouching()
 
 void ASoldier::onStartRunning()
 {
-	GetCharacterMovement()->MaxWalkSpeed = 1200;
-	bIsRunning = true;
+	setRunning(true);
 }
 
 void ASoldier::onStopRunning()
 {
-	GetCharacterMovement()->MaxWalkSpeed = 600;
-	bIsRunning = false;
+	setRunning(false);
+}
+
+void ASoldier::setRunning(const bool _wantsToRun)
+{
+	bWantsToRun = _wantsToRun;
+	GetCharacterMovement()->MaxWalkSpeed = bWantsToRun ? 2200.f : 600.f;
+
+	if (GetLocalRole() < ROLE_Authority)
+		ServerSetRunning(bWantsToRun);
+}
+
+bool ASoldier::ServerSetRunning_Validate(const bool _wantsToRun)
+{
+	return true;
+}
+
+void ASoldier::ServerSetRunning_Implementation(const bool _wantsToRun)
+{
+	setRunning(_wantsToRun);
 }
 
 bool ASoldier::isRunning() const noexcept
 {
-	return bIsRunning;
+	return bWantsToRun && !GetVelocity().IsZero();
 }
