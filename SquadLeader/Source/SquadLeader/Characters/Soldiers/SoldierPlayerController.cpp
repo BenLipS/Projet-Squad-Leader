@@ -45,54 +45,54 @@ void ASoldierPlayerController::SetupInputComponent()
 
 void ASoldierPlayerController::onSwitchCamera()
 {
-	if (ASoldier* soldier = Cast<ASoldier>(K2_GetPawn()))
+	if (ASoldier* soldier = Cast<ASoldier>(K2_GetPawn()); soldier)
 		soldier->onSwitchCamera();
 }
 
 void ASoldierPlayerController::onMoveForward(const float _val)
 {
-	if (ASoldier* soldier = Cast<ASoldier>(K2_GetPawn()))
+	if (ASoldier* soldier = Cast<ASoldier>(K2_GetPawn()); soldier)
 		soldier->onMoveForward(_val);
 }
 
 void ASoldierPlayerController::onMoveRight(const float _val) {
 
-	if (ASoldier* soldier = Cast<ASoldier>(K2_GetPawn()))
+	if (ASoldier* soldier = Cast<ASoldier>(K2_GetPawn()); soldier)
 		soldier->onMoveRight(_val);
 }
 
 void ASoldierPlayerController::onStartJumping()
 {
-	if (ASoldier* soldier = Cast<ASoldier>(K2_GetPawn()))
+	if (ASoldier* soldier = Cast<ASoldier>(K2_GetPawn()); soldier)
 		soldier->onStartJumping();
 }
 
 void ASoldierPlayerController::onStopJumping()
 {
-	if (ASoldier* soldier = Cast<ASoldier>(K2_GetPawn()))
+	if (ASoldier* soldier = Cast<ASoldier>(K2_GetPawn()); soldier)
 		soldier->onStopJumping();
 }
 
 void ASoldierPlayerController::onStartCrouching()
 {
-	if (ASoldier* soldier = Cast<ASoldier>(K2_GetPawn()))
+	if (ASoldier* soldier = Cast<ASoldier>(K2_GetPawn()); soldier)
 		soldier->onStartCrouching();
 }
 
 void ASoldierPlayerController::onStopCrouching()
 {
-	if (ASoldier* soldier = Cast<ASoldier>(K2_GetPawn()))
+	if (ASoldier* soldier = Cast<ASoldier>(K2_GetPawn()); soldier)
 		soldier->onStopCrouching();
 }
 
 void ASoldierPlayerController::onStartRunning()
 {
-	if (ASoldier* soldier = Cast<ASoldier>(K2_GetPawn()))
+	if (ASoldier* soldier = Cast<ASoldier>(K2_GetPawn()); soldier)
 		soldier->onStartRunning();
 }
 
 void ASoldierPlayerController::onStopRunning()
 {
-	if (ASoldier* soldier = Cast<ASoldier>(K2_GetPawn()))
+	if (ASoldier* soldier = Cast<ASoldier>(K2_GetPawn()); soldier)
 		soldier->onStopRunning();
 }
