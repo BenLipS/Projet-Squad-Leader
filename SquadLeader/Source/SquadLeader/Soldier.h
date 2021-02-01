@@ -2,10 +2,11 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+#include "Core.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "camera/cameracomponent.h"
+#include "Net/UnrealNetwork.h"
 #include "Soldier.generated.h"
 
 UCLASS()
@@ -19,15 +20,16 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-public:	
+public:
+	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 	virtual void Tick(float DeltaTime) override;
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 //////////////// Inits
 private:
 	void initCameras();
 	void initMeshes();
 	void initStats();
+	void initMovements();
 
 //////////////// Cameras
 private:
@@ -44,11 +46,13 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
 	USpringArmComponent* SpringArmComponent;
 
+protected:
 	UPROPERTY(VisibleAnywhere, BluePrintReadWrite, Category = "Camera")
 	bool bIsFirstPerson;
 
+public:
 	UFUNCTION()
-	void OnSwitchCamera();
+	void onSwitchCamera();
 
 ////////////////  Meshes
 public:
@@ -61,7 +65,41 @@ public:
 	void onMoveForward(const float _val);
 
 	UFUNCTION()
-	void MoveRight(const float _val);
+	void onMoveRight(const float _val);
+
+	// Jump
+	UFUNCTION()
+	void onStartJumping();
+
+	UFUNCTION()
+	void onStopJumping();
+
+	// Crouch
+	UFUNCTION()
+	void onStartCrouching();
+
+	UFUNCTION()
+	void onStopCrouching();
+
+	// Run
+	UFUNCTION()
+	void onStartRunning();
+
+	UFUNCTION()
+	void onStopRunning();
+
+protected:
+	UPROPERTY(VisibleAnywhere, BluePrintReadWrite, Transient, Replicated, Category = "Movement")
+	bool bWantsToRun;
+
+	void setRunning(const bool _wantsToRun);
+
+	UFUNCTION(reliable, server, WithValidation)
+	void ServerSetRunning(const bool _wantsToRun);
+
+public:
+	UFUNCTION(BlueprintCallable, Category = "Movement")
+	bool isRunning() const noexcept;
 
 ////////////////  PlayerCondition
 	UPROPERTY(BluePrintReadWrite, Category = "PlayerCondition")

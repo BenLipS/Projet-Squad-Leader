@@ -5,12 +5,12 @@
 
 ASoldier::ASoldier()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	initStats();
 	initCameras();
 	initMeshes();
+	initMovements();
 }
 
 void ASoldier::BeginPlay()
@@ -23,22 +23,23 @@ void ASoldier::BeginPlay()
 		setToThirdCameraPerson();
 }
 
+void ASoldier::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	// only to local owner: weapon change requests are locally instigated, other clients don't need it
+	//DOREPLIFETIME_CONDITION(ASoldier, Inventory, COND_OwnerOnly);
+
+	// everyone except local owner: flag change is locally instigated
+	DOREPLIFETIME_CONDITION(ASoldier, bWantsToRun, COND_SkipOwner);
+
+	// everyone
+	//DOREPLIFETIME(AShooterCharacter, CurrentWeapon);
+}
+
 void ASoldier::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-}
-
-void ASoldier::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-	InputComponent->BindAxis("MoveForward", this, &ASoldier::onMoveForward);
-	InputComponent->BindAxis("MoveRight", this, &ASoldier::MoveRight);
-
-	InputComponent->BindAxis("Turn", this, &ASoldier::AddControllerYawInput);
-	InputComponent->BindAxis("LookUp", this, &ASoldier::AddControllerPitchInput);
-
-	InputComponent->BindAction("SwitchCamera", IE_Pressed, this, &ASoldier::OnSwitchCamera);
 }
 
 void ASoldier::initCameras()
@@ -86,7 +87,15 @@ void ASoldier::initStats()
 	fieldOfViewAim = 50.f;
 }
 
-void ASoldier::OnSwitchCamera()
+void ASoldier::initMovements()
+{
+	GetCharacterMovement()->GetNavAgentPropertiesRef().bCanCrouch = true;
+	GetCharacterMovement()->GravityScale = 1.5f;
+	GetCharacterMovement()->bCanWalkOffLedgesWhenCrouching = true;
+	GetCharacterMovement()->MaxWalkSpeedCrouched = 200;
+}
+
+void ASoldier::onSwitchCamera()
 {
 	if (bIsFirstPerson)
 		setToThirdCameraPerson();
@@ -128,10 +137,64 @@ void ASoldier::onMoveForward(const float _val)
 	}
 }
 
-void ASoldier::MoveRight(const float _val) {
+void ASoldier::onMoveRight(const float _val) {
 	if ((Controller != NULL) && (_val != 0.0f))
 	{
 		FRotator Rotation = Controller->GetControlRotation();
 		AddMovementInput(FRotationMatrix(Rotation).GetScaledAxis(EAxis::Y), _val);
 	}
+}
+
+void ASoldier::onStartJumping()
+{
+	Jump();
+}
+
+void ASoldier::onStopJumping()
+{
+	StopJumping();
+}
+
+void ASoldier::onStartCrouching()
+{
+	Crouch();
+}
+
+void ASoldier::onStopCrouching()
+{
+	UnCrouch();
+}
+
+void ASoldier::onStartRunning()
+{
+	setRunning(true);
+}
+
+void ASoldier::onStopRunning()
+{
+	setRunning(false);
+}
+
+void ASoldier::setRunning(const bool _wantsToRun)
+{
+	bWantsToRun = _wantsToRun;
+	GetCharacterMovement()->MaxWalkSpeed = bWantsToRun ? 2200.f : 600.f;
+
+	if (GetLocalRole() < ROLE_Authority)
+		ServerSetRunning(bWantsToRun);
+}
+
+bool ASoldier::ServerSetRunning_Validate(const bool _wantsToRun)
+{
+	return true;
+}
+
+void ASoldier::ServerSetRunning_Implementation(const bool _wantsToRun)
+{
+	setRunning(_wantsToRun);
+}
+
+bool ASoldier::isRunning() const noexcept
+{
+	return bWantsToRun && !GetVelocity().IsZero();
 }
