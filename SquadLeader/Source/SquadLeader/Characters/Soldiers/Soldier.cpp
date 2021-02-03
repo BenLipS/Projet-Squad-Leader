@@ -2,6 +2,8 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "EngineUtils.h"
+//#include "SoldierPlayerState.h"
+#include "SoldierPlayerController.h"
 
 ASoldier::ASoldier()
 {

@@ -1,5 +1,4 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
-
 #include "SquadLeader.h"
 #include "Modules/ModuleManager.h"
 
