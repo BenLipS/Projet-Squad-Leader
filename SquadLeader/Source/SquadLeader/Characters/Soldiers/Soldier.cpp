@@ -264,3 +264,16 @@ float ASoldier::GetMoveSpeed() const
 {
 	return AttributeSet ? AttributeSet->GetMoveSpeed() : -1.0f;
 }
+
+bool ASoldier::GetWantsToFire() const
+{
+	return wantsToFire;
+}
+
+void ASoldier::SetWantsToFire(bool want)
+{
+	wantsToFire = want;
+	if (wantsToFire) {
+		//TODO: call Weapon try_fire function
+	}
+}

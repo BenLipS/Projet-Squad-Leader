@@ -87,6 +87,15 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
 	float GetMoveSpeed() const;
 
+	UPROPERTY(BlueprintReadOnly, Category = "Weapon")
+	bool wantsToFire = false;
+
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	bool GetWantsToFire() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	void SetWantsToFire(bool want);
+
 //////////////// Cameras
 private:
 	void setToFirstCameraPerson();
