@@ -2,10 +2,11 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "EngineUtils.h"
-//#include "SoldierPlayerState.h"
+#include "SoldierPlayerState.h"
 #include "SoldierPlayerController.h"
+#include "../../AbilitySystem/Soldiers/GameplayAbilitySoldier.h"
 
-ASoldier::ASoldier()
+ASoldier::ASoldier() : bAbilitiesInitialized{ false }, ASCInputBound{ false }
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -15,6 +16,11 @@ ASoldier::ASoldier()
 	initMovements();
 }
 
+/*
+* On the Server, Possession happens before BeginPlay.
+* On the Client, BeginPlay happens before Possession.
+* So we can't use BeginPlay to do anything with the AbilitySystemComponent because we don't have it until the PlayerState replicates from possession.
+*/
 void ASoldier::BeginPlay()
 {
 	Super::BeginPlay();
@@ -23,6 +29,18 @@ void ASoldier::BeginPlay()
 		setToFirstCameraPerson();
 	else
 		setToThirdCameraPerson();
+}
+
+void ASoldier::OnRep_PlayerState()
+{
+	Super::OnRep_PlayerState();
+	SetAbilitySystemComponent();
+}
+
+void ASoldier::PossessedBy(AController* _newController)
+{
+	Super::PossessedBy(_newController);
+	SetAbilitySystemComponent();
 }
 
 void ASoldier::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
@@ -97,6 +115,85 @@ void ASoldier::initMovements()
 	GetCharacterMovement()->MaxWalkSpeedCrouched = 200;
 }
 
+UAbilitySystemSoldier* ASoldier::GetAbilitySystemComponent() const
+{
+	return AbilitySystemComponent;
+}
+
+UAttributeSetSoldier* ASoldier::GetAttributeSet() const
+{
+	return AttributeSet;
+}
+
+void ASoldier::SetAbilitySystemComponent()
+{
+	// TODO: si pas de playerState alors IA donc intiliaser avec les attributs ability system de SOldier au lieu du playerState
+	if (!IsValid(GetPlayerState()))
+		return;
+
+	if (ASoldierPlayerState* pState = Cast<ASoldierPlayerState>(GetPlayerState()); pState)
+	{
+		AbilitySystemComponent = pState->GetAbilitySystemComponent();
+		AbilitySystemComponent->InitAbilityActorInfo(pState, this);
+		AttributeSet = pState->GetAttributeSet();
+
+		// If we handle players disconnecting and rejoining in the future, we'll have to change this so that possession from rejoining doesn't reset attributes.
+		// For now assume possession = spawn/respawn.
+		InitializeAttributes();
+		InitializeAbilities();
+
+		BindASCInput();
+	}
+}
+
+void ASoldier::BindASCInput()
+{
+	ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(GetController());
+	
+	if (!PC)
+		return;
+
+	UInputComponent* inputComponent = PC->InputComponent;
+
+	if (!ASCInputBound && AbilitySystemComponent && IsValid(inputComponent))
+	{
+		AbilitySystemComponent->BindAbilityActivationToInputComponent(inputComponent, FGameplayAbilityInputBinds(FString("Confirm"),
+			FString("Cancel"), FString("ESoldierAbilityInputID"), static_cast<int32>(ESoldierAbilityInputID::Confirm), static_cast<int32>(ESoldierAbilityInputID::Cancel)));
+
+		ASCInputBound = true;
+	}
+}
+
+void ASoldier::InitializeAttributes()
+{
+	if (!AbilitySystemComponent || !DefaultAttributeEffects)
+		return;
+
+	FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
+	EffectContext.AddSourceObject(this);
+
+	FGameplayEffectSpecHandle NewHandle = AbilitySystemComponent->MakeOutgoingSpec(DefaultAttributeEffects, GetCharacterLevel(), EffectContext);
+	if (NewHandle.IsValid())
+	{
+		FActiveGameplayEffectHandle ActiveGEHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*NewHandle.Data.Get());
+	}
+}
+
+void ASoldier::InitializeAbilities()
+{
+	check(AbilitySystemComponent);
+
+	if (GetLocalRole() == ROLE_Authority && !bAbilitiesInitialized)
+	{
+		// Grant abilities, but only on the server
+		for (TSubclassOf<UGameplayAbilitySoldier>& StartupAbility : CharacterDefaultAbilities)
+		{
+			AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(StartupAbility, GetCharacterLevel(), static_cast<int32>(StartupAbility.GetDefaultObject()->AbilityInputID), this));
+		}
+		bAbilitiesInitialized = true;
+	}
+}
+
 void ASoldier::onSwitchCamera()
 {
 	if (bIsFirstPerson)
@@ -147,26 +244,6 @@ void ASoldier::onMoveRight(const float _val) {
 	}
 }
 
-void ASoldier::onStartJumping()
-{
-	Jump();
-}
-
-void ASoldier::onStopJumping()
-{
-	StopJumping();
-}
-
-void ASoldier::onStartCrouching()
-{
-	Crouch();
-}
-
-void ASoldier::onStopCrouching()
-{
-	UnCrouch();
-}
-
 void ASoldier::onStartRunning()
 {
 	setRunning(true);
@@ -199,4 +276,26 @@ void ASoldier::ServerSetRunning_Implementation(const bool _wantsToRun)
 bool ASoldier::isRunning() const noexcept
 {
 	return bWantsToRun && !GetVelocity().IsZero();
+}
+
+int32 ASoldier::GetCharacterLevel() const
+{
+	if (AttributeSet)
+		return static_cast<int32>(AttributeSet->GetCharacterLevel());
+	return -1;
+}
+
+float ASoldier::GetHealth() const
+{
+	return AttributeSet ? AttributeSet->GetHealth() : -1.0f;
+}
+
+float ASoldier::GetMaxHealth() const
+{
+	return AttributeSet ? AttributeSet->GetMaxHealth() : -1.0f;
+}
+
+float ASoldier::GetMoveSpeed() const
+{
+	return AttributeSet ? AttributeSet->GetMoveSpeed() : -1.0f;
 }
