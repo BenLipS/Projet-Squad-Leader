@@ -10,6 +10,8 @@
 #include "Net/UnrealNetwork.h"
 #include "Soldier.generated.h"
 
+struct Weapon {};
+
 UCLASS()
 class SQUADLEADER_API ASoldier : public ACharacter, public IAbilitySystemInterface
 {
@@ -121,4 +123,10 @@ public:
 	UFUNCTION()
 	void onMoveRight(const float _val);
 
+//////////////// Weapons
+protected:
+	Weapon* currentWeapon;
+
+public:
+	Weapon* getCurrentWeapon() const noexcept { return currentWeapon; }
 };
