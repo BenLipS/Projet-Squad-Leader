@@ -4,8 +4,15 @@
 #include "GameFramework/Character.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "camera/cameracomponent.h"
+#include "UObject/ObjectMacros.h"
 #include "Net/UnrealNetwork.h"
 #include "Soldier.generated.h"
+
+UENUM()
+enum class ENUM_PlayerTeam : uint8 {
+	Team1       UMETA(DisplayName = "PlayerTeam1"),
+	Team2       UMETA(DisplayName = "PlayerTeam2"),
+};
 
 UCLASS()
 class SQUADLEADER_API ASoldier : public ACharacter
@@ -21,6 +28,7 @@ protected:
 public:
 	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 	virtual void Tick(float DeltaTime) override;
+
 
 //////////////// Inits
 private:
@@ -105,4 +113,8 @@ public:
 
 	UPROPERTY(BluePrintReadWrite, Category = "PlayerCondition")
 	float fieldOfViewAim;
+
+////////////////  PlayerTeam
+	UPROPERTY(EditAnywhere, BluePrintReadWrite, Category = "PlayerTeam")
+		ENUM_PlayerTeam PlayerTeam;
 };
