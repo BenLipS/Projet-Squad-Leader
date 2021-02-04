@@ -37,10 +37,10 @@ private:
 //////////////// Ability System
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ability System Component", meta = (AllowPrivateAccess = "true"))
-		UAbilitySystemSoldier* AbilitySystemComponent;
+	UAbilitySystemSoldier* AbilitySystemComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute Set", meta = (AllowPrivateAccess = "true"))
-		UAttributeSetSoldier* AttributeSet;
+	UAttributeSetSoldier* AttributeSet;
 
 public:
 	UAbilitySystemSoldier* GetAbilitySystemComponent() const override;
@@ -64,6 +64,26 @@ protected:
 	virtual void InitializeAttributes();
 	void InitializeAbilities();
 	void BindASCInput();
+
+//////////////// Attributes
+public:
+	UPROPERTY(BluePrintReadWrite, Category = "Attributes")
+	float fieldOfViewNormal;
+
+	UPROPERTY(BluePrintReadWrite, Category = "Attributes")
+	float fieldOfViewAim;
+
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
+	int32 GetCharacterLevel() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
+	float GetHealth() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
+	float GetMaxHealth() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
+	float GetMoveSpeed() const;
 
 //////////////// Cameras
 private:
@@ -101,42 +121,4 @@ public:
 	UFUNCTION()
 	void onMoveRight(const float _val);
 
-	// Run
-	UFUNCTION()
-	void onStartRunning();
-
-	UFUNCTION()
-	void onStopRunning();
-
-protected:
-	UPROPERTY(VisibleAnywhere, BluePrintReadWrite, Transient, Replicated, Category = "Movement")
-	bool bWantsToRun;
-
-	void setRunning(const bool _wantsToRun);
-
-	UFUNCTION(reliable, server, WithValidation)
-	void ServerSetRunning(const bool _wantsToRun);
-
-public:
-	UFUNCTION(BlueprintCallable, Category = "Movement")
-	bool isRunning() const noexcept;
-
-//////////////// Attributes
-	UPROPERTY(BluePrintReadWrite, Category = "Attributes")
-	float fieldOfViewNormal;
-
-	UPROPERTY(BluePrintReadWrite, Category = "Attributes")
-	float fieldOfViewAim;
-
-	UFUNCTION(BlueprintCallable, Category = "Attributes")
-	int32 GetCharacterLevel() const;
-
-	UFUNCTION(BlueprintCallable, Category = "Attributes")
-	float GetHealth() const;
-
-	UFUNCTION(BlueprintCallable, Category = "Attributes")
-	float GetMaxHealth() const;
-
-	UFUNCTION(BlueprintCallable, Category = "Attributes")
-	float GetMoveSpeed() const;
 };

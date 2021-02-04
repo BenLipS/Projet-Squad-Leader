@@ -51,7 +51,6 @@ void ASoldier::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifeti
 	//DOREPLIFETIME_CONDITION(ASoldier, Inventory, COND_OwnerOnly);
 
 	// everyone except local owner: flag change is locally instigated
-	DOREPLIFETIME_CONDITION(ASoldier, bWantsToRun, COND_SkipOwner);
 
 	// everyone
 	//DOREPLIFETIME(AShooterCharacter, CurrentWeapon);
@@ -112,7 +111,7 @@ void ASoldier::initMovements()
 	GetCharacterMovement()->GetNavAgentPropertiesRef().bCanCrouch = true;
 	GetCharacterMovement()->GravityScale = 1.5f;
 	GetCharacterMovement()->bCanWalkOffLedgesWhenCrouching = true;
-	GetCharacterMovement()->MaxWalkSpeedCrouched = 200;
+	GetCharacterMovement()->MaxWalkSpeedCrouched = 200.f;
 }
 
 UAbilitySystemSoldier* ASoldier::GetAbilitySystemComponent() const
@@ -242,40 +241,6 @@ void ASoldier::onMoveRight(const float _val) {
 		FRotator Rotation = Controller->GetControlRotation();
 		AddMovementInput(FRotationMatrix(Rotation).GetScaledAxis(EAxis::Y), _val);
 	}
-}
-
-void ASoldier::onStartRunning()
-{
-	setRunning(true);
-}
-
-void ASoldier::onStopRunning()
-{
-	setRunning(false);
-}
-
-void ASoldier::setRunning(const bool _wantsToRun)
-{
-	bWantsToRun = _wantsToRun;
-	GetCharacterMovement()->MaxWalkSpeed = bWantsToRun ? 2200.f : 600.f;
-
-	if (GetLocalRole() < ROLE_Authority)
-		ServerSetRunning(bWantsToRun);
-}
-
-bool ASoldier::ServerSetRunning_Validate(const bool _wantsToRun)
-{
-	return true;
-}
-
-void ASoldier::ServerSetRunning_Implementation(const bool _wantsToRun)
-{
-	setRunning(_wantsToRun);
-}
-
-bool ASoldier::isRunning() const noexcept
-{
-	return bWantsToRun && !GetVelocity().IsZero();
 }
 
 int32 ASoldier::GetCharacterLevel() const
