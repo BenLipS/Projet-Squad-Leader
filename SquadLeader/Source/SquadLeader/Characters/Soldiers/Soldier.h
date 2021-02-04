@@ -10,6 +10,7 @@
 
 UENUM()
 enum class ENUM_PlayerTeam : uint8 {
+	None        UMETA(DisplayName = "None"),
 	Team1       UMETA(DisplayName = "PlayerTeam1"),
 	Team2       UMETA(DisplayName = "PlayerTeam2"),
 };

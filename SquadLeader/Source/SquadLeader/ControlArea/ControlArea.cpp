@@ -18,7 +18,18 @@ AControlArea::AControlArea()
 void AControlArea::BeginPlay()
 {
 	Super::BeginPlay();
+
+
+	maxControlValue = 20;  // maxValue
+	controlValueToTake = 10;  // value need to change boolean variables
 	
+	isTakenBy = ENUM_PlayerTeam::None;
+
+	controlValue = 0;
+	presenceTeam1 = 0;
+	presenceTeam2 = 0;
+
+	tempo1s = 0;
 }
 
 // Called every frame
@@ -26,4 +37,49 @@ void AControlArea::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	// create a one second tempo system
+	tempo1s += DeltaTime;
+	if (tempo1s >= 1) {
+		tempo1s = 0;
+
+		if ((presenceTeam1 == 0 && presenceTeam2 > 0) || (presenceTeam2 == 0 && presenceTeam1 > 0)) {
+			if (abs(controlValue + presenceTeam1 - presenceTeam2) <= maxControlValue) {
+				controlValue += presenceTeam1 - presenceTeam2;
+				if (controlValue >= controlValueToTake)
+					isTakenBy = ENUM_PlayerTeam::Team1;
+				else if (controlValue <= -1 * controlValueToTake)
+					isTakenBy = ENUM_PlayerTeam::Team2;
+				else
+					isTakenBy = ENUM_PlayerTeam::None;
+			}
+		}
+	}
+}
+
+void AControlArea::NotifyActorBeginOverlap(AActor* OtherActor)
+{
+	Super::NotifyActorBeginOverlap(OtherActor);
+	if (ASoldier* soldier = Cast<ASoldier>(OtherActor); soldier) {
+		if (soldier->PlayerTeam == ENUM_PlayerTeam::Team1) {
+			presenceTeam1++;
+		}
+		else if (soldier->PlayerTeam == ENUM_PlayerTeam::Team2) {
+			presenceTeam2++;
+		}
+	}
+}
+
+void AControlArea::NotifyActorEndOverlap(AActor* OtherActor)
+{
+	Super::NotifyActorEndOverlap(OtherActor);
+	if (ASoldier* soldier = Cast<ASoldier>(OtherActor); soldier) {
+		if (soldier->PlayerTeam == ENUM_PlayerTeam::Team1) {
+			if (presenceTeam1 > 0)
+				presenceTeam1--;
+		}
+		else if (soldier->PlayerTeam == ENUM_PlayerTeam::Team2) {
+			if (presenceTeam2 > 0)
+				presenceTeam2--;
+		}
+	}
 }
