@@ -7,10 +7,9 @@
 #include "AbilitySystemInterface.h"
 #include "../../AbilitySystem/Soldiers/AttributeSetSoldier.h"
 #include "../../AbilitySystem/Soldiers/AbilitySystemSoldier.h"
+#include "../../Weapons/Weapon.h"
 #include "Net/UnrealNetwork.h"
 #include "Soldier.generated.h"
-
-struct Weapon {};
 
 UCLASS()
 class SQUADLEADER_API ASoldier : public ACharacter, public IAbilitySystemInterface
@@ -30,11 +29,12 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 //////////////// Inits
-private:
+protected:
 	void initCameras();
 	void initMeshes();
 	void initStats();
 	void initMovements();
+	virtual void initWeapons();
 
 //////////////// Ability System
 protected:
@@ -92,6 +92,7 @@ private:
 	void setToFirstCameraPerson();
 	void setToThirdCameraPerson();
 
+// TODO: Change to protected and use getters/setters
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
 	UCameraComponent* FirstPersonCameraComponent;
@@ -123,10 +124,40 @@ public:
 	UFUNCTION()
 	void onMoveRight(const float _val);
 
+	UFUNCTION(BlueprintCallable, Category = "Sight")
+	FVector lookingAtPosition();
+
 //////////////// Weapons
 protected:
-	Weapon* currentWeapon;
+	UPROPERTY(BlueprintReadOnly, Category = "Weapon")
+	bool wantsToFire = false;
 
 public:
-	Weapon* getCurrentWeapon() const noexcept { return currentWeapon; }
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	bool GetWantsToFire() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	void SetWantsToFire(const bool want);
+
+protected:
+	// Default inventory
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+	TArray<TSubclassOf<class AWeapon>> DefaultWeaponClasses;
+
+	// Current inventory
+	UPROPERTY(Transient, Replicated)
+	TArray<class AWeapon*> Inventory;
+
+	UPROPERTY(Transient, ReplicatedUsing = OnRep_CurrentWeapon)
+	AWeapon* currentWeapon;
+
+	void addToInventory(AWeapon* _weapon);
+
+	void SetCurrentWeapon(class AWeapon* _newWeapon, class AWeapon* _previousWeapon = nullptr);
+
+	UFUNCTION()
+	void OnRep_CurrentWeapon(class AWeapon* _lastWeapon);
+
+public:
+	AWeapon* getCurrentWeapon() const noexcept { return currentWeapon; }
 };
