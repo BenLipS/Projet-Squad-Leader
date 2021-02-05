@@ -5,9 +5,6 @@
 #include "../GameplayAbilitySoldier.h"
 #include "GA_Jump.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class SQUADLEADER_API UGA_Jump : public UGameplayAbilitySoldier
 {

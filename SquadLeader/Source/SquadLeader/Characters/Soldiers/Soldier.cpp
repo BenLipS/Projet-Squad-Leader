@@ -4,6 +4,7 @@
 #include "EngineUtils.h"
 #include "SoldierPlayerState.h"
 #include "SoldierPlayerController.h"
+#include "AIController.h"
 #include "../../AbilitySystem/Soldiers/GameplayAbilitySoldier.h"
 
 ASoldier::ASoldier() : bAbilitiesInitialized{ false }, ASCInputBound{ false }
@@ -12,8 +13,8 @@ ASoldier::ASoldier() : bAbilitiesInitialized{ false }, ASCInputBound{ false }
 
 	initStats();
 	initCameras();
-	initMeshes();
 	initMovements();
+	initMeshes();
 }
 
 /*
@@ -29,6 +30,8 @@ void ASoldier::BeginPlay()
 		setToFirstCameraPerson();
 	else
 		setToThirdCameraPerson();
+
+	initWeapons();
 }
 
 void ASoldier::OnRep_PlayerState()
@@ -112,6 +115,29 @@ void ASoldier::initMovements()
 	GetCharacterMovement()->GravityScale = 1.5f;
 	GetCharacterMovement()->bCanWalkOffLedgesWhenCrouching = true;
 	GetCharacterMovement()->MaxWalkSpeedCrouched = 200.f;
+}
+
+void ASoldier::initWeapons()
+{
+	for (int32 i = 0; i < DefaultWeaponClasses.Num(); ++i)
+	{
+		if (DefaultWeaponClasses[i])
+		{
+			FActorSpawnParameters SpawnInfo;
+			SpawnInfo.Owner = this;
+			SpawnInfo.Instigator = GetInstigator();
+			SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+			AWeapon* weapon = GetWorld()->SpawnActor<AWeapon>(DefaultWeaponClasses[i], SpawnInfo);
+
+			auto testLocation = weapon->GetActorLocation();
+
+			if (weapon)
+				addToInventory(weapon);
+		}
+	}
+
+	if (Inventory.Num() > 0)
+		currentWeapon = Inventory[0];
 }
 
 UAbilitySystemSoldier* ASoldier::GetAbilitySystemComponent() const
@@ -243,6 +269,34 @@ void ASoldier::onMoveRight(const float _val) {
 	}
 }
 
+FVector ASoldier::lookingAtPosition()
+{
+	if (APlayerController* PC = Cast<APlayerController>(GetController()); PC)
+	{
+		FHitResult outHit;
+		int32 screenSizeX, screenSizeY;
+		FVector endTrace, forwardVector, screenLocation, screenDirection;
+
+		PC->GetViewportSize(screenSizeX, screenSizeY);
+		PC->DeprojectScreenPositionToWorld(static_cast<float>(screenSizeX) / 2, static_cast<float>(screenSizeY) / 2, screenLocation, screenDirection);
+
+		forwardVector = bIsFirstPerson ? FirstPersonCameraComponent->GetForwardVector() : ThirdPersonCameraComponent->GetForwardVector();
+		endTrace = screenLocation + forwardVector * 10000.f;
+
+		FCollisionQueryParams collisionParams;
+		collisionParams.AddIgnoredActor(this);
+
+		if (GetWorld()->LineTraceSingleByChannel(outHit, screenLocation, endTrace, ECollisionChannel::ECC_WorldStatic, collisionParams))
+			return outHit.bBlockingHit ? outHit.Location : endTrace;
+		return endTrace;
+	}
+	else if (AAIController* AC = Cast<AAIController>(GetController()); AC)
+	{
+		return FVector{ 10.f, 10.f, 10.f };
+	}
+	return FVector{ 0.f, 0.f, 0.f };
+}
+
 int32 ASoldier::GetCharacterLevel() const
 {
 	if (AttributeSet)
@@ -274,6 +328,22 @@ void ASoldier::SetWantsToFire(bool want)
 {
 	wantsToFire = want;
 	if (wantsToFire) {
-		//TODO: call Weapon try_fire function
+		currentWeapon->tryFiring();
 	}
+}
+
+void ASoldier::OnRep_CurrentWeapon(AWeapon* _lastWeapon)
+{
+	SetCurrentWeapon(currentWeapon, _lastWeapon);
+}
+
+void ASoldier::addToInventory(AWeapon* _weapon)
+{
+	Inventory.Add(_weapon);
+}
+
+void ASoldier::SetCurrentWeapon(AWeapon* _newWeapon, AWeapon* _previousWeapon)
+{
+	if (_previousWeapon && _newWeapon !=_previousWeapon)
+		currentWeapon = _newWeapon;
 }

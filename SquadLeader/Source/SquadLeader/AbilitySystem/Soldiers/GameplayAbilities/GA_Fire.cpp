@@ -1,15 +1,14 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #include "GA_Fire.h"
 #include "../../../Characters/Soldiers/Soldier.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "../../../Weapons/WeaponLaser.h"
 
 UGA_Fire::UGA_Fire()
 {
 	AbilityInputID = ESoldierAbilityInputID::BasicAttack;
 	AbilityID = ESoldierAbilityInputID::None;
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.FireWeapon")));
-	InstancingPolicy = EGameplayAbilityInstancingPolicy::NonInstanced;
+	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 }
 
 void UGA_Fire::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
@@ -20,15 +19,17 @@ void UGA_Fire::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FG
 			EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
 
 		ASoldier* soldier = CastChecked<ASoldier>(ActorInfo->AvatarActor.Get());
-		soldier->SetWantsToFire(false);
+		soldier->SetWantsToFire(true);
 	}
 }
 
 bool UGA_Fire::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, OUT FGameplayTagContainer* OptionalRelevantTags) const
 {
-	if (!Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags) || CastChecked<ASoldier>(ActorInfo->AvatarActor.Get())->getCurrentWeapon() == nullptr)
-		return false;
-	return true;
+	ASoldier* soldier = Cast<ASoldier>(ActorInfo->AvatarActor.Get());
+
+	if (soldier && soldier->getCurrentWeapon() && Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags))
+		return true;
+	return false;
 }
 
 void UGA_Fire::InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo)
