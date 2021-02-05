@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "components/BoxComponent.h"
 #include "../Characters/Soldiers/Soldier.h"
 #include "ControlArea.generated.h"
 
@@ -26,9 +25,11 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 public:
-	/** Box Collide */
-	UPROPERTY(VisibleDefaultsOnly, Category = "DetectionArea")
-		class UBoxComponent* BoxCollide;
+	/** Zone Collide */
+	virtual void initCollideElement();
+	//UPROPERTY(EditAnywhere, Category = "DetectionArea")
+	//	class UBoxComponent* BoxCollide;
+
 
 	/** Control value variables */
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "ControlValue")
@@ -59,6 +60,10 @@ public:
 	virtual void NotifyActorEndOverlap(AActor* OtherActor) override;
 
 protected:
-	UPROPERTY(BlueprintReadWrite, Category = "Tempo")
-		float tempo1s;
+	FTimerHandle timerCalculationControlValue;
+	UPROPERTY(BlueprintReadWrite, Category = "ControlValue")
+		float timeBetweenCalcuation;
+
+	UFUNCTION(BlueprintCallable, Category = "ControlValue")
+		void calculateControlValue();
 };

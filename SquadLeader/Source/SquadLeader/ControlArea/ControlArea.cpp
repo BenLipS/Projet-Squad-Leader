@@ -5,14 +5,16 @@
 // Sets default values
 AControlArea::AControlArea()
 {
-	BoxCollide = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxContactComponent"));
-	FVector BoxSize{ 50, 50, 30 };
-	BoxCollide->SetBoxExtent(BoxSize, false);
-	RootComponent = BoxCollide;
+	initCollideElement();
 
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 }
+
+// used when initialising the control area
+void AControlArea::initCollideElement() {
+}
+
 
 // Called when the game starts or when spawned
 void AControlArea::BeginPlay()
@@ -29,31 +31,13 @@ void AControlArea::BeginPlay()
 	presenceTeam1 = 0;
 	presenceTeam2 = 0;
 
-	tempo1s = 0;
+	timeBetweenCalcuation = 0.5;
 }
 
 // Called every frame
 void AControlArea::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	// create a one second tempo system
-	tempo1s += DeltaTime;
-	if (tempo1s >= 1) {
-		tempo1s = 0;
-
-		if ((presenceTeam1 == 0 && presenceTeam2 > 0) || (presenceTeam2 == 0 && presenceTeam1 > 0)) {
-			if (abs(controlValue + presenceTeam1 - presenceTeam2) <= maxControlValue) {
-				controlValue += presenceTeam1 - presenceTeam2;
-				if (controlValue >= controlValueToTake)
-					isTakenBy = ENUM_PlayerTeam::Team1;
-				else if (controlValue <= -1 * controlValueToTake)
-					isTakenBy = ENUM_PlayerTeam::Team2;
-				else
-					isTakenBy = ENUM_PlayerTeam::None;
-			}
-		}
-	}
 }
 
 void AControlArea::NotifyActorBeginOverlap(AActor* OtherActor)
@@ -66,6 +50,11 @@ void AControlArea::NotifyActorBeginOverlap(AActor* OtherActor)
 		else if (soldier->PlayerTeam == ENUM_PlayerTeam::Team2) {
 			presenceTeam2++;
 		}
+
+		// initiate the calculation of the control zone value if needed
+		if (! timerCalculationControlValue.IsValid())
+			GetWorldTimerManager().SetTimer(timerCalculationControlValue, this, 
+				&AControlArea::calculateControlValue, timeBetweenCalcuation, true, timeBetweenCalcuation);
 	}
 }
 
@@ -80,6 +69,35 @@ void AControlArea::NotifyActorEndOverlap(AActor* OtherActor)
 		else if (soldier->PlayerTeam == ENUM_PlayerTeam::Team2) {
 			if (presenceTeam2 > 0)
 				presenceTeam2--;
+		}
+
+		// end the calculation if everybody left
+		if (presenceTeam1 == 0 && presenceTeam2 == 0)
+			GetWorld()->GetTimerManager().ClearTimer(timerCalculationControlValue);
+	}
+}
+
+void AControlArea::calculateControlValue()
+{
+	if ((presenceTeam1 == 0 && presenceTeam2 > 0) || (presenceTeam2 == 0 && presenceTeam1 > 0)) {
+		if (abs(controlValue + presenceTeam1 - presenceTeam2) <= maxControlValue) {
+			controlValue += presenceTeam1 - presenceTeam2;
+			if (controlValue >= controlValueToTake) {
+				isTakenBy = ENUM_PlayerTeam::Team1;
+				GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Control : Team1"));
+			}
+			else if (controlValue <= -1 * controlValueToTake) {
+				isTakenBy = ENUM_PlayerTeam::Team2;
+				GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Control : Team2"));
+			}
+			else {
+				isTakenBy = ENUM_PlayerTeam::None;
+				GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Control : None"));
+			}
+		}
+		else { // if the max value is reached
+			GetWorld()->GetTimerManager().ClearTimer(timerCalculationControlValue);
+			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Max value reach"));
 		}
 	}
 }
