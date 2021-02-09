@@ -2,9 +2,10 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+#include "Core.h"
 #include "GameFramework/Actor.h"
 #include "../Characters/Soldiers/Soldier.h"
+#include "Net/UnrealNetwork.h"
 #include "ControlArea.generated.h"
 
 UCLASS()
@@ -24,6 +25,9 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	// for replication purpose
+	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
+
 public:
 	/** Zone Collide */
 	virtual void initCollideElement();
@@ -32,19 +36,21 @@ public:
 
 
 	/** Control value variables */
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "ControlValue")
-		int controlValue;
 	UPROPERTY(BlueprintReadWrite, Category = "ControlValue")
 		int maxControlValue;
 	UPROPERTY(BlueprintReadWrite, Category = "ControlValue")
 		int controlValueToTake;
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "ControlValue")
+		int controlValue;
 	UPROPERTY(BlueprintReadWrite, Category = "ControlValue")
 		int presenceTeam1;
 	UPROPERTY(BlueprintReadWrite, Category = "ControlValue")
 		int presenceTeam2;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "IsTaken")
+public:
+	UPROPERTY(VisibleAnywhere, Replicated, Category = "IsTaken")
 		ENUM_PlayerTeam isTakenBy;
+
 
 	/**
 	 *	Event when this actor overlaps another actor, for example a player walking into a trigger.
