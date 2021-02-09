@@ -1,5 +1,7 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "SoldierHeavy.h"
+#include "../../Weapons/WeaponLaser.h"
+
+ASoldierHeavy::ASoldierHeavy() : ASoldier()
+{
+}
 

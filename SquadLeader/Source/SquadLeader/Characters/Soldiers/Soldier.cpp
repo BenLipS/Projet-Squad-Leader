@@ -2,19 +2,26 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "EngineUtils.h"
-//#include "SoldierPlayerState.h"
+#include "SoldierPlayerState.h"
 #include "SoldierPlayerController.h"
+#include "AIController.h"
+#include "../../AbilitySystem/Soldiers/GameplayAbilitySoldier.h"
 
-ASoldier::ASoldier()
+ASoldier::ASoldier() : bAbilitiesInitialized{ false }, ASCInputBound{ false }
 {
 	PrimaryActorTick.bCanEverTick = true;
 
 	initStats();
 	initCameras();
-	initMeshes();
 	initMovements();
+	initMeshes();
 }
 
+/*
+* On the Server, Possession happens before BeginPlay.
+* On the Client, BeginPlay happens before Possession.
+* So we can't use BeginPlay to do anything with the AbilitySystemComponent because we don't have it until the PlayerState replicates from possession.
+*/
 void ASoldier::BeginPlay()
 {
 	Super::BeginPlay();
@@ -23,6 +30,20 @@ void ASoldier::BeginPlay()
 		setToFirstCameraPerson();
 	else
 		setToThirdCameraPerson();
+
+	initWeapons();
+}
+
+void ASoldier::OnRep_PlayerState()
+{
+	Super::OnRep_PlayerState();
+	SetAbilitySystemComponent();
+}
+
+void ASoldier::PossessedBy(AController* _newController)
+{
+	Super::PossessedBy(_newController);
+	SetAbilitySystemComponent();
 }
 
 void ASoldier::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
@@ -33,7 +54,6 @@ void ASoldier::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifeti
 	//DOREPLIFETIME_CONDITION(ASoldier, Inventory, COND_OwnerOnly);
 
 	// everyone except local owner: flag change is locally instigated
-	DOREPLIFETIME_CONDITION(ASoldier, bWantsToRun, COND_SkipOwner);
 
 	// everyone
 	//DOREPLIFETIME(AShooterCharacter, CurrentWeapon);
@@ -94,7 +114,109 @@ void ASoldier::initMovements()
 	GetCharacterMovement()->GetNavAgentPropertiesRef().bCanCrouch = true;
 	GetCharacterMovement()->GravityScale = 1.5f;
 	GetCharacterMovement()->bCanWalkOffLedgesWhenCrouching = true;
-	GetCharacterMovement()->MaxWalkSpeedCrouched = 200;
+	GetCharacterMovement()->MaxWalkSpeedCrouched = 200.f;
+}
+
+void ASoldier::initWeapons()
+{
+	for (int32 i = 0; i < DefaultWeaponClasses.Num(); ++i)
+	{
+		if (DefaultWeaponClasses[i])
+		{
+			FActorSpawnParameters SpawnInfo;
+			SpawnInfo.Owner = this;
+			SpawnInfo.Instigator = GetInstigator();
+			SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+			AWeapon* weapon = GetWorld()->SpawnActor<AWeapon>(DefaultWeaponClasses[i], SpawnInfo);
+
+			auto testLocation = weapon->GetActorLocation();
+
+			if (weapon)
+				addToInventory(weapon);
+		}
+	}
+
+	if (Inventory.Num() > 0)
+		currentWeapon = Inventory[0];
+}
+
+UAbilitySystemSoldier* ASoldier::GetAbilitySystemComponent() const
+{
+	return AbilitySystemComponent;
+}
+
+UAttributeSetSoldier* ASoldier::GetAttributeSet() const
+{
+	return AttributeSet;
+}
+
+void ASoldier::SetAbilitySystemComponent()
+{
+	// TODO: si pas de playerState alors IA donc intiliaser avec les attributs ability system de SOldier au lieu du playerState
+	if (!IsValid(GetPlayerState()))
+		return;
+
+	if (ASoldierPlayerState* pState = Cast<ASoldierPlayerState>(GetPlayerState()); pState)
+	{
+		AbilitySystemComponent = pState->GetAbilitySystemComponent();
+		AbilitySystemComponent->InitAbilityActorInfo(pState, this);
+		AttributeSet = pState->GetAttributeSet();
+
+		// If we handle players disconnecting and rejoining in the future, we'll have to change this so that possession from rejoining doesn't reset attributes.
+		// For now assume possession = spawn/respawn.
+		InitializeAttributes();
+		InitializeAbilities();
+
+		BindASCInput();
+	}
+}
+
+void ASoldier::BindASCInput()
+{
+	ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(GetController());
+	
+	if (!PC)
+		return;
+
+	UInputComponent* inputComponent = PC->InputComponent;
+
+	if (!ASCInputBound && AbilitySystemComponent && IsValid(inputComponent))
+	{
+		AbilitySystemComponent->BindAbilityActivationToInputComponent(inputComponent, FGameplayAbilityInputBinds(FString("Confirm"),
+			FString("Cancel"), FString("ESoldierAbilityInputID"), static_cast<int32>(ESoldierAbilityInputID::Confirm), static_cast<int32>(ESoldierAbilityInputID::Cancel)));
+
+		ASCInputBound = true;
+	}
+}
+
+void ASoldier::InitializeAttributes()
+{
+	if (!AbilitySystemComponent || !DefaultAttributeEffects)
+		return;
+
+	FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
+	EffectContext.AddSourceObject(this);
+
+	FGameplayEffectSpecHandle NewHandle = AbilitySystemComponent->MakeOutgoingSpec(DefaultAttributeEffects, GetCharacterLevel(), EffectContext);
+	if (NewHandle.IsValid())
+	{
+		FActiveGameplayEffectHandle ActiveGEHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*NewHandle.Data.Get());
+	}
+}
+
+void ASoldier::InitializeAbilities()
+{
+	check(AbilitySystemComponent);
+
+	if (GetLocalRole() == ROLE_Authority && !bAbilitiesInitialized)
+	{
+		// Grant abilities, but only on the server
+		for (TSubclassOf<UGameplayAbilitySoldier>& StartupAbility : CharacterDefaultAbilities)
+		{
+			AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(StartupAbility, GetCharacterLevel(), static_cast<int32>(StartupAbility.GetDefaultObject()->AbilityInputID), this));
+		}
+		bAbilitiesInitialized = true;
+	}
 }
 
 void ASoldier::onSwitchCamera()
@@ -147,56 +269,81 @@ void ASoldier::onMoveRight(const float _val) {
 	}
 }
 
-void ASoldier::onStartJumping()
+FVector ASoldier::lookingAtPosition()
 {
-	Jump();
+	if (APlayerController* PC = Cast<APlayerController>(GetController()); PC)
+	{
+		FHitResult outHit;
+		int32 screenSizeX, screenSizeY;
+		FVector endTrace, forwardVector, screenLocation, screenDirection;
+
+		PC->GetViewportSize(screenSizeX, screenSizeY);
+		PC->DeprojectScreenPositionToWorld(static_cast<float>(screenSizeX) / 2, static_cast<float>(screenSizeY) / 2, screenLocation, screenDirection);
+
+		forwardVector = bIsFirstPerson ? FirstPersonCameraComponent->GetForwardVector() : ThirdPersonCameraComponent->GetForwardVector();
+		endTrace = screenLocation + forwardVector * 10000.f;
+
+		FCollisionQueryParams collisionParams;
+		collisionParams.AddIgnoredActor(this);
+
+		if (GetWorld()->LineTraceSingleByChannel(outHit, screenLocation, endTrace, ECollisionChannel::ECC_WorldStatic, collisionParams))
+			return outHit.bBlockingHit ? outHit.Location : endTrace;
+		return endTrace;
+	}
+	else if (AAIController* AC = Cast<AAIController>(GetController()); AC)
+	{
+		return FVector{ 10.f, 10.f, 10.f };
+	}
+	return FVector{ 0.f, 0.f, 0.f };
 }
 
-void ASoldier::onStopJumping()
+int32 ASoldier::GetCharacterLevel() const
 {
-	StopJumping();
+	if (AttributeSet)
+		return static_cast<int32>(AttributeSet->GetCharacterLevel());
+	return -1;
 }
 
-void ASoldier::onStartCrouching()
+float ASoldier::GetHealth() const
 {
-	Crouch();
+	return AttributeSet ? AttributeSet->GetHealth() : -1.0f;
 }
 
-void ASoldier::onStopCrouching()
+float ASoldier::GetMaxHealth() const
 {
-	UnCrouch();
+	return AttributeSet ? AttributeSet->GetMaxHealth() : -1.0f;
 }
 
-void ASoldier::onStartRunning()
+float ASoldier::GetMoveSpeed() const
 {
-	setRunning(true);
+	return AttributeSet ? AttributeSet->GetMoveSpeed() : -1.0f;
 }
 
-void ASoldier::onStopRunning()
+bool ASoldier::GetWantsToFire() const
 {
-	setRunning(false);
+	return wantsToFire;
 }
 
-void ASoldier::setRunning(const bool _wantsToRun)
+void ASoldier::SetWantsToFire(bool want)
 {
-	bWantsToRun = _wantsToRun;
-	GetCharacterMovement()->MaxWalkSpeed = bWantsToRun ? 2200.f : 600.f;
-
-	if (GetLocalRole() < ROLE_Authority)
-		ServerSetRunning(bWantsToRun);
+	wantsToFire = want;
+	if (wantsToFire) {
+		currentWeapon->tryFiring();
+	}
 }
 
-bool ASoldier::ServerSetRunning_Validate(const bool _wantsToRun)
+void ASoldier::OnRep_CurrentWeapon(AWeapon* _lastWeapon)
 {
-	return true;
+	SetCurrentWeapon(currentWeapon, _lastWeapon);
 }
 
-void ASoldier::ServerSetRunning_Implementation(const bool _wantsToRun)
+void ASoldier::addToInventory(AWeapon* _weapon)
 {
-	setRunning(_wantsToRun);
+	Inventory.Add(_weapon);
 }
 
-bool ASoldier::isRunning() const noexcept
+void ASoldier::SetCurrentWeapon(AWeapon* _newWeapon, AWeapon* _previousWeapon)
 {
-	return bWantsToRun && !GetVelocity().IsZero();
+	if (_previousWeapon && _newWeapon !=_previousWeapon)
+		currentWeapon = _newWeapon;
 }

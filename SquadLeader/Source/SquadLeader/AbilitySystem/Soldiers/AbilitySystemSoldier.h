@@ -8,4 +8,7 @@ UCLASS()
 class SQUADLEADER_API UAbilitySystemSoldier : public UAbilitySystemComponent
 {
 	GENERATED_BODY()
+
+public:
+	UAbilitySystemSoldier();
 };

@@ -6,19 +6,18 @@
 #include "camera/cameracomponent.h"
 #include "SoldierPlayerController.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class SQUADLEADER_API ASoldierPlayerController : public APlayerController
 {
 	GENERATED_BODY()
-	
+
 public:
 	ASoldierPlayerController();
 
 protected:
 	virtual void BeginPlay() override;
+	virtual void OnPossess(APawn* InPawn) override;
+	virtual void OnRep_PlayerState() override;
 
 public:
 	virtual void Tick(float _deltaTime) override;
@@ -49,24 +48,10 @@ protected:
 	UFUNCTION()
 	void onMoveRight(const float _val);
 
-	// Jump
-	UFUNCTION()
-	void onStartJumping();
-
-	UFUNCTION()
-	void onStopJumping();
-
-	// Crouch
-	UFUNCTION()
-	void onStartCrouching();
-
-	UFUNCTION()
-	void onStopCrouching();
-
-	// Run
+	/*// Run
 	UFUNCTION()
 	void onStartRunning();
 
 	UFUNCTION()
-	void onStopRunning();
+	void onStopRunning();*/
 };
