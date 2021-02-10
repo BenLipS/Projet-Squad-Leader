@@ -6,6 +6,7 @@
 #include "SoldierPlayerController.h"
 #include "AIController.h"
 #include "../../AbilitySystem/Soldiers/GameplayAbilitySoldier.h"
+//#include "DrawDebugHelpers.h"
 
 ASoldier::ASoldier() : bAbilitiesInitialized{ false }, ASCInputBound{ false }
 {
@@ -89,6 +90,7 @@ void ASoldier::initCameras()
 	ThirdPersonCameraComponent->SetFieldOfView(fieldOfViewNormal);
 
 	bIsFirstPerson = true;
+	CurrentCameraComponent = FirstPersonCameraComponent;
 }
 
 void ASoldier::initMeshes()
@@ -156,11 +158,11 @@ void ASoldier::SetAbilitySystemComponent()
 	if (!IsValid(GetPlayerState()))
 		return;
 
-	if (ASoldierPlayerState* pState = Cast<ASoldierPlayerState>(GetPlayerState()); pState)
+	if (ASoldierPlayerState* PS = Cast<ASoldierPlayerState>(GetPlayerState()); PS)
 	{
-		AbilitySystemComponent = pState->GetAbilitySystemComponent();
-		AbilitySystemComponent->InitAbilityActorInfo(pState, this);
-		AttributeSet = pState->GetAttributeSet();
+		AbilitySystemComponent = PS->GetAbilitySystemComponent();
+		AbilitySystemComponent->InitAbilityActorInfo(PS, this);
+		AttributeSet = PS->GetAttributeSet();
 
 		// If we handle players disconnecting and rejoining in the future, we'll have to change this so that possession from rejoining doesn't reset attributes.
 		// For now assume possession = spawn/respawn.
@@ -234,6 +236,7 @@ void ASoldier::setToFirstCameraPerson()
 	FirstPersonCameraComponent->Activate();
 	FirstPersonMesh->SetOwnerNoSee(false);
 
+	CurrentCameraComponent = FirstPersonCameraComponent;
 	bIsFirstPerson = true;
 }
 
@@ -244,6 +247,7 @@ void ASoldier::setToThirdCameraPerson()
 	ThirdPersonCameraComponent->Activate();
 	GetMesh()->SetOwnerNoSee(false);
 
+	CurrentCameraComponent = ThirdPersonCameraComponent;
 	bIsFirstPerson = false;
 }
 
@@ -271,30 +275,19 @@ void ASoldier::onMoveRight(const float _val) {
 
 FVector ASoldier::lookingAtPosition()
 {
-	if (APlayerController* PC = Cast<APlayerController>(GetController()); PC)
-	{
-		FHitResult outHit;
-		int32 screenSizeX, screenSizeY;
-		FVector endTrace, forwardVector, screenLocation, screenDirection;
+	// TODO: Handle AIs
+	FHitResult outHit;
 
-		PC->GetViewportSize(screenSizeX, screenSizeY);
-		PC->DeprojectScreenPositionToWorld(static_cast<float>(screenSizeX) / 2, static_cast<float>(screenSizeY) / 2, screenLocation, screenDirection);
+	FVector startLocation = CurrentCameraComponent->GetComponentTransform().GetLocation();
+	FVector forwardVector = CurrentCameraComponent->GetForwardVector();
+	FVector endLocation = startLocation + forwardVector * 10000.f;
 
-		forwardVector = bIsFirstPerson ? FirstPersonCameraComponent->GetForwardVector() : ThirdPersonCameraComponent->GetForwardVector();
-		endTrace = screenLocation + forwardVector * 10000.f;
+	FCollisionQueryParams collisionParams;
+	collisionParams.AddIgnoredActor(this);
 
-		FCollisionQueryParams collisionParams;
-		collisionParams.AddIgnoredActor(this);
-
-		if (GetWorld()->LineTraceSingleByChannel(outHit, screenLocation, endTrace, ECollisionChannel::ECC_WorldStatic, collisionParams))
-			return outHit.bBlockingHit ? outHit.Location : endTrace;
-		return endTrace;
-	}
-	else if (AAIController* AC = Cast<AAIController>(GetController()); AC)
-	{
-		return FVector{ 10.f, 10.f, 10.f };
-	}
-	return FVector{ 0.f, 0.f, 0.f };
+	if (GetWorld()->LineTraceSingleByChannel(outHit, startLocation, endLocation, ECollisionChannel::ECC_WorldStatic, collisionParams))
+		return outHit.bBlockingHit ? outHit.Location : endLocation;
+	return endLocation;
 }
 
 int32 ASoldier::GetCharacterLevel() const
@@ -314,6 +307,11 @@ float ASoldier::GetMaxHealth() const
 	return AttributeSet ? AttributeSet->GetMaxHealth() : -1.0f;
 }
 
+bool ASoldier::IsAlive() const
+{
+	return GetHealth() > 0.0f;
+}
+
 float ASoldier::GetMoveSpeed() const
 {
 	return AttributeSet ? AttributeSet->GetMoveSpeed() : -1.0f;
@@ -324,13 +322,22 @@ bool ASoldier::GetWantsToFire() const
 	return wantsToFire;
 }
 
-void ASoldier::SetWantsToFire(bool want)
+void ASoldier::SetWantsToFire(const bool _want)
 {
-	wantsToFire = want;
+	wantsToFire = _want;
 	if (wantsToFire) {
 		currentWeapon->tryFiring();
 	}
 }
+
+void ASoldier::SetWantsToFire(const bool _want, const FGameplayEffectSpecHandle _damageEffectSpecHandle)
+{
+	wantsToFire = _want;
+	if (wantsToFire) {
+		currentWeapon->tryFiring(_damageEffectSpecHandle);
+	}
+}
+
 
 void ASoldier::OnRep_CurrentWeapon(AWeapon* _lastWeapon)
 {
