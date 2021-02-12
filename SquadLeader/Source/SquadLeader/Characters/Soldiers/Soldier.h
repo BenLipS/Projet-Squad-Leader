@@ -94,6 +94,9 @@ public:
 	float GetMaxHealth() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
+	bool IsAlive() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
 	float GetMoveSpeed() const;
 
 //////////////// Cameras
@@ -103,6 +106,9 @@ private:
 
 // TODO: Change to protected and use getters/setters
 public:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
+	UCameraComponent* CurrentCameraComponent;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
 	UCameraComponent* FirstPersonCameraComponent;
 
@@ -146,7 +152,9 @@ public:
 	bool GetWantsToFire() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
-	void SetWantsToFire(const bool want);
+	void SetWantsToFire(const bool _want);
+
+	void SetWantsToFire(const bool _want, const FGameplayEffectSpecHandle _damageEffectSpecHandle);
 
 protected:
 	// Default inventory
