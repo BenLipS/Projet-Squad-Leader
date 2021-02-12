@@ -34,6 +34,7 @@ void AWeaponLaser::fire()
 
 	// TODO: Find out how to handle multi detection. The line trace tracing stops at the first pawn.
 	GetWorld()->LineTraceMultiByObjectType(outHits, startLocation, endLocation, objectTypes, collisionParams);
+	DrawDebugLine(GetWorld(), startLocation, endLocation, FColor::Red, false, 6.f);
 
 	int remainPenetration = penetration;
 	for (auto it = outHits.begin(); it != outHits.end() && remainPenetration > 0; ++it)
