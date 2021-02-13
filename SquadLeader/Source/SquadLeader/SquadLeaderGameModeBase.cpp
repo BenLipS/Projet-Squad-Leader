@@ -5,8 +5,8 @@
 
 ASquadLeaderGameModeBase::ASquadLeaderGameModeBase() {
 	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnObject(TEXT("/Game/BluePrints/Characters/BP_SoldierHeavy"));
-	static ConstructorHelpers::FClassFinder<ASoldierPlayerController> PlayerControllerObject(TEXT("/Game/BluePrints/Controllers/BP_SoldierPlayerController"));
-	static ConstructorHelpers::FClassFinder<ASoldierPlayerState> PlayerStateObject(TEXT("/Game/BluePrints/States/BP_SoldierPlayerState"));
+	static ConstructorHelpers::FClassFinder<ASoldierPlayerController> PlayerControllerObject(TEXT("/Game/BluePrints/Players/BP_SoldierPlayerController"));
+	static ConstructorHelpers::FClassFinder<ASoldierPlayerState> PlayerStateObject(TEXT("/Game/BluePrints/Players/BP_SoldierPlayerState"));
 
 	if (PlayerPawnObject.Class != NULL)
 		DefaultPawnClass = PlayerPawnObject.Class;

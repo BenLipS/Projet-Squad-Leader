@@ -4,6 +4,7 @@
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "camera/cameracomponent.h"
+#include "../../UI/HUDWidget.h"
 #include "SoldierPlayerController.generated.h"
 
 UCLASS()
@@ -23,6 +24,7 @@ public:
 	virtual void Tick(float _deltaTime) override;
 	virtual void SetupInputComponent() override;
 
+// TODO: are the cameras necessary in controllers ?
 //////////////// Cameras
 protected:
 	UPROPERTY(Transient, EditAnywhere, BlueprintReadWrite, Category = "Camera")
@@ -40,7 +42,20 @@ protected:
 	UFUNCTION()
 	void onSwitchCamera();
 
+//////////////// UI
+protected:
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "UI")
+	TSubclassOf<class UHUDWidget> HUDWidgetClass;
+
+	UPROPERTY(BlueprintReadWrite, Category = "UI")
+	class UHUDWidget* HUDWidget;
+
+public:
+	void createHUD();
+	UUserWidget* getHUD() const;
+
 //////////////// Movements
+protected:
 	// Move direction
 	UFUNCTION()
 	void onMoveForward(const float _val);

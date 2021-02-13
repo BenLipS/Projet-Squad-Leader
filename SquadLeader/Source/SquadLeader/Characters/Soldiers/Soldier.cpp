@@ -39,12 +39,18 @@ void ASoldier::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();
 	SetAbilitySystemComponent();
+
+	if (ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(GetController()); PC)
+		PC->createHUD();
 }
 
 void ASoldier::PossessedBy(AController* _newController)
 {
 	Super::PossessedBy(_newController);
 	SetAbilitySystemComponent();
+
+	if (ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(GetController()); PC)
+		PC->createHUD();
 }
 
 void ASoldier::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
