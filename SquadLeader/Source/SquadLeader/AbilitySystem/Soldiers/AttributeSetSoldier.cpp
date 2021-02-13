@@ -59,6 +59,8 @@ void UAttributeSetSoldier::PostGameplayEffectExecute(const FGameplayEffectModCal
 			}
 		}
 	}
+	else if (Data.EvaluatedData.Attribute == GetHealthAttribute())
+		SetHealth(FMath::Clamp(GetHealth(), 0.0f, GetMaxHealth()));
 }
 
 void UAttributeSetSoldier::OnRep_CharacterLevel(const FGameplayAttributeData& OldCharacterLevel)
