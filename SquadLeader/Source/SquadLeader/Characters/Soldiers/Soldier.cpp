@@ -8,7 +8,7 @@
 #include "../../AbilitySystem/Soldiers/GameplayAbilitySoldier.h"
 //#include "DrawDebugHelpers.h"
 
-ASoldier::ASoldier() : bAbilitiesInitialized{ false }, ASCInputBound{ false }
+ASoldier::ASoldier() : bAbilitiesInitialized{ false }, ASCInputBound{ false }, bDefaultWeaponsInitialized{ false }
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -31,20 +31,20 @@ void ASoldier::BeginPlay()
 		setToFirstCameraPerson();
 	else
 		setToThirdCameraPerson();
-
-	initWeapons();
 }
 
 void ASoldier::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();
 	SetAbilitySystemComponent();
+	initWeapons();
 }
 
 void ASoldier::PossessedBy(AController* _newController)
 {
 	Super::PossessedBy(_newController);
 	SetAbilitySystemComponent();
+	initWeapons();
 }
 
 void ASoldier::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
@@ -121,6 +121,9 @@ void ASoldier::initMovements()
 
 void ASoldier::initWeapons()
 {
+	if (bDefaultWeaponsInitialized)
+		return;
+
 	for (int32 i = 0; i < DefaultWeaponClasses.Num(); ++i)
 	{
 		if (DefaultWeaponClasses[i])
@@ -131,15 +134,18 @@ void ASoldier::initWeapons()
 			SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 			AWeapon* weapon = GetWorld()->SpawnActor<AWeapon>(DefaultWeaponClasses[i], SpawnInfo);
 
-			auto testLocation = weapon->GetActorLocation();
-
 			if (weapon)
+			{
 				addToInventory(weapon);
+				weapon->InitializeAbilitySystemComponent(AbilitySystemComponent);
+			}
 		}
 	}
 
 	if (Inventory.Num() > 0)
 		currentWeapon = Inventory[0];
+
+	bDefaultWeaponsInitialized = true;
 }
 
 UAbilitySystemSoldier* ASoldier::GetAbilitySystemComponent() const
@@ -169,7 +175,7 @@ void ASoldier::SetAbilitySystemComponent()
 		InitializeAttributes();
 		InitializeAbilities();
 		AddStartupEffects();
-
+		InitializeTagChangeCallbacks();
 		BindASCInput();
 	}
 }
@@ -242,6 +248,15 @@ void ASoldier::AddStartupEffects()
 
 		AbilitySystemComponent->startupEffectsApplied = true;
 	}
+}
+
+void ASoldier::InitializeTagChangeCallbacks()
+{
+	AbilitySystemComponent->RegisterGameplayTagEvent(FGameplayTag::RequestGameplayTag(FName("State.Fighting")), EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ASoldier::FightingTagChanged);
+}
+
+void ASoldier::FightingTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
+{
 }
 
 void ASoldier::onSwitchCamera()

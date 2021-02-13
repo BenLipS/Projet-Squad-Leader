@@ -69,7 +69,11 @@ protected:
 	virtual void InitializeAttributes();
 	void InitializeAbilities();
 	void AddStartupEffects();
+	void InitializeTagChangeCallbacks();
 	void BindASCInput();
+
+//////////////// Tag Change Callbacks
+	virtual void FightingTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 
 //////////////// Attributes
 public:
@@ -152,6 +156,8 @@ public:
 	void SetWantsToFire(const bool _want, const FGameplayEffectSpecHandle _damageEffectSpecHandle);
 
 protected:
+	bool bDefaultWeaponsInitialized;
+
 	// Default inventory
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	TArray<TSubclassOf<class AWeapon>> DefaultWeaponClasses;
