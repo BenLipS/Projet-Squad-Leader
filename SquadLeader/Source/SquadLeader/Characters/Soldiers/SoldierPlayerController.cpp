@@ -14,6 +14,27 @@ void ASoldierPlayerController::BeginPlay()
 	Super::BeginPlay();
 }
 
+void ASoldierPlayerController::createHUD()
+{
+	if (HUDWidget || !IsLocalPlayerController()) // We only want the HUD in local
+		return;
+
+	if (!HUDWidgetClass)
+	{
+		UE_LOG(LogTemp, Error, TEXT("%s() Missing HUDWidgetClass. Please fill in on the Blueprint of the PlayerController."), *FString(__FUNCTION__));
+		return;
+	}
+
+	HUDWidget = CreateWidget<UHUDWidget>(this, HUDWidgetClass);
+	HUDWidget->AddToViewport();
+}
+
+UUserWidget* ASoldierPlayerController::getHUD() const
+{
+	return HUDWidget;
+}
+
+// Server only
 void ASoldierPlayerController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);

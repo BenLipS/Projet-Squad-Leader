@@ -38,6 +38,9 @@ void ASoldier::OnRep_PlayerState()
 	Super::OnRep_PlayerState();
 	SetAbilitySystemComponent();
 	initWeapons();
+
+	if (ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(GetController()); PC)
+		PC->createHUD();
 }
 
 void ASoldier::PossessedBy(AController* _newController)
@@ -45,7 +48,9 @@ void ASoldier::PossessedBy(AController* _newController)
 	Super::PossessedBy(_newController);
 	SetAbilitySystemComponent();
 	initWeapons();
-}
+
+	if (ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(GetController()); PC)
+		PC->createHUD();}
 
 void ASoldier::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
 {
