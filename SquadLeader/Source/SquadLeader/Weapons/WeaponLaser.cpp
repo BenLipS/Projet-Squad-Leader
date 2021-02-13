@@ -56,7 +56,7 @@ TArray<FHitResult> AWeaponLaser::GetActorsFromLineTrace(const FVector& _startLoc
 	// TODO: Find out how to handle multi detection. The line trace tracing stops at the first pawn.
 	// TODO: See if lineTracing could use the penetration
 	GetWorld()->LineTraceMultiByObjectType(outHits, _startLocation, _endLocation, objectTypes, collisionParams);
-	DrawDebugLine(GetWorld(), startLocation, endLocation, FColor::Red, false, 6.f);
+	DrawDebugLine(GetWorld(), _startLocation, _endLocation, FColor::Red, false, 6.f);
 
 	return outHits;
 }
