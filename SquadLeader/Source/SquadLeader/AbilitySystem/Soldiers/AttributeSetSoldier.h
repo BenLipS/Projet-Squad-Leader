@@ -48,6 +48,11 @@ public:
 	FGameplayAttributeData MaxHealth;
 	ATTRIBUTE_ACCESSORS(UAttributeSetSoldier, MaxHealth)
 
+	// Health regen
+	UPROPERTY(BlueprintReadOnly, Category = "Attributes | HealthRegenRate", ReplicatedUsing = OnRep_HealthRegenRate)
+	FGameplayAttributeData HealthRegenRate;
+	ATTRIBUTE_ACCESSORS(UAttributeSetSoldier, HealthRegenRate)
+
 	// Move Speed
 	UPROPERTY(BlueprintReadOnly, Category = "Attributes | MoveSpeed", ReplicatedUsing = OnRep_MoveSpeed)
 	FGameplayAttributeData MoveSpeed;
@@ -62,6 +67,9 @@ protected:
 
 	UFUNCTION()
 	virtual void OnRep_MaxHealth(const FGameplayAttributeData& OldValue);
+
+	UFUNCTION()
+	virtual void OnRep_HealthRegenRate(const FGameplayAttributeData& OldHealthRegenRate);
 
 	UFUNCTION()
 	virtual void OnRep_MoveSpeed(const FGameplayAttributeData& OldValue);

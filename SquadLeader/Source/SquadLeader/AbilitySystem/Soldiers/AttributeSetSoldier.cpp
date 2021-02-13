@@ -76,6 +76,11 @@ void UAttributeSetSoldier::OnRep_MaxHealth(const FGameplayAttributeData& OldValu
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAttributeSetSoldier, MaxHealth, OldValue);
 }
 
+void UAttributeSetSoldier::OnRep_HealthRegenRate(const FGameplayAttributeData& OldHealthRegenRate)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAttributeSetSoldier, HealthRegenRate, OldHealthRegenRate);
+}
+
 void UAttributeSetSoldier::OnRep_MoveSpeed(const FGameplayAttributeData& OldValue)
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAttributeSetSoldier, MoveSpeed, OldValue);

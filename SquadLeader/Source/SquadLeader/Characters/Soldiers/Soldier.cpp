@@ -168,6 +168,7 @@ void ASoldier::SetAbilitySystemComponent()
 		// For now assume possession = spawn/respawn.
 		InitializeAttributes();
 		InitializeAbilities();
+		AddStartupEffects();
 
 		BindASCInput();
 	}
@@ -218,6 +219,28 @@ void ASoldier::InitializeAbilities()
 			AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(StartupAbility, GetCharacterLevel(), static_cast<int32>(StartupAbility.GetDefaultObject()->AbilityInputID), this));
 		}
 		bAbilitiesInitialized = true;
+	}
+}
+
+void ASoldier::AddStartupEffects()
+{
+	check(AbilitySystemComponent);
+
+	if (GetLocalRole() == ROLE_Authority && !AbilitySystemComponent->startupEffectsApplied)
+	{
+		FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
+		EffectContext.AddSourceObject(this);
+
+		for (TSubclassOf<UGameplayEffect> GameplayEffect : StartupEffects)
+		{
+			FGameplayEffectSpecHandle NewHandle = AbilitySystemComponent->MakeOutgoingSpec(GameplayEffect, GetCharacterLevel(), EffectContext);
+			if (NewHandle.IsValid())
+			{
+				FActiveGameplayEffectHandle ActiveGEHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*NewHandle.Data.Get(), AbilitySystemComponent);
+			}
+		}
+
+		AbilitySystemComponent->startupEffectsApplied = true;
 	}
 }
 

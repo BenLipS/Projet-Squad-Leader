@@ -4,7 +4,7 @@
 #include "Characters/Soldiers/SoldierPlayerState.h"
 
 ASquadLeaderGameModeBase::ASquadLeaderGameModeBase() {
-	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnObject(TEXT("/Game/BluePrints/Characters/BP_SoldierHeavy"));
+	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnObject(TEXT("/Game/BluePrints/Characters/BP_SoldierSupport"));
 	static ConstructorHelpers::FClassFinder<ASoldierPlayerController> PlayerControllerObject(TEXT("/Game/BluePrints/Controllers/BP_SoldierPlayerController"));
 	static ConstructorHelpers::FClassFinder<ASoldierPlayerState> PlayerStateObject(TEXT("/Game/BluePrints/States/BP_SoldierPlayerState"));
 

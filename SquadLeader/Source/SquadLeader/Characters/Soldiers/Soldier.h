@@ -49,14 +49,17 @@ public:
 	UAttributeSetSoldier* GetAttributeSet() const;
 
 protected:
+	// Define the default stats
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Abilities")
 	TSubclassOf<class UGameplayEffect> DefaultAttributeEffects;
 
+	// Define the default abilities
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Abilities")
 	TArray<TSubclassOf<class UGameplayAbilitySoldier>> CharacterDefaultAbilities;
 
-	//UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Abilities")
-	//TArray<TSubclassOf<class UGameplayEffect>> StartupEffects;
+	// Additional applied effect (for instance hp regen)
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Abilities")
+	TArray<TSubclassOf<class UGameplayEffect>> StartupEffects;
 
 	UPROPERTY()
 	bool bAbilitiesInitialized;
@@ -65,6 +68,7 @@ protected:
 	void SetAbilitySystemComponent();
 	virtual void InitializeAttributes();
 	void InitializeAbilities();
+	void AddStartupEffects();
 	void BindASCInput();
 
 //////////////// Attributes
