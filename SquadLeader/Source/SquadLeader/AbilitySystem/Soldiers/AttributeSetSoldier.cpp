@@ -59,6 +59,8 @@ void UAttributeSetSoldier::PostGameplayEffectExecute(const FGameplayEffectModCal
 			}
 		}
 	}
+	else if (Data.EvaluatedData.Attribute == GetHealthAttribute())
+		SetHealth(FMath::Clamp(GetHealth(), 0.0f, GetMaxHealth()));
 }
 
 void UAttributeSetSoldier::OnRep_CharacterLevel(const FGameplayAttributeData& OldCharacterLevel)
@@ -74,6 +76,11 @@ void UAttributeSetSoldier::OnRep_Health(const FGameplayAttributeData& OldValue)
 void UAttributeSetSoldier::OnRep_MaxHealth(const FGameplayAttributeData& OldValue)
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAttributeSetSoldier, MaxHealth, OldValue);
+}
+
+void UAttributeSetSoldier::OnRep_HealthRegenRate(const FGameplayAttributeData& OldHealthRegenRate)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAttributeSetSoldier, HealthRegenRate, OldHealthRegenRate);
 }
 
 void UAttributeSetSoldier::OnRep_MoveSpeed(const FGameplayAttributeData& OldValue)

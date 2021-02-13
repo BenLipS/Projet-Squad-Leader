@@ -8,7 +8,7 @@
 #include "../../AbilitySystem/Soldiers/GameplayAbilitySoldier.h"
 //#include "DrawDebugHelpers.h"
 
-ASoldier::ASoldier() : bAbilitiesInitialized{ false }, ASCInputBound{ false }
+ASoldier::ASoldier() : bAbilitiesInitialized{ false }, ASCInputBound{ false }, bDefaultWeaponsInitialized{ false }
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -31,14 +31,13 @@ void ASoldier::BeginPlay()
 		setToFirstCameraPerson();
 	else
 		setToThirdCameraPerson();
-
-	initWeapons();
 }
 
 void ASoldier::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();
 	SetAbilitySystemComponent();
+	initWeapons();
 
 	if (ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(GetController()); PC)
 		PC->createHUD();
@@ -48,10 +47,10 @@ void ASoldier::PossessedBy(AController* _newController)
 {
 	Super::PossessedBy(_newController);
 	SetAbilitySystemComponent();
+	initWeapons();
 
 	if (ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(GetController()); PC)
-		PC->createHUD();
-}
+		PC->createHUD();}
 
 void ASoldier::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
 {
@@ -127,6 +126,9 @@ void ASoldier::initMovements()
 
 void ASoldier::initWeapons()
 {
+	if (bDefaultWeaponsInitialized)
+		return;
+
 	for (int32 i = 0; i < DefaultWeaponClasses.Num(); ++i)
 	{
 		if (DefaultWeaponClasses[i])
@@ -137,15 +139,18 @@ void ASoldier::initWeapons()
 			SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 			AWeapon* weapon = GetWorld()->SpawnActor<AWeapon>(DefaultWeaponClasses[i], SpawnInfo);
 
-			auto testLocation = weapon->GetActorLocation();
-
 			if (weapon)
+			{
 				addToInventory(weapon);
+				weapon->InitializeAbilitySystemComponent(AbilitySystemComponent);
+			}
 		}
 	}
 
 	if (Inventory.Num() > 0)
 		currentWeapon = Inventory[0];
+
+	bDefaultWeaponsInitialized = true;
 }
 
 UAbilitySystemSoldier* ASoldier::GetAbilitySystemComponent() const
@@ -174,7 +179,8 @@ void ASoldier::SetAbilitySystemComponent()
 		// For now assume possession = spawn/respawn.
 		InitializeAttributes();
 		InitializeAbilities();
-
+		AddStartupEffects();
+		InitializeTagChangeCallbacks();
 		BindASCInput();
 	}
 }
@@ -225,6 +231,37 @@ void ASoldier::InitializeAbilities()
 		}
 		bAbilitiesInitialized = true;
 	}
+}
+
+void ASoldier::AddStartupEffects()
+{
+	check(AbilitySystemComponent);
+
+	if (GetLocalRole() == ROLE_Authority && !AbilitySystemComponent->startupEffectsApplied)
+	{
+		FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
+		EffectContext.AddSourceObject(this);
+
+		for (TSubclassOf<UGameplayEffect> GameplayEffect : StartupEffects)
+		{
+			FGameplayEffectSpecHandle NewHandle = AbilitySystemComponent->MakeOutgoingSpec(GameplayEffect, GetCharacterLevel(), EffectContext);
+			if (NewHandle.IsValid())
+			{
+				FActiveGameplayEffectHandle ActiveGEHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*NewHandle.Data.Get(), AbilitySystemComponent);
+			}
+		}
+
+		AbilitySystemComponent->startupEffectsApplied = true;
+	}
+}
+
+void ASoldier::InitializeTagChangeCallbacks()
+{
+	AbilitySystemComponent->RegisterGameplayTagEvent(FGameplayTag::RequestGameplayTag(FName("State.Fighting")), EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ASoldier::FightingTagChanged);
+}
+
+void ASoldier::FightingTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
+{
 }
 
 void ASoldier::onSwitchCamera()

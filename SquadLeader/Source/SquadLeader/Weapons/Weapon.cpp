@@ -11,6 +11,24 @@ void AWeapon::BeginPlay()
 	Super::BeginPlay();
 }
 
+void AWeapon::InitializeAbilitySystemComponent(UAbilitySystemSoldier* _abilitySystemComponent)
+{
+	AbilitySystemComponent = _abilitySystemComponent;
+}
+
+UAbilitySystemSoldier* AWeapon::GetAbilitySystemComponent() const
+{
+	return AbilitySystemComponent;
+}
+
+void AWeapon::ApplyImpactDamage(UAbilitySystemComponent* _targetASC)
+{
+}
+
+void AWeapon::ApplyImpactEffects(UAbilitySystemComponent* _targetASC)
+{
+}
+
 void AWeapon::tryFiring()
 {
 	ASoldier* soldier = Cast<ASoldier>(GetOwner());

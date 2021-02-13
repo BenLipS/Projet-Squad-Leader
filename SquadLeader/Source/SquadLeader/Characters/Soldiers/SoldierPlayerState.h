@@ -28,5 +28,5 @@ protected:
 
 public:
 	UAbilitySystemSoldier* GetAbilitySystemComponent() const override;
-	UAttributeSetSoldier* GetAttributeSet() const;	
+	UAttributeSetSoldier* GetAttributeSet() const;
 };
