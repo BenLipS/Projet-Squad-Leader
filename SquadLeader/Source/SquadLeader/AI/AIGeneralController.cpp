@@ -3,7 +3,7 @@
 
 #include "AIGeneralController.h"
 #include "Perception/AISenseConfig_Sight.h"
-#include "../Characters/Soldiers/Soldier.h"
+#include "../Soldiers/Soldier.h"
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "Perception/AIPerceptionComponent.h"
 

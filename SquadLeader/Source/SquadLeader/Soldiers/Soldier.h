@@ -173,9 +173,4 @@ protected:
 public:
 	AWeapon* getCurrentWeapon() const noexcept { return currentWeapon; }
 
-private:
-	//Stimulus for AI perception
-	class UAIPerceptionStimuliSourceComponent* stimulus;
-
-	void setup_stimulus();
 };
