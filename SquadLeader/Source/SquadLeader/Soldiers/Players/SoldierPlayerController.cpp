@@ -1,6 +1,6 @@
 #include "SoldierPlayerController.h"
 #include "SoldierPlayerState.h"
-#include "Soldier.h"
+#include "../Soldier.h"
 #include "AbilitySystemComponent.h"
 
 ASoldierPlayerController::ASoldierPlayerController()

@@ -5,9 +5,9 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "camera/cameracomponent.h"
 #include "AbilitySystemInterface.h"
-#include "../../AbilitySystem/Soldiers/AttributeSetSoldier.h"
-#include "../../AbilitySystem/Soldiers/AbilitySystemSoldier.h"
-#include "../../Weapons/Weapon.h"
+#include "../AbilitySystem/Soldiers/AttributeSetSoldier.h"
+#include "../AbilitySystem/Soldiers/AbilitySystemSoldier.h"
+#include "../Weapons/Weapon.h"
 #include "Net/UnrealNetwork.h"
 #include "Soldier.generated.h"
 
@@ -21,8 +21,6 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-	void PossessedBy(AController* _newController) override;
-	void OnRep_PlayerState() override;
 
 public:
 	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
@@ -32,7 +30,7 @@ public:
 protected:
 	void initCameras();
 	void initMeshes();
-	void initStats();
+	void initStats(); // TODO: Move all the remain stat to attributset ?
 	void initMovements();
 	virtual void initWeapons();
 
@@ -62,15 +60,11 @@ protected:
 	TArray<TSubclassOf<class UGameplayEffect>> StartupEffects;
 
 	UPROPERTY()
-	bool bAbilitiesInitialized;
-
-	bool ASCInputBound;
-	void SetAbilitySystemComponent();
+	bool bAbilitiesInitialized;	
 	virtual void InitializeAttributes();
 	void InitializeAbilities();
 	void AddStartupEffects();
 	void InitializeTagChangeCallbacks();
-	void BindASCInput();
 
 //////////////// Tag Change Callbacks
 	virtual void FightingTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
@@ -99,7 +93,7 @@ public:
 	float GetMoveSpeed() const;
 
 //////////////// Cameras
-private:
+protected:
 	void setToFirstCameraPerson();
 	void setToThirdCameraPerson();
 

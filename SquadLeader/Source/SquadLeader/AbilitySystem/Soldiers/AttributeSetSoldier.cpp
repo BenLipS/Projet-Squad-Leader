@@ -1,11 +1,7 @@
 #include "AttributeSetSoldier.h"
 #include "GameplayEffect.h"
 #include "GameplayEffectExtension.h"
-#include "../../Characters/Soldiers/Soldier.h"
-
-UAttributeSetSoldier::UAttributeSetSoldier()
-{
-}
+#include "../../Soldiers/Soldier.h"
 
 void UAttributeSetSoldier::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {

@@ -1,5 +1,5 @@
 #include "GA_Fire.h"
-#include "../../../Characters/Soldiers/Soldier.h"
+#include "../../../Soldiers/Soldier.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "../../../Weapons/WeaponLaser.h"
 
