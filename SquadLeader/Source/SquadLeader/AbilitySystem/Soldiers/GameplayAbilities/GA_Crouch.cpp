@@ -1,5 +1,5 @@
 #include "GA_Crouch.h"
-#include "../../../Characters/Soldiers/Soldier.h"
+#include "../../../Soldiers/Soldier.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 UGA_Crouch::UGA_Crouch()

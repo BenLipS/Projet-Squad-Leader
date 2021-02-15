@@ -2,15 +2,10 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "EngineUtils.h"
-#include "SoldierPlayerState.h"
-#include "SoldierPlayerController.h"
-#include "AIController.h"
-#include "../../AbilitySystem/Soldiers/GameplayAbilitySoldier.h"
-#include "Perception/AIPerceptionStimuliSourceComponent.h"
-#include "Perception/AISense_Sight.h"
+#include "../AbilitySystem/Soldiers/GameplayAbilitySoldier.h"
 //#include "DrawDebugHelpers.h"
 
-ASoldier::ASoldier() : bAbilitiesInitialized{ false }, ASCInputBound{ false }, bDefaultWeaponsInitialized{ false }
+ASoldier::ASoldier() : bAbilitiesInitialized{ false }, bDefaultWeaponsInitialized{ false }
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -18,7 +13,6 @@ ASoldier::ASoldier() : bAbilitiesInitialized{ false }, ASCInputBound{ false }, b
 	initCameras();
 	initMovements();
 	initMeshes();
-	setup_stimulus();
 }
 
 /*
@@ -36,24 +30,6 @@ void ASoldier::BeginPlay()
 		setToThirdCameraPerson();
 }
 
-void ASoldier::OnRep_PlayerState()
-{
-	Super::OnRep_PlayerState();
-	SetAbilitySystemComponent();
-	initWeapons();
-
-	if (ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(GetController()); PC)
-		PC->createHUD();
-}
-
-void ASoldier::PossessedBy(AController* _newController)
-{
-	Super::PossessedBy(_newController);
-	SetAbilitySystemComponent();
-	initWeapons();
-
-	if (ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(GetController()); PC)
-		PC->createHUD();}
 
 void ASoldier::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
 {
@@ -121,6 +97,7 @@ void ASoldier::initStats()
 
 void ASoldier::initMovements()
 {
+	// TODO: Link with attribut set (when possible)
 	GetCharacterMovement()->GetNavAgentPropertiesRef().bCanCrouch = true;
 	GetCharacterMovement()->GravityScale = 1.5f;
 	GetCharacterMovement()->bCanWalkOffLedgesWhenCrouching = true;
@@ -164,46 +141,6 @@ UAbilitySystemSoldier* ASoldier::GetAbilitySystemComponent() const
 UAttributeSetSoldier* ASoldier::GetAttributeSet() const
 {
 	return AttributeSet;
-}
-
-void ASoldier::SetAbilitySystemComponent()
-{
-	// TODO: si pas de playerState alors IA donc intiliaser avec les attributs ability system de SOldier au lieu du playerState
-	if (!IsValid(GetPlayerState()))
-		return;
-
-	if (ASoldierPlayerState* PS = Cast<ASoldierPlayerState>(GetPlayerState()); PS)
-	{
-		AbilitySystemComponent = PS->GetAbilitySystemComponent();
-		AbilitySystemComponent->InitAbilityActorInfo(PS, this);
-		AttributeSet = PS->GetAttributeSet();
-
-		// If we handle players disconnecting and rejoining in the future, we'll have to change this so that possession from rejoining doesn't reset attributes.
-		// For now assume possession = spawn/respawn.
-		InitializeAttributes();
-		InitializeAbilities();
-		AddStartupEffects();
-		InitializeTagChangeCallbacks();
-		BindASCInput();
-	}
-}
-
-void ASoldier::BindASCInput()
-{
-	ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(GetController());
-	
-	if (!PC)
-		return;
-
-	UInputComponent* inputComponent = PC->InputComponent;
-
-	if (!ASCInputBound && AbilitySystemComponent && IsValid(inputComponent))
-	{
-		AbilitySystemComponent->BindAbilityActivationToInputComponent(inputComponent, FGameplayAbilityInputBinds(FString("Confirm"),
-			FString("Cancel"), FString("ESoldierAbilityInputID"), static_cast<int32>(ESoldierAbilityInputID::Confirm), static_cast<int32>(ESoldierAbilityInputID::Cancel)));
-
-		ASCInputBound = true;
-	}
 }
 
 void ASoldier::InitializeAttributes()
@@ -384,7 +321,6 @@ void ASoldier::SetWantsToFire(const bool _want, const FGameplayEffectSpecHandle 
 	}
 }
 
-
 void ASoldier::OnRep_CurrentWeapon(AWeapon* _lastWeapon)
 {
 	SetCurrentWeapon(currentWeapon, _lastWeapon);
@@ -399,10 +335,4 @@ void ASoldier::SetCurrentWeapon(AWeapon* _newWeapon, AWeapon* _previousWeapon)
 {
 	if (_previousWeapon && _newWeapon !=_previousWeapon)
 		currentWeapon = _newWeapon;
-}
-
-void ASoldier::setup_stimulus() {
-	stimulus = CreateDefaultSubobject<UAIPerceptionStimuliSourceComponent>(TEXT("stimulus"));
-	stimulus->RegisterForSense(TSubclassOf<UAISense_Sight>());
-	stimulus->RegisterWithPerceptionSystem();
 }

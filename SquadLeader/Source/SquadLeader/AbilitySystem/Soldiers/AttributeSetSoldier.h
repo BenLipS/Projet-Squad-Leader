@@ -20,7 +20,7 @@ class SQUADLEADER_API UAttributeSetSoldier : public UAttributeSet
 	GENERATED_BODY()
 
 public:
-	UAttributeSetSoldier();
+	UAttributeSetSoldier() = default;
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual bool PreGameplayEffectExecute(struct FGameplayEffectModCallbackData& Data) override;

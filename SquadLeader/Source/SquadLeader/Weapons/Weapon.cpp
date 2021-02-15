@@ -1,5 +1,5 @@
 #include "Weapon.h"
-#include "../Characters/Soldiers/Soldier.h"
+#include "../Soldiers/Soldier.h"
 
 AWeapon::AWeapon() : isNextFireReady{ true }, timeToReloadNextShoot{ 0.2f }, isAutomatic{ true }, penetration{ 1 }
 {
