@@ -1,5 +1,5 @@
 #include "GA_Run.h"
-#include "../../../Characters/Soldiers/Soldier.h"
+#include "../../../Soldiers/Soldier.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 UGA_Run::UGA_Run()

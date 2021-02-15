@@ -10,5 +10,7 @@ class SQUADLEADER_API UAbilitySystemSoldier : public UAbilitySystemComponent
 	GENERATED_BODY()
 
 public:
-	UAbilitySystemSoldier();
+	UAbilitySystemSoldier() = default;
+
+	bool startupEffectsApplied = false;
 };

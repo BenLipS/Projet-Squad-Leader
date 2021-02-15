@@ -1,5 +1,5 @@
 #include "Weapon.h"
-#include "../Characters/Soldiers/Soldier.h"
+#include "../Soldiers/Soldier.h"
 
 AWeapon::AWeapon() : isNextFireReady{ true }, timeToReloadNextShoot{ 0.2f }, isAutomatic{ true }, penetration{ 1 }
 {
@@ -9,6 +9,24 @@ AWeapon::AWeapon() : isNextFireReady{ true }, timeToReloadNextShoot{ 0.2f }, isA
 void AWeapon::BeginPlay()
 {
 	Super::BeginPlay();
+}
+
+void AWeapon::InitializeAbilitySystemComponent(UAbilitySystemSoldier* _abilitySystemComponent)
+{
+	AbilitySystemComponent = _abilitySystemComponent;
+}
+
+UAbilitySystemSoldier* AWeapon::GetAbilitySystemComponent() const
+{
+	return AbilitySystemComponent;
+}
+
+void AWeapon::ApplyImpactDamage(UAbilitySystemComponent* _targetASC)
+{
+}
+
+void AWeapon::ApplyImpactEffects(UAbilitySystemComponent* _targetASC)
+{
 }
 
 void AWeapon::tryFiring()
