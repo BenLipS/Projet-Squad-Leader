@@ -1,5 +1,5 @@
 #include "GA_Jump.h"
-#include "../../../Characters/Soldiers/Soldier.h"
+#include "../../../Soldiers/Soldier.h"
 
 UGA_Jump::UGA_Jump()
 {

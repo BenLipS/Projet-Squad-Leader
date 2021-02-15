@@ -1,7 +1,7 @@
 #include "WeaponLaser.h"
 #include "DrawDebugHelpers.h"
 #include "Kismet/GamePlayStatics.h"
-#include "../Characters/Soldiers/Soldier.h"
+#include "../Soldiers/Soldier.h"
 
 AWeaponLaser::AWeaponLaser() : AWeapon()
 {
