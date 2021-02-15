@@ -18,8 +18,7 @@ void AAIGeneralController::on_update_sight(AActor* actor, FAIStimulus const stim
 		if(GEngine)
 			GEngine->AddOnScreenDebugMessage(10, 1.f, FColor::Red, FString::Printf(TEXT("I see: %s"), *actor->GetName()));
 }
-	if (stimulus.IsValid()) this->SetFocus(actor);
-	else this->ClearFocus(EAIFocusPriority::Gameplay);
+	this->SetFocus(actor);
 };
 
 void AAIGeneralController::setup_perception_system() {
@@ -31,7 +30,7 @@ void AAIGeneralController::setup_perception_system() {
 		sight_config->SightRadius = 1000.0f;
 		sight_config->LoseSightRadius = sight_config->SightRadius + 50.0f;
 		sight_config->PeripheralVisionAngleDegrees = 82.5f;
-		sight_config->SetMaxAge(.2f);
+		sight_config->SetMaxAge(2.0f);
 		sight_config->AutoSuccessRangeFromLastSeenLocation = 100.0f;
 		sight_config->DetectionByAffiliation.bDetectEnemies = true;
 		sight_config->DetectionByAffiliation.bDetectFriendlies = true;

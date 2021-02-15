@@ -21,7 +21,7 @@ public:
 	class UAISenseConfig_Sight* sight_config;
 
 	UFUNCTION()
-	void on_update(TArray<AActor*> const& updated_actors);
+	void on_update_sight(AActor* actor, FAIStimulus const stimulus);
 
 	void setup_perception_system();
 

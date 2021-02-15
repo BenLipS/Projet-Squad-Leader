@@ -6,6 +6,8 @@
 #include "SoldierPlayerController.h"
 #include "AIController.h"
 #include "../../AbilitySystem/Soldiers/GameplayAbilitySoldier.h"
+#include "Perception/AIPerceptionStimuliSourceComponent.h"
+#include "Perception/AISense_Sight.h"
 //#include "DrawDebugHelpers.h"
 
 ASoldier::ASoldier() : bAbilitiesInitialized{ false }, ASCInputBound{ false }, bDefaultWeaponsInitialized{ false }
@@ -16,6 +18,7 @@ ASoldier::ASoldier() : bAbilitiesInitialized{ false }, ASCInputBound{ false }, b
 	initCameras();
 	initMovements();
 	initMeshes();
+	setup_stimulus();
 }
 
 /*
@@ -396,4 +399,10 @@ void ASoldier::SetCurrentWeapon(AWeapon* _newWeapon, AWeapon* _previousWeapon)
 {
 	if (_previousWeapon && _newWeapon !=_previousWeapon)
 		currentWeapon = _newWeapon;
+}
+
+void ASoldier::setup_stimulus() {
+	stimulus = CreateDefaultSubobject<UAIPerceptionStimuliSourceComponent>(TEXT("stimulus"));
+	stimulus->RegisterForSense(TSubclassOf<UAISense_Sight>());
+	stimulus->RegisterWithPerceptionSystem();
 }
