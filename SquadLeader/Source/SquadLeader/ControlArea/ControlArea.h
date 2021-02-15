@@ -4,7 +4,7 @@
 
 #include "Core.h"
 #include "GameFramework/Actor.h"
-#include "../Characters/Soldiers/Soldier.h"
+#include "../Soldiers/Soldier.h"
 #include "Net/UnrealNetwork.h"
 #include "ControlArea.generated.h"
 
