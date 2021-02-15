@@ -1,6 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "ControlArea.h"
+#include "../SquadLeaderGameModeBase.h"
+
 
 // Sets default values
 AControlArea::AControlArea()
@@ -22,7 +24,7 @@ void AControlArea::BeginPlay()
 {
 	Super::BeginPlay();
 
-
+	/* Var init*/
 	maxControlValue = 20;  // maxValue
 	controlValueToTake = 10;  // value need to change boolean variables
 	
@@ -33,6 +35,13 @@ void AControlArea::BeginPlay()
 	presenceTeam2 = 0;
 
 	timeBetweenCalcuation = 0.5;
+
+	// add this to the game mode collection
+	if (GetLocalRole() == ROLE_Authority) {
+		auto gameMode = static_cast<ASquadLeaderGameModeBase*>(GetWorld()->GetAuthGameMode());
+		gameMode->controlAreaCollection.Add(this);
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, TEXT("Add to gameMode"));
+	}
 }
 
 // Called every frame
