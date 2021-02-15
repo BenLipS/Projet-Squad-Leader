@@ -3,15 +3,23 @@
 
 #include "AIGeneralController.h"
 #include "Perception/AISenseConfig_Sight.h"
+#include "BehaviorTree/BehaviorTreeComponent.h"
+#include "BehaviorTree/BehaviorTree.h"
+#include "BehaviorTree/BlackboardComponent.h"
 #include "../Soldiers/Soldier.h"
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "Perception/AIPerceptionComponent.h"
 
 AAIGeneralController::AAIGeneralController(FObjectInitializer const& object_initializer)
 {
+	setup_BehaviorTree();
 	setup_perception_system();
 }
 
+void AAIGeneralController::BeginPlay() {
+	Super::BeginPlay();
+	RunBehaviorTree(m_behaviorTree);
+}
 
 void AAIGeneralController::on_update_sight(AActor* actor, FAIStimulus const stimulus) {
 	if(auto const ch = Cast<ASoldier>(actor)){
@@ -20,6 +28,9 @@ void AAIGeneralController::on_update_sight(AActor* actor, FAIStimulus const stim
 }
 	if (stimulus.IsValid()) this->SetFocus(actor);
 	else this->ClearFocus(EAIFocusPriority::Gameplay);
+
+	UBlackboardComponent* BlackboardComponent = BrainComponent->GetBlackboardComponent();
+	BlackboardComponent->SetValueAsVector("VectorLocation", actor->GetActorLocation());
 };
 
 void AAIGeneralController::setup_perception_system() {
@@ -43,3 +54,9 @@ void AAIGeneralController::setup_perception_system() {
 		GetPerceptionComponent()->ConfigureSense(*sight_config);
 	}
 };
+
+void AAIGeneralController::setup_BehaviorTree() {
+	static ConstructorHelpers::FObjectFinder<UBehaviorTree> obj(TEXT("BehaviorTree'/Game/AI/BT_AITest.BT_AITest'"));
+	if (obj.Succeeded())
+		m_behaviorTree = obj.Object;
+}
