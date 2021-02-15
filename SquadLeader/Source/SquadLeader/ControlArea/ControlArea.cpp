@@ -40,7 +40,6 @@ void AControlArea::BeginPlay()
 	if (GetLocalRole() == ROLE_Authority) {
 		auto gameMode = static_cast<ASquadLeaderGameModeBase*>(GetWorld()->GetAuthGameMode());
 		gameMode->controlAreaCollection.Add(this);
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, TEXT("Add to gameMode"));
 	}
 }
 
@@ -69,7 +68,7 @@ void AControlArea::NotifyActorBeginOverlap(AActor* OtherActor)
 			else if (soldier->PlayerTeam == ENUM_PlayerTeam::Team2) {
 				presenceTeam2++;
 			}
-			else GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Yellow, TEXT("Player of an unknow team"));
+			else GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Yellow, TEXT("ControlArea : Player of an unknow team"));
 
 			// initiate the calculation of the control zone value if needed
 			if (!timerCalculationControlValue.IsValid())
@@ -109,23 +108,23 @@ void AControlArea::calculateControlValue()
 				if (controlValue >= controlValueToTake){
 					if (isTakenBy != ENUM_PlayerTeam::Team1) {
 						isTakenBy = ENUM_PlayerTeam::Team1;
-						GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Control : Team1"));
+						GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("ControlArea : Team1"));
 					}
 				}
 				else if (controlValue <= -1 * controlValueToTake) {
 					if (isTakenBy != ENUM_PlayerTeam::Team2) {
 						isTakenBy = ENUM_PlayerTeam::Team2;
-						GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Control : Team2"));
+						GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("ControlArea : Team2"));
 					}
 				}
 				else if (isTakenBy != ENUM_PlayerTeam::None){
 					isTakenBy = ENUM_PlayerTeam::None;
-					GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Control : None"));
+					GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("ControlArea : None"));
 				}
 			}
 			else { // if the max value is reached
 				GetWorld()->GetTimerManager().ClearTimer(timerCalculationControlValue);
-				GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Max value reach"));
+				GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("ControlArea : Max value reach"));
 			}
 		}
 	}
