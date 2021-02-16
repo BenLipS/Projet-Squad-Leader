@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
+#include "ControlArea/ControlArea.h"
 #include "SquadLeaderGameModeBase.generated.h"
 
 /**
@@ -17,4 +18,9 @@ class SQUADLEADER_API ASquadLeaderGameModeBase : public AGameModeBase
 public:
 	virtual void StartPlay() override;
 	ASquadLeaderGameModeBase();
+
+
+public:
+	// storage of global data for all the game
+	TArray<class AControlArea*> controlAreaCollection;
 };

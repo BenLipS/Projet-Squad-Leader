@@ -1,6 +1,5 @@
 #include "GA_Fire.h"
 #include "../../../Soldiers/Soldier.h"
-#include "GameFramework/CharacterMovementComponent.h"
 #include "../../../Weapons/WeaponLaser.h"
 
 UGA_Fire::UGA_Fire()
