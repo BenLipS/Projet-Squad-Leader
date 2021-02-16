@@ -142,6 +142,15 @@ public:
 	UFUNCTION()
 	void onMoveRight(const float _val);
 
+	UFUNCTION(BlueprintCallable, Category = "Movement")
+	bool startRunning();
+
+	UFUNCTION(BlueprintCallable, Category = "Movement")
+	bool stopRunning();
+	
+	UFUNCTION(BlueprintCallable, Category = "Movement")
+	bool walk();
+
 	UFUNCTION(BlueprintCallable, Category = "Sight")
 	FVector lookingAtPosition();
 
