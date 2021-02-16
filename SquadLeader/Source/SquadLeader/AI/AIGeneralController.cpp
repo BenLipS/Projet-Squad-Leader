@@ -46,7 +46,7 @@ void AAIGeneralController::on_update_sight(const TArray<AActor*>& AArray) {
 	else this->ClearFocus(EAIFocusPriority::Gameplay);
 
 	UBlackboardComponent* BlackboardComponent = BrainComponent->GetBlackboardComponent();
-	BlackboardComponent->SetValueAsVector("VectorLocation", FVector(0.f,0.f,0.f));
+	BlackboardComponent->SetValueAsVector("VectorLocation", AArray[0]->GetActorLocation());
 };
 
 void AAIGeneralController::setup_perception_system() {
@@ -55,7 +55,7 @@ void AAIGeneralController::setup_perception_system() {
 	if (sight_config)
 	{
 		SetPerceptionComponent(*CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("Perception Component")));
-		sight_config->SightRadius = 2000.0f;
+		sight_config->SightRadius = 5000.0f;
 		sight_config->LoseSightRadius = sight_config->SightRadius + 50.0f;
 		sight_config->PeripheralVisionAngleDegrees = 82.5f;
 		sight_config->SetMaxAge(.2f);
@@ -92,16 +92,17 @@ EPathFollowingRequestResult::Type AAIGeneralController::MoveToVectorLocation() {
 	FVector _vector = BlackboardComponent->GetValueAsVector("VectorLocation");
 
 	ASoldierAI* _soldier = Cast<ASoldierAI>(GetPawn());
+	if (_soldier) {
+		UNavigationSystemV1* navSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
+		UNavigationPath* path = navSys->FindPathToLocationSynchronously(GetWorld(), GetPawn()->GetActorLocation(), _vector, NULL);
 
-	UNavigationSystemV1* navSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
-	UNavigationPath* path = navSys->FindPathToLocationSynchronously(GetWorld(), GetPawn()->GetActorLocation(), _vector, NULL);
+		if (path->GetPathLength() >= 2000.f)
+			_soldier->GetCharacterMovement()->MaxWalkSpeed = 2200.f;
+		else _soldier->GetCharacterMovement()->MaxWalkSpeed = 600.f;
 
-	if (path->GetPathLength() >= 1000.f)
-		_soldier->GetCharacterMovement()->MaxWalkSpeed = 2200.f;
-	else _soldier->GetCharacterMovement()->MaxWalkSpeed = 600.f;
+	}
 
-	GEngine->AddOnScreenDebugMessage(10, 1.f, FColor::Red, TEXT("Je dois bouger !!!"));
-	EPathFollowingRequestResult::Type _movetoResult = MoveToLocation(_vector);
+	EPathFollowingRequestResult::Type _movetoResult = MoveToLocation(_vector, 1000.f);
 	
 	return _movetoResult;
 }
