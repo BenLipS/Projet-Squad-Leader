@@ -21,3 +21,17 @@ void ASoldierAI::BeginPlay()
 	InitializeTagChangeCallbacks();
 	initWeapons();
 }
+
+bool ASoldierAI::StartFiring()
+{
+	FGameplayTagContainer shootTag;
+	shootTag.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.FireWeapon")));
+	return GetAbilitySystemComponent()->TryActivateAbilitiesByTag(shootTag);
+}
+
+void ASoldierAI::StopFiring()
+{
+	FGameplayTagContainer shootTag;
+	shootTag.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.FireWeapon")));
+	GetAbilitySystemComponent()->CancelAbilities(&shootTag);
+}

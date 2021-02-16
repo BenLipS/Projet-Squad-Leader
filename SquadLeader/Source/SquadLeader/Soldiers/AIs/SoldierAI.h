@@ -14,4 +14,13 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+
+//////////////// Abilities
+protected:
+
+	UFUNCTION(BlueprintCallable, Category = "Abilities")
+	bool StartFiring();
+
+	UFUNCTION(BlueprintCallable, Category = "Abilities")
+	void StopFiring();
 };
