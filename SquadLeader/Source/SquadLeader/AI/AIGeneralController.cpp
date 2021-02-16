@@ -96,13 +96,16 @@ EPathFollowingRequestResult::Type AAIGeneralController::MoveToVectorLocation() {
 		UNavigationSystemV1* navSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
 		UNavigationPath* path = navSys->FindPathToLocationSynchronously(GetWorld(), GetPawn()->GetActorLocation(), _vector, NULL);
 
-		if (path->GetPathLength() >= 2000.f)
+		if (path->GetPathLength() >= 3000.f)
 			_soldier->GetCharacterMovement()->MaxWalkSpeed = 2200.f;
 		else _soldier->GetCharacterMovement()->MaxWalkSpeed = 600.f;
 
 	}
 
-	EPathFollowingRequestResult::Type _movetoResult = MoveToLocation(_vector, 1000.f);
+	//TO-DO : if follow an enemy be at the distance to shoot 
+	EPathFollowingRequestResult::Type _movetoResult = MoveToLocation(_vector, 2000.f);
+	if(_movetoResult == EPathFollowingRequestResult::Type::AlreadyAtGoal)
+		BlackboardComponent->ClearValue("VectorLocation");
 	
 	return _movetoResult;
 }
