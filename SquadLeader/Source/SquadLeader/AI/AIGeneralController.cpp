@@ -96,6 +96,7 @@ EPathFollowingRequestResult::Type AAIGeneralController::MoveToVectorLocation() {
 		UNavigationSystemV1* navSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
 		UNavigationPath* path = navSys->FindPathToLocationSynchronously(GetWorld(), GetPawn()->GetActorLocation(), _vector, NULL);
 
+		//TO-DO :: call the Run
 		if (path->GetPathLength() >= 3000.f)
 			_soldier->GetCharacterMovement()->MaxWalkSpeed = 2200.f;
 		else _soldier->GetCharacterMovement()->MaxWalkSpeed = 600.f;
