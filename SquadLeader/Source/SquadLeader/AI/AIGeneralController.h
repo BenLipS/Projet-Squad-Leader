@@ -27,6 +27,15 @@ public:
 
 	UFUNCTION()
 		void BeginPlay();
+	
+	/*Move to a location, the location must be an AActor*/
+	UFUNCTION(BlueprintCallable, Category = "SquadLeader")
+		EPathFollowingRequestResult::Type MoveToActorLocation();
+
+	/*Move to a location, the location muste be a FVector*/
+	UFUNCTION(BlueprintCallable, Category = "SquadLeader")
+		EPathFollowingRequestResult::Type MoveToVectorLocation();
+
 
 private:
 	/*Set-up the BehaviorTree at the construction*/

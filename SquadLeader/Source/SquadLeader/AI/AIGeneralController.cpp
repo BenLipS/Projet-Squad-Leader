@@ -9,11 +9,14 @@
 #include "../Soldiers/Soldier.h"
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "Perception/AIPerceptionComponent.h"
+#include "../Soldiers/AIs/SoldierAI.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 AAIGeneralController::AAIGeneralController(FObjectInitializer const& object_initializer)
 {
 	setup_BehaviorTree();
 	setup_perception_system();
+	
 }
 
 void AAIGeneralController::BeginPlay() {
@@ -26,11 +29,11 @@ void AAIGeneralController::on_update_sight(AActor* actor, FAIStimulus const stim
 		if(GEngine)
 			GEngine->AddOnScreenDebugMessage(10, 1.f, FColor::Red, FString::Printf(TEXT("I see: %s"), *actor->GetName()));
 }
-	if (stimulus.IsValid()) this->SetFocus(actor);
-	else this->ClearFocus(EAIFocusPriority::Gameplay);
-
+	/*if (stimulus.IsValid()) this->SetFocus(actor);
+	else this->ClearFocus(EAIFocusPriority::Gameplay);*/
 	UBlackboardComponent* BlackboardComponent = BrainComponent->GetBlackboardComponent();
 	BlackboardComponent->SetValueAsVector("VectorLocation", actor->GetActorLocation());
+	
 };
 
 void AAIGeneralController::setup_perception_system() {
@@ -59,4 +62,27 @@ void AAIGeneralController::setup_BehaviorTree() {
 	static ConstructorHelpers::FObjectFinder<UBehaviorTree> obj(TEXT("BehaviorTree'/Game/AI/BT_AITest.BT_AITest'"));
 	if (obj.Succeeded())
 		m_behaviorTree = obj.Object;
+}
+
+EPathFollowingRequestResult::Type AAIGeneralController::MoveToActorLocation() {
+	UBlackboardComponent* BlackboardComponent = BrainComponent->GetBlackboardComponent();
+	AActor* _actor = Cast<AActor>(BlackboardComponent->GetValueAsObject("ActorLocation"));
+
+	EPathFollowingRequestResult::Type _movetoResult = MoveToActor(_actor);
+
+	return _movetoResult;
+}
+
+EPathFollowingRequestResult::Type AAIGeneralController::MoveToVectorLocation() {
+	UBlackboardComponent* BlackboardComponent = BrainComponent->GetBlackboardComponent();
+	FVector _vector = BlackboardComponent->GetValueAsVector("VectorLocation");
+
+	ASoldierAI* _soldier = Cast<ASoldierAI>(GetPawn());
+
+	_soldier->GetCharacterMovement()->MaxWalkSpeed = 2200.f;
+
+	GEngine->AddOnScreenDebugMessage(10, 1.f, FColor::Red, TEXT("Je dois bouger !!!"));
+	EPathFollowingRequestResult::Type _movetoResult = MoveToLocation(_vector);
+
+	return _movetoResult;
 }
