@@ -1,7 +1,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameplayAbilitySpec.h"
 #include "../GameplayAbilitySoldier.h"
 #include "GA_Fire.generated.h"
 

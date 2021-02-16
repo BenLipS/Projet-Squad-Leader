@@ -69,4 +69,7 @@ protected:
 
 	UFUNCTION()
 	void onStopRunning();*/
+
+	UFUNCTION()
+	void onChangeTeam();
 };

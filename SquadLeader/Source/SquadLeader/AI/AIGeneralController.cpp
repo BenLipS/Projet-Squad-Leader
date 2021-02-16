@@ -9,11 +9,14 @@
 #include "../Soldiers/Soldier.h"
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "Perception/AIPerceptionComponent.h"
+#include "../Soldiers/AIs/SoldierAI.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 AAIGeneralController::AAIGeneralController(FObjectInitializer const& object_initializer)
 {
 	setup_BehaviorTree();
 	setup_perception_system();
+	
 }
 
 void AAIGeneralController::BeginPlay() {
@@ -33,8 +36,6 @@ void AAIGeneralController::ontargetperception_update_sight(AActor* actor, FAISti
 		BlackboardComponent->SetValueAsObject("ActorSeen1", actor);
 	else if (BlackboardComponent->GetValueAsObject("ActorSeen2") == nullptr && BlackboardComponent->GetValueAsObject("ActorSeen0") != actor && BlackboardComponent->GetValueAsObject("ActorSeen1") != actor)
 		BlackboardComponent->SetValueAsObject("ActorSeen2", actor);
-
-
 };
 
 void AAIGeneralController::onperception_update_sight(const TArray<AActor*>& AArray) {
@@ -81,15 +82,28 @@ void AAIGeneralController::setup_BehaviorTree() {
 		m_behaviorTree = obj.Object;
 }
 
-void AAIGeneralController::ShootEnemy() {
-	if (GEngine) GEngine->AddOnScreenDebugMessage(1050, 1.f, FColor::Red, FString::Printf(TEXT("%s shoots !"), *this->GetName()));
-	//todo shoot auto or manual
+EPathFollowingRequestResult::Type AAIGeneralController::MoveToActorLocation() {
+	UBlackboardComponent* BlackboardComponent = BrainComponent->GetBlackboardComponent();
+	AActor* _actor = Cast<AActor>(BlackboardComponent->GetValueAsObject("ActorLocation"));
 
-	if (ASoldier* soldier = Cast<ASoldier>(GetPawn()); soldier)
-	{
-		FGameplayTagContainer shootTag;
-		shootTag.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.FireWeapon")));
-		bool test = soldier->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(shootTag);
-		soldier->GetAbilitySystemComponent()->CancelAbilities(&shootTag);
-	}
+	EPathFollowingRequestResult::Type _movetoResult = MoveToActor(_actor);
+
+	return _movetoResult;
+}
+
+EPathFollowingRequestResult::Type AAIGeneralController::MoveToVectorLocation() {
+	UBlackboardComponent* BlackboardComponent = BrainComponent->GetBlackboardComponent();
+	FVector _vector = BlackboardComponent->GetValueAsVector("VectorLocation");
+
+	ASoldierAI* _soldier = Cast<ASoldierAI>(GetPawn());
+
+	_soldier->GetCharacterMovement()->MaxWalkSpeed = 2200.f;
+
+	GEngine->AddOnScreenDebugMessage(10, 1.f, FColor::Red, TEXT("Je dois bouger !!!"));
+	EPathFollowingRequestResult::Type _movetoResult = MoveToLocation(_vector);
+
+	return _movetoResult;
+}
+
+void AAIGeneralController::ShootEnemy() {
 };

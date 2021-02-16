@@ -11,6 +11,13 @@
 #include "Net/UnrealNetwork.h"
 #include "Soldier.generated.h"
 
+UENUM()
+enum class ENUM_PlayerTeam : uint8 {
+	None        UMETA(DisplayName = "None"),
+	Team1       UMETA(DisplayName = "PlayerTeam1"),
+	Team2       UMETA(DisplayName = "PlayerTeam2"),
+};
+
 UCLASS()
 class SQUADLEADER_API ASoldier : public ACharacter, public IAbilitySystemInterface
 {
@@ -25,6 +32,7 @@ protected:
 public:
 	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 	virtual void Tick(float DeltaTime) override;
+
 
 //////////////// Inits
 protected:
@@ -67,6 +75,16 @@ protected:
 	void InitializeTagChangeCallbacks();
 
 //////////////// Tag Change Callbacks
+public:
+	static FGameplayTag StateDeadTag;
+	static FGameplayTag StateRunningTag;
+	static FGameplayTag StateJumpingTag;
+	static FGameplayTag StateFightingTag;
+
+protected:
+	virtual void DeadTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
+	virtual void RunningTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
+	virtual void JumpingTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 	virtual void FightingTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 
 //////////////// Attributes
@@ -132,6 +150,15 @@ public:
 	UFUNCTION()
 	void onMoveRight(const float _val);
 
+	UFUNCTION(BlueprintCallable, Category = "Movement")
+	bool startRunning();
+
+	UFUNCTION(BlueprintCallable, Category = "Movement")
+	bool stopRunning();
+	
+	UFUNCTION(BlueprintCallable, Category = "Movement")
+	bool walk();
+
 	UFUNCTION(BlueprintCallable, Category = "Sight")
 	FVector lookingAtPosition();
 
@@ -172,5 +199,18 @@ protected:
 
 public:
 	AWeapon* getCurrentWeapon() const noexcept { return currentWeapon; }
+	////////////////  PlayerTeam
+	// Appel du c�t� serveur pour actualiser l'�tat du rep�re 
+	UFUNCTION(Reliable, Server, WithValidation)
+		void ServerChangeTeam(ENUM_PlayerTeam _PlayerTeam);
+
+	UFUNCTION() // Doit toujours �tre UFUNCTION() quand il s'agit d'une fonction �OnRep notify�
+		void OnRep_ChangeTeam();
+
+	UPROPERTY(EditInstanceOnly, BluePrintReadWrite, ReplicatedUsing = OnRep_ChangeTeam, Category = "PlayerTeam")
+		ENUM_PlayerTeam PlayerTeam;
+
+	// Connected to the "L" key
+	void cycleBetweenTeam();
 
 };

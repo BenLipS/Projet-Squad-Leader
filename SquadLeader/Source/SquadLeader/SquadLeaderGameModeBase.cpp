@@ -20,5 +20,11 @@ ASquadLeaderGameModeBase::ASquadLeaderGameModeBase()
 }
 
 void ASquadLeaderGameModeBase::StartPlay() {
+	// init collections
+	controlAreaCollection = {};
+
+	// todo : create teams as class
+
+
 	Super::StartPlay();
 }
