@@ -98,3 +98,7 @@ EPathFollowingRequestResult::Type AAIGeneralController::MoveToVectorLocation() {
 
 	return _movetoResult;
 }
+
+void AAIGeneralController::ShootEnemy() {
+	if (GEngine) GEngine->AddOnScreenDebugMessage(10, 1.f, FColor::Red, TEXT("I shoot !"));
+};
