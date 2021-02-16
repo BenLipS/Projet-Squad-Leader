@@ -182,6 +182,16 @@ public:
 	AWeapon* getCurrentWeapon() const noexcept { return currentWeapon; }
 	
 	////////////////  PlayerTeam
-	UPROPERTY(EditAnywhere, BluePrintReadWrite, Category = "PlayerTeam")
+	// Appel du côté serveur pour actualiser l'état du repère 
+	UFUNCTION(Reliable, Server, WithValidation)
+		void ServerChangeTeam(ENUM_PlayerTeam _PlayerTeam);
+
+	UFUNCTION() // Doit toujours être UFUNCTION() quand il s'agit d'une fonction «OnRep notify»
+		void OnRep_ChangeTeam();
+
+	UPROPERTY(EditInstanceOnly, BluePrintReadWrite, ReplicatedUsing = OnRep_ChangeTeam, Category = "PlayerTeam")
 		ENUM_PlayerTeam PlayerTeam;
+
+	// Connected to the "L" key
+	void cycleBetweenTeam();
 };

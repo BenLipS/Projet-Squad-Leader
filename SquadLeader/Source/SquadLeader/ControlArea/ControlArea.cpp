@@ -26,7 +26,7 @@ void AControlArea::BeginPlay()
 
 	/* Var init*/
 	maxControlValue = 20;  // maxValue
-	controlValueToTake = 10;  // value need to change boolean variables
+	controlValueToTake = maxControlValue / 2;  // value need to change boolean variables
 	
 	isTakenBy = ENUM_PlayerTeam::None;
 

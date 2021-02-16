@@ -72,6 +72,9 @@ void ASoldierPlayerController::SetupInputComponent()
 
 	//InputComponent->BindAction("Run", IE_Pressed, this, &ASoldierPlayerController::onStartRunning);
 	//InputComponent->BindAction("Run", IE_Released, this, &ASoldierPlayerController::onStopRunning);
+
+	//TODO : change debug bindAction when not need anymore
+	InputComponent->BindAction("ChangeTeam", IE_Released, this, &ASoldierPlayerController::onChangeTeam);
 }
 
 void ASoldierPlayerController::onSwitchCamera()
@@ -103,3 +106,9 @@ void ASoldierPlayerController::onMoveRight(const float _val) {
 //	if (ASoldier* soldier = Cast<ASoldier>(K2_GetPawn()); soldier)
 //		soldier->onStopRunning();
 //}
+
+void ASoldierPlayerController::onChangeTeam()
+{
+	if (ASoldier* soldier = Cast<ASoldier>(K2_GetPawn()); soldier)
+		soldier->cycleBetweenTeam();
+}
