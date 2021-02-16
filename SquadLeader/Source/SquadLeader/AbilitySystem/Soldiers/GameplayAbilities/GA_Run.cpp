@@ -18,7 +18,7 @@ void UGA_Run::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGa
 
 		ASoldier* soldier = CastChecked<ASoldier>(ActorInfo->AvatarActor.Get());
 
-		if (soldier->startRunning())
+		if (soldier->StartRunning())
 		{
 			FGameplayEffectSpecHandle RunningEffectSpecHandle = MakeOutgoingGameplayEffectSpec(RunningGameplayEffect, GetAbilityLevel());
 			soldier->GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*RunningEffectSpecHandle.Data.Get());
@@ -56,5 +56,5 @@ void UGA_Run::CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGame
 	Super::CancelAbility(Handle, ActorInfo, ActivationInfo, bReplicateCancelAbility);
 
 	ASoldier* soldier = CastChecked<ASoldier>(ActorInfo->AvatarActor.Get());
-	soldier->stopRunning();
+	soldier->StopRunning();
 }

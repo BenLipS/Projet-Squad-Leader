@@ -278,13 +278,13 @@ void ASoldier::onMoveRight(const float _val) {
 	}
 }
 
-bool ASoldier::startRunning()
+bool ASoldier::StartRunning()
 {
 	GetCharacterMovement()->MaxWalkSpeed = 2200.f; // TODO: Make a MaxMovementSpeed attribute in attributeset ?
 	return true;
 }
 
-bool ASoldier::stopRunning()
+bool ASoldier::StopRunning()
 {
 	FGameplayTagContainer EffectTagsToRemove;
 	EffectTagsToRemove.AddTag(StateRunningTag);
@@ -293,9 +293,9 @@ bool ASoldier::stopRunning()
 	return true;
 }
 
-bool ASoldier::walk()
+bool ASoldier::Walk()
 {
-	stopRunning();
+	StopRunning();
 	return true;
 }
 

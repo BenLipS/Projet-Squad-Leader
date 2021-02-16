@@ -151,13 +151,13 @@ public:
 	void onMoveRight(const float _val);
 
 	UFUNCTION(BlueprintCallable, Category = "Movement")
-	bool startRunning();
+	bool StartRunning();
 
 	UFUNCTION(BlueprintCallable, Category = "Movement")
-	bool stopRunning();
+	bool StopRunning();
 	
 	UFUNCTION(BlueprintCallable, Category = "Movement")
-	bool walk();
+	bool Walk();
 
 	UFUNCTION(BlueprintCallable, Category = "Sight")
 	FVector lookingAtPosition();
