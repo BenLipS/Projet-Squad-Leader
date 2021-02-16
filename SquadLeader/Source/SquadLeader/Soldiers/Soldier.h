@@ -11,6 +11,13 @@
 #include "Net/UnrealNetwork.h"
 #include "Soldier.generated.h"
 
+UENUM()
+enum class ENUM_PlayerTeam : uint8 {
+	None        UMETA(DisplayName = "None"),
+	Team1       UMETA(DisplayName = "PlayerTeam1"),
+	Team2       UMETA(DisplayName = "PlayerTeam2"),
+};
+
 UCLASS()
 class SQUADLEADER_API ASoldier : public ACharacter, public IAbilitySystemInterface
 {
@@ -25,6 +32,7 @@ protected:
 public:
 	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 	virtual void Tick(float DeltaTime) override;
+
 
 //////////////// Inits
 protected:
@@ -191,4 +199,18 @@ protected:
 
 public:
 	AWeapon* getCurrentWeapon() const noexcept { return currentWeapon; }
+	
+	////////////////  PlayerTeam
+	// Appel du côté serveur pour actualiser l'état du repère 
+	UFUNCTION(Reliable, Server, WithValidation)
+		void ServerChangeTeam(ENUM_PlayerTeam _PlayerTeam);
+
+	UFUNCTION() // Doit toujours être UFUNCTION() quand il s'agit d'une fonction «OnRep notify»
+		void OnRep_ChangeTeam();
+
+	UPROPERTY(EditInstanceOnly, BluePrintReadWrite, ReplicatedUsing = OnRep_ChangeTeam, Category = "PlayerTeam")
+		ENUM_PlayerTeam PlayerTeam;
+
+	// Connected to the "L" key
+	void cycleBetweenTeam();
 };

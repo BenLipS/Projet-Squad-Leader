@@ -13,6 +13,7 @@ FGameplayTag ASoldier::StateFightingTag = FGameplayTag::RequestGameplayTag(FName
 ASoldier::ASoldier() : bAbilitiesInitialized{ false }, bDefaultWeaponsInitialized{ false }
 {
 	PrimaryActorTick.bCanEverTick = true;
+	bReplicates = true;
 
 	initStats();
 	initCameras();
@@ -46,6 +47,7 @@ void ASoldier::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifeti
 	// everyone except local owner: flag change is locally instigated
 
 	// everyone
+	DOREPLIFETIME(ASoldier, PlayerTeam);
 	//DOREPLIFETIME(AShooterCharacter, CurrentWeapon);
 }
 
@@ -376,4 +378,44 @@ void ASoldier::SetCurrentWeapon(AWeapon* _newWeapon, AWeapon* _previousWeapon)
 {
 	if (_previousWeapon && _newWeapon !=_previousWeapon)
 		currentWeapon = _newWeapon;
+}
+
+void ASoldier::ServerChangeTeam_Implementation(ENUM_PlayerTeam _PlayerTeam)
+{
+	PlayerTeam = _PlayerTeam;
+}
+
+bool ASoldier::ServerChangeTeam_Validate(ENUM_PlayerTeam _PlayerTeam)
+{
+	return true;
+}
+
+void ASoldier::OnRep_ChangeTeam()
+{
+	if (GetLocalRole() < ROLE_Authority) {
+		ServerChangeTeam(PlayerTeam);
+	}
+}
+
+void ASoldier::cycleBetweenTeam()
+{
+	FString message;
+	switch (PlayerTeam)
+	{
+	case ENUM_PlayerTeam::None:
+		PlayerTeam = ENUM_PlayerTeam::Team1;
+		message = FString::Printf(TEXT("You now are in team1"));
+		break;
+	case ENUM_PlayerTeam::Team1:
+		PlayerTeam = ENUM_PlayerTeam::Team2;
+		message = FString::Printf(TEXT("You now are in team2"));
+		break;
+	case ENUM_PlayerTeam::Team2:
+		message = FString::Printf(TEXT("You now are in no team"));
+		PlayerTeam = ENUM_PlayerTeam::None;
+		break;
+	default:
+		break;
+	}
+	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, message);
 }
