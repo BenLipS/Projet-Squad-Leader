@@ -33,5 +33,5 @@ public:
 
 protected:
 	UFUNCTION()
-	virtual void OnRep_Duration(const FGameplayAttributeData& OldValue);
+	virtual void OnRep_Duration(const FGameplayAttributeData& OldDuration);
 };

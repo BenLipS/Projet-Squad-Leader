@@ -21,3 +21,8 @@ void UAttributeSetAreaEffect::PreAttributeChange(const FGameplayAttribute& Attri
 void UAttributeSetAreaEffect::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
 }
+
+void UAttributeSetAreaEffect::OnRep_Duration(const FGameplayAttributeData& OldDuration)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAttributeSetAreaEffect, Duration, OldDuration);
+}
