@@ -21,11 +21,10 @@ void AAIGeneralController::BeginPlay() {
 	RunBehaviorTree(m_behaviorTree);
 }
 
-void AAIGeneralController::on_update_sight2(AActor* actor, FAIStimulus const stimulus) {
+void AAIGeneralController::ontargetperception_update_sight(AActor* actor, FAIStimulus const stimulus) {
 	if(auto const ch = Cast<ASoldier>(actor)){
-		if(GEngine)
-			GEngine->AddOnScreenDebugMessage(10, 1.f, FColor::Red, FString::Printf(TEXT("I see: %s"), *actor->GetName()));
-}
+		if(GEngine)GEngine->AddOnScreenDebugMessage(960, 1.f, FColor::Green, TEXT("I see: OnTargetPerceptionUpdated"));
+	}
 	//todo clear Focus when Soldier out of range
 	if (stimulus.IsValid()) this->SetFocus(actor);
 	else this->ClearFocus(EAIFocusPriority::Gameplay);
@@ -34,8 +33,8 @@ void AAIGeneralController::on_update_sight2(AActor* actor, FAIStimulus const sti
 	BlackboardComponent->SetValueAsVector("VectorLocation", actor->GetActorLocation());
 };
 
-void AAIGeneralController::on_update_sight(const TArray<AActor*>& AArray) {
-	//if (GEngine)GEngine->AddOnScreenDebugMessage(10, 1.f, FColor::Red, TEXT("I see 2"));
+void AAIGeneralController::onperception_update_sight(const TArray<AActor*>& AArray) {
+	if (GEngine)GEngine->AddOnScreenDebugMessage(959, 1.f, FColor::Green, TEXT("I see: OnPerceptionUpdated"));
 
 	//todo clear Focus when Soldier out of range
 	if (AArray.Num() > 0) this->SetFocus(AArray[0]);
@@ -75,5 +74,5 @@ void AAIGeneralController::setup_BehaviorTree() {
 }
 
 void AAIGeneralController::ShootEnemy() {
-	if (GEngine) GEngine->AddOnScreenDebugMessage(10, 1.f, FColor::Red,TEXT("I shoot !"));
+	if (GEngine) GEngine->AddOnScreenDebugMessage(1050, 1.f, FColor::Red, FString::Printf(TEXT("%s shoots !"), *this->GetName()));
 };

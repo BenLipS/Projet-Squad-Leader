@@ -21,10 +21,10 @@ public:
 	class UAISenseConfig_Sight* sight_config;
 
 	UFUNCTION()
-	void on_update_sight2(AActor* actor, FAIStimulus const stimulus);
+	void ontargetperception_update_sight(AActor* actor, FAIStimulus const stimulus);
 
 	UFUNCTION()
-	void on_update_sight(const TArray<AActor*>& AArray);
+	void onperception_update_sight(const TArray<AActor*>& AArray);
 
 	void setup_perception_system();
 
