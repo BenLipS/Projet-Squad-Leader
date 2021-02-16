@@ -24,16 +24,27 @@ void AAIGeneralController::BeginPlay() {
 	RunBehaviorTree(m_behaviorTree);
 }
 
-void AAIGeneralController::on_update_sight(AActor* actor, FAIStimulus const stimulus) {
+void AAIGeneralController::on_update_sight2(AActor* actor, FAIStimulus const stimulus) {
 	if(auto const ch = Cast<ASoldier>(actor)){
 		if(GEngine)
 			GEngine->AddOnScreenDebugMessage(10, 1.f, FColor::Red, FString::Printf(TEXT("I see: %s"), *actor->GetName()));
 }
-	/*if (stimulus.IsValid()) this->SetFocus(actor);
-	else this->ClearFocus(EAIFocusPriority::Gameplay);*/
-	UBlackboardComponent* BlackboardComponent = BrainComponent->GetBlackboardComponent();
+	//todo clear Focus when Soldier out of range
+	if (stimulus.IsValid()) this->SetFocus(actor);
+	else this->ClearFocus(EAIFocusPriority::Gameplay);	UBlackboardComponent* BlackboardComponent = BrainComponent->GetBlackboardComponent();
 	BlackboardComponent->SetValueAsVector("VectorLocation", actor->GetActorLocation());
 	
+};
+
+void AAIGeneralController::on_update_sight(const TArray<AActor*>& AArray) {
+	//if (GEngine)GEngine->AddOnScreenDebugMessage(10, 1.f, FColor::Red, TEXT("I see 2"));
+
+	//todo clear Focus when Soldier out of range
+	if (AArray.Num() > 0) this->SetFocus(AArray[0]);
+	else this->ClearFocus(EAIFocusPriority::Gameplay);
+
+	UBlackboardComponent* BlackboardComponent = BrainComponent->GetBlackboardComponent();
+	BlackboardComponent->SetValueAsVector("VectorLocation", AArray[0]->GetTargetLocation());
 };
 
 void AAIGeneralController::setup_perception_system() {
@@ -53,7 +64,8 @@ void AAIGeneralController::setup_perception_system() {
 
 		// add sight configuration component to perception component
 		GetPerceptionComponent()->SetDominantSense(*sight_config->GetSenseImplementation());
-		GetPerceptionComponent()->OnTargetPerceptionUpdated.AddDynamic(this, &AAIGeneralController::on_update_sight);
+		GetPerceptionComponent()->OnTargetPerceptionUpdated.AddDynamic(this, &AAIGeneralController::on_update_sight2);
+		GetPerceptionComponent()->OnPerceptionUpdated.AddDynamic(this, &AAIGeneralController::on_update_sight);
 		GetPerceptionComponent()->ConfigureSense(*sight_config);
 	}
 };

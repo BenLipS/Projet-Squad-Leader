@@ -21,12 +21,15 @@ public:
 	class UAISenseConfig_Sight* sight_config;
 
 	UFUNCTION()
-	void on_update_sight(AActor* actor, FAIStimulus const stimulus);
+	void on_update_sight2(AActor* actor, FAIStimulus const stimulus);
+
+	UFUNCTION()
+	void on_update_sight(const TArray<AActor*>& AArray);
 
 	void setup_perception_system();
 
 	UFUNCTION()
-		void BeginPlay();
+	void BeginPlay();
 	
 	/*Move to a location, the location must be an AActor*/
 	UFUNCTION(BlueprintCallable, Category = "SquadLeader")
@@ -35,6 +38,10 @@ public:
 	/*Move to a location, the location muste be a FVector*/
 	UFUNCTION(BlueprintCallable, Category = "SquadLeader")
 		EPathFollowingRequestResult::Type MoveToVectorLocation();
+
+
+	UFUNCTION(BlueprintCallable, Category = "Shoot")
+	void ShootEnemy();
 
 
 private:
