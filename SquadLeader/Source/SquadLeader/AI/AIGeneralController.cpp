@@ -11,6 +11,8 @@
 #include "Perception/AIPerceptionComponent.h"
 #include "../Soldiers/AIs/SoldierAI.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "NavigationSystem.h"
+#include "NavigationPath.h"
 
 AAIGeneralController::AAIGeneralController(FObjectInitializer const& object_initializer)
 {
@@ -44,7 +46,7 @@ void AAIGeneralController::on_update_sight(const TArray<AActor*>& AArray) {
 	else this->ClearFocus(EAIFocusPriority::Gameplay);
 
 	UBlackboardComponent* BlackboardComponent = BrainComponent->GetBlackboardComponent();
-	BlackboardComponent->SetValueAsVector("VectorLocation", AArray[0]->GetTargetLocation());
+	BlackboardComponent->SetValueAsVector("VectorLocation", FVector(0.f,0.f,0.f));
 };
 
 void AAIGeneralController::setup_perception_system() {
@@ -53,7 +55,7 @@ void AAIGeneralController::setup_perception_system() {
 	if (sight_config)
 	{
 		SetPerceptionComponent(*CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("Perception Component")));
-		sight_config->SightRadius = 1000.0f;
+		sight_config->SightRadius = 2000.0f;
 		sight_config->LoseSightRadius = sight_config->SightRadius + 50.0f;
 		sight_config->PeripheralVisionAngleDegrees = 82.5f;
 		sight_config->SetMaxAge(.2f);
@@ -91,11 +93,16 @@ EPathFollowingRequestResult::Type AAIGeneralController::MoveToVectorLocation() {
 
 	ASoldierAI* _soldier = Cast<ASoldierAI>(GetPawn());
 
-	_soldier->GetCharacterMovement()->MaxWalkSpeed = 2200.f;
+	UNavigationSystemV1* navSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
+	UNavigationPath* path = navSys->FindPathToLocationSynchronously(GetWorld(), GetPawn()->GetActorLocation(), _vector, NULL);
+
+	if (path->GetPathLength() >= 1000.f)
+		_soldier->GetCharacterMovement()->MaxWalkSpeed = 2200.f;
+	else _soldier->GetCharacterMovement()->MaxWalkSpeed = 600.f;
 
 	GEngine->AddOnScreenDebugMessage(10, 1.f, FColor::Red, TEXT("Je dois bouger !!!"));
 	EPathFollowingRequestResult::Type _movetoResult = MoveToLocation(_vector);
-
+	
 	return _movetoResult;
 }
 
