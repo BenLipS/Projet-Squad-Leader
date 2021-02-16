@@ -16,8 +16,7 @@ protected:
 	virtual void BeginPlay() override;
 
 //////////////// Abilities
-protected:
-
+public:
 	UFUNCTION(BlueprintCallable, Category = "Abilities")
 	bool StartFiring();
 
