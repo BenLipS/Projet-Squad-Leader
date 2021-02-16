@@ -25,23 +25,31 @@ void AAIGeneralController::ontargetperception_update_sight(AActor* actor, FAISti
 	if(auto const ch = Cast<ASoldier>(actor)){
 		if(GEngine)GEngine->AddOnScreenDebugMessage(960, 1.f, FColor::Green, TEXT("I see: OnTargetPerceptionUpdated"));
 	}
-	//todo clear Focus when Soldier out of range
-	if (stimulus.IsValid()) this->SetFocus(actor);
-	else this->ClearFocus(EAIFocusPriority::Gameplay);
 
 	UBlackboardComponent* BlackboardComponent = BrainComponent->GetBlackboardComponent();
-	BlackboardComponent->SetValueAsVector("VectorLocation", actor->GetActorLocation());
+	if (BlackboardComponent->GetValueAsObject("ActorSeen0") == nullptr) 
+		BlackboardComponent->SetValueAsObject("ActorSeen0", actor);
+	else if (BlackboardComponent->GetValueAsObject("ActorSeen1") == nullptr && BlackboardComponent->GetValueAsObject("ActorSeen0") != actor)
+		BlackboardComponent->SetValueAsObject("ActorSeen1", actor);
+	else if (BlackboardComponent->GetValueAsObject("ActorSeen2") == nullptr && BlackboardComponent->GetValueAsObject("ActorSeen0") != actor && BlackboardComponent->GetValueAsObject("ActorSeen1") != actor)
+		BlackboardComponent->SetValueAsObject("ActorSeen2", actor);
+
+
 };
 
 void AAIGeneralController::onperception_update_sight(const TArray<AActor*>& AArray) {
 	if (GEngine)GEngine->AddOnScreenDebugMessage(959, 1.f, FColor::Green, TEXT("I see: OnPerceptionUpdated"));
 
 	//todo clear Focus when Soldier out of range
-	if (AArray.Num() > 0) this->SetFocus(AArray[0]);
-	else this->ClearFocus(EAIFocusPriority::Gameplay);
 
 	UBlackboardComponent* BlackboardComponent = BrainComponent->GetBlackboardComponent();
-	BlackboardComponent->SetValueAsVector("VectorLocation", AArray[0]->GetTargetLocation());
+	if (AArray.Num() > 0 && BlackboardComponent->GetValueAsObject("ActorSeen0") != nullptr) this->SetFocus(Cast<AActor>(BlackboardComponent->GetValueAsObject("ActorSeen0")));
+	else this->ClearFocus(EAIFocusPriority::Gameplay);
+
+	
+
+
+	
 };
 
 void AAIGeneralController::setup_perception_system() {
@@ -51,7 +59,7 @@ void AAIGeneralController::setup_perception_system() {
 	{
 		SetPerceptionComponent(*CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("Perception Component")));
 		sight_config->SightRadius = 1000.0f;
-		sight_config->LoseSightRadius = sight_config->SightRadius + 50.0f;
+		sight_config->LoseSightRadius = sight_config->SightRadius + 200.0f;
 		sight_config->PeripheralVisionAngleDegrees = 82.5f;
 		sight_config->SetMaxAge(.2f);
 		sight_config->AutoSuccessRangeFromLastSeenLocation = 100.0f;
@@ -61,8 +69,8 @@ void AAIGeneralController::setup_perception_system() {
 
 		// add sight configuration component to perception component
 		GetPerceptionComponent()->SetDominantSense(*sight_config->GetSenseImplementation());
-		GetPerceptionComponent()->OnTargetPerceptionUpdated.AddDynamic(this, &AAIGeneralController::on_update_sight2);
-		GetPerceptionComponent()->OnPerceptionUpdated.AddDynamic(this, &AAIGeneralController::on_update_sight);
+		GetPerceptionComponent()->OnTargetPerceptionUpdated.AddDynamic(this, &AAIGeneralController::ontargetperception_update_sight);
+		GetPerceptionComponent()->OnPerceptionUpdated.AddDynamic(this, &AAIGeneralController::onperception_update_sight);
 		GetPerceptionComponent()->ConfigureSense(*sight_config);
 	}
 };
@@ -75,4 +83,13 @@ void AAIGeneralController::setup_BehaviorTree() {
 
 void AAIGeneralController::ShootEnemy() {
 	if (GEngine) GEngine->AddOnScreenDebugMessage(1050, 1.f, FColor::Red, FString::Printf(TEXT("%s shoots !"), *this->GetName()));
+	//todo shoot auto or manual
+
+	if (ASoldier* soldier = Cast<ASoldier>(GetPawn()); soldier)
+	{
+		FGameplayTagContainer shootTag;
+		shootTag.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.FireWeapon")));
+		bool test = soldier->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(shootTag);
+		soldier->GetAbilitySystemComponent()->CancelAbilities(&shootTag);
+	}
 };

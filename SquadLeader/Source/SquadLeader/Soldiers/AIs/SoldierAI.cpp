@@ -19,4 +19,5 @@ void ASoldierAI::BeginPlay()
 	InitializeAbilities();
 	AddStartupEffects();
 	InitializeTagChangeCallbacks();
+	initWeapons();
 }

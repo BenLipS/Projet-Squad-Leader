@@ -39,10 +39,12 @@ private:
 	/*Set-up the BehaviorTree at the construction*/
 	void setup_BehaviorTree();
 
-private:
-
 	/*The behaviorTree that we are running*/
 	UPROPERTY()
-		class UBehaviorTree* m_behaviorTree;
+	UBehaviorTree* m_behaviorTree;
+
+	/*map of seen actors and related stimulus*/
+	TMap<AActor*, FAIStimulus> SeenActorAndStimulus;
+
 
 };
