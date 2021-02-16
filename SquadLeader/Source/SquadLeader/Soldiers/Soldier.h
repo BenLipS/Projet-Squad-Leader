@@ -75,6 +75,16 @@ protected:
 	void InitializeTagChangeCallbacks();
 
 //////////////// Tag Change Callbacks
+public:
+	static FGameplayTag StateDeadTag;
+	static FGameplayTag StateRunningTag;
+	static FGameplayTag StateJumpingTag;
+	static FGameplayTag StateFightingTag;
+
+protected:
+	virtual void DeadTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
+	virtual void RunningTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
+	virtual void JumpingTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 	virtual void FightingTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 
 //////////////// Attributes
@@ -139,6 +149,15 @@ public:
 
 	UFUNCTION()
 	void onMoveRight(const float _val);
+
+	UFUNCTION(BlueprintCallable, Category = "Movement")
+	bool startRunning();
+
+	UFUNCTION(BlueprintCallable, Category = "Movement")
+	bool stopRunning();
+	
+	UFUNCTION(BlueprintCallable, Category = "Movement")
+	bool walk();
 
 	UFUNCTION(BlueprintCallable, Category = "Sight")
 	FVector lookingAtPosition();
