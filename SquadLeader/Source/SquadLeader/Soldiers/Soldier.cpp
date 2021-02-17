@@ -5,9 +5,23 @@
 #include "../AbilitySystem/Soldiers/GameplayAbilitySoldier.h"
 //#include "DrawDebugHelpers.h"
 
+// States
+FGameplayTag ASoldier::StateDeadTag = FGameplayTag::RequestGameplayTag(FName("State.Dead"));
+FGameplayTag ASoldier::StateRunningTag = FGameplayTag::RequestGameplayTag(FName("State.Running"));
+FGameplayTag ASoldier::StateJumpingTag = FGameplayTag::RequestGameplayTag(FName("State.Jumping"));
+FGameplayTag ASoldier::StateCrouchingTag = FGameplayTag::RequestGameplayTag(FName("State.Crouching"));
+FGameplayTag ASoldier::StateFightingTag = FGameplayTag::RequestGameplayTag(FName("State.Fighting"));
+
+// Abilities
+FGameplayTag ASoldier::SkillRunTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Run"));
+FGameplayTag ASoldier::SkillJumpTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Jump"));
+FGameplayTag ASoldier::SkillCrouchTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Crouch"));
+FGameplayTag ASoldier::SkillFireWeaponTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.FireWeapon"));
+
 ASoldier::ASoldier() : bAbilitiesInitialized{ false }, bDefaultWeaponsInitialized{ false }
 {
 	PrimaryActorTick.bCanEverTick = true;
+	bReplicates = true;
 
 	initStats();
 	initCameras();
@@ -41,6 +55,7 @@ void ASoldier::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifeti
 	// everyone except local owner: flag change is locally instigated
 
 	// everyone
+	DOREPLIFETIME(ASoldier, PlayerTeam);
 	//DOREPLIFETIME(AShooterCharacter, CurrentWeapon);
 }
 
@@ -197,7 +212,22 @@ void ASoldier::AddStartupEffects()
 
 void ASoldier::InitializeTagChangeCallbacks()
 {
-	AbilitySystemComponent->RegisterGameplayTagEvent(FGameplayTag::RequestGameplayTag(FName("State.Fighting")), EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ASoldier::FightingTagChanged);
+	AbilitySystemComponent->RegisterGameplayTagEvent(StateDeadTag, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ASoldier::DeadTagChanged);
+	AbilitySystemComponent->RegisterGameplayTagEvent(StateRunningTag, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ASoldier::RunningTagChanged);
+	AbilitySystemComponent->RegisterGameplayTagEvent(StateJumpingTag, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ASoldier::JumpingTagChanged);
+	AbilitySystemComponent->RegisterGameplayTagEvent(StateFightingTag, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ASoldier::FightingTagChanged);
+}
+
+void ASoldier::DeadTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
+{
+}
+
+void ASoldier::RunningTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
+{
+}
+
+void ASoldier::JumpingTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
+{
 }
 
 void ASoldier::FightingTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
@@ -254,6 +284,24 @@ void ASoldier::onMoveRight(const float _val) {
 		FRotator Rotation = Controller->GetControlRotation();
 		AddMovementInput(FRotationMatrix(Rotation).GetScaledAxis(EAxis::Y), _val);
 	}
+}
+
+bool ASoldier::StartRunning()
+{
+	GetCharacterMovement()->MaxWalkSpeed = 2200.f; // TODO: Make a MaxMovementSpeed attribute in attributeset ?
+	return true;
+}
+
+void ASoldier::StopRunning()
+{
+	GetCharacterMovement()->MaxWalkSpeed = 600.f; // TODO : Use attribute set
+}
+
+bool ASoldier::Walk()
+{
+	UnCrouch();
+	StopRunning();
+	return true;
 }
 
 FVector ASoldier::lookingAtPosition()
@@ -335,4 +383,46 @@ void ASoldier::SetCurrentWeapon(AWeapon* _newWeapon, AWeapon* _previousWeapon)
 {
 	if (_previousWeapon && _newWeapon !=_previousWeapon)
 		currentWeapon = _newWeapon;
+
+}
+
+void ASoldier::ServerChangeTeam_Implementation(ENUM_PlayerTeam _PlayerTeam)
+{
+	PlayerTeam = _PlayerTeam;
+}
+
+bool ASoldier::ServerChangeTeam_Validate(ENUM_PlayerTeam _PlayerTeam)
+{
+	return true;
+}
+
+void ASoldier::OnRep_ChangeTeam()
+{
+	if (GetLocalRole() < ROLE_Authority) {
+		ServerChangeTeam(PlayerTeam);
+	}
+}
+
+void ASoldier::cycleBetweenTeam()
+{
+	FString message;
+	switch (PlayerTeam)
+	{
+	case ENUM_PlayerTeam::None:
+		PlayerTeam = ENUM_PlayerTeam::Team1;
+		message = FString::Printf(TEXT("You now are in team1"));
+		break;
+	case ENUM_PlayerTeam::Team1:
+		PlayerTeam = ENUM_PlayerTeam::Team2;
+		message = FString::Printf(TEXT("You now are in team2"));
+		break;
+	case ENUM_PlayerTeam::Team2:
+		message = FString::Printf(TEXT("You now are in no team"));
+		PlayerTeam = ENUM_PlayerTeam::None;
+		break;
+	default:
+		break;
+	}
+	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, message);
+
 }

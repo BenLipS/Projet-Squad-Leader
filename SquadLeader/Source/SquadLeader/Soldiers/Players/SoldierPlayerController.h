@@ -63,10 +63,6 @@ protected:
 	UFUNCTION()
 	void onMoveRight(const float _val);
 
-	/*// Run
 	UFUNCTION()
-	void onStartRunning();
-
-	UFUNCTION()
-	void onStopRunning();*/
+	void onChangeTeam();
 };

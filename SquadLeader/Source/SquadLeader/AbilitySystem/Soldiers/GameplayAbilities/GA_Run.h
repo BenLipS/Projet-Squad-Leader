@@ -1,18 +1,15 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameplayAbilitySpec.h"
 #include "../GameplayAbilitySoldier.h"
+#include "../GameplayEffects/States/GE_StateRunning.h"
 #include "GA_Run.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class SQUADLEADER_API UGA_Run : public UGameplayAbilitySoldier
 {
 	GENERATED_BODY()
-	
+
 public:
 	UGA_Run();
 
@@ -24,4 +21,7 @@ public:
 
 	virtual void CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateCancelAbility) override;
 
+protected:
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	TSubclassOf<UGE_StateRunning> RunningGameplayEffect;
 };
