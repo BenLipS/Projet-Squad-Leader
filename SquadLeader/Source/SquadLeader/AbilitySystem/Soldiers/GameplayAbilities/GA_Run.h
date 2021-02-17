@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "../GameplayAbilitySoldier.h"
+#include "../GameplayEffects/States/GE_StateRunning.h"
 #include "GA_Run.generated.h"
 
 UCLASS()
@@ -22,5 +23,5 @@ public:
 
 protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-	TSubclassOf<UGameplayEffect> RunningGameplayEffect;
+	TSubclassOf<UGE_StateRunning> RunningGameplayEffect;
 };

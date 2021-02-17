@@ -6,7 +6,7 @@ UGA_Fire::UGA_Fire()
 {
 	AbilityInputID = ESoldierAbilityInputID::BasicAttack;
 	AbilityID = ESoldierAbilityInputID::None;
-	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.FireWeapon")));
+	AbilityTags.AddTag(ASoldier::SkillFireWeaponTag);
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 }
 
