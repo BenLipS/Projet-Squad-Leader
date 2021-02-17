@@ -5,7 +5,7 @@
 #include "../../AI/AIGeneralController.h"
 
 UMoveToEnemyBTTaskNode::UMoveToEnemyBTTaskNode() {
-	NodeName = "MoveToVectorLocation";
+	NodeName = "MoveToEnemyLocation";
 	bNotifyTick = true;
 }
 

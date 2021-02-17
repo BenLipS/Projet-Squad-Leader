@@ -32,15 +32,15 @@ void AAIGeneralController::ontargetperception_update_sight(AActor* actor, FAISti
 };
 
 void AAIGeneralController::ActorsPerceptionUpdated(const TArray < AActor* >& UpdatedActors) {
+	for (auto& Elem : UpdatedActors) {
+		if (SeenActor.Contains(Elem));
+		else SeenActor.Add(Elem);
+	}
 	//if (GEngine)GEngine->AddOnScreenDebugMessage(5960, 1.f, FColor::Blue, TEXT("ActorsPerceptionUpdated"));
 };
 
 void AAIGeneralController::onperception_update_sight(const TArray<AActor*>& AArray) {
 	//if (GEngine)GEngine->AddOnScreenDebugMessage(959, 1.f, FColor::Green, TEXT("I see: OnPerceptionUpdated"));
-	for (auto& Elem : AArray) {
-		if (SeenActor.Contains(Elem));
-		else SeenActor.Add(Elem);
-	}
 };
 
 void AAIGeneralController::setup_perception_system() {
@@ -60,8 +60,8 @@ void AAIGeneralController::setup_perception_system() {
 
 		// add sight configuration component to perception component
 		GetPerceptionComponent()->SetDominantSense(*sight_config->GetSenseImplementation());
-		GetPerceptionComponent()->OnTargetPerceptionUpdated.AddDynamic(this, &AAIGeneralController::ontargetperception_update_sight);
-		GetPerceptionComponent()->OnPerceptionUpdated.AddDynamic(this, &AAIGeneralController::onperception_update_sight);
+		//GetPerceptionComponent()->OnTargetPerceptionUpdated.AddDynamic(this, &AAIGeneralController::ontargetperception_update_sight);
+		//GetPerceptionComponent()->OnPerceptionUpdated.AddDynamic(this, &AAIGeneralController::onperception_update_sight);
 		GetPerceptionComponent()->ConfigureSense(*sight_config);
 	}
 };
@@ -96,25 +96,27 @@ EPathFollowingRequestResult::Type AAIGeneralController::MoveToVectorLocation() {
 
 EPathFollowingRequestResult::Type AAIGeneralController::MoveToEnemyLocation() {
 	UBlackboardComponent* BlackboardComponent = BrainComponent->GetBlackboardComponent();
-	ASoldier* _soldier_enemy = Cast<ASoldier>(BlackboardComponent->GetValueAsObject("EnemyActor"));
+	ASoldier* _soldier_enemy = Cast<ASoldier>(BlackboardComponent->GetValueAsObject("FocusActor"));
 
 	ASoldierAI* _soldier = Cast<ASoldierAI>(GetPawn());
-	if (_soldier) {
-		UNavigationSystemV1* navSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
-		UNavigationPath* path = navSys->FindPathToLocationSynchronously(GetWorld(), GetPawn()->GetActorLocation(), _soldier_enemy->GetActorLocation(), NULL);
+	if (_soldier_enemy) {
+		if (_soldier) {
+			UNavigationSystemV1* navSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
+			UNavigationPath* path = navSys->FindPathToLocationSynchronously(GetWorld(), GetPawn()->GetActorLocation(), _soldier_enemy->GetActorLocation(), NULL);
 
-		if (path->GetPathLength() >= m_distanceShootAndWalk)
-			_soldier->ActivateAbilityRun();
-		else
-			_soldier->CancelAbilityRun();
+			if (path->GetPathLength() >= m_distanceShootAndWalk)
+				_soldier->ActivateAbilityRun();
+			else
+				_soldier->CancelAbilityRun();
+		}
+
+		//TO-DO : if follow an enemy be at the distance to shoot 
+		EPathFollowingRequestResult::Type _movetoResult = MoveToLocation(_soldier_enemy->GetActorLocation(), m_distanceShootAndStop);
+		if (_movetoResult == EPathFollowingRequestResult::Type::AlreadyAtGoal)
+			BlackboardComponent->ClearValue("VectorLocation");
+		return _movetoResult;
 	}
-
-	//TO-DO : if follow an enemy be at the distance to shoot 
-	EPathFollowingRequestResult::Type _movetoResult = MoveToLocation(_soldier_enemy->GetActorLocation(), m_distanceShootAndStop);
-	if (_movetoResult == EPathFollowingRequestResult::Type::AlreadyAtGoal)
-		BlackboardComponent->ClearValue("VectorLocation");
-
-	return _movetoResult;
+	return EPathFollowingRequestResult::Failed;
 }
 
 void AAIGeneralController::ShootEnemy() {
@@ -122,25 +124,18 @@ void AAIGeneralController::ShootEnemy() {
 
 	if (ASoldierAI* soldier = Cast<ASoldierAI>(GetPawn()); soldier)
 	{
-		soldier->StartFiring();
-		soldier->StopFiring();
+		soldier->ActivateAbilityFire();
+		soldier->CancelAbilityFire();
 	}
 }
 
 void AAIGeneralController::Tick(float DeltaSeconds) {
-
+	Super::Tick(DeltaSeconds);
 	Sens();
 	Think(); // == if we need to change the BehaviorTree,
 	//Act will be done in the behavior tree
 
-	//ClearFocus(EAIFocusPriority::Gameplay);
-	blackboard->ClearValue("FocusActor");
-	if (SeenActor.Num() > 0){
-		this->SetFocus(SeenActor[0]);
-		blackboard->SetValueAsObject("FocusActor", SeenActor[0]);
-	}
-
-	Super::Tick(DeltaSeconds);
+	
 }
 
 void AAIGeneralController::Sens() {
@@ -159,6 +154,13 @@ void AAIGeneralController::Sens() {
 	for (auto& Elem : ActorToRemove) {
 		SeenActor.Remove(Elem);
 	}
+
+	//ClearFocus(EAIFocusPriority::Gameplay);
+	blackboard->ClearValue("FocusActor");
+	if (SeenActor.Num() > 0) {
+		this->SetFocus(SeenActor[0]);
+		blackboard->SetValueAsObject("FocusActor", SeenActor[0]);
+	}
 }
 
 void AAIGeneralController::Think() {
@@ -167,7 +169,7 @@ void AAIGeneralController::Think() {
 
 	UBlackboardComponent* BlackboardComponent = BrainComponent->GetBlackboardComponent();
 
-	if (BlackboardComponent->GetValueAsObject("EnemyActor")) {
+	if (BlackboardComponent->GetValueAsObject("FocusActor")) {
 		//Attack Comportment
 		if (GEngine)
 			GEngine->AddOnScreenDebugMessage(21, 1.f, FColor::Purple, TEXT("In Attack mode"));
