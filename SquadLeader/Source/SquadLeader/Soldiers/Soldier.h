@@ -162,22 +162,10 @@ public:
 	bool StartRunning();
 
 	UFUNCTION(BlueprintCallable, Category = "Movement")
-	bool StopRunning();
+	void StopRunning();
 	
 	UFUNCTION(BlueprintCallable, Category = "Movement")
 	bool Walk();
-
-	UFUNCTION(BlueprintCallable, Category = "Movement")
-	bool StartJump();
-
-	UFUNCTION(BlueprintCallable, Category = "Movement")
-	void StopJump();
-
-	UFUNCTION(BlueprintCallable, Category = "Movement")
-	bool StartCrouching();
-
-	UFUNCTION(BlueprintCallable, Category = "Movement")
-	void StopCrouching();
 
 	UFUNCTION(BlueprintCallable, Category = "Sight")
 	FVector lookingAtPosition();

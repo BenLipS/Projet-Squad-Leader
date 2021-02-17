@@ -292,48 +292,16 @@ bool ASoldier::StartRunning()
 	return true;
 }
 
-bool ASoldier::StopRunning()
+void ASoldier::StopRunning()
 {
-	FGameplayTagContainer EffectTagsToRemove;
-	EffectTagsToRemove.AddTag(StateRunningTag);
-	AbilitySystemComponent->RemoveActiveEffectsWithGrantedTags(EffectTagsToRemove);
 	GetCharacterMovement()->MaxWalkSpeed = 600.f; // TODO : Use attribute set
-	return true;
 }
 
 bool ASoldier::Walk()
 {
+	UnCrouch();
 	StopRunning();
 	return true;
-}
-
-bool ASoldier::StartJump()
-{
-	Jump();
-	return true;
-}
-
-void ASoldier::StopJump()
-{
-	FGameplayTagContainer EffectTagsToRemove;
-	EffectTagsToRemove.AddTag(StateJumpingTag);
-	AbilitySystemComponent->RemoveActiveEffectsWithGrantedTags(EffectTagsToRemove);
-
-	StopJumping();
-}
-
-bool ASoldier::StartCrouching()
-{
-	Crouch();
-	return true;
-}
-
-void ASoldier::StopCrouching()
-{
-	FGameplayTagContainer EffectTagsToRemove;
-	EffectTagsToRemove.AddTag(StateCrouchingTag);
-	AbilitySystemComponent->RemoveActiveEffectsWithGrantedTags(EffectTagsToRemove);
-	UnCrouch();
 }
 
 FVector ASoldier::lookingAtPosition()
