@@ -79,6 +79,7 @@ public:
 	static FGameplayTag StateDeadTag;
 	static FGameplayTag StateRunningTag;
 	static FGameplayTag StateJumpingTag;
+	static FGameplayTag StateCrouchingTag;
 	static FGameplayTag StateFightingTag;
 
 protected:
@@ -164,6 +165,12 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Movement")
 	void StopJump();
+
+	UFUNCTION(BlueprintCallable, Category = "Movement")
+	bool StartCrouching();
+
+	UFUNCTION(BlueprintCallable, Category = "Movement")
+	void StopCrouching();
 
 	UFUNCTION(BlueprintCallable, Category = "Sight")
 	FVector lookingAtPosition();

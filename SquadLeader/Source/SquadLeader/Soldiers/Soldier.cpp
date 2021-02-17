@@ -8,6 +8,7 @@
 FGameplayTag ASoldier::StateDeadTag = FGameplayTag::RequestGameplayTag(FName("State.Dead"));
 FGameplayTag ASoldier::StateRunningTag = FGameplayTag::RequestGameplayTag(FName("State.Running"));
 FGameplayTag ASoldier::StateJumpingTag = FGameplayTag::RequestGameplayTag(FName("State.Jumping"));
+FGameplayTag ASoldier::StateCrouchingTag = FGameplayTag::RequestGameplayTag(FName("State.Crouching"));
 FGameplayTag ASoldier::StateFightingTag = FGameplayTag::RequestGameplayTag(FName("State.Fighting"));
 
 ASoldier::ASoldier() : bAbilitiesInitialized{ false }, bDefaultWeaponsInitialized{ false }
@@ -312,6 +313,20 @@ void ASoldier::StopJump()
 	AbilitySystemComponent->RemoveActiveEffectsWithGrantedTags(EffectTagsToRemove);
 
 	StopJumping();
+}
+
+bool ASoldier::StartCrouching()
+{
+	Crouch();
+	return true;
+}
+
+void ASoldier::StopCrouching()
+{
+	FGameplayTagContainer EffectTagsToRemove;
+	EffectTagsToRemove.AddTag(StateCrouchingTag);
+	AbilitySystemComponent->RemoveActiveEffectsWithGrantedTags(EffectTagsToRemove);
+	UnCrouch();
 }
 
 FVector ASoldier::lookingAtPosition()
