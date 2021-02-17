@@ -76,11 +76,18 @@ protected:
 
 //////////////// Tag Change Callbacks
 public:
+	// States
 	static FGameplayTag StateDeadTag;
 	static FGameplayTag StateRunningTag;
 	static FGameplayTag StateJumpingTag;
 	static FGameplayTag StateCrouchingTag;
 	static FGameplayTag StateFightingTag;
+
+	// Abilities
+	static FGameplayTag SkillRunTag;
+	static FGameplayTag SkillJumpTag;
+	static FGameplayTag SkillCrouchTag;
+	static FGameplayTag SkillFireWeaponTag;
 
 protected:
 	virtual void DeadTagChanged(const FGameplayTag CallbackTag, int32 NewCount);

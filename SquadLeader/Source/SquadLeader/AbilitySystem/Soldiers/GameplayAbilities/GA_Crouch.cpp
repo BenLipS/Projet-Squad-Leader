@@ -6,7 +6,7 @@ UGA_Crouch::UGA_Crouch()
 {
 	AbilityInputID = ESoldierAbilityInputID::Crouch;
 	AbilityID = ESoldierAbilityInputID::None;
-	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Crouch")));
+	AbilityTags.AddTag(ASoldier::SkillCrouchTag);
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 }
 

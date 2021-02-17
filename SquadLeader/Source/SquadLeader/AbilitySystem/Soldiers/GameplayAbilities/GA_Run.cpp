@@ -5,7 +5,7 @@ UGA_Run::UGA_Run()
 {
 	AbilityInputID = ESoldierAbilityInputID::Run;
 	AbilityID = ESoldierAbilityInputID::None;
-	AbilityTags.AddTag(ASoldier::StateRunningTag);
+	AbilityTags.AddTag(ASoldier::SkillRunTag);
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 }
 

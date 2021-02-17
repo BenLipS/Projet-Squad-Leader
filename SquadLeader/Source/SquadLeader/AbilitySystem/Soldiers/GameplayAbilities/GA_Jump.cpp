@@ -5,7 +5,7 @@ UGA_Jump::UGA_Jump()
 {
 	AbilityInputID = ESoldierAbilityInputID::Jump;
 	AbilityID = ESoldierAbilityInputID::None;
-	AbilityTags.AddTag(ASoldier::StateJumpingTag);
+	AbilityTags.AddTag(ASoldier::SkillJumpTag);
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 }
 
