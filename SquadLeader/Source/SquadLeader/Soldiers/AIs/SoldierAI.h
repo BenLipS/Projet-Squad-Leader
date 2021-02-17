@@ -17,9 +17,17 @@ protected:
 
 //////////////// Abilities
 public:
+	// Fire
 	UFUNCTION(BlueprintCallable, Category = "Abilities")
-	bool StartFiring();
+	bool ActivateAbilityFire();
 
 	UFUNCTION(BlueprintCallable, Category = "Abilities")
-	void StopFiring();
+	void CancelAbilityFire();
+
+	// Run
+	UFUNCTION(BlueprintCallable, Category = "Abilities")
+	bool ActivateAbilityRun();
+
+	UFUNCTION(BlueprintCallable, Category = "Abilities")
+	void CancelAbilityRun();
 };

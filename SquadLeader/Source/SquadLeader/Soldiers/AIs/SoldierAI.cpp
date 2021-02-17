@@ -22,16 +22,31 @@ void ASoldierAI::BeginPlay()
 	initWeapons();
 }
 
-bool ASoldierAI::StartFiring()
+
+bool ASoldierAI::ActivateAbilityFire()
 {
 	FGameplayTagContainer shootTag;
-	shootTag.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.FireWeapon")));
-	return GetAbilitySystemComponent()->TryActivateAbilitiesByTag(shootTag);
+	shootTag.AddTag(ASoldier::SkillFireWeaponTag);
+	return AbilitySystemComponent->TryActivateAbilitiesByTag(shootTag);
 }
 
-void ASoldierAI::StopFiring()
+void ASoldierAI::CancelAbilityFire()
 {
 	FGameplayTagContainer shootTag;
-	shootTag.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.FireWeapon")));
-	GetAbilitySystemComponent()->CancelAbilities(&shootTag);
+	shootTag.AddTag(ASoldier::SkillFireWeaponTag);
+	AbilitySystemComponent->CancelAbilities(&shootTag);
+}
+
+bool ASoldierAI::ActivateAbilityRun()
+{
+	FGameplayTagContainer runTag;
+	runTag.AddTag(ASoldier::SkillRunTag);
+	return AbilitySystemComponent->TryActivateAbilitiesByTag(runTag);
+}
+
+void ASoldierAI::CancelAbilityRun()
+{
+	FGameplayTagContainer runTag;
+	runTag.AddTag(ASoldier::SkillRunTag);
+	AbilitySystemComponent->CancelAbilities(&runTag);
 }
