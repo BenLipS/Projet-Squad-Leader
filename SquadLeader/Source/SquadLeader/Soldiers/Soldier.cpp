@@ -299,6 +299,21 @@ bool ASoldier::Walk()
 	return true;
 }
 
+bool ASoldier::StartJump()
+{
+	Jump();
+	return true;
+}
+
+void ASoldier::StopJump()
+{
+	FGameplayTagContainer EffectTagsToRemove;
+	EffectTagsToRemove.AddTag(StateJumpingTag);
+	AbilitySystemComponent->RemoveActiveEffectsWithGrantedTags(EffectTagsToRemove);
+
+	StopJumping();
+}
+
 FVector ASoldier::lookingAtPosition()
 {
 	// TODO: Handle AIs

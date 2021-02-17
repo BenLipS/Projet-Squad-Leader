@@ -5,8 +5,8 @@ UGA_Jump::UGA_Jump()
 {
 	AbilityInputID = ESoldierAbilityInputID::Jump;
 	AbilityID = ESoldierAbilityInputID::None;
-	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Jump")));
-	InstancingPolicy = EGameplayAbilityInstancingPolicy::NonInstanced;
+	AbilityTags.AddTag(ASoldier::StateJumpingTag);
+	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 }
 
 void UGA_Jump::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
@@ -17,7 +17,12 @@ void UGA_Jump::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FG
 			EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
 
 		ASoldier* soldier = CastChecked<ASoldier>(ActorInfo->AvatarActor.Get());
-		soldier->Jump();
+
+		if (soldier->StartJump())
+		{
+			FGameplayEffectSpecHandle JumpingEffectSpecHandle = MakeOutgoingGameplayEffectSpec(JumpingGameplayEffect, GetAbilityLevel());
+			soldier->GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*JumpingEffectSpecHandle.Data.Get());
+		}
 	}
 }
 
@@ -54,5 +59,5 @@ void UGA_Jump::CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGam
 	Super::CancelAbility(Handle, ActorInfo, ActivationInfo, bReplicateCancelAbility);
 
 	ASoldier* soldier = CastChecked<ASoldier>(ActorInfo->AvatarActor.Get());
-	soldier->StopJumping();
+	soldier->StopJump();
 }

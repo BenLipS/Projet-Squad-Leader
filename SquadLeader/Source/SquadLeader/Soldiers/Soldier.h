@@ -159,6 +159,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Movement")
 	bool Walk();
 
+	UFUNCTION(BlueprintCallable, Category = "Movement")
+	bool StartJump();
+
+	UFUNCTION(BlueprintCallable, Category = "Movement")
+	void StopJump();
+
 	UFUNCTION(BlueprintCallable, Category = "Sight")
 	FVector lookingAtPosition();
 
