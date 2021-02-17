@@ -168,7 +168,7 @@ public:
 	bool Walk();
 
 	UFUNCTION(BlueprintCallable, Category = "Sight")
-	FVector lookingAtPosition();
+	virtual FVector lookingAtPosition();
 
 //////////////// Weapons
 protected:
