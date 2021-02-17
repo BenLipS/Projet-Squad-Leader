@@ -45,6 +45,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "SquadLeader")
 		EPathFollowingRequestResult::Type MoveToVectorLocation();
 
+	/*Move to the enemy location*/
+	UFUNCTION(BlueprintCallable, Category = "SquadLeader")
+		EPathFollowingRequestResult::Type MoveToEnemyLocation();
+
 
 	UFUNCTION(BlueprintCallable, Category = "Shoot")
 	void ShootEnemy();
@@ -74,4 +78,17 @@ private:
 		TEnumAsByte<AIComportment> m_comportment;
 
 
+	UPROPERTY()
+		FVector m_destination;
+
+public:
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shoot")
+		float m_distanceShootAndWalk = 3000.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shoot")
+		float m_distanceShootAndStop = 1000.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Perception")
+		float m_distancePerception = 5000.f;
 };

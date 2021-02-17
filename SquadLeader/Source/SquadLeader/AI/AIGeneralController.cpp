@@ -18,6 +18,7 @@ AAIGeneralController::AAIGeneralController(FObjectInitializer const& object_init
 {
 	setup_BehaviorTree();
 	setup_perception_system();
+	m_destination = FVector(0.f, 0.f, 0.f);
 }
 
 void AAIGeneralController::BeginPlay() {
@@ -45,7 +46,7 @@ void AAIGeneralController::on_update_sight(const TArray<AActor*>& AArray) {
 	else this->ClearFocus(EAIFocusPriority::Gameplay);
 
 	UBlackboardComponent* BlackboardComponent = BrainComponent->GetBlackboardComponent();
-	BlackboardComponent->SetValueAsVector("VectorLocation", AArray[0]->GetActorLocation());
+	BlackboardComponent->SetValueAsObject("EnemyActor", AArray[0]);
 };
 
 void AAIGeneralController::setup_perception_system() {
@@ -54,7 +55,7 @@ void AAIGeneralController::setup_perception_system() {
 	if (sight_config)
 	{
 		SetPerceptionComponent(*CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("Perception Component")));
-		sight_config->SightRadius = 5000.0f;
+		sight_config->SightRadius = m_distancePerception;
 		sight_config->LoseSightRadius = sight_config->SightRadius + 50.0f;
 		sight_config->PeripheralVisionAngleDegrees = 82.5f;
 		sight_config->SetMaxAge(.2f);
@@ -88,24 +89,38 @@ EPathFollowingRequestResult::Type AAIGeneralController::MoveToActorLocation() {
 
 EPathFollowingRequestResult::Type AAIGeneralController::MoveToVectorLocation() {
 	UBlackboardComponent* BlackboardComponent = BrainComponent->GetBlackboardComponent();
-	FVector _vector = BlackboardComponent->GetValueAsVector("VectorLocation");
+	
+	if (BlackboardComponent->GetValueAsBool("is_attacking"))
+		return EPathFollowingRequestResult::Type::Failed;
+
+	//TO-DO : if follow an enemy be at the distance to shoot 
+	EPathFollowingRequestResult::Type _movetoResult = MoveToLocation(m_destination, 500.f);
+	if(_movetoResult == EPathFollowingRequestResult::Type::AlreadyAtGoal)
+		BlackboardComponent->ClearValue("VectorLocation");
+	
+	return _movetoResult;
+}
+
+EPathFollowingRequestResult::Type AAIGeneralController::MoveToEnemyLocation() {
+	UBlackboardComponent* BlackboardComponent = BrainComponent->GetBlackboardComponent();
+	ASoldier* _soldier_enemy = Cast<ASoldier>(BlackboardComponent->GetValueAsObject("EnemyActor"));
 
 	ASoldierAI* _soldier = Cast<ASoldierAI>(GetPawn());
 	if (_soldier) {
 		UNavigationSystemV1* navSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
-		UNavigationPath* path = navSys->FindPathToLocationSynchronously(GetWorld(), GetPawn()->GetActorLocation(), _vector, NULL);
+		UNavigationPath* path = navSys->FindPathToLocationSynchronously(GetWorld(), GetPawn()->GetActorLocation(), _soldier_enemy->GetActorLocation(), NULL);
 
-		if (path->GetPathLength() >= 3000.f)
+		if (path->GetPathLength() >= m_distanceShootAndWalk)
 			_soldier->ActivateAbilityRun();
 		else
 			_soldier->CancelAbilityRun();
 	}
 
 	//TO-DO : if follow an enemy be at the distance to shoot 
-	EPathFollowingRequestResult::Type _movetoResult = MoveToLocation(_vector, 2000.f);
-	if(_movetoResult == EPathFollowingRequestResult::Type::AlreadyAtGoal)
+	EPathFollowingRequestResult::Type _movetoResult = MoveToLocation(_soldier_enemy->GetActorLocation(), m_distanceShootAndStop);
+	if (_movetoResult == EPathFollowingRequestResult::Type::AlreadyAtGoal)
 		BlackboardComponent->ClearValue("VectorLocation");
-	
+
 	return _movetoResult;
 }
 
@@ -124,7 +139,6 @@ void AAIGeneralController::Tick(float DeltaSeconds) {
 void AAIGeneralController::Sens() {
 	if (GEngine)
 		GEngine->AddOnScreenDebugMessage(10, 1.f, FColor::Yellow, TEXT("Sens !!"));
-	
 }
 
 void AAIGeneralController::Think() {
@@ -138,12 +152,14 @@ void AAIGeneralController::Think() {
 		if (GEngine)
 			GEngine->AddOnScreenDebugMessage(21, 1.f, FColor::Purple, TEXT("In Attack mode"));
 		m_comportment = AIComportment::Attack;
-
+		BlackboardComponent->SetValueAsBool("is_attacking", true);
 	}
 	else {
 		//Defens comportment
 		if (GEngine)
 			GEngine->AddOnScreenDebugMessage(21, 1.f, FColor::Purple, TEXT("In Defensiv mode"));
 		m_comportment = AIComportment::Defense;
+		BlackboardComponent->SetValueAsBool("is_attacking", false);
 	}
+
 }
