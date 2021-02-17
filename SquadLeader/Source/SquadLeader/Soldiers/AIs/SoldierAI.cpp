@@ -22,6 +22,29 @@ void ASoldierAI::BeginPlay()
 	initWeapons();
 }
 
+bool ASoldierAI::ActivateAbilities(const FGameplayTagContainer &_TagContainer)
+{
+	return AbilitySystemComponent->TryActivateAbilitiesByTag(_TagContainer);
+}
+
+bool ASoldierAI::ActivateAbility(const FGameplayTag &_Tag)
+{
+	FGameplayTagContainer TagContainer;
+	TagContainer.AddTag(_Tag);
+	return AbilitySystemComponent->TryActivateAbilitiesByTag(TagContainer);
+}
+
+void ASoldierAI::CancelAbilities(const FGameplayTagContainer &_TagContainer)
+{
+	AbilitySystemComponent->CancelAbilities(&_TagContainer);
+}
+
+void ASoldierAI::CancelAbility(const FGameplayTag &_Tag)
+{
+	FGameplayTagContainer TagContainer;
+	TagContainer.AddTag(_Tag);
+	AbilitySystemComponent->CancelAbilities(&TagContainer);
+}
 
 bool ASoldierAI::ActivateAbilityFire()
 {

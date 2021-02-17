@@ -17,6 +17,19 @@ protected:
 
 //////////////// Abilities
 public:
+	// Generic
+	UFUNCTION(BlueprintCallable, Category = "Abilities")
+	bool ActivateAbilities(const FGameplayTagContainer &_TagContainer);
+
+	UFUNCTION(BlueprintCallable, Category = "Abilities")
+	bool ActivateAbility(const FGameplayTag &_Tag);
+
+	UFUNCTION(BlueprintCallable, Category = "Abilities")
+	void CancelAbilities(const FGameplayTagContainer &_TagContainer);
+
+	UFUNCTION(BlueprintCallable, Category = "Abilities")
+	void CancelAbility(const FGameplayTag &_Tag);
+
 	// Fire
 	UFUNCTION(BlueprintCallable, Category = "Abilities")
 	bool ActivateAbilityFire();
