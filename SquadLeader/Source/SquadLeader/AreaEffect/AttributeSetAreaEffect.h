@@ -31,7 +31,21 @@ public:
 	FGameplayAttributeData Duration;
 	ATTRIBUTE_ACCESSORS(UAttributeSetAreaEffect, Duration)
 
+	UPROPERTY(BlueprintReadOnly, Category = "Attributes | Radius", ReplicatedUsing = OnRep_Radius)
+	FGameplayAttributeData Radius;
+	ATTRIBUTE_ACCESSORS(UAttributeSetAreaEffect, Radius)
+
+	UPROPERTY(BlueprintReadOnly, Category = "Attributes | Interval", ReplicatedUsing = OnRep_Interval)
+	FGameplayAttributeData Interval;
+	ATTRIBUTE_ACCESSORS(UAttributeSetAreaEffect, Interval)
+
 protected:
 	UFUNCTION()
 	virtual void OnRep_Duration(const FGameplayAttributeData& OldDuration);
+
+	UFUNCTION()
+	virtual void OnRep_Radius(const FGameplayAttributeData& OldRadius);
+	
+	UFUNCTION()
+	virtual void OnRep_Interval(const FGameplayAttributeData& OldInterval);
 };
