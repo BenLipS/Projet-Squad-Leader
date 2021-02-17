@@ -22,6 +22,11 @@ void ASoldierAI::BeginPlay()
 	initWeapons();
 }
 
+FVector ASoldierAI::lookingAtPosition()
+{
+	return FVector(9999.f,9999.f,9999.f);
+}
+
 bool ASoldierAI::ActivateAbilities(const FGameplayTagContainer &_TagContainer)
 {
 	return AbilitySystemComponent->TryActivateAbilitiesByTag(_TagContainer);

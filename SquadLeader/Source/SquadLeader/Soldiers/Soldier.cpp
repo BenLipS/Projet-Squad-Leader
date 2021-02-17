@@ -309,7 +309,7 @@ bool ASoldier::Walk()
 
 FVector ASoldier::lookingAtPosition()
 {
-	// TODO: Handle AIs
+	// TODO: Handle AIsa
 	FHitResult outHit;
 
 	FVector startLocation = CurrentCameraComponent->GetComponentTransform().GetLocation();

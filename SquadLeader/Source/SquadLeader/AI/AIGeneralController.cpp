@@ -158,7 +158,7 @@ void AAIGeneralController::Sens() {
 	//ClearFocus(EAIFocusPriority::Gameplay);
 	blackboard->ClearValue("FocusActor");
 	if (SeenActor.Num() > 0) {
-		this->SetFocus(SeenActor[0]);
+		this->SetFocalPoint(SeenActor[0]->GetTargetLocation());
 		blackboard->SetValueAsObject("FocusActor", SeenActor[0]);
 	}
 }

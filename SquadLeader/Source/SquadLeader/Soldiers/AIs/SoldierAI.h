@@ -15,6 +15,8 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	virtual FVector lookingAtPosition() override;
+
 //////////////// Abilities
 public:
 	// Generic
