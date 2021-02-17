@@ -3,10 +3,28 @@
 
 #include "SoldierTeam.h"
 
-SoldierTeam::SoldierTeam()
-{
+
+ASoldierTeam::ASoldierTeam() {
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	PrimaryActorTick.bCanEverTick = true;
+	bReplicates = true;
 }
 
-SoldierTeam::~SoldierTeam()
+
+void ASoldierTeam::BeginPlay() {
+	Super::BeginPlay();
+}
+
+
+void ASoldierTeam::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	//DOREPLIFETIME(ASoldierTeam, ...);
+}
+
+
+// Called every frame
+void ASoldierTeam::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
 }

@@ -13,12 +13,14 @@ ASoldierPrimarySpawn::ASoldierPrimarySpawn() {
 
 void ASoldierPrimarySpawn::BeginPlay() {
 	Super::BeginPlay();
+	canBeUsed = true;
 }
 
 
 void ASoldierPrimarySpawn::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(ASoldierPrimarySpawn, TeamOwner);
 }
 
 

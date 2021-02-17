@@ -2,8 +2,10 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+#include "Core.h"
 #include "SoldierSpawn.h"
+#include "../Soldiers/SoldierTeam.h"
+#include "Net/UnrealNetwork.h"
 #include "SoldierPrimarySpawn.generated.h"
 
 /**
@@ -26,4 +28,8 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Team")
+		ASoldierTeam* TeamOwner;
 };

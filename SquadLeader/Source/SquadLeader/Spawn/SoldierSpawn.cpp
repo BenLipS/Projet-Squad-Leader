@@ -19,6 +19,7 @@ void ASoldierSpawn::BeginPlay() {
 void ASoldierSpawn::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(ASoldierSpawn, canBeUsed);
 }
 
 

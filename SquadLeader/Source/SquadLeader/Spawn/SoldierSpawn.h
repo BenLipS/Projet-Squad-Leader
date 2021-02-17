@@ -30,5 +30,5 @@ public:
 
 protected:
 	UPROPERTY(VisibleAnywhere, Replicated, Category = "SpawnCondition")
-	bool canBeUse;
+	bool canBeUsed;
 };
