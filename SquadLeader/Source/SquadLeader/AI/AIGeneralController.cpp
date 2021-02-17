@@ -18,7 +18,6 @@ AAIGeneralController::AAIGeneralController(FObjectInitializer const& object_init
 {
 	setup_BehaviorTree();
 	setup_perception_system();
-	
 }
 
 void AAIGeneralController::BeginPlay() {
@@ -27,15 +26,15 @@ void AAIGeneralController::BeginPlay() {
 }
 
 void AAIGeneralController::on_update_sight2(AActor* actor, FAIStimulus const stimulus) {
-	if(auto const ch = Cast<ASoldier>(actor)){
+	/*if(auto const ch = Cast<ASoldier>(actor)){
 		if(GEngine)
 			GEngine->AddOnScreenDebugMessage(10, 1.f, FColor::Red, FString::Printf(TEXT("I see: %s"), *actor->GetName()));
-}
+	}*/
 	//todo clear Focus when Soldier out of range
 	if (stimulus.IsValid()) this->SetFocus(actor);
-	else this->ClearFocus(EAIFocusPriority::Gameplay);	UBlackboardComponent* BlackboardComponent = BrainComponent->GetBlackboardComponent();
-	BlackboardComponent->SetValueAsVector("VectorLocation", actor->GetActorLocation());
-	
+	else this->ClearFocus(EAIFocusPriority::Gameplay);	
+	UBlackboardComponent* BlackboardComponent = BrainComponent->GetBlackboardComponent();
+	BlackboardComponent->SetValueAsObject("EnemyActor", actor);
 };
 
 void AAIGeneralController::on_update_sight(const TArray<AActor*>& AArray) {
@@ -112,5 +111,40 @@ EPathFollowingRequestResult::Type AAIGeneralController::MoveToVectorLocation() {
 }
 
 void AAIGeneralController::ShootEnemy() {
-	if (GEngine) GEngine->AddOnScreenDebugMessage(10, 1.f, FColor::Red, TEXT("I shoot !"));
+	if (GEngine) GEngine->AddOnScreenDebugMessage(30, 1.f, FColor::Red, TEXT("I shoot !"));
 };
+
+void AAIGeneralController::Tick(float DeltaSeconds) {
+	
+	Sens();
+	Think(); // == if we need to change the BehaviorTree,
+	//Act will be done in the behavior tree
+	Super::Tick(DeltaSeconds);
+}
+
+void AAIGeneralController::Sens() {
+	if (GEngine)
+		GEngine->AddOnScreenDebugMessage(10, 1.f, FColor::Yellow, TEXT("Sens !!"));
+	
+}
+
+void AAIGeneralController::Think() {
+	if (GEngine)
+		GEngine->AddOnScreenDebugMessage(20, 1.f, FColor::Purple, TEXT("Think !!"));
+
+	UBlackboardComponent* BlackboardComponent = BrainComponent->GetBlackboardComponent();
+
+	if (BlackboardComponent->GetValueAsObject("EnemyActor")) {
+		//Attack Comportment
+		if (GEngine)
+			GEngine->AddOnScreenDebugMessage(21, 1.f, FColor::Purple, TEXT("In Attack mode"));
+		m_comportment = AIComportment::Attack;
+
+	}
+	else {
+		//Defens comportment
+		if (GEngine)
+			GEngine->AddOnScreenDebugMessage(21, 1.f, FColor::Purple, TEXT("In Defensiv mode"));
+		m_comportment = AIComportment::Defense;
+	}
+}

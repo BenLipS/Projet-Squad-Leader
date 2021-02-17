@@ -10,6 +10,12 @@
 /**
  * 
  */
+UENUM()
+enum AIComportment {
+	Attack UMETA(DisplayName = "Attack"),
+	Defense UMETA(DisplayName = "Defense"),
+};
+
 UCLASS()
 class SQUADLEADER_API AAIGeneralController : public AAIController
 {
@@ -43,15 +49,29 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Shoot")
 	void ShootEnemy();
 
-
+	UFUNCTION(BluePrintCallable, Category = "Comportement")
+		virtual void Tick(float DeltaSeconds) override;
 private:
 	/*Set-up the BehaviorTree at the construction*/
 	void setup_BehaviorTree();
 
+	UFUNCTION()
+		void Sens();
+
+	UFUNCTION()
+		void Think();
+	
 private:
 
 	/*The behaviorTree that we are running*/
 	UPROPERTY()
 		class UBehaviorTree* m_behaviorTree;
+
+	UPROPERTY()
+		class UBlackboardComponent* m_BlackBoard;
+
+	UPROPERTY()
+		TEnumAsByte<AIComportment> m_comportment;
+
 
 };
