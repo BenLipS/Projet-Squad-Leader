@@ -70,8 +70,8 @@ void ASoldierPlayerController::SetupInputComponent()
 	InputComponent->BindAxis("Turn", this, &ASoldierPlayerController::AddYawInput);
 	InputComponent->BindAxis("LookUp", this, &ASoldierPlayerController::AddPitchInput);
 
-	//InputComponent->BindAction("Run", IE_Pressed, this, &ASoldierPlayerController::onStartRunning);
-	//InputComponent->BindAction("Run", IE_Released, this, &ASoldierPlayerController::onStopRunning);
+	//TODO : change debug bindAction when not need anymore
+	InputComponent->BindAction("ChangeTeam", IE_Released, this, &ASoldierPlayerController::onChangeTeam);
 }
 
 void ASoldierPlayerController::onSwitchCamera()
@@ -92,14 +92,8 @@ void ASoldierPlayerController::onMoveRight(const float _val) {
 		soldier->onMoveRight(_val);
 }
 
-//void ASoldierPlayerController::onStartRunning()
-//{
-//	if (ASoldier* soldier = Cast<ASoldier>(K2_GetPawn()); soldier)
-//		soldier->onStartRunning();
-//}
-//
-//void ASoldierPlayerController::onStopRunning()
-//{
-//	if (ASoldier* soldier = Cast<ASoldier>(K2_GetPawn()); soldier)
-//		soldier->onStopRunning();
-//}
+void ASoldierPlayerController::onChangeTeam()
+{
+	if (ASoldier* soldier = Cast<ASoldier>(K2_GetPawn()); soldier)
+		soldier->cycleBetweenTeam();
+}

@@ -1,13 +1,12 @@
 #include "GA_Fire.h"
 #include "../../../Soldiers/Soldier.h"
-#include "GameFramework/CharacterMovementComponent.h"
 #include "../../../Weapons/WeaponLaser.h"
 
 UGA_Fire::UGA_Fire()
 {
 	AbilityInputID = ESoldierAbilityInputID::BasicAttack;
 	AbilityID = ESoldierAbilityInputID::None;
-	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.FireWeapon")));
+	AbilityTags.AddTag(ASoldier::SkillFireWeaponTag);
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 }
 
