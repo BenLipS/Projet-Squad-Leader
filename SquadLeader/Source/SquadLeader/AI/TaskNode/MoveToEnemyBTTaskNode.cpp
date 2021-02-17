@@ -27,6 +27,8 @@ void UMoveToEnemyBTTaskNode::TickTask(class UBehaviorTreeComponent& OwnerComp, u
 
 	if (MoveToActorResult == EPathFollowingRequestResult::AlreadyAtGoal)
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+	if(MoveToActorResult == EPathFollowingRequestResult::Failed)
+		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
 }
 
 FString UMoveToEnemyBTTaskNode::GetStaticDescription() const {

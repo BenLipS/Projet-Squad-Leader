@@ -95,8 +95,7 @@ EPathFollowingRequestResult::Type AAIGeneralController::MoveToVectorLocation() {
 }
 
 EPathFollowingRequestResult::Type AAIGeneralController::MoveToEnemyLocation() {
-	UBlackboardComponent* BlackboardComponent = BrainComponent->GetBlackboardComponent();
-	ASoldier* _soldier_enemy = Cast<ASoldier>(BlackboardComponent->GetValueAsObject("FocusActor"));
+	ASoldier* _soldier_enemy = Cast<ASoldier>(blackboard->GetValueAsObject("FocusActor"));
 
 	ASoldierAI* _soldier = Cast<ASoldierAI>(GetPawn());
 	if (_soldier_enemy) {
@@ -113,7 +112,7 @@ EPathFollowingRequestResult::Type AAIGeneralController::MoveToEnemyLocation() {
 		//TO-DO : if follow an enemy be at the distance to shoot 
 		EPathFollowingRequestResult::Type _movetoResult = MoveToLocation(_soldier_enemy->GetActorLocation(), m_distanceShootAndStop);
 		if (_movetoResult == EPathFollowingRequestResult::Type::AlreadyAtGoal)
-			BlackboardComponent->ClearValue("VectorLocation");
+			blackboard->ClearValue("VectorLocation");
 		return _movetoResult;
 	}
 	return EPathFollowingRequestResult::Failed;
@@ -167,21 +166,19 @@ void AAIGeneralController::Think() {
 	if (GEngine)
 		GEngine->AddOnScreenDebugMessage(20, 1.f, FColor::Purple, TEXT("Think !!"));
 
-	UBlackboardComponent* BlackboardComponent = BrainComponent->GetBlackboardComponent();
-
-	if (BlackboardComponent->GetValueAsObject("FocusActor")) {
+	if (blackboard->GetValueAsObject("FocusActor")) {
 		//Attack Comportment
 		if (GEngine)
 			GEngine->AddOnScreenDebugMessage(21, 1.f, FColor::Purple, TEXT("In Attack mode"));
 		m_behavior = AIBehavior::Attack;
-		BlackboardComponent->SetValueAsBool("is_attacking", true);
+		blackboard->SetValueAsBool("is_attacking", true);
 	}
 	else {
 		//Defens comportment
 		if (GEngine)
 			GEngine->AddOnScreenDebugMessage(21, 1.f, FColor::Purple, TEXT("In Defensiv mode"));
 		m_behavior = AIBehavior::Defense;
-		BlackboardComponent->SetValueAsBool("is_attacking", false);
+		blackboard->SetValueAsBool("is_attacking", false);
 	}
 }
 
