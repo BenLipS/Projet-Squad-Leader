@@ -25,32 +25,26 @@ void AAIGeneralController::BeginPlay() {
 }
 
 void AAIGeneralController::ontargetperception_update_sight(AActor* actor, FAIStimulus const stimulus) {
-	if(auto const ch = Cast<ASoldier>(actor)){
-		if(GEngine)GEngine->AddOnScreenDebugMessage(960, 1.f, FColor::Green, TEXT("I see: OnTargetPerceptionUpdated"));
+	if (auto const ch = Cast<ASoldier>(actor)) {
+		if (GEngine)GEngine->AddOnScreenDebugMessage(960, 1.f, FColor::Green, TEXT("I see: OnTargetPerceptionUpdated"));
 	}
 
+	if (!SeenActorAndStimulus.Contains(actor))
+		SeenActorAndStimulus.Add(actor, stimulus);
+	else SeenActorAndStimulus[actor] = stimulus;
+
 	UBlackboardComponent* BlackboardComponent = BrainComponent->GetBlackboardComponent();
-	if (BlackboardComponent->GetValueAsObject("ActorSeen0") == nullptr) 
-		BlackboardComponent->SetValueAsObject("ActorSeen0", actor);
-	else if (BlackboardComponent->GetValueAsObject("ActorSeen1") == nullptr && BlackboardComponent->GetValueAsObject("ActorSeen0") != actor)
-		BlackboardComponent->SetValueAsObject("ActorSeen1", actor);
-	else if (BlackboardComponent->GetValueAsObject("ActorSeen2") == nullptr && BlackboardComponent->GetValueAsObject("ActorSeen0") != actor && BlackboardComponent->GetValueAsObject("ActorSeen1") != actor)
-		BlackboardComponent->SetValueAsObject("ActorSeen2", actor);
+	
+	if(SeenActorAndStimulus.Num() > 0)BlackboardComponent->SetValueAsObject("FocusActor", SeenActorAndStimulus.begin().Key());
+
+};
+
+void AAIGeneralController::ActorsPerceptionUpdated(const TArray < AActor* >& UpdatedActors) {
+	//if (GEngine)GEngine->AddOnScreenDebugMessage(960, 1.f, FColor::Blue, FString::FromInt(UpdatedActors.Num()));
 };
 
 void AAIGeneralController::onperception_update_sight(const TArray<AActor*>& AArray) {
-	if (GEngine)GEngine->AddOnScreenDebugMessage(959, 1.f, FColor::Green, TEXT("I see: OnPerceptionUpdated"));
-
-	//todo clear Focus when Soldier out of range
-
-	UBlackboardComponent* BlackboardComponent = BrainComponent->GetBlackboardComponent();
-	if (AArray.Num() > 0 && BlackboardComponent->GetValueAsObject("ActorSeen0") != nullptr) this->SetFocus(Cast<AActor>(BlackboardComponent->GetValueAsObject("ActorSeen0")));
-	else this->ClearFocus(EAIFocusPriority::Gameplay);
-
-	
-
-
-	
+	//if (GEngine)GEngine->AddOnScreenDebugMessage(959, 1.f, FColor::Green, TEXT("I see: OnPerceptionUpdated"));
 };
 
 void AAIGeneralController::setup_perception_system() {
@@ -62,7 +56,7 @@ void AAIGeneralController::setup_perception_system() {
 		sight_config->SightRadius = 1000.0f;
 		sight_config->LoseSightRadius = sight_config->SightRadius + 200.0f;
 		sight_config->PeripheralVisionAngleDegrees = 82.5f;
-		sight_config->SetMaxAge(.2f);
+		sight_config->SetMaxAge(1.f);
 		sight_config->AutoSuccessRangeFromLastSeenLocation = 100.0f;
 		sight_config->DetectionByAffiliation.bDetectEnemies = true;
 		sight_config->DetectionByAffiliation.bDetectFriendlies = true;
@@ -106,4 +100,28 @@ EPathFollowingRequestResult::Type AAIGeneralController::MoveToVectorLocation() {
 }
 
 void AAIGeneralController::ShootEnemy() {
+	if (GEngine) GEngine->AddOnScreenDebugMessage(10, 1.f, FColor::Red, TEXT("I shoot !"));
+
+	if (ASoldierAI* soldier = Cast<ASoldierAI>(GetPawn()); soldier)
+	{
+		soldier->StartFiring();
+		soldier->StopFiring();
+	}
+};
+
+void AAIGeneralController::Tick(float DeltaSeconds) {
+	UBlackboardComponent* BlackboardComponent = BrainComponent->GetBlackboardComponent();
+
+	if (SeenActorAndStimulus.Num() > 0)BlackboardComponent->SetValueAsObject("FocusActor", SeenActorAndStimulus.begin().Key());
+	/* Update Seen Actors/ Delete hidden Actors*/
+	for (auto& Elem : SeenActorAndStimulus)
+	{
+		if (Elem.Value.IsExpired()) {
+			SeenActorAndStimulus.Remove(Elem.Key);
+			ClearFocus(EAIFocusPriority::LastFocusPriority);
+			BlackboardComponent->ClearValue("FocusActor");
+		}
+		
+
+	}
 };

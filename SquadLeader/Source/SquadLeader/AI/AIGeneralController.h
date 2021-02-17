@@ -55,5 +55,7 @@ private:
 	/*map of seen actors and related stimulus*/
 	TMap<AActor*, FAIStimulus> SeenActorAndStimulus;
 
+	void ActorsPerceptionUpdated(const TArray < AActor* >& UpdatedActors);
 
+	void Tick(float DeltaSeconds);
 };
