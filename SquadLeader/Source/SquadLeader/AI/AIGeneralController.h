@@ -11,7 +11,7 @@
  * 
  */
 UENUM()
-enum AIComportment {
+enum AIBehavior {
 	Attack UMETA(DisplayName = "Attack"),
 	Defense UMETA(DisplayName = "Defense"),
 };
@@ -75,7 +75,7 @@ private:
 		class UBlackboardComponent* m_BlackBoard;
 
 	UPROPERTY()
-		TEnumAsByte<AIComportment> m_comportment;
+		TEnumAsByte<AIBehavior> m_behavior;
 
 
 	UPROPERTY()

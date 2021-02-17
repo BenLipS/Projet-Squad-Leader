@@ -73,7 +73,7 @@ void AAIGeneralController::setup_perception_system() {
 };
 
 void AAIGeneralController::setup_BehaviorTree() {
-	static ConstructorHelpers::FObjectFinder<UBehaviorTree> obj(TEXT("BehaviorTree'/Game/AI/BT_AITest.BT_AITest'"));
+	static ConstructorHelpers::FObjectFinder<UBehaviorTree> obj(TEXT("BehaviorTree'/Game/AI/BT_AIMainBehavior.BT_AIMainBehavior'"));
 	if (obj.Succeeded())
 		m_behaviorTree = obj.Object;
 }
@@ -151,14 +151,14 @@ void AAIGeneralController::Think() {
 		//Attack Comportment
 		if (GEngine)
 			GEngine->AddOnScreenDebugMessage(21, 1.f, FColor::Purple, TEXT("In Attack mode"));
-		m_comportment = AIComportment::Attack;
+		m_behavior = AIBehavior::Attack;
 		BlackboardComponent->SetValueAsBool("is_attacking", true);
 	}
 	else {
 		//Defens comportment
 		if (GEngine)
 			GEngine->AddOnScreenDebugMessage(21, 1.f, FColor::Purple, TEXT("In Defensiv mode"));
-		m_comportment = AIComportment::Defense;
+		m_behavior = AIBehavior::Defense;
 		BlackboardComponent->SetValueAsBool("is_attacking", false);
 	}
 
