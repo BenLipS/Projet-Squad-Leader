@@ -213,4 +213,10 @@ public:
 	// Connected to the "L" key
 	void cycleBetweenTeam();
 
+	//For AIPerception
+private:
+	class UAIPerceptionStimuliSourceComponent* stimulus;
+
+	void setup_stimulus();
+
 };

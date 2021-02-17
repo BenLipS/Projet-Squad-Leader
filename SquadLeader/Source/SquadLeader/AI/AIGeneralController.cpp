@@ -22,29 +22,23 @@ AAIGeneralController::AAIGeneralController(FObjectInitializer const& object_init
 void AAIGeneralController::BeginPlay() {
 	Super::BeginPlay();
 	RunBehaviorTree(m_behaviorTree);
+	blackboard = BrainComponent->GetBlackboardComponent();
 }
 
-void AAIGeneralController::ontargetperception_update_sight(AActor* actor, FAIStimulus const stimulus) {
-	if (auto const ch = Cast<ASoldier>(actor)) {
-		if (GEngine)GEngine->AddOnScreenDebugMessage(960, 1.f, FColor::Green, TEXT("I see: OnTargetPerceptionUpdated"));
-	}
-
-	if (!SeenActorAndStimulus.Contains(actor))
-		SeenActorAndStimulus.Add(actor, stimulus);
-	else SeenActorAndStimulus[actor] = stimulus;
-
-	UBlackboardComponent* BlackboardComponent = BrainComponent->GetBlackboardComponent();
-	
-	if(SeenActorAndStimulus.Num() > 0)BlackboardComponent->SetValueAsObject("FocusActor", SeenActorAndStimulus.begin().Key());
-
+void AAIGeneralController::ontargetperception_update_sight(AActor* actor, FAIStimulus stimulus) {
+	//if (GEngine)GEngine->AddOnScreenDebugMessage(5961, 1.f, FColor::Blue, TEXT("ontargetperception_update_sight"));
 };
 
 void AAIGeneralController::ActorsPerceptionUpdated(const TArray < AActor* >& UpdatedActors) {
-	//if (GEngine)GEngine->AddOnScreenDebugMessage(960, 1.f, FColor::Blue, FString::FromInt(UpdatedActors.Num()));
+	//if (GEngine)GEngine->AddOnScreenDebugMessage(5960, 1.f, FColor::Blue, TEXT("ActorsPerceptionUpdated"));
 };
 
 void AAIGeneralController::onperception_update_sight(const TArray<AActor*>& AArray) {
 	//if (GEngine)GEngine->AddOnScreenDebugMessage(959, 1.f, FColor::Green, TEXT("I see: OnPerceptionUpdated"));
+	for (auto& Elem : AArray) {
+		if (SeenActor.Contains(Elem));
+		else SeenActor.Add(Elem);
+	}
 };
 
 void AAIGeneralController::setup_perception_system() {
@@ -77,8 +71,7 @@ void AAIGeneralController::setup_BehaviorTree() {
 }
 
 EPathFollowingRequestResult::Type AAIGeneralController::MoveToActorLocation() {
-	UBlackboardComponent* BlackboardComponent = BrainComponent->GetBlackboardComponent();
-	AActor* _actor = Cast<AActor>(BlackboardComponent->GetValueAsObject("ActorLocation"));
+	AActor* _actor = Cast<AActor>(blackboard->GetValueAsObject("ActorLocation"));
 
 	EPathFollowingRequestResult::Type _movetoResult = MoveToActor(_actor);
 
@@ -86,8 +79,7 @@ EPathFollowingRequestResult::Type AAIGeneralController::MoveToActorLocation() {
 }
 
 EPathFollowingRequestResult::Type AAIGeneralController::MoveToVectorLocation() {
-	UBlackboardComponent* BlackboardComponent = BrainComponent->GetBlackboardComponent();
-	FVector _vector = BlackboardComponent->GetValueAsVector("VectorLocation");
+	FVector _vector = blackboard->GetValueAsVector("VectorLocation");
 
 	ASoldierAI* _soldier = Cast<ASoldierAI>(GetPawn());
 
@@ -110,18 +102,29 @@ void AAIGeneralController::ShootEnemy() {
 };
 
 void AAIGeneralController::Tick(float DeltaSeconds) {
-	UBlackboardComponent* BlackboardComponent = BrainComponent->GetBlackboardComponent();
 
-	if (SeenActorAndStimulus.Num() > 0)BlackboardComponent->SetValueAsObject("FocusActor", SeenActorAndStimulus.begin().Key());
 	/* Update Seen Actors/ Delete hidden Actors*/
-	for (auto& Elem : SeenActorAndStimulus)
-	{
-		if (Elem.Value.IsExpired()) {
-			SeenActorAndStimulus.Remove(Elem.Key);
-			ClearFocus(EAIFocusPriority::LastFocusPriority);
-			BlackboardComponent->ClearValue("FocusActor");
+	TArray<AActor*> ActorToRemove;
+	for (auto& Elem : SeenActor) {
+		FActorPerceptionBlueprintInfo info;
+		GetPerceptionComponent()->GetActorsPerception(Elem, info);
+		if (info.LastSensedStimuli.Last().IsExpired()) {
+			ActorToRemove.Add(Elem);
 		}
-		
-
 	}
+	for (auto& Elem : ActorToRemove) {
+		SeenActor.Remove(Elem);
+	}
+	//ClearFocus(EAIFocusPriority::Gameplay);
+	blackboard->ClearValue("FocusActor");
+	if (SeenActor.Num() > 0){
+		this->SetFocus(SeenActor[0]);
+		blackboard->SetValueAsObject("FocusActor", SeenActor[0]);
+	}
+
 };
+
+UBlackboardComponent* AAIGeneralController::get_blackboard() const
+{
+	return blackboard;
+}

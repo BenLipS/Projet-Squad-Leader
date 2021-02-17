@@ -3,6 +3,8 @@
 #include "Components/CapsuleComponent.h"
 #include "EngineUtils.h"
 #include "../AbilitySystem/Soldiers/GameplayAbilitySoldier.h"
+#include "Perception/AIPerceptionStimuliSourceComponent.h"
+#include "Perception/AISense_Sight.h"
 //#include "DrawDebugHelpers.h"
 
 FGameplayTag ASoldier::StateDeadTag = FGameplayTag::RequestGameplayTag(FName("State.Dead"));
@@ -19,6 +21,7 @@ ASoldier::ASoldier() : bAbilitiesInitialized{ false }, bDefaultWeaponsInitialize
 	initCameras();
 	initMovements();
 	initMeshes();
+	setup_stimulus();
 }
 
 /*
@@ -421,3 +424,9 @@ void ASoldier::cycleBetweenTeam()
 	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, message);
 
 }
+
+void ASoldier::setup_stimulus() {
+	stimulus = CreateDefaultSubobject<UAIPerceptionStimuliSourceComponent>(TEXT("stimulusSight"));
+	stimulus->RegisterForSense(TSubclassOf <UAISense_Sight>());
+	stimulus->RegisterWithPerceptionSystem();
+};

@@ -18,15 +18,15 @@ class SQUADLEADER_API AAIGeneralController : public AAIController
 public:
 	AAIGeneralController(FObjectInitializer const& object_initializer = FObjectInitializer::Get());
 
-	class UAISenseConfig_Sight* sight_config;
-
 	UFUNCTION()
-	void ontargetperception_update_sight(AActor* actor, FAIStimulus const stimulus);
+	void ontargetperception_update_sight(AActor* actor, FAIStimulus stimulus);
 
 	UFUNCTION()
 	void onperception_update_sight(const TArray<AActor*>& AArray);
-
+	UFUNCTION()
 	void setup_perception_system();
+	UFUNCTION()
+	void ActorsPerceptionUpdated(const TArray < AActor* >& UpdatedActors);
 
 	UFUNCTION()
 	void BeginPlay();
@@ -43,19 +43,22 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Shoot")
 	void ShootEnemy();
 
-
+	class UBlackboardComponent* get_blackboard() const;
 private:
 	/*Set-up the BehaviorTree at the construction*/
 	void setup_BehaviorTree();
 
 	/*The behaviorTree that we are running*/
-	UPROPERTY()
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))
 	UBehaviorTree* m_behaviorTree;
+	
+	class UBlackboardComponent* blackboard;
+	
+	class UAISenseConfig_Sight* sight_config;
 
-	/*map of seen actors and related stimulus*/
-	TMap<AActor*, FAIStimulus> SeenActorAndStimulus;
+	UPROPERTY()
+	TArray<AActor*> SeenActor;
 
-	void ActorsPerceptionUpdated(const TArray < AActor* >& UpdatedActors);
-
+	UFUNCTION()
 	void Tick(float DeltaSeconds);
 };
