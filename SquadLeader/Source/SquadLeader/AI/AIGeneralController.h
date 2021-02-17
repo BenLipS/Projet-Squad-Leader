@@ -10,6 +10,12 @@
 /**
  * 
  */
+UENUM()
+enum AIBehavior {
+	Attack UMETA(DisplayName = "Attack"),
+	Defense UMETA(DisplayName = "Defense"),
+};
+
 UCLASS()
 class SQUADLEADER_API AAIGeneralController : public AAIController
 {
@@ -39,14 +45,29 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "SquadLeader")
 		EPathFollowingRequestResult::Type MoveToVectorLocation();
 
+	/*Move to the enemy location*/
+	UFUNCTION(BlueprintCallable, Category = "SquadLeader")
+		EPathFollowingRequestResult::Type MoveToEnemyLocation();
+
 
 	UFUNCTION(BlueprintCallable, Category = "Shoot")
 	void ShootEnemy();
 
 	class UBlackboardComponent* get_blackboard() const;
+	
+	UFUNCTION(BluePrintCallable, Category = "Comportement")
+		virtual void Tick(float DeltaSeconds) override;
 private:
 	/*Set-up the BehaviorTree at the construction*/
 	void setup_BehaviorTree();
+
+	UFUNCTION()
+		void Sens();
+
+	UFUNCTION()
+		void Think();
+	
+private:
 
 	/*The behaviorTree that we are running*/
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))
@@ -59,6 +80,24 @@ private:
 	UPROPERTY()
 	TArray<AActor*> SeenActor;
 
-	UFUNCTION()
-	void Tick(float DeltaSeconds);
+	UPROPERTY()
+		class UBlackboardComponent* m_BlackBoard;
+
+	UPROPERTY()
+		TEnumAsByte<AIBehavior> m_behavior;
+
+
+	UPROPERTY()
+		FVector m_destination;
+
+public:
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shoot")
+		float m_distanceShootAndWalk = 3000.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shoot")
+		float m_distanceShootAndStop = 1000.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Perception")
+		float m_distancePerception = 5000.f;
 };

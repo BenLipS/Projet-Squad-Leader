@@ -7,10 +7,18 @@
 #include "Perception/AISense_Sight.h"
 //#include "DrawDebugHelpers.h"
 
+// States
 FGameplayTag ASoldier::StateDeadTag = FGameplayTag::RequestGameplayTag(FName("State.Dead"));
 FGameplayTag ASoldier::StateRunningTag = FGameplayTag::RequestGameplayTag(FName("State.Running"));
 FGameplayTag ASoldier::StateJumpingTag = FGameplayTag::RequestGameplayTag(FName("State.Jumping"));
+FGameplayTag ASoldier::StateCrouchingTag = FGameplayTag::RequestGameplayTag(FName("State.Crouching"));
 FGameplayTag ASoldier::StateFightingTag = FGameplayTag::RequestGameplayTag(FName("State.Fighting"));
+
+// Abilities
+FGameplayTag ASoldier::SkillRunTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Run"));
+FGameplayTag ASoldier::SkillJumpTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Jump"));
+FGameplayTag ASoldier::SkillCrouchTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Crouch"));
+FGameplayTag ASoldier::SkillFireWeaponTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.FireWeapon"));
 
 ASoldier::ASoldier() : bAbilitiesInitialized{ false }, bDefaultWeaponsInitialized{ false }
 {
@@ -281,24 +289,21 @@ void ASoldier::onMoveRight(const float _val) {
 	}
 }
 
-bool ASoldier::startRunning()
+bool ASoldier::StartRunning()
 {
 	GetCharacterMovement()->MaxWalkSpeed = 2200.f; // TODO: Make a MaxMovementSpeed attribute in attributeset ?
 	return true;
 }
 
-bool ASoldier::stopRunning()
+void ASoldier::StopRunning()
 {
-	FGameplayTagContainer EffectTagsToRemove;
-	EffectTagsToRemove.AddTag(StateRunningTag);
-	AbilitySystemComponent->RemoveActiveEffectsWithGrantedTags(EffectTagsToRemove);
 	GetCharacterMovement()->MaxWalkSpeed = 600.f; // TODO : Use attribute set
-	return true;
 }
 
-bool ASoldier::walk()
+bool ASoldier::Walk()
 {
-	stopRunning();
+	UnCrouch();
+	StopRunning();
 	return true;
 }
 

@@ -27,6 +27,8 @@ void UMoveToLocationBTTaskNode::TickTask(class UBehaviorTreeComponent& OwnerComp
 
 	if (MoveToActorResult == EPathFollowingRequestResult::AlreadyAtGoal)
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+	if(MoveToActorResult == EPathFollowingRequestResult::Failed)
+		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
 }
 
 FString UMoveToLocationBTTaskNode::GetStaticDescription() const {
