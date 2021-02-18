@@ -66,6 +66,14 @@ private:
 
 	UFUNCTION()
 		void Think();
+	UFUNCTION()
+		void Act();
+
+	UFUNCTION()
+		void UpdateFocus();
+
+	UFUNCTION()
+		void UpdateSeenActor();
 	
 private:
 
