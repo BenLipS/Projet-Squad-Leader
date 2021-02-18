@@ -3,7 +3,7 @@
 #include "SoldierPlayerController.h"
 #include "../../AbilitySystem/Soldiers/GameplayAbilitySoldier.h"
 
-ASoldierPlayer::ASoldierPlayer(const FObjectInitializer& _ObjectInitializer) : ASoldier(_ObjectInitializer), ASCInputBound{ false }
+ASoldierPlayer::ASoldierPlayer(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer), ASCInputBound{ false }
 {
 }
 

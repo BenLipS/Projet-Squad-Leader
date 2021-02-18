@@ -1,6 +1,6 @@
 #include "SoldierAI.h"
 
-ASoldierAI::ASoldierAI(const FObjectInitializer& _ObjectInitializer) : ASoldier(_ObjectInitializer)
+ASoldierAI::ASoldierAI(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer)
 {
 	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemSoldier>(TEXT("Ability System Component"));
 	AbilitySystemComponent->SetIsReplicated(true);
@@ -59,7 +59,7 @@ void ASoldierAI::CancelAbility(const FGameplayTag &_Tag)
 
 bool ASoldierAI::ActivateAbilityFire()
 {
-	ActivateAbility(ASoldier::SkillFireWeaponTag);
+	return ActivateAbility(ASoldier::SkillFireWeaponTag);
 }
 
 void ASoldierAI::CancelAbilityFire()
@@ -69,7 +69,7 @@ void ASoldierAI::CancelAbilityFire()
 
 bool ASoldierAI::ActivateAbilityRun()
 {
-	ActivateAbility(ASoldier::SkillRunTag);
+	return ActivateAbility(ASoldier::SkillRunTag);
 }
 
 void ASoldierAI::CancelAbilityRun()
