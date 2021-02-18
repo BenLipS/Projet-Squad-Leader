@@ -160,6 +160,10 @@ void AAIGeneralController::Sens() {
 		this->SetFocalPoint(SeenActor[0]->GetTargetLocation());
 		blackboard->SetValueAsObject("FocusActor", SeenActor[0]);
 	}
+	else {
+		ASoldierAI* _solider = Cast<ASoldierAI>(GetPawn());
+		_solider->CancelAbilityRun();
+	}
 }
 
 void AAIGeneralController::Think() {
