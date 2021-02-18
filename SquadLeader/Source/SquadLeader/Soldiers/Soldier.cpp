@@ -3,6 +3,8 @@
 #include "Components/CapsuleComponent.h"
 #include "EngineUtils.h"
 #include "../AbilitySystem/Soldiers/GameplayAbilitySoldier.h"
+#include "Perception/AIPerceptionStimuliSourceComponent.h"
+#include "Perception/AISense_Sight.h"
 //#include "DrawDebugHelpers.h"
 
 // States
@@ -27,6 +29,7 @@ ASoldier::ASoldier(const FObjectInitializer& _ObjectInitializer) : Super(_Object
 	initCameras();
 	initMovements();
 	initMeshes();
+	setup_stimulus();
 }
 
 /*
@@ -314,7 +317,7 @@ bool ASoldier::Walk()
 
 FVector ASoldier::lookingAtPosition()
 {
-	// TODO: Handle AIs
+	// TODO: Handle AIsa
 	FHitResult outHit;
 
 	FVector startLocation = CurrentCameraComponent->GetComponentTransform().GetLocation();
@@ -361,6 +364,11 @@ float ASoldier::GetMoveSpeedCrouch() const
 	return AttributeSet ? AttributeSet->GetMoveSpeedCrouch() : -1.0f;
 }
 
+float ASoldier::GetMoveSpeedMultiplier() const
+{
+	return AttributeSet ? AttributeSet->GetMoveSpeedMultiplier() : -1.0f;
+}
+
 bool ASoldier::GetWantsToFire() const
 {
 	return wantsToFire;
@@ -396,6 +404,7 @@ void ASoldier::SetCurrentWeapon(AWeapon* _newWeapon, AWeapon* _previousWeapon)
 {
 	if (_previousWeapon && _newWeapon !=_previousWeapon)
 		currentWeapon = _newWeapon;
+
 }
 
 void ASoldier::ServerChangeTeam_Implementation(ENUM_PlayerTeam _PlayerTeam)
@@ -436,4 +445,11 @@ void ASoldier::cycleBetweenTeam()
 		break;
 	}
 	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, message);
+
 }
+
+void ASoldier::setup_stimulus() {
+	stimulus = CreateDefaultSubobject<UAIPerceptionStimuliSourceComponent>(TEXT("stimulusSight"));
+	stimulus->RegisterForSense(TSubclassOf <UAISense_Sight>());
+	stimulus->RegisterWithPerceptionSystem();
+};

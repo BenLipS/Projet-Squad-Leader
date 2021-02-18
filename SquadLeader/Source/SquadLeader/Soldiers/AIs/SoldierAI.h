@@ -15,6 +15,10 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	virtual FVector lookingAtPosition() override;
+
+	FVector LookingAtPosition;
+
 //////////////// Abilities
 public:
 	// Generic
@@ -43,4 +47,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Abilities")
 	void CancelAbilityRun();
+
+	UFUNCTION(BlueprintCallable, Category = "Shoot")
+	void SetLookingAtPosition(FVector lookingAtPosition);
 };
