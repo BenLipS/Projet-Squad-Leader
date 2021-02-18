@@ -10,7 +10,10 @@ void UAttributeSetSoldier::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&
 	DOREPLIFETIME(UAttributeSetSoldier, CharacterLevel);
 	DOREPLIFETIME(UAttributeSetSoldier, Health);
 	DOREPLIFETIME(UAttributeSetSoldier, MaxHealth);
-	DOREPLIFETIME(UAttributeSetSoldier, MoveSpeed);
+	DOREPLIFETIME(UAttributeSetSoldier, HealthRegenRate);
+	DOREPLIFETIME(UAttributeSetSoldier, MoveSpeedWalk);
+	DOREPLIFETIME(UAttributeSetSoldier, MoveSpeedCrouch);
+	DOREPLIFETIME(UAttributeSetSoldier, MoveSpeedMultiplier);
 }
 
 bool UAttributeSetSoldier::PreGameplayEffectExecute(FGameplayEffectModCallbackData& Data)
@@ -59,27 +62,38 @@ void UAttributeSetSoldier::PostGameplayEffectExecute(const FGameplayEffectModCal
 		SetHealth(FMath::Clamp(GetHealth(), 0.0f, GetMaxHealth()));
 }
 
-void UAttributeSetSoldier::OnRep_CharacterLevel(const FGameplayAttributeData& OldCharacterLevel)
+void UAttributeSetSoldier::OnRep_CharacterLevel(const FGameplayAttributeData& _OldCharacterLevel)
 {
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UAttributeSetSoldier, CharacterLevel, OldCharacterLevel);
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAttributeSetSoldier, CharacterLevel, _OldCharacterLevel);
 }
 
-void UAttributeSetSoldier::OnRep_Health(const FGameplayAttributeData& OldValue)
+void UAttributeSetSoldier::OnRep_Health(const FGameplayAttributeData& _OldHealth)
 {
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UAttributeSetSoldier, Health, OldValue);
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAttributeSetSoldier, Health, _OldHealth);
 }
 
-void UAttributeSetSoldier::OnRep_MaxHealth(const FGameplayAttributeData& OldValue)
+void UAttributeSetSoldier::OnRep_MaxHealth(const FGameplayAttributeData& _OldMaxHealth)
 {
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UAttributeSetSoldier, MaxHealth, OldValue);
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAttributeSetSoldier, MaxHealth, _OldMaxHealth);
 }
 
-void UAttributeSetSoldier::OnRep_HealthRegenRate(const FGameplayAttributeData& OldHealthRegenRate)
+void UAttributeSetSoldier::OnRep_HealthRegenRate(const FGameplayAttributeData& _OldHealthRegenRate)
 {
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UAttributeSetSoldier, HealthRegenRate, OldHealthRegenRate);
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAttributeSetSoldier, HealthRegenRate, _OldHealthRegenRate);
 }
 
-void UAttributeSetSoldier::OnRep_MoveSpeed(const FGameplayAttributeData& OldValue)
+
+void UAttributeSetSoldier::OnRep_MoveSpeedWalk(const FGameplayAttributeData& _OldMoveSpeedWalk)
 {
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UAttributeSetSoldier, MoveSpeed, OldValue);
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAttributeSetSoldier, MoveSpeedWalk, _OldMoveSpeedWalk);
+}
+
+void UAttributeSetSoldier::OnRep_MoveSpeedCrouch(const FGameplayAttributeData& _OldMoveSpeedCrouch)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAttributeSetSoldier, MoveSpeedCrouch, _OldMoveSpeedCrouch);
+}
+
+void UAttributeSetSoldier::OnRep_MoveSpeedMultiplier(const FGameplayAttributeData& _OldMoveSpeedMultiplier)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAttributeSetSoldier, MoveSpeedMultiplier, _OldMoveSpeedMultiplier);
 }
