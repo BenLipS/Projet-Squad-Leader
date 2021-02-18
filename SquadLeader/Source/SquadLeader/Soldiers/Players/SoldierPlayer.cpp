@@ -42,7 +42,7 @@ void ASoldierPlayer::OnRep_PlayerState()
 
 void ASoldierPlayer::SetAbilitySystemComponent()
 {
-	//check(IsValid(GetPlayerState()))
+	check(IsValid(GetPlayerState()))
 
 	if (ASoldierPlayerState* PS = Cast<ASoldierPlayerState>(GetPlayerState()); PS)
 	{
