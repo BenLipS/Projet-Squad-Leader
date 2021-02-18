@@ -34,8 +34,9 @@ void AAIGeneralController::ontargetperception_update_sight(AActor* actor, FAISti
 
 void AAIGeneralController::ActorsPerceptionUpdated(const TArray < AActor* >& UpdatedActors) {
 	for (auto& Elem : UpdatedActors) {
-		if (SeenActor.Contains(Elem));
-		else SeenActor.Add(Elem);
+		if(ASoldier* soldier = Cast<ASoldier>(Elem); soldier && soldier->PlayerTeam != Cast<ASoldier>(GetPawn())->PlayerTeam)
+			if (SeenActor.Contains(Elem));
+			else SeenActor.Add(Elem);
 	}
 	//if (GEngine)GEngine->AddOnScreenDebugMessage(5960, 1.f, FColor::Blue, TEXT("ActorsPerceptionUpdated"));
 };
@@ -184,7 +185,7 @@ void AAIGeneralController::SortActorPerception() {
 	}
 }
 void AAIGeneralController::SearchEnemy() {
-	//ClearFocus(EAIFocusPriority::Gameplay);
+	ClearFocus(EAIFocusPriority::Gameplay);
 	blackboard->ClearValue("FocusActor");
 	if (SeenActor.Num() > 0) {
 		this->SetFocalPoint(SeenActor[0]->GetTargetLocation());
