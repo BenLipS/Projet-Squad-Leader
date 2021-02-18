@@ -10,5 +10,5 @@ class SQUADLEADER_API ASoldierPlayerSupport : public ASoldierPlayer
 	GENERATED_BODY()
 	
 public:
-	ASoldierPlayerSupport() = default;
+	ASoldierPlayerSupport(const FObjectInitializer& _ObjectInitializer);
 };

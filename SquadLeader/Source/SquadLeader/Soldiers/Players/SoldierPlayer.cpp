@@ -3,7 +3,7 @@
 #include "SoldierPlayerController.h"
 #include "../../AbilitySystem/Soldiers/GameplayAbilitySoldier.h"
 
-ASoldierPlayer::ASoldierPlayer() : ASoldier(), ASCInputBound{ false }
+ASoldierPlayer::ASoldierPlayer(const FObjectInitializer& _ObjectInitializer) : ASoldier(_ObjectInitializer), ASCInputBound{ false }
 {
 }
 
@@ -52,10 +52,11 @@ void ASoldierPlayer::SetAbilitySystemComponent()
 
 		// If we handle players disconnecting and rejoining in the future, we'll have to change this so that possession from rejoining doesn't reset attributes.
 		// For now assume possession = spawn/respawn.
+		InitializeTagChangeCallbacks();
+		InitializeAttributeChangeCallbacks();
 		InitializeAttributes();
 		InitializeAbilities();
 		AddStartupEffects();
-		InitializeTagChangeCallbacks();
 		BindASCInput();
 	}
 }

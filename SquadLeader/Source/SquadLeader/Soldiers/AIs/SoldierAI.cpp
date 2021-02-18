@@ -1,6 +1,6 @@
 #include "SoldierAI.h"
 
-ASoldierAI::ASoldierAI() : ASoldier()
+ASoldierAI::ASoldierAI(const FObjectInitializer& _ObjectInitializer) : ASoldier(_ObjectInitializer)
 {
 	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemSoldier>(TEXT("Ability System Component"));
 	AbilitySystemComponent->SetIsReplicated(true);
@@ -15,10 +15,12 @@ void ASoldierAI::BeginPlay()
 	check(AbilitySystemComponent);
 
 	AbilitySystemComponent->InitAbilityActorInfo(this, this);
+
+	InitializeTagChangeCallbacks();
+	InitializeAttributeChangeCallbacks();
 	InitializeAttributes();
 	InitializeAbilities();
 	AddStartupEffects();
-	InitializeTagChangeCallbacks();
 	initWeapons();
 }
 

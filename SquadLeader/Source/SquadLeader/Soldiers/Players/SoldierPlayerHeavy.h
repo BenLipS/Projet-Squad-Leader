@@ -10,5 +10,5 @@ class SQUADLEADER_API ASoldierPlayerHeavy : public ASoldierPlayer
 	GENERATED_BODY()
 	
 public:
-	ASoldierPlayerHeavy() = default;
+	ASoldierPlayerHeavy(const FObjectInitializer& _ObjectInitializer);
 };

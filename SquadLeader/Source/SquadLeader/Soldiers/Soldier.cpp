@@ -1,5 +1,5 @@
 #include "Soldier.h"
-#include "GameFramework/CharacterMovementComponent.h"
+#include "SoldierMovementComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "EngineUtils.h"
 #include "../AbilitySystem/Soldiers/GameplayAbilitySoldier.h"
@@ -18,7 +18,7 @@ FGameplayTag ASoldier::SkillJumpTag = FGameplayTag::RequestGameplayTag(FName("Ab
 FGameplayTag ASoldier::SkillCrouchTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Crouch"));
 FGameplayTag ASoldier::SkillFireWeaponTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.FireWeapon"));
 
-ASoldier::ASoldier() : bAbilitiesInitialized{ false }, bDefaultWeaponsInitialized{ false }
+ASoldier::ASoldier(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer.SetDefaultSubobjectClass<USoldierMovementComponent>(ACharacter::CharacterMovementComponentName)), bAbilitiesInitialized{ false }, bDefaultWeaponsInitialized{ false }
 {
 	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
@@ -116,7 +116,6 @@ void ASoldier::initMovements()
 	GetCharacterMovement()->GetNavAgentPropertiesRef().bCanCrouch = true;
 	GetCharacterMovement()->GravityScale = 1.5f;
 	GetCharacterMovement()->bCanWalkOffLedgesWhenCrouching = true;
-	GetCharacterMovement()->MaxWalkSpeedCrouched = 200.f;
 }
 
 void ASoldier::initWeapons()
@@ -160,7 +159,9 @@ UAttributeSetSoldier* ASoldier::GetAttributeSet() const
 
 void ASoldier::InitializeAttributes()
 {
-	if (!AbilitySystemComponent || !DefaultAttributeEffects)
+	check(AbilitySystemComponent);
+
+	if (!DefaultAttributeEffects)
 		return;
 
 	FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
@@ -216,6 +217,11 @@ void ASoldier::InitializeTagChangeCallbacks()
 	AbilitySystemComponent->RegisterGameplayTagEvent(StateRunningTag, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ASoldier::RunningTagChanged);
 	AbilitySystemComponent->RegisterGameplayTagEvent(StateJumpingTag, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ASoldier::JumpingTagChanged);
 	AbilitySystemComponent->RegisterGameplayTagEvent(StateFightingTag, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ASoldier::FightingTagChanged);
+}
+
+void ASoldier::InitializeAttributeChangeCallbacks()
+{
+	//MoveSpeedChangedDelegateHandle = AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetMoveSpeedAttribute()).AddUObject(this, &ASoldier::MoveSpeedChanged);
 }
 
 void ASoldier::DeadTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
@@ -286,15 +292,17 @@ void ASoldier::onMoveRight(const float _val) {
 	}
 }
 
+// TODO: For now, we directly change the move speed multiplier with a setter. This is should be changed 
+// through a GE. It should use the execalculation to consider all the buffs/debbufs
 bool ASoldier::StartRunning()
 {
-	GetCharacterMovement()->MaxWalkSpeed = 2200.f; // TODO: Make a MaxMovementSpeed attribute in attributeset ?
+	AttributeSet->SetMoveSpeedMultiplier(3.f);
 	return true;
 }
 
 void ASoldier::StopRunning()
 {
-	GetCharacterMovement()->MaxWalkSpeed = 600.f; // TODO : Use attribute set
+	AttributeSet->SetMoveSpeedMultiplier(1.f);
 }
 
 bool ASoldier::Walk()
@@ -343,9 +351,14 @@ bool ASoldier::IsAlive() const
 	return GetHealth() > 0.0f;
 }
 
-float ASoldier::GetMoveSpeed() const
+float ASoldier::GetMoveSpeedWalk() const
 {
-	return AttributeSet ? AttributeSet->GetMoveSpeed() : -1.0f;
+	return AttributeSet ? AttributeSet->GetMoveSpeedWalk() : -1.0f;
+}
+
+float ASoldier::GetMoveSpeedCrouch() const
+{
+	return AttributeSet ? AttributeSet->GetMoveSpeedCrouch() : -1.0f;
 }
 
 bool ASoldier::GetWantsToFire() const
