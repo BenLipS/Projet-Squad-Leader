@@ -121,8 +121,9 @@ EPathFollowingRequestResult::Type AAIGeneralController::MoveToEnemyLocation() {
 void AAIGeneralController::ShootEnemy() {
 	if (GEngine) GEngine->AddOnScreenDebugMessage(10, 1.f, FColor::Red, TEXT("I shoot !"));
 
-	if (ASoldierAI* soldier = Cast<ASoldierAI>(GetPawn()); soldier)
+	if (ASoldierAI* soldier = Cast<ASoldierAI>(GetPawn()); soldier && GetFocusActor())
 	{
+		soldier->SetLookingAtPosition(GetFocusActor()->GetTargetLocation());
 		soldier->ActivateAbilityFire();
 		soldier->CancelAbilityFire();
 	}
@@ -132,7 +133,8 @@ void AAIGeneralController::Tick(float DeltaSeconds) {
 	Super::Tick(DeltaSeconds);
 	Sens();
 	Think(); // == if we need to change the BehaviorTree,
-	//Act will be done in the behavior tree
+	Act();
+	//Act will also be done in the behavior tree
 
 	
 }
@@ -140,30 +142,8 @@ void AAIGeneralController::Tick(float DeltaSeconds) {
 void AAIGeneralController::Sens() {
 	if (GEngine)
 		GEngine->AddOnScreenDebugMessage(10, 1.f, FColor::Yellow, TEXT("Sens !!"));
-
-	/* Update Seen Actors/ Delete hidden Actors*/
-	TArray<AActor*> ActorToRemove;
-	for (auto& Elem : SeenActor) {
-		FActorPerceptionBlueprintInfo info;
-		GetPerceptionComponent()->GetActorsPerception(Elem, info);
-		if (info.LastSensedStimuli.Last().IsExpired()) {
-			ActorToRemove.Add(Elem);
-		}
-	}
-	for (auto& Elem : ActorToRemove) {
-		SeenActor.Remove(Elem);
-	}
-
-	//ClearFocus(EAIFocusPriority::Gameplay);
-	blackboard->ClearValue("FocusActor");
-	if (SeenActor.Num() > 0) {
-		this->SetFocalPoint(SeenActor[0]->GetTargetLocation());
-		blackboard->SetValueAsObject("FocusActor", SeenActor[0]);
-	}
-	else {
-		ASoldierAI* _solider = Cast<ASoldierAI>(GetPawn());
-		_solider->CancelAbilityRun();
-	}
+	UpdateSeenActor();
+	
 }
 
 void AAIGeneralController::Think() {
@@ -186,6 +166,33 @@ void AAIGeneralController::Think() {
 	}
 }
 
+void AAIGeneralController::Act() {
+	UpdateFocus();
+}
+
+void AAIGeneralController::UpdateFocus() {
+	ClearFocus(EAIFocusPriority::Gameplay);
+	blackboard->ClearValue("FocusActor");
+	if (SeenActor.Num() > 0) {
+		this->SetFocus(SeenActor[0]);
+		blackboard->SetValueAsObject("FocusActor", SeenActor[0]);
+	}
+}
+
+void AAIGeneralController::UpdateSeenActor() {
+	/* Update Seen Actors/ Delete hidden Actors*/
+	TArray<AActor*> ActorToRemove;
+	for (auto& Elem : SeenActor) {
+		FActorPerceptionBlueprintInfo info;
+		GetPerceptionComponent()->GetActorsPerception(Elem, info);
+		if (info.Target == nullptr || info.LastSensedStimuli.Last().IsExpired()) {
+			ActorToRemove.Add(Elem);
+		}
+	}
+	for (auto& Elem : ActorToRemove) {
+		SeenActor.Remove(Elem);
+	}
+}
 
 UBlackboardComponent* AAIGeneralController::get_blackboard() const
 {

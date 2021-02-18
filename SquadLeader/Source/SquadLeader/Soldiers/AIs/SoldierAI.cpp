@@ -24,8 +24,12 @@ void ASoldierAI::BeginPlay()
 
 FVector ASoldierAI::lookingAtPosition()
 {
-	return FVector(9999.f,9999.f,9999.f);
+	return LookingAtPosition;
 }
+
+void ASoldierAI::SetLookingAtPosition(FVector _lookingAtPosition) {
+	LookingAtPosition = _lookingAtPosition;
+};
 
 bool ASoldierAI::ActivateAbilities(const FGameplayTagContainer &_TagContainer)
 {
