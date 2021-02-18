@@ -105,6 +105,15 @@ private:
 	*/
 	UFUNCTION()
 		void Run(ASoldierAI* _soldier, ASoldier* _soldier_enemy);
+
+	/*
+	* Calculate the point where the AI is 
+	* in a good range 
+	* if the enemy is too close.
+	* This method is called only when the AI is in the Attack Behavior
+	*/
+	UFUNCTION()
+		void TooClose();
 private:
 
 	/*The behaviorTree that we are running*/
@@ -123,7 +132,6 @@ private:
 
 	UPROPERTY()
 		TEnumAsByte<AIBehavior> m_behavior;
-
 
 	UPROPERTY()
 		FVector m_destination;
@@ -148,4 +156,5 @@ public:
 	*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Perception")
 		float m_distancePerception = 5000.f;
+
 };
