@@ -86,9 +86,11 @@ EPathFollowingRequestResult::Type AAIGeneralController::MoveToVectorLocation() {
 		return EPathFollowingRequestResult::Type::Failed;
 
 	//TO-DO : if follow an enemy be at the distance to shoot 
-	EPathFollowingRequestResult::Type _movetoResult = MoveToLocation(blackboard->GetValueAsVector("VectorLocation"), 10.f);
-	//if(_movetoResult == EPathFollowingRequestResult::Type::AlreadyAtGoal)
-	//	blackboard->ClearValue("VectorLocation");
+	EPathFollowingRequestResult::Type _movetoResult = MoveToLocation(blackboard->GetValueAsVector("VectorLocation"));
+	if (_movetoResult == EPathFollowingRequestResult::Type::AlreadyAtGoal) {
+		blackboard->ClearValue("VectorLocation");
+		blackboard->ClearValue("need_G0oBackward");
+	}
 	
 	return _movetoResult;
 }
@@ -213,11 +215,10 @@ void AAIGeneralController::TooClose() {
 	if (_distance < m_distanceShootAndStop) {
 		blackboard->SetValueAsBool("need_GoBackward", true);
 		FVector _DestinationToGo;
-		float _d = _distance - m_distanceShootAndStop;
-		float t = _distance / _d;
-		_DestinationToGo.X = ((1 - t) * GetPawn()->GetActorLocation().X + t * _FocusEnemy->GetActorLocation().X);
-		_DestinationToGo.Y = ((1 - t) * GetPawn()->GetActorLocation().Y + t * _FocusEnemy->GetActorLocation().Y);
-		_DestinationToGo.Z = GetPawn()->GetActorLocation().Z;
+		float _d = m_distanceShootAndStop - _distance;
+		FVector _unitaire = _FocusEnemy->GetActorForwardVector(); 
+		//_unitaire.Normalize();
+		_DestinationToGo = _unitaire * _d + GetPawn()->GetActorLocation();
 		blackboard->SetValueAsVector("VectorLocation", _DestinationToGo);
 	}
 	else {
