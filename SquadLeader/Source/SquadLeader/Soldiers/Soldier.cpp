@@ -364,6 +364,11 @@ float ASoldier::GetMoveSpeedCrouch() const
 	return AttributeSet ? AttributeSet->GetMoveSpeedCrouch() : -1.0f;
 }
 
+float ASoldier::GetMoveSpeedMultiplier() const
+{
+	return AttributeSet ? AttributeSet->GetMoveSpeedMultiplier() : -1.0f;
+}
+
 bool ASoldier::GetWantsToFire() const
 {
 	return wantsToFire;

@@ -120,6 +120,9 @@ public:
 	float GetMoveSpeedCrouch() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
+	float GetMoveSpeedMultiplier() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
 	bool IsAlive() const;
 
 	// Attribute changed callbacks
