@@ -6,10 +6,8 @@
 #include "BehaviorTree/BehaviorTreeComponent.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "../Soldiers/Soldier.h"
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "Perception/AIPerceptionComponent.h"
-#include "../Soldiers/AIs/SoldierAI.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "NavigationSystem.h"
 #include "NavigationPath.h"
@@ -74,22 +72,20 @@ void AAIGeneralController::setup_BehaviorTree() {
 
 EPathFollowingRequestResult::Type AAIGeneralController::MoveToActorLocation() {
 	AActor* _actor = Cast<AActor>(blackboard->GetValueAsObject("ActorLocation"));
-
 	EPathFollowingRequestResult::Type _movetoResult = MoveToActor(_actor);
 
 	return _movetoResult;
 }
 
 EPathFollowingRequestResult::Type AAIGeneralController::MoveToVectorLocation() {
-	UBlackboardComponent* BlackboardComponent = BrainComponent->GetBlackboardComponent();
 	
-	if (BlackboardComponent->GetValueAsBool("is_attacking"))
+	if (blackboard->GetValueAsBool("is_attacking"))
 		return EPathFollowingRequestResult::Type::Failed;
 
 	//TO-DO : if follow an enemy be at the distance to shoot 
 	EPathFollowingRequestResult::Type _movetoResult = MoveToLocation(m_destination, 500.f);
 	if(_movetoResult == EPathFollowingRequestResult::Type::AlreadyAtGoal)
-		BlackboardComponent->ClearValue("VectorLocation");
+		blackboard->ClearValue("VectorLocation");
 	
 	return _movetoResult;
 }
@@ -99,15 +95,7 @@ EPathFollowingRequestResult::Type AAIGeneralController::MoveToEnemyLocation() {
 
 	ASoldierAI* _soldier = Cast<ASoldierAI>(GetPawn());
 	if (_soldier_enemy) {
-		if (_soldier) {
-			UNavigationSystemV1* navSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
-			UNavigationPath* path = navSys->FindPathToLocationSynchronously(GetWorld(), GetPawn()->GetActorLocation(), _soldier_enemy->GetActorLocation(), NULL);
-
-			if (path->GetPathLength() >= m_distanceShootAndWalk)
-				_soldier->ActivateAbilityRun();
-			else
-				_soldier->CancelAbilityRun();
-		}
+		Run(_soldier, _soldier_enemy);
 
 		//TO-DO : if follow an enemy be at the distance to shoot 
 		EPathFollowingRequestResult::Type _movetoResult = MoveToLocation(_soldier_enemy->GetActorLocation(), m_distanceShootAndStop);
@@ -129,43 +117,32 @@ void AAIGeneralController::ShootEnemy() {
 }
 
 void AAIGeneralController::Tick(float DeltaSeconds) {
-	Super::Tick(DeltaSeconds);
 	Sens();
 	Think(); // == if we need to change the BehaviorTree,
 	//Act will be done in the behavior tree
-
-	
+	Super::Tick(DeltaSeconds);
 }
 
 void AAIGeneralController::Sens() {
 	if (GEngine)
 		GEngine->AddOnScreenDebugMessage(10, 1.f, FColor::Yellow, TEXT("Sens !!"));
 
-	/* Update Seen Actors/ Delete hidden Actors*/
-	TArray<AActor*> ActorToRemove;
-	for (auto& Elem : SeenActor) {
-		FActorPerceptionBlueprintInfo info;
-		GetPerceptionComponent()->GetActorsPerception(Elem, info);
-		if (info.LastSensedStimuli.Last().IsExpired()) {
-			ActorToRemove.Add(Elem);
-		}
-	}
-	for (auto& Elem : ActorToRemove) {
-		SeenActor.Remove(Elem);
-	}
-
-	//ClearFocus(EAIFocusPriority::Gameplay);
-	blackboard->ClearValue("FocusActor");
-	if (SeenActor.Num() > 0) {
-		this->SetFocalPoint(SeenActor[0]->GetTargetLocation());
-		blackboard->SetValueAsObject("FocusActor", SeenActor[0]);
-	}
+	SortActorPerception();
+	SearchEnemy();
 }
 
 void AAIGeneralController::Think() {
 	if (GEngine)
 		GEngine->AddOnScreenDebugMessage(20, 1.f, FColor::Purple, TEXT("Think !!"));
+	ChooseBehavior();
+}
 
+UBlackboardComponent* AAIGeneralController::get_blackboard() const
+{
+	return blackboard;
+}
+
+void AAIGeneralController::ChooseBehavior() {
 	if (blackboard->GetValueAsObject("FocusActor")) {
 		//Attack Comportment
 		if (GEngine)
@@ -181,9 +158,36 @@ void AAIGeneralController::Think() {
 		blackboard->SetValueAsBool("is_attacking", false);
 	}
 }
+void AAIGeneralController::SortActorPerception() {
+	/* Update Seen Actors/ Delete hidden Actors*/
+	TArray<AActor*> ActorToRemove;
+	for (auto& Elem : SeenActor) {
+		FActorPerceptionBlueprintInfo info;
+		GetPerceptionComponent()->GetActorsPerception(Elem, info);
+		if (info.LastSensedStimuli.Last().IsExpired()) {
+			ActorToRemove.Add(Elem);
+		}
+	}
+	for (auto& Elem : ActorToRemove) {
+		SeenActor.Remove(Elem);
+	}
+}
+void AAIGeneralController::SearchEnemy() {
+	//ClearFocus(EAIFocusPriority::Gameplay);
+	blackboard->ClearValue("FocusActor");
+	if (SeenActor.Num() > 0) {
+		this->SetFocalPoint(SeenActor[0]->GetTargetLocation());
+		blackboard->SetValueAsObject("FocusActor", SeenActor[0]);
+	}
+}
+void AAIGeneralController::Run(ASoldierAI* _soldier, ASoldier* _soldier_enemy) {
+	if (_soldier) {
+		UNavigationSystemV1* navSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
+		UNavigationPath* path = navSys->FindPathToLocationSynchronously(GetWorld(), GetPawn()->GetActorLocation(), _soldier_enemy->GetActorLocation(), NULL);
 
-
-UBlackboardComponent* AAIGeneralController::get_blackboard() const
-{
-	return blackboard;
+		if (path->GetPathLength() >= m_distanceShootAndWalk)
+			_soldier->ActivateAbilityRun();
+		else
+			_soldier->CancelAbilityRun();
+	}
 }
