@@ -24,7 +24,7 @@ class SQUADLEADER_API ASoldier : public ACharacter, public IAbilitySystemInterfa
 	GENERATED_BODY()
 
 public:
-	ASoldier();
+	ASoldier(const FObjectInitializer& _ObjectInitializer);
 
 protected:
 	virtual void BeginPlay() override;
@@ -73,6 +73,7 @@ protected:
 	void InitializeAbilities();
 	void AddStartupEffects();
 	void InitializeTagChangeCallbacks();
+	void InitializeAttributeChangeCallbacks();
 
 //////////////// Tag Change Callbacks
 public:
@@ -113,10 +114,17 @@ public:
 	float GetMaxHealth() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
-	bool IsAlive() const;
+	float GetMoveSpeedWalk() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
-	float GetMoveSpeed() const;
+	float GetMoveSpeedCrouch() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
+	bool IsAlive() const;
+
+	// Attribute changed callbacks
+	//FDelegateHandle MoveSpeedChangedDelegateHandle;
+	//virtual void MoveSpeedChanged(const FOnAttributeChangeData& _Data);
 
 //////////////// Cameras
 protected:

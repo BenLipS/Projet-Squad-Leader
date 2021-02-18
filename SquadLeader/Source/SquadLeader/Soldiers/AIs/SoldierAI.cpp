@@ -1,6 +1,6 @@
 #include "SoldierAI.h"
 
-ASoldierAI::ASoldierAI() : ASoldier()
+ASoldierAI::ASoldierAI(const FObjectInitializer& _ObjectInitializer) : ASoldier(_ObjectInitializer)
 {
 	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemSoldier>(TEXT("Ability System Component"));
 	AbilitySystemComponent->SetIsReplicated(true);
@@ -15,10 +15,12 @@ void ASoldierAI::BeginPlay()
 	check(AbilitySystemComponent);
 
 	AbilitySystemComponent->InitAbilityActorInfo(this, this);
+
+	InitializeTagChangeCallbacks();
+	InitializeAttributeChangeCallbacks();
 	InitializeAttributes();
 	InitializeAbilities();
 	AddStartupEffects();
-	InitializeTagChangeCallbacks();
 	initWeapons();
 }
 
@@ -57,28 +59,20 @@ void ASoldierAI::CancelAbility(const FGameplayTag &_Tag)
 
 bool ASoldierAI::ActivateAbilityFire()
 {
-	FGameplayTagContainer shootTag;
-	shootTag.AddTag(ASoldier::SkillFireWeaponTag);
-	return AbilitySystemComponent->TryActivateAbilitiesByTag(shootTag);
+	ActivateAbility(ASoldier::SkillFireWeaponTag);
 }
 
 void ASoldierAI::CancelAbilityFire()
 {
-	FGameplayTagContainer shootTag;
-	shootTag.AddTag(ASoldier::SkillFireWeaponTag);
-	AbilitySystemComponent->CancelAbilities(&shootTag);
+	CancelAbility(ASoldier::SkillFireWeaponTag);
 }
 
 bool ASoldierAI::ActivateAbilityRun()
 {
-	FGameplayTagContainer runTag;
-	runTag.AddTag(ASoldier::SkillRunTag);
-	return AbilitySystemComponent->TryActivateAbilitiesByTag(runTag);
+	ActivateAbility(ASoldier::SkillRunTag);
 }
 
 void ASoldierAI::CancelAbilityRun()
 {
-	FGameplayTagContainer runTag;
-	runTag.AddTag(ASoldier::SkillRunTag);
-	AbilitySystemComponent->CancelAbilities(&runTag);
+	CancelAbility(ASoldier::SkillRunTag);
 }
