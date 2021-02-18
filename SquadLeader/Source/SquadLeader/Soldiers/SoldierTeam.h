@@ -4,12 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Info.h"
+#include "../Spawn/SoldierSpawn.h"
 #include "SoldierTeam.generated.h"
 
 /**
  * 
  */
-UCLASS()
+UCLASS(Blueprintable)
 class SQUADLEADER_API ASoldierTeam : public AInfo
 {
 	GENERATED_BODY()
@@ -27,8 +28,17 @@ public:
 	// for replication purpose
 	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 
-protected:
-	UPROPERTY(EditAnywhere, Replicated, Category = "TeamData")
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "GlobalTeamData")
 		FString TeamName;
-	
+
+
+protected: // Spawn points
+	UPROPERTY(EditAnywhere, Replicated, Category = "SpawnPoints")
+		TArray<ASoldierSpawn*> mainSpawnPoints;
+public:
+	UFUNCTION(BlueprintCallable, Category = "SpawnPoints")
+	void AddSpawn(ASoldierSpawn* newSpawn);
+	UFUNCTION(BlueprintCallable, Category = "SpawnPoints")
+	void RemoveSpawn(ASoldierSpawn* newSpawn);
 };

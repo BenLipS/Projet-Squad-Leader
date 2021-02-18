@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
 #include "ControlArea/ControlArea.h"
+#include "Soldiers/SoldierTeam.h"
 #include "SquadLeaderGameModeBase.generated.h"
 
 /**
@@ -22,5 +23,8 @@ public:
 
 public:
 	// storage of global data for all the game
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "GameModeData")
 	TArray<class AControlArea*> controlAreaCollection;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "GameModeData")
+	TArray<class ASoldierTeam*> SoldierTeamCollection;
 };

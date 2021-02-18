@@ -3,7 +3,7 @@
 #pragma once
 
 #include "Core.h"
-#include "SoldierSpawn.h"
+#include "SoldierPrimarySpawn.h"
 #include "../Soldiers/SoldierTeam.h"
 #include "Net/UnrealNetwork.h"
 #include "SoldierSecondarySpawn.generated.h"
@@ -12,7 +12,7 @@
  * 
  */
 UCLASS()
-class SQUADLEADER_API ASoldierSecondarySpawn : public ASoldierSpawn
+class SQUADLEADER_API ASoldierSecondarySpawn : public ASoldierPrimarySpawn
 {
 	GENERATED_BODY()
 
@@ -30,9 +30,6 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Team")
-		ASoldierTeam* TeamOwner;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnCondition")
-		bool initialCanBeUsed;
+		bool initialyCanBeUsed;
 };

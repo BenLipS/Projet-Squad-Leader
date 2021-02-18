@@ -2,9 +2,11 @@
 
 
 #include "SoldierTeam.h"
+#include "../SquadLeaderGameModeBase.h"
 
 
 ASoldierTeam::ASoldierTeam() {
+
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
@@ -13,6 +15,12 @@ ASoldierTeam::ASoldierTeam() {
 
 void ASoldierTeam::BeginPlay() {
 	Super::BeginPlay();
+
+	// notify the GameMode of the team existence
+	if (GetLocalRole() == ROLE_Authority) {
+		auto gameMode = static_cast<ASquadLeaderGameModeBase*>(GetWorld()->GetAuthGameMode());
+		gameMode->SoldierTeamCollection.Add(this);
+	}
 }
 
 
@@ -27,4 +35,17 @@ void ASoldierTeam::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 void ASoldierTeam::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
+
+
+void ASoldierTeam::AddSpawn(ASoldierSpawn* newSpawn)
+{
+	mainSpawnPoints.AddUnique(newSpawn);
+}
+
+
+void ASoldierTeam::RemoveSpawn(ASoldierSpawn* newSpawn)
+{
+	if (mainSpawnPoints.Find(newSpawn))
+			mainSpawnPoints.Remove(newSpawn);
 }
