@@ -148,7 +148,7 @@ void AAIGeneralController::Sens() {
 	for (auto& Elem : SeenActor) {
 		FActorPerceptionBlueprintInfo info;
 		GetPerceptionComponent()->GetActorsPerception(Elem, info);
-		if (info.LastSensedStimuli.Last().IsExpired()) {
+		if (info.Target == nullptr || info.LastSensedStimuli.Last().IsExpired()) {
 			ActorToRemove.Add(Elem);
 		}
 	}
