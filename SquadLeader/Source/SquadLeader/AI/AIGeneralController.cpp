@@ -185,6 +185,10 @@ void AAIGeneralController::SearchEnemy() {
 		this->SetFocalPoint(SeenActor[0]->GetTargetLocation());
 		blackboard->SetValueAsObject("FocusActor", SeenActor[0]);
 	}
+	else {
+		ASoldierAI* _solider = Cast<ASoldierAI>(GetPawn());
+		_solider->CancelAbilityRun();
+	}
 }
 void AAIGeneralController::Run(ASoldierAI* _soldier, ASoldier* _soldier_enemy) {
 	if (_soldier) {
