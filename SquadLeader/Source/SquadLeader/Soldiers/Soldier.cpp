@@ -224,7 +224,7 @@ void ASoldier::InitializeTagChangeCallbacks()
 
 void ASoldier::InitializeAttributeChangeCallbacks()
 {
-	//MoveSpeedChangedDelegateHandle = AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetMoveSpeedAttribute()).AddUObject(this, &ASoldier::MoveSpeedChanged);
+	HealthChangedDelegateHandle = AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetHealthAttribute()).AddUObject(this, &ASoldier::HealthChanged);
 }
 
 void ASoldier::DeadTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
@@ -366,6 +366,20 @@ float ASoldier::GetMoveSpeedCrouch() const
 float ASoldier::GetMoveSpeedMultiplier() const
 {
 	return AttributeSet ? AttributeSet->GetMoveSpeedMultiplier() : -1.0f;
+}
+
+void ASoldier::HealthChanged(const FOnAttributeChangeData& _Data)
+{
+	if (!IsAlive())
+		Die();
+}
+
+void ASoldier::Die()
+{
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetCharacterMovement()->GravityScale = 0;
+	//GetCharacterMovement()->Velocity = FVector(0);
+
 }
 
 bool ASoldier::GetWantsToFire() const

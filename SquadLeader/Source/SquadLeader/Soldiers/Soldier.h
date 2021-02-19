@@ -126,8 +126,10 @@ public:
 	bool IsAlive() const;
 
 	// Attribute changed callbacks
-	//FDelegateHandle MoveSpeedChangedDelegateHandle;
-	//virtual void MoveSpeedChanged(const FOnAttributeChangeData& _Data);
+	FDelegateHandle HealthChangedDelegateHandle;
+	virtual void HealthChanged(const FOnAttributeChangeData& _Data);
+
+	virtual void Die();
 
 //////////////// Cameras
 protected:
