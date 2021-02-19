@@ -8,15 +8,10 @@
 #include "../AbilitySystem/Soldiers/AttributeSetSoldier.h"
 #include "../AbilitySystem/Soldiers/AbilitySystemSoldier.h"
 #include "../Weapons/Weapon.h"
+#include "SoldierTeam.h"
 #include "Net/UnrealNetwork.h"
 #include "Soldier.generated.h"
 
-UENUM()
-enum class ENUM_PlayerTeam : uint8 {
-	None        UMETA(DisplayName = "None"),
-	Team1       UMETA(DisplayName = "PlayerTeam1"),
-	Team2       UMETA(DisplayName = "PlayerTeam2"),
-};
 
 UCLASS()
 class SQUADLEADER_API ASoldier : public ACharacter, public IAbilitySystemInterface
@@ -203,14 +198,16 @@ public:
 	////////////////  PlayerTeam
 	// Appel du côté serveur pour actualiser l'état du repère 
 	UFUNCTION(Reliable, Server, WithValidation)
-		void ServerChangeTeam(ENUM_PlayerTeam _PlayerTeam);
+		void ServerChangeTeam(TSubclassOf<ASoldierTeam> _PlayerTeam);
 
 	UFUNCTION() // Doit toujours être UFUNCTION() quand il s'agit d'une fonction «OnRep notify»
 		void OnRep_ChangeTeam();
 
-	UPROPERTY(EditInstanceOnly, BluePrintReadWrite, ReplicatedUsing = OnRep_ChangeTeam, Category = "PlayerTeam")
-		ENUM_PlayerTeam PlayerTeam;
-
+	UPROPERTY(EditAnywhere, BluePrintReadWrite, ReplicatedUsing = OnRep_ChangeTeam, Category = "PlayerTeam")
+		TSubclassOf<ASoldierTeam> PlayerTeam;
+	
+	UFUNCTION(Reliable, Server, WithValidation)
+		void ServerCycleBetweenTeam();
 	// Connected to the "L" key
 	void cycleBetweenTeam();
 };

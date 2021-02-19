@@ -25,6 +25,6 @@ public:
 	// storage of global data for all the game
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "GameModeData")
 	TArray<class AControlArea*> controlAreaCollection;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "GameModeData")
-	TArray<class ASoldierTeam*> SoldierTeamCollection;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "GameModeData")
+	TArray<TSubclassOf<ASoldierTeam>> SoldierTeamCollection;
 };

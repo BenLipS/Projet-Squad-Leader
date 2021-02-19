@@ -27,8 +27,6 @@ void AControlArea::BeginPlay()
 	/* Var init*/
 	maxControlValue = 20;  // maxValue
 	controlValueToTake = maxControlValue / 2;  // value need to change boolean variables
-	
-	isTakenBy = ENUM_PlayerTeam::None;
 
 	controlValue = 0;
 	presenceTeam1 = 0;
@@ -36,10 +34,12 @@ void AControlArea::BeginPlay()
 
 	timeBetweenCalcuation = 0.5;
 
-	// add this to the game mode collection
 	if (GetLocalRole() == ROLE_Authority) {
+		// add this to the game mode collection
 		auto gameMode = static_cast<ASquadLeaderGameModeBase*>(GetWorld()->GetAuthGameMode());
 		gameMode->controlAreaCollection.Add(this);
+
+		UpdateTeamData();
 	}
 }
 
@@ -59,7 +59,7 @@ void AControlArea::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 void AControlArea::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);
-	if (GetLocalRole() == ROLE_Authority) 
+	/*if (GetLocalRole() == ROLE_Authority) 
 	{  // server only
 		if (ASoldier* soldier = Cast<ASoldier>(OtherActor); soldier) {
 			if (soldier->PlayerTeam == ENUM_PlayerTeam::Team1) {
@@ -75,13 +75,13 @@ void AControlArea::NotifyActorBeginOverlap(AActor* OtherActor)
 				GetWorldTimerManager().SetTimer(timerCalculationControlValue, this,
 					&AControlArea::calculateControlValue, timeBetweenCalcuation, true, timeBetweenCalcuation);
 		}
-	}
+	}*/
 }
 
 void AControlArea::NotifyActorEndOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorEndOverlap(OtherActor);
-	if (GetLocalRole() == ROLE_Authority) {  // server only
+	/*if (GetLocalRole() == ROLE_Authority) {  // server only
 		if (ASoldier* soldier = Cast<ASoldier>(OtherActor); soldier) {
 			if (soldier->PlayerTeam == ENUM_PlayerTeam::Team1) {
 				if (presenceTeam1 > 0)
@@ -96,13 +96,13 @@ void AControlArea::NotifyActorEndOverlap(AActor* OtherActor)
 			if (presenceTeam1 == 0 && presenceTeam2 == 0)
 				GetWorld()->GetTimerManager().ClearTimer(timerCalculationControlValue);
 		}
-	}
+	}*/
 }
 
 void AControlArea::calculateControlValue()
 {
-	if (GetLocalRole() == ROLE_Authority) {  // only call by the server
-		if ((presenceTeam1 == 0 && presenceTeam2 > 0) || (presenceTeam2 == 0 && presenceTeam1 > 0)) {
+	if (GetLocalRole() == ROLE_Authority) {  // only for the server
+		/*if ((presenceTeam1 == 0 && presenceTeam2 > 0) || (presenceTeam2 == 0 && presenceTeam1 > 0)) {
 			if (abs(controlValue + presenceTeam1 - presenceTeam2) <= maxControlValue) {
 				controlValue += presenceTeam1 - presenceTeam2;
 				if (controlValue >= controlValueToTake){
@@ -126,6 +126,20 @@ void AControlArea::calculateControlValue()
 				GetWorld()->GetTimerManager().ClearTimer(timerCalculationControlValue);
 				GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("ControlArea : Max value reach"));
 			}
-		}
+		}*/
+	}
+}
+
+
+void AControlArea::UpdateTeamData()
+{
+	if (GetLocalRole() == ROLE_Authority) {  // only for the server
+		auto gameMode = static_cast<ASquadLeaderGameModeBase*>(GetWorld()->GetAuthGameMode());
+		/*for (auto team : gameMode->SoldierTeamCollection) {
+			if (!TeamData.Contains(team))
+			{
+				TeamData.Emplace(team, FTeamStat{});
+			}
+		}*/
 	}
 }

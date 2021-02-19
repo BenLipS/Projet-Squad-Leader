@@ -4,9 +4,29 @@
 
 #include "Core.h"
 #include "GameFramework/Actor.h"
-#include "../Soldiers/Soldier.h"
+#include "../Soldiers/SoldierTeam.h"
+#include "../Spawn/SoldierSecondarySpawn.h"
 #include "Net/UnrealNetwork.h"
 #include "ControlArea.generated.h"
+
+
+USTRUCT()
+struct FTeamStat
+{
+	GENERATED_BODY()
+public:
+	UPROPERTY()
+		int controlValue;
+	UPROPERTY()
+		int presenceTeam;
+	UPROPERTY()
+		ASoldierSecondarySpawn* spawnTeam;
+
+	// Sets default values for this actor's properties
+	FTeamStat() {};
+	FTeamStat(ASoldierSecondarySpawn* _spawnTeam) { spawnTeam = _spawnTeam; };
+};
+
 
 UCLASS()
 class SQUADLEADER_API AControlArea : public AActor
@@ -48,8 +68,8 @@ protected:
 	UPROPERTY(BlueprintReadWrite, Category = "ControlValue")
 		int presenceTeam2;
 public:
-	UPROPERTY(VisibleAnywhere, Replicated, Category = "IsTaken")
-		ENUM_PlayerTeam isTakenBy;
+	UPROPERTY(EditDefaultsOnly, Replicated, Category = "IsTaken")
+		TSubclassOf<ASoldierTeam> isTakenBy;
 
 
 	/**
@@ -65,11 +85,17 @@ public:
 	 */
 	virtual void NotifyActorEndOverlap(AActor* OtherActor) override;
 
-protected:
+protected:  // time value for calculation frequency
 	FTimerHandle timerCalculationControlValue;
 	UPROPERTY(BlueprintReadWrite, Category = "ControlValue")
 		float timeBetweenCalcuation;
 
 	UFUNCTION(BlueprintCallable, Category = "ControlValue")
 		void calculateControlValue();
+
+protected:
+	UPROPERTY(VisibleAnywhere, Replicated, Category = "ControlData")
+		TMap<TSubclassOf<ASoldierTeam>, FTeamStat> TeamData;
+	UFUNCTION(Category = "ControlData")
+		void UpdateTeamData();
 };

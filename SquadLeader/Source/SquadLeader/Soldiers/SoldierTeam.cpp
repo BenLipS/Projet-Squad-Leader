@@ -18,8 +18,8 @@ void ASoldierTeam::BeginPlay() {
 
 	// notify the GameMode of the team existence
 	if (GetLocalRole() == ROLE_Authority) {
-		auto gameMode = static_cast<ASquadLeaderGameModeBase*>(GetWorld()->GetAuthGameMode());
-		gameMode->SoldierTeamCollection.Add(this);
+		//auto gameMode = static_cast<ASquadLeaderGameModeBase*>(GetWorld()->GetAuthGameMode());
+		//gameMode->SoldierTeamCollection.Add(this);
 	}
 }
 

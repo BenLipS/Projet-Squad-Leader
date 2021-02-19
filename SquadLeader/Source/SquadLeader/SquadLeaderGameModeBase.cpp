@@ -20,9 +20,5 @@ ASquadLeaderGameModeBase::ASquadLeaderGameModeBase()
 }
 
 void ASquadLeaderGameModeBase::StartPlay() {
-	// init collections
-	controlAreaCollection = {};
-	SoldierTeamCollection = {};
-
 	Super::StartPlay();
-}	
+}
