@@ -273,26 +273,26 @@ void ASoldier::setToThirdCameraPerson()
 	bIsFirstPerson = false;
 }
 
-void ASoldier::onMoveForward(const float _val)
+void ASoldier::MoveForward(const float _Val)
 {
-	if ((Controller != NULL) && (_val != 0.0f))
-	{
-		FRotator Rotation = Controller->GetControlRotation();
-
-		// Ignore pitch
-		if (GetCharacterMovement()->IsMovingOnGround() || GetCharacterMovement()->IsFalling())
-			Rotation.Pitch = 0.0f;
-
-		AddMovementInput(FRotationMatrix(Rotation).GetScaledAxis(EAxis::X), _val);
-	}
+	AddMovementInput(FRotationMatrix(Controller->GetControlRotation()).GetScaledAxis(EAxis::X), _Val);
 }
 
-void ASoldier::onMoveRight(const float _val) {
-	if ((Controller != NULL) && (_val != 0.0f))
-	{
-		FRotator Rotation = Controller->GetControlRotation();
-		AddMovementInput(FRotationMatrix(Rotation).GetScaledAxis(EAxis::Y), _val);
-	}
+void ASoldier::MoveRight(const float _Val)
+{
+	AddMovementInput(FRotationMatrix(Controller->GetControlRotation()).GetScaledAxis(EAxis::Y), _Val);
+}
+
+void ASoldier::LookUp(const float _Val)
+{
+	if (IsAlive())
+		AddControllerPitchInput(_Val);
+}
+
+void ASoldier::Turn(const float _Val)
+{
+	if (IsAlive())
+		AddControllerYawInput(_Val);
 }
 
 // TODO: For now, we directly change the move speed multiplier with a setter. This is should be changed 
@@ -317,7 +317,6 @@ bool ASoldier::Walk()
 
 FVector ASoldier::lookingAtPosition()
 {
-	// TODO: Handle AIsa
 	FHitResult outHit;
 
 	FVector startLocation = CurrentCameraComponent->GetComponentTransform().GetLocation();
