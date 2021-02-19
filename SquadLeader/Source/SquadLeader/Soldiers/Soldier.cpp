@@ -378,7 +378,7 @@ void ASoldier::Die()
 {
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	GetCharacterMovement()->GravityScale = 0;
-	//GetCharacterMovement()->Velocity = FVector(0);
+	GetCharacterMovement()->Velocity = FVector(0);
 
 	AbilitySystemComponent->CancelAllAbilities();
 	AbilitySystemComponent->AddLooseGameplayTag(StateDeadTag);
