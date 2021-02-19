@@ -160,27 +160,13 @@ UBlackboardComponent* AAIGeneralController::get_blackboard() const
 
 void AAIGeneralController::ChooseBehavior() {
 	if (blackboard->GetValueAsObject("FocusActor")) {
-		//Attack Comportment
-		if (GEngine)
-			GEngine->AddOnScreenDebugMessage(21, 1.f, FColor::Purple, TEXT("In Attack mode"));
-		if (m_behavior == AIBehavior::Defense) {
-			m_behavior = AIBehavior::Attack;
-			blackboard->SetValueAsBool("is_attacking", true);
-			ASoldier* _enemy = Cast<ASoldier>(blackboard->GetValueAsObject("FocusActor"));
-			blackboard->SetValueAsVector("EnemyLocation", _enemy->GetActorLocation());
-		}
+		AttackBehavior();
 	}
 	else {
-		//Defens comportment
-		if (GEngine)
-			GEngine->AddOnScreenDebugMessage(21, 1.f, FColor::Purple, TEXT("In Defensiv mode"));
-		if (m_behavior == AIBehavior::Attack) {
-			m_behavior = AIBehavior::Defense;
-			blackboard->SetValueAsBool("is_attacking", false);
-			blackboard->SetValueAsVector("VectorLocation", FVector(0.f, 0.f, 0.f));
-		}
+		DefenseBehavior();
 	}
 }
+
 void AAIGeneralController::SortActorPerception() {
 	/* Update Seen Actors/ Delete hidden Actors*/
 	TArray<AActor*> ActorToRemove;
@@ -207,6 +193,7 @@ void AAIGeneralController::SearchEnemy() {
 		_solider->CancelAbilityRun();
 	}
 }
+
 void AAIGeneralController::Run(ASoldierAI* _soldier, ASoldier* _soldier_enemy) {
 	if (_soldier) {
 		UNavigationSystemV1* navSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
@@ -218,6 +205,7 @@ void AAIGeneralController::Run(ASoldierAI* _soldier, ASoldier* _soldier_enemy) {
 			_soldier->CancelAbilityRun();
 	}
 }
+
 void AAIGeneralController::TooClose() {
 	ASoldier* _FocusEnemy = Cast<ASoldier>(blackboard->GetValueAsObject("FocusActor"));
 	float _distance = FVector::Dist(GetPawn()->GetActorLocation(), _FocusEnemy->GetActorLocation());
@@ -227,10 +215,8 @@ void AAIGeneralController::TooClose() {
 		FVector _DestinationToGo;
 		float _d = m_distanceShootAndStop - _distance;
 		FVector _unitaire = _FocusEnemy->GetActorForwardVector(); 
-		//_unitaire.Normalize();
 		_DestinationToGo = _unitaire * _d + GetPawn()->GetActorLocation();
 		blackboard->SetValueAsVector("VectorLocation", _DestinationToGo);
-	
 	}
 	else {
 		blackboard->SetValueAsBool("need_GoBackward", false);
@@ -251,6 +237,7 @@ void AAIGeneralController::TooFar() {
 		blackboard->ClearValue("EnemyLocation");
 	}
 }
+
 void AAIGeneralController::UpdateFocus() {
 	ClearFocus(EAIFocusPriority::Gameplay);
 	blackboard->ClearValue("FocusActor");
@@ -275,5 +262,28 @@ void AAIGeneralController::UpdateSeenActor() {
 	}
 	for (auto& Elem : ActorToRemove) {
 		SeenActor.Remove(Elem);
+	}
+}
+
+void AAIGeneralController::AttackBehavior() {
+	//Attack Comportment
+	if (GEngine)
+		GEngine->AddOnScreenDebugMessage(21, 1.f, FColor::Purple, TEXT("In Attack mode"));
+	if (m_behavior == AIBehavior::Defense) {
+		m_behavior = AIBehavior::Attack;
+		blackboard->SetValueAsBool("is_attacking", true);
+		ASoldier* _enemy = Cast<ASoldier>(blackboard->GetValueAsObject("FocusActor"));
+		blackboard->SetValueAsVector("EnemyLocation", _enemy->GetActorLocation());
+	}
+}
+void AAIGeneralController::DefenseBehavior() {
+	//Defens comportment
+	if (GEngine)
+		GEngine->AddOnScreenDebugMessage(21, 1.f, FColor::Purple, TEXT("In Defensiv mode"));
+	//Check if it's new or not
+	if (m_behavior == AIBehavior::Attack) {
+		m_behavior = AIBehavior::Defense;
+		blackboard->SetValueAsBool("is_attacking", false);
+		blackboard->SetValueAsVector("VectorLocation", FVector(0.f, 0.f, 0.f));
 	}
 }
