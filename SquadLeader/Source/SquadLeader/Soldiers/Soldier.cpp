@@ -380,6 +380,8 @@ void ASoldier::Die()
 	GetCharacterMovement()->GravityScale = 0;
 	//GetCharacterMovement()->Velocity = FVector(0);
 
+	AbilitySystemComponent->CancelAllAbilities();
+	AbilitySystemComponent->AddLooseGameplayTag(StateDeadTag);
 }
 
 bool ASoldier::GetWantsToFire() const
