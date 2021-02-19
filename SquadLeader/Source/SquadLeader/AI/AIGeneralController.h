@@ -85,11 +85,6 @@ private:
 	UFUNCTION()
 		void Act();
 
-	UFUNCTION()
-		void UpdateFocus();
-
-	UFUNCTION()
-		void UpdateSeenActor();
 	
 		void ChooseBehavior();
 
@@ -99,14 +94,14 @@ private:
 	* And will erase the Actor we can't see anymore
 	*/
 	UFUNCTION()
-		void SortActorPerception();
+		void UpdateSeenActor();
 
 	/*
 	* After sorting the Actor we see we will choose the enemy to kill
 	* if there is one
 	*/
 	UFUNCTION()
-		void SearchEnemy();
+		void FocusEnemy();
 
 	/*
 	* Make the AI run if it's possible
