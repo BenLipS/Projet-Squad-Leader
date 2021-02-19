@@ -87,10 +87,10 @@ EPathFollowingRequestResult::Type AAIGeneralController::MoveToVectorLocation() {
 		return EPathFollowingRequestResult::Type::Failed;
 
 	//TO-DO : if follow an enemy be at the distance to shoot 
-	EPathFollowingRequestResult::Type _movetoResult = MoveToLocation(blackboard->GetValueAsVector("VectorLocation"));
+	EPathFollowingRequestResult::Type _movetoResult = MoveToLocation(blackboard->GetValueAsVector("VectorLocation"), 50.f);
 	if (_movetoResult == EPathFollowingRequestResult::Type::AlreadyAtGoal) {
 		blackboard->ClearValue("VectorLocation");
-		blackboard->ClearValue("need_G0oBackward");
+		blackboard->ClearValue("need_GoBackward");
 	}
 	
 	return _movetoResult;
@@ -104,7 +104,9 @@ EPathFollowingRequestResult::Type AAIGeneralController::MoveToEnemyLocation() {
 		Run(_soldier, _soldier_enemy);
 
 		//TO-DO : if follow an enemy be at the distance to shoot 
-		EPathFollowingRequestResult::Type _movetoResult = MoveToLocation(_soldier_enemy->GetActorLocation(), m_distanceShootAndStop);
+		EPathFollowingRequestResult::Type _movetoResult = MoveToLocation(blackboard->GetValueAsVector("EnemyLocation"), m_distanceShootAndStop);
+		if (_movetoResult == EPathFollowingRequestResult::AlreadyAtGoal)
+			blackboard->ClearValue("EnemyLocation");
 		return _movetoResult;
 	}
 	return EPathFollowingRequestResult::Failed;
@@ -142,6 +144,7 @@ void AAIGeneralController::Think() {
 	ChooseBehavior();
 	if(AIBehavior::Attack == m_behavior){
 		//see if in a good range
+		TooFar();
 		TooClose();
 	}
 }
@@ -160,16 +163,22 @@ void AAIGeneralController::ChooseBehavior() {
 		//Attack Comportment
 		if (GEngine)
 			GEngine->AddOnScreenDebugMessage(21, 1.f, FColor::Purple, TEXT("In Attack mode"));
-		m_behavior = AIBehavior::Attack;
-		blackboard->SetValueAsBool("is_attacking", true);
+		if (m_behavior == AIBehavior::Defense) {
+			m_behavior = AIBehavior::Attack;
+			blackboard->SetValueAsBool("is_attacking", true);
+			ASoldier* _enemy = Cast<ASoldier>(blackboard->GetValueAsObject("FocusActor"));
+			blackboard->SetValueAsVector("EnemyLocation", _enemy->GetActorLocation());
+		}
 	}
 	else {
 		//Defens comportment
 		if (GEngine)
 			GEngine->AddOnScreenDebugMessage(21, 1.f, FColor::Purple, TEXT("In Defensiv mode"));
-		m_behavior = AIBehavior::Defense;
-		blackboard->SetValueAsBool("is_attacking", false);
-		blackboard->SetValueAsVector("VectorLocation", FVector(0.f, 0.f, 0.f));
+		if (m_behavior == AIBehavior::Attack) {
+			m_behavior = AIBehavior::Defense;
+			blackboard->SetValueAsBool("is_attacking", false);
+			blackboard->SetValueAsVector("VectorLocation", FVector(0.f, 0.f, 0.f));
+		}
 	}
 }
 void AAIGeneralController::SortActorPerception() {
@@ -213,7 +222,7 @@ void AAIGeneralController::TooClose() {
 	ASoldier* _FocusEnemy = Cast<ASoldier>(blackboard->GetValueAsObject("FocusActor"));
 	float _distance = FVector::Dist(GetPawn()->GetActorLocation(), _FocusEnemy->GetActorLocation());
 
-	if (_distance < m_distanceShootAndStop) {
+	if (_distance < m_distanceShootAndStop - 100.f) {
 		blackboard->SetValueAsBool("need_GoBackward", true);
 		FVector _DestinationToGo;
 		float _d = m_distanceShootAndStop - _distance;
@@ -221,10 +230,25 @@ void AAIGeneralController::TooClose() {
 		//_unitaire.Normalize();
 		_DestinationToGo = _unitaire * _d + GetPawn()->GetActorLocation();
 		blackboard->SetValueAsVector("VectorLocation", _DestinationToGo);
+	
 	}
 	else {
 		blackboard->SetValueAsBool("need_GoBackward", false);
 		blackboard->ClearValue("VectorLocation");
+	}
+}
+void AAIGeneralController::TooFar() {
+	ASoldier* _FocusEnemy = Cast<ASoldier>(blackboard->GetValueAsObject("FocusActor"));
+	float _distance = FVector::Dist(GetPawn()->GetActorLocation(), _FocusEnemy->GetActorLocation());
+
+	if (_distance > m_distanceShootAndStop + 100.f) {
+		blackboard->SetValueAsBool("need_GoForward", true);
+		ASoldier* _enemy = Cast<ASoldier>(blackboard->GetValueAsObject("FocusActor"));
+		blackboard->SetValueAsVector("EnemyLocation", _enemy->GetActorLocation());
+	}
+	else {
+		blackboard->SetValueAsBool("need_GoForward", false);
+		blackboard->ClearValue("EnemyLocation");
 	}
 }
 void AAIGeneralController::UpdateFocus() {

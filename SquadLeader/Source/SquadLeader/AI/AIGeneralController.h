@@ -122,6 +122,15 @@ private:
 	*/
 	UFUNCTION()
 		void TooClose();
+
+	/*
+	* Calculate the point where the AI is
+	* in a good range
+	* if the enemy is too close.
+	* This method is called only when the AI is in the Attack Behavior
+	*/	
+	UFUNCTION()
+		void TooFar();
 private:
 
 	/*The behaviorTree that we are running*/
