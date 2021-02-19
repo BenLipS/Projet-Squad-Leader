@@ -165,4 +165,45 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Perception")
 		float m_distancePerception = 5000.f;
 
+	/*
+	* Lose Sight Offset
+	*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Perception")
+		float m_LoseSightOffset = 200.0f;
+
+	/*
+	* PeripheralVisionAngleDegrees
+	*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Perception")
+		float m_PeripheralVisionAngleDegrees = 82.5f;
+
+	/*
+	* Stimulus Max Age
+	*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Perception")
+		float m_MaxAge = 1.f;
+
+	/*
+	* AutoSuccessRangeFromLastSeenLocation
+	*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Perception")
+		float m_AutoSuccessRangeFromLastSeenLocation = 100.0f;
+
+	/*
+	* Detect Enemies
+	*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Perception")
+		bool m_DetectEnemies = true;
+
+	/*
+	* Detect Friendlies
+	*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Perception")
+		bool m_DetectFriendlies = true;
+
+	/*
+	* Detect Neutrals
+	*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Perception")
+		bool m_DetectNeutrals = true;
 };

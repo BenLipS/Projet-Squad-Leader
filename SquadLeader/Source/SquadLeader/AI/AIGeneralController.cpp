@@ -34,8 +34,9 @@ void AAIGeneralController::ontargetperception_update_sight(AActor* actor, FAISti
 
 void AAIGeneralController::ActorsPerceptionUpdated(const TArray < AActor* >& UpdatedActors) {
 	for (auto& Elem : UpdatedActors) {
-		if (SeenActor.Contains(Elem));
-		else SeenActor.Add(Elem);
+		if(ASoldier* soldier = Cast<ASoldier>(Elem); soldier && soldier->PlayerTeam != Cast<ASoldier>(GetPawn())->PlayerTeam)
+			if (SeenActor.Contains(Elem));
+			else SeenActor.Add(Elem);
 	}
 	//if (GEngine)GEngine->AddOnScreenDebugMessage(5960, 1.f, FColor::Blue, TEXT("ActorsPerceptionUpdated"));
 };
@@ -51,13 +52,13 @@ void AAIGeneralController::setup_perception_system() {
 	{
 		SetPerceptionComponent(*CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("Perception Component")));
 		sight_config->SightRadius = m_distancePerception;
-		sight_config->LoseSightRadius = sight_config->SightRadius + 200.0f;
-		sight_config->PeripheralVisionAngleDegrees = 82.5f;
-		sight_config->SetMaxAge(1.f);
-		sight_config->AutoSuccessRangeFromLastSeenLocation = 100.0f;
-		sight_config->DetectionByAffiliation.bDetectEnemies = true;
-		sight_config->DetectionByAffiliation.bDetectFriendlies = true;
-		sight_config->DetectionByAffiliation.bDetectNeutrals = true;
+		sight_config->LoseSightRadius = sight_config->SightRadius + m_LoseSightOffset;
+		sight_config->PeripheralVisionAngleDegrees = m_PeripheralVisionAngleDegrees;
+		sight_config->SetMaxAge(m_MaxAge);
+		sight_config->AutoSuccessRangeFromLastSeenLocation = m_AutoSuccessRangeFromLastSeenLocation;
+		sight_config->DetectionByAffiliation.bDetectEnemies = m_DetectEnemies;
+		sight_config->DetectionByAffiliation.bDetectFriendlies = m_DetectFriendlies;
+		sight_config->DetectionByAffiliation.bDetectNeutrals = m_DetectNeutrals;
 
 		// add sight configuration component to perception component
 		GetPerceptionComponent()->SetDominantSense(*sight_config->GetSenseImplementation());
@@ -186,7 +187,7 @@ void AAIGeneralController::SortActorPerception() {
 	}
 }
 void AAIGeneralController::SearchEnemy() {
-	//ClearFocus(EAIFocusPriority::Gameplay);
+	ClearFocus(EAIFocusPriority::Gameplay);
 	blackboard->ClearValue("FocusActor");
 	if (SeenActor.Num() > 0) {
 		this->SetFocalPoint(SeenActor[0]->GetTargetLocation());
