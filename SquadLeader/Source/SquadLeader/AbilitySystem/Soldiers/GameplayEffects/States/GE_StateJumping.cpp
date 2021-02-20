@@ -1,9 +1,6 @@
 #include "GE_StateJumping.h"
 #include "../../../../Soldiers/Soldier.h"
 
-UGE_StateJumping::UGE_StateJumping() : UGameplayEffect()
+UGE_StateJumping::UGE_StateJumping() : UGE_State(ASoldier::StateJumpingTag)
 {
-	DurationPolicy = EGameplayEffectDurationType::Infinite;
-	ChanceToApplyToTarget = FScalableFloat(1.0f);
-	InheritableOwnedTagsContainer.AddTag(ASoldier::StateJumpingTag);
 }
