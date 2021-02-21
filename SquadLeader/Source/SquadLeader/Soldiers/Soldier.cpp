@@ -5,6 +5,7 @@
 #include "../AbilitySystem/Soldiers/GameplayAbilitySoldier.h"
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "Perception/AISense_Sight.h"
+#include "../SquadLeaderGameModeBase.h"
 //#include "DrawDebugHelpers.h"
 
 // States
@@ -216,10 +217,10 @@ void ASoldier::AddStartupEffects()
 
 void ASoldier::InitializeTagChangeCallbacks()
 {
-	AbilitySystemComponent->RegisterGameplayTagEvent(StateDeadTag, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ASoldier::DeadTagChanged);
-	AbilitySystemComponent->RegisterGameplayTagEvent(StateRunningTag, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ASoldier::RunningTagChanged);
-	AbilitySystemComponent->RegisterGameplayTagEvent(StateJumpingTag, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ASoldier::JumpingTagChanged);
-	AbilitySystemComponent->RegisterGameplayTagEvent(StateFightingTag, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ASoldier::FightingTagChanged);
+	AbilitySystemComponent->RegisterGameplayTagEvent(ASoldier::StateDeadTag, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ASoldier::DeadTagChanged);
+	AbilitySystemComponent->RegisterGameplayTagEvent(ASoldier::StateRunningTag, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ASoldier::RunningTagChanged);
+	AbilitySystemComponent->RegisterGameplayTagEvent(ASoldier::StateJumpingTag, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ASoldier::JumpingTagChanged);
+	AbilitySystemComponent->RegisterGameplayTagEvent(ASoldier::StateFightingTag, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ASoldier::FightingTagChanged);
 }
 
 void ASoldier::InitializeAttributeChangeCallbacks()
@@ -377,11 +378,32 @@ void ASoldier::HealthChanged(const FOnAttributeChangeData& _Data)
 void ASoldier::Die()
 {
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	GetCharacterMovement()->GravityScale = 0;
+	GetCharacterMovement()->GravityScale = 0.f;
 	GetCharacterMovement()->Velocity = FVector(0);
 
 	AbilitySystemComponent->CancelAllAbilities();
-	AbilitySystemComponent->AddLooseGameplayTag(StateDeadTag);
+	AbilitySystemComponent->AddLooseGameplayTag(ASoldier::StateDeadTag);
+
+	if (GetLocalRole() == ROLE_Authority)
+	{
+		if (ASquadLeaderGameModeBase* GameMode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode()); GameMode)
+			GameMode->RespawnSoldier(GetController());
+	}
+}
+
+void ASoldier::Respawn()
+{
+	// A setter is ok for this special case. Otherwise use GEs to handle attributes
+	AttributeSet->SetHealth(AttributeSet->GetMaxHealth());
+
+	FGameplayTagContainer EffectTagsToRemove;
+	EffectTagsToRemove.AddTag(ASoldier::StateFightingTag);
+	AbilitySystemComponent->RemoveActiveEffectsWithGrantedTags(EffectTagsToRemove);
+	AbilitySystemComponent->RemoveLooseGameplayTag(ASoldier::StateDeadTag);
+
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	// TODO: Should gravity be a attribute ?
+	GetCharacterMovement()->GravityScale = 1.f;
 }
 
 bool ASoldier::GetWantsToFire() const

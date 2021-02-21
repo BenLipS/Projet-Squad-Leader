@@ -104,6 +104,7 @@ public:
 	UPROPERTY(BluePrintReadWrite, Category = "Attributes")
 	float fieldOfViewAim;
 
+	// Getters
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
 	int32 GetCharacterLevel() const;
 
@@ -130,6 +131,7 @@ public:
 	virtual void HealthChanged(const FOnAttributeChangeData& _Data);
 
 	virtual void Die();
+	virtual void Respawn();
 
 //////////////// Cameras
 protected:

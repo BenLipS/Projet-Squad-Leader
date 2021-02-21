@@ -28,3 +28,13 @@ void ASquadLeaderGameModeBase::StartPlay() {
 
 	Super::StartPlay();
 }
+
+void ASquadLeaderGameModeBase::RespawnSoldier(AController* _Controller)
+{
+	if (ASoldier* soldier = Cast<ASoldier>(_Controller->GetPawn()); soldier)
+	{
+		// TODO: improve respawn
+		soldier->SetActorTransform(FTransform(FQuat(), FVector(0.f, 0.f, 400.f)));
+		soldier->Respawn();
+	}
+}
