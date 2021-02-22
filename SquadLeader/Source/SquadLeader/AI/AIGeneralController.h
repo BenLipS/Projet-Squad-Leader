@@ -37,7 +37,7 @@ public:
 	void ActorsPerceptionUpdated(const TArray < AActor* >& UpdatedActors);
 
 	UFUNCTION()
-	void BeginPlay();
+	virtual void BeginPlay();
 	
 	/*Move to a location, the location must be an AActor*/
 	UFUNCTION(BlueprintCallable, Category = "SquadLeader")
@@ -62,9 +62,10 @@ public:
 	*/
 	UFUNCTION(BluePrintCallable, Category = "Comportement")
 		virtual void Tick(float DeltaSeconds) override;
-private:
+protected:
 	/*Set-up the BehaviorTree at the construction*/
-	void setup_BehaviorTree();
+	virtual void setup_BehaviorTree();
+private:
 
 	/*
 	* The next two method are part of the 
@@ -132,14 +133,15 @@ private:
 
 	UFUNCTION()
 		void DefenseBehavior();
-private:
 
+protected:
 	/*The behaviorTree that we are running*/
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))
 	UBehaviorTree* m_behaviorTree;
-	
+
+
 	class UBlackboardComponent* blackboard;
-	
+private:
 	class UAISenseConfig_Sight* sight_config;
 
 	UPROPERTY()
