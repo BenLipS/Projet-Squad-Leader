@@ -104,6 +104,7 @@ public:
 	UPROPERTY(BluePrintReadWrite, Category = "Attributes")
 	float fieldOfViewAim;
 
+	// Getters
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
 	int32 GetCharacterLevel() const;
 
@@ -126,8 +127,11 @@ public:
 	bool IsAlive() const;
 
 	// Attribute changed callbacks
-	//FDelegateHandle MoveSpeedChangedDelegateHandle;
-	//virtual void MoveSpeedChanged(const FOnAttributeChangeData& _Data);
+	FDelegateHandle HealthChangedDelegateHandle;
+	virtual void HealthChanged(const FOnAttributeChangeData& _Data);
+
+	virtual void Die();
+	virtual void Respawn();
 
 //////////////// Cameras
 protected:
@@ -164,11 +168,22 @@ public:
 //////////////// Movement
 	// Move direction
 	UFUNCTION()
-	void onMoveForward(const float _val);
+	void MoveForward(const float _Val);
 
 	UFUNCTION()
-	void onMoveRight(const float _val);
+	void MoveRight(const float _Val);
 
+	// Looking direction
+	UFUNCTION()
+	void LookUp(const float _Val);
+
+	UFUNCTION()
+	void Turn(const float _Val);
+
+	UFUNCTION(BlueprintCallable, Category = "Movement")
+	virtual FVector lookingAtPosition();
+
+	// Run
 	UFUNCTION(BlueprintCallable, Category = "Movement")
 	bool StartRunning();
 
@@ -177,9 +192,6 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category = "Movement")
 	bool Walk();
-
-	UFUNCTION(BlueprintCallable, Category = "Sight")
-	virtual FVector lookingAtPosition();
 
 //////////////// Weapons
 protected:
