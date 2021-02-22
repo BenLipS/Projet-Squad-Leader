@@ -2,6 +2,7 @@
 
 
 #include "AreaEffect.h"
+#include "DrawDebugHelpers.h"
 #include "../Soldiers/Soldier.h"
 
 // Sets default values
@@ -58,6 +59,7 @@ void AAreaEffect::BeginPlay()
 	OnAreaTick();
 
 	if (AttributeSet->GetDuration() > 0.f) {
+		DrawDebugSphere(GetWorld(), GetActorLocation(), AttributeSet->GetRadius(), 50, FColor::Blue, false, AttributeSet->GetDuration());
 		if (!periodTimer.IsValid()) {
 			GetWorldTimerManager().SetTimer(periodTimer, this, &AAreaEffect::OnAreaTick, AttributeSet->GetInterval(), true);
 		}
@@ -67,6 +69,7 @@ void AAreaEffect::BeginPlay()
 	}
 	else
 	{
+		DrawDebugSphere(GetWorld(), GetActorLocation(), AttributeSet->GetRadius(), 50, FColor::Red, false, 0.5f);
 		finishAreaEffect();
 	}
 }
@@ -136,9 +139,12 @@ void AAreaEffect::OnAreaTick()
 					EffectContext = ASC->MakeEffectContext();
 					EffectContext.AddSourceObject(soldier);
 				}
-				FGameplayEffectSpecHandle NewHandle = ASC->MakeOutgoingSpec(ExplosionEffects, 1.f, EffectContext);
-				if (NewHandle.IsValid())
-					ASC->ApplyGameplayEffectSpecToTarget(*NewHandle.Data.Get(), soldier->GetAbilitySystemComponent());
+				for (auto effect : ExplosionEffects)
+				{
+					FGameplayEffectSpecHandle NewHandle = ASC->MakeOutgoingSpec(effect, 1.f, EffectContext);
+					if (NewHandle.IsValid())
+						ASC->ApplyGameplayEffectSpecToTarget(*NewHandle.Data.Get(), soldier->GetAbilitySystemComponent());
+				}
 			}
 		}
 	}

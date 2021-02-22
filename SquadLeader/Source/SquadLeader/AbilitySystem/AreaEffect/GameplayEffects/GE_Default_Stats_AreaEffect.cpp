@@ -2,7 +2,7 @@
 
 
 #include "GE_Default_Stats_AreaEffect.h"
-#include "AttributeSetAreaEffect.h"
+#include "../AttributeSetAreaEffect.h"
 
 UGE_Default_Stats_AreaEffect::UGE_Default_Stats_AreaEffect()
 {

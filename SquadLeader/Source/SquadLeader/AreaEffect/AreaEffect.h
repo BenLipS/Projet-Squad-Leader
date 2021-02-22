@@ -6,11 +6,11 @@
 #include "GameFramework/Actor.h"
 #include "GameplayEffect.h"
 #include "GameplayEffectExtension.h"
-#include "AttributeSetAreaEffect.h"
-#include "GE_Default_Stats_AreaEffect.h"
+#include "../AbilitySystem/AreaEffect/AttributeSetAreaEffect.h"
+#include "../AbilitySystem/AreaEffect/GameplayEffects/GE_Default_Stats_AreaEffect.h"
+#include "../AbilitySystem/AreaEffect/AbilitySystemComponentAreaEffect.h"
 #include "AbilitySystemInterface.h"
 #include "AbilitySystemComponent.h"
-#include "AbilitySystemComponentAreaEffect.h"
 #include "AreaEffect.generated.h"
 
 UCLASS()
@@ -48,7 +48,7 @@ protected:
 
 	// Define the effect applied by explosion
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Abilities")
-	TSubclassOf<class UGameplayEffect> ExplosionEffects;
+	TArray<TSubclassOf<class UGameplayEffect>> ExplosionEffects;
 
 	AActor* realOwner;
 
