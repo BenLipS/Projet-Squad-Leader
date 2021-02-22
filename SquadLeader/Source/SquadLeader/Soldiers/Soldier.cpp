@@ -3,6 +3,7 @@
 #include "Components/CapsuleComponent.h"
 #include "EngineUtils.h"
 #include "../AbilitySystem/Soldiers/GameplayAbilitySoldier.h"
+#include "../AbilitySystem/Soldiers/GameplayEffects/States/GE_StateDead.h"
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "Perception/AISense_Sight.h"
 #include "../SquadLeaderGameModeBase.h"
@@ -230,6 +231,28 @@ void ASoldier::InitializeAttributeChangeCallbacks()
 
 void ASoldier::DeadTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
 {
+	if (NewCount > 0) // If dead tag is added - Handle death
+	{
+		// Stop the soldier and remove any interaction with the world
+		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		GetCharacterMovement()->GravityScale = 0.f;
+		GetCharacterMovement()->Velocity = FVector(0.f);
+
+		// Cancel abilities
+		AbilitySystemComponent->CancelAllAbilities();
+
+		// Notify the death to GameMode - Server only
+		if (ASquadLeaderGameModeBase* GameMode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode()); GameMode)
+			GameMode->SoldierDied(GetController());
+	}
+	else // If dead tag is removed - Handle respawn
+	{
+		// A setter is ok for this special case. Otherwise use GEs to handle attributes
+		AttributeSet->SetHealth(AttributeSet->GetMaxHealth());
+
+		GetCharacterMovement()->GravityScale = 1.f;
+		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	}
 }
 
 void ASoldier::RunningTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
@@ -377,33 +400,19 @@ void ASoldier::HealthChanged(const FOnAttributeChangeData& _Data)
 
 void ASoldier::Die()
 {
-	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	GetCharacterMovement()->GravityScale = 0.f;
-	GetCharacterMovement()->Velocity = FVector(0);
-
-	AbilitySystemComponent->CancelAllAbilities();
-	AbilitySystemComponent->AddLooseGameplayTag(ASoldier::StateDeadTag);
-
-	if (GetLocalRole() == ROLE_Authority)
-	{
-		if (ASquadLeaderGameModeBase* GameMode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode()); GameMode)
-			GameMode->RespawnSoldier(GetController());
-	}
+	// Give dead tag - death will be handled in DeadTagChanged
+	FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
+	FGameplayEffectSpecHandle DeathHandle = AbilitySystemComponent->MakeOutgoingSpec(UGE_StateDead::StaticClass(), 1.f, EffectContext);
+	AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*DeathHandle.Data.Get());
 }
 
 void ASoldier::Respawn()
 {
-	// A setter is ok for this special case. Otherwise use GEs to handle attributes
-	AttributeSet->SetHealth(AttributeSet->GetMaxHealth());
-
+	// Remove dead tag - respawn will be handled in DeadTagChanged
 	FGameplayTagContainer EffectTagsToRemove;
-	EffectTagsToRemove.AddTag(ASoldier::StateFightingTag);
+	EffectTagsToRemove.AddTag(ASoldier::StateFightingTag); // Make sure all passive are available on respawn
+	EffectTagsToRemove.AddTag(ASoldier::StateDeadTag);
 	AbilitySystemComponent->RemoveActiveEffectsWithGrantedTags(EffectTagsToRemove);
-	AbilitySystemComponent->RemoveLooseGameplayTag(ASoldier::StateDeadTag);
-
-	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	// TODO: Should gravity be a attribute ?
-	GetCharacterMovement()->GravityScale = 1.f;
 }
 
 bool ASoldier::GetWantsToFire() const

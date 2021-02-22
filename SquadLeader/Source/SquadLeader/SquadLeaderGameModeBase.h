@@ -21,5 +21,10 @@ public:
 	// storage of global data for all the game
 	TArray<class AControlArea*> controlAreaCollection;
 
+protected:
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Respawn")
+	float RespawnDelay;
+public:
+	void SoldierDied(AController* _Controller);
 	void RespawnSoldier(AController* _Controller);
 };
