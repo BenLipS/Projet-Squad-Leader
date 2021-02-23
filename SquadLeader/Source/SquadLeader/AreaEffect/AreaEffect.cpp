@@ -1,15 +1,9 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "AreaEffect.h"
 #include "DrawDebugHelpers.h"
 #include "../Soldiers/Soldier.h"
 
-// Sets default values
-
 AAreaEffect::AAreaEffect() : realOwner{ this }, realOwnerHasASC{ true }
 {
-	// Set this actor to not call Tick() every frame.
 	PrimaryActorTick.bCanEverTick = false;
 
 	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponentAreaEffect>(TEXT("Ability System Component"));
@@ -20,7 +14,6 @@ AAreaEffect::AAreaEffect() : realOwner{ this }, realOwnerHasASC{ true }
 
 AAreaEffect::AAreaEffect(AActor* realOwnerIn) : realOwner{ realOwnerIn }
 {
-	// Set this actor to not call Tick() every frame.
 	PrimaryActorTick.bCanEverTick = false;
 
 	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponentAreaEffect>(TEXT("Ability System Component"));
@@ -32,7 +25,8 @@ AAreaEffect::AAreaEffect(AActor* realOwnerIn) : realOwner{ realOwnerIn }
 	{
 		realOwnerHasASC = true;
 	}
-	else {
+	else
+	{
 		realOwnerHasASC = false;
 	}
 }
@@ -47,18 +41,15 @@ UAttributeSetAreaEffect* AAreaEffect::GetAttributeSet() const
 	return AttributeSet;
 }
 
-// Called when the game starts or when spawned
 void AAreaEffect::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//AbilitySystemComponent->InitAbilityActorInfo(this, this);
-	//AttributeSet = CreateDefaultSubobject<UAttributeSetAreaEffect>(TEXT("Attribute Set"));
 	InitializeAttributes();
-
 	OnAreaTick();
 
-	if (AttributeSet->GetDuration() > 0.f) {
+	if (AttributeSet->GetDuration() > 0.f)
+	{
 		DrawDebugSphere(GetWorld(), GetActorLocation(), AttributeSet->GetRadius(), 50, FColor::Blue, false, AttributeSet->GetDuration());
 		if (!periodTimer.IsValid()) {
 			GetWorldTimerManager().SetTimer(periodTimer, this, &AAreaEffect::OnAreaTick, AttributeSet->GetInterval(), true);
@@ -112,7 +103,7 @@ void AAreaEffect::OnAreaTick()
 	FVector startTrace = GetActorLocation();
 	FVector endTrace = startTrace;
 
-	//Apply effect
+	//Apply effects
 	if (GetWorld()->SweepMultiByChannel(hitActors, startTrace, endTrace, FQuat::FQuat(), ECC_WorldStatic, collisionShape))
 	{
 		for (auto actor = hitActors.CreateIterator(); actor; ++actor)
@@ -120,7 +111,6 @@ void AAreaEffect::OnAreaTick()
 			if (actor->Actor == nullptr)
 				continue;
 
-			//UStaticMeshComponent* SM = Cast<UStaticMeshComponent>((*actor).Actor->GetRootComponent());
 			ASoldier* soldier = Cast<ASoldier>((*actor).GetActor());
 
 			if (soldier)
