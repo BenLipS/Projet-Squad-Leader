@@ -89,6 +89,7 @@ public:
 	static FGameplayTag SkillJumpTag;
 	static FGameplayTag SkillCrouchTag;
 	static FGameplayTag SkillFireWeaponTag;
+	static FGameplayTag SkillFireAreaEffectFromSelfTag;
 
 protected:
 	virtual void DeadTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
