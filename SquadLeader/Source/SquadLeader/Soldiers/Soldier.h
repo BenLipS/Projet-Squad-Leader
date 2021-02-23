@@ -208,6 +208,6 @@ public:
 	
 	UFUNCTION(Reliable, Server, WithValidation)
 		void ServerCycleBetweenTeam();
-	// Connected to the "L" key
-	void cycleBetweenTeam();
+
+	void cycleBetweenTeam();  // Connected to the "L" key
 };

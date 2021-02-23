@@ -16,15 +16,14 @@ struct FTeamStat
 	GENERATED_BODY()
 public:
 	UPROPERTY()
-		int controlValue;
+		int controlValue = 0;
 	UPROPERTY()
-		int presenceTeam;
+		int presenceTeam = 0;
 	UPROPERTY()
-		ASoldierSecondarySpawn* spawnTeam;
+		ASoldierSecondarySpawn* spawnTeam = nullptr;
 
 	// Sets default values for this actor's properties
 	FTeamStat() {};
-	FTeamStat(ASoldierSecondarySpawn* _spawnTeam) { spawnTeam = _spawnTeam; };
 };
 
 
@@ -60,13 +59,6 @@ public:
 		int maxControlValue;
 	UPROPERTY(BlueprintReadWrite, Category = "ControlValue")
 		int controlValueToTake;
-protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "ControlValue")
-		int controlValue;
-	UPROPERTY(BlueprintReadWrite, Category = "ControlValue")
-		int presenceTeam1;
-	UPROPERTY(BlueprintReadWrite, Category = "ControlValue")
-		int presenceTeam2;
 public:
 	UPROPERTY(EditDefaultsOnly, Replicated, Category = "IsTaken")
 		TSubclassOf<ASoldierTeam> isTakenBy;
@@ -94,7 +86,7 @@ protected:  // time value for calculation frequency
 		void calculateControlValue();
 
 protected:
-	UPROPERTY(VisibleAnywhere, Replicated, Category = "ControlData")
+	UPROPERTY(VisibleAnywhere, Category = "ControlData")
 		TMap<TSubclassOf<ASoldierTeam>, FTeamStat> TeamData;
 	UFUNCTION(Category = "ControlData")
 		void UpdateTeamData();
