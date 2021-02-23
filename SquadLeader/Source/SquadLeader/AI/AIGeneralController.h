@@ -95,7 +95,7 @@ private:
 	* And will erase the Actor we can't see anymore
 	*/
 	UFUNCTION()
-		void UpdateSeenActor();
+		void UpdateSeenSoldier();
 
 	/*
 	* After sorting the Actor we see we will choose the enemy to kill
@@ -141,20 +141,20 @@ protected:
 
 
 	class UBlackboardComponent* blackboard;
+
+	UPROPERTY()
+	TArray<ASoldier*> SeenSoldier;
 private:
 	class UAISenseConfig_Sight* sight_config;
 
 	UPROPERTY()
-	TArray<AActor*> SeenActor;
+	class UBlackboardComponent* m_BlackBoard;
 
 	UPROPERTY()
-		class UBlackboardComponent* m_BlackBoard;
+	TEnumAsByte<AIBehavior> m_behavior;
 
 	UPROPERTY()
-		TEnumAsByte<AIBehavior> m_behavior;
-
-	UPROPERTY()
-		FVector m_destination;
+	FVector m_destination;
 
 public:
 

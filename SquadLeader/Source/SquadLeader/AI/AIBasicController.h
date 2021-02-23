@@ -29,7 +29,7 @@ protected:
 
 	/* The weight of the Alignment vector component */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Flocking Behaviour")
-	float AlignmentWeight;
+	float AlignementWeight;
 
 	/* The weight of the Cohesion vector component */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Flocking Behaviour")
@@ -64,5 +64,48 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Flocking Behaviour")
 	FVector ObjectifLocation;
 
-	const float DefaultNormalizeVectorTolerance = 0.0001f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Flocking Behaviour")
+	float DefaultNormalizeVectorTolerance = 0.0001f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Flocking Behaviour")
+	float BoidPhysicalRadius = 34.0f;
+
+	UPROPERTY()
+	TArray<AAIBasicController*> SeenBoids;
+
+	UFUNCTION()
+	void ResetVectors();
+
+	UFUNCTION()
+	void UpdateNeighbourhood();
+
+	/*Update and normalize vectors*/
+	UFUNCTION()
+	void UpdateCohesionVector();
+
+	UFUNCTION()
+	void UpdateAlignementVector();
+
+	UFUNCTION()
+	void UpdateSeparationVector();
+
+	UFUNCTION()
+	void UpdateObjectifVector();
+
+	UFUNCTION()
+	void UpdateMovementVector();
+
+	UFUNCTION()
+	void DrawDebug();
+
+	UFUNCTION()
+	void UpdateFlockingPosition(float DeltaSeconds);
+
+public:
+	/* For BT Task  */
+	UFUNCTION(BlueprintCallable, Category = "Flocking Behaviour")
+	EPathFollowingRequestResult::Type FollowFlocking();
+
+	UFUNCTION(BlueprintCallable, Category = "Flocking Behaviour")
+	FVector GetObjectifLocation() { return ObjectifLocation; };
 };
