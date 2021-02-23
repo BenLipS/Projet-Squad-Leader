@@ -97,11 +97,17 @@ void AAIBasicController::UpdateObjectifVector()
 	UNavigationSystemV1* navSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
 	UNavigationPath* path = navSys->FindPathToLocationSynchronously(GetWorld(), SoldierLocation, ObjectifLocation, NULL);
 	
-	FVector _vect = path->PathPoints[1];
-	_vect.Z = SoldierLocation.Z;
-	DrawDebugPoint(GetWorld(), _vect, 52, FColor::Red);
+	FVector ObjectifLocalDir;
+	if (path->PathPoints.Num() > 1)
+		ObjectifLocalDir = path->PathPoints[1];
+	else
+		ObjectifLocalDir = ObjectifLocation;
 
-	ObjectifVector = _vect - SoldierLocation;
+	ObjectifLocalDir.Z = SoldierLocation.Z;
+
+	DrawDebugPoint(GetWorld(), ObjectifLocalDir, 10, FColor::Red);
+
+	ObjectifVector = ObjectifLocalDir - SoldierLocation;
 	ObjectifLocation.Z = SoldierLocation.Z;
 	ObjectifVector = ObjectifVector.GetSafeNormal(DefaultNormalizeVectorTolerance);
 }
