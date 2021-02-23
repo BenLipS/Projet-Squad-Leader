@@ -15,6 +15,8 @@ ASL_Projectile::ASL_Projectile()
 	CollisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComponent"));
 	CollisionComp->InitSphereRadius(Radius); //physic collision radius
 	CollisionComp->BodyInstance.SetCollisionProfileName("Projectile");
+	if(OnContactPolicy == ContactPolicy::EXPLODE || OnContactPolicy == ContactPolicy::STICKY)
+		CollisionComp->OnComponentHit.AddDynamic(this, &ASL_Projectile::OnContact);
 
 	RootComponent = CollisionComp;
 
@@ -23,7 +25,7 @@ ASL_Projectile::ASL_Projectile()
 	ProjectileMovement->InitialSpeed = InitialSpeed;
 	ProjectileMovement->MaxSpeed = MaxSpeed;
 	ProjectileMovement->bRotationFollowsVelocity = true;
-	ProjectileMovement->bShouldBounce = OnContact == ContactPolicy::BOUNCE;
+	ProjectileMovement->bShouldBounce = OnContactPolicy == ContactPolicy::BOUNCE;
 	ProjectileMovement->Bounciness = Bounciness;
 	ProjectileMovement->ProjectileGravityScale = GravityScale;
 
@@ -46,7 +48,7 @@ ASL_Projectile::ASL_Projectile(FVector& FireDirection)
 	ProjectileMovement->InitialSpeed = InitialSpeed;
 	ProjectileMovement->MaxSpeed = MaxSpeed;
 	ProjectileMovement->bRotationFollowsVelocity = true;
-	ProjectileMovement->bShouldBounce = OnContact == ContactPolicy::BOUNCE;
+	ProjectileMovement->bShouldBounce = OnContactPolicy == ContactPolicy::BOUNCE;
 	ProjectileMovement->Bounciness = Bounciness;
 	ProjectileMovement->ProjectileGravityScale = GravityScale;
 
@@ -66,11 +68,17 @@ void ASL_Projectile::OnExplode()
 	for (auto areaEffect : ExplosionAreaEffect)
 	{
 		FActorSpawnParameters SpawnInfo;
-		SpawnInfo.Owner = this;
+		SpawnInfo.Owner = GetOwner();
 		SpawnInfo.Instigator = GetInstigator();
 		SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 		GetWorld()->SpawnActor<AAreaEffect>(areaEffect, SpawnInfo);
 	}
+	DeleteProjectile();
+}
+
+void ASL_Projectile::DeleteProjectile()
+{
+	Destroy();
 }
 
 void ASL_Projectile::InitVelocity()
@@ -86,5 +94,19 @@ void ASL_Projectile::InitVelocity()
 void ASL_Projectile::InitVelocity(FVector& FireDirection)
 {
 	ProjectileMovement->Velocity = FireDirection * ProjectileMovement->InitialSpeed;
+}
+
+void ASL_Projectile::OnContact(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit)
+{
+	switch (OnContactPolicy) {
+	case ContactPolicy::EXPLODE:
+		OnExplode();
+		break;
+	case ContactPolicy::STICKY:
+		break;
+	default:
+		break;
+	}
+	OnExplode();
 }
 //FGameplayEffectSpecHandle DamageEffectSpecHandle = MakeOutgoingGameplayEffectSpec(DamageGameplayEffect, GetAbilityLevel());

@@ -9,7 +9,7 @@
 UENUM()
 	enum class ContactPolicy {
 	BOUNCE UMETA(DisplayName = "Bounce"),
-	SITCKY UMETA(DisplayName = "Sticky"),
+	STICKY UMETA(DisplayName = "Sticky"),
 	EXPLODE UMETA(DisplayName = "Explode")
 };
 
@@ -44,7 +44,7 @@ protected:
 	float Bounciness = 0.3f;
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Projectile")
-	ContactPolicy OnContact = ContactPolicy::BOUNCE;
+	ContactPolicy OnContactPolicy = ContactPolicy::BOUNCE;
 
 	// AreaEffect to apply on contact/explosion
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Projectile")
@@ -66,7 +66,12 @@ protected:
 
 	void OnExplode();
 
+	void DeleteProjectile();
+
 	void InitVelocity();
 
 	void InitVelocity(FVector& FireDirection);
+
+public:
+	void OnContact(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit);
 };
