@@ -10,9 +10,9 @@
 ASL_Projectile::ASL_Projectile()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
-	CollisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComponent"));
+	CollisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
 	CollisionComp->InitSphereRadius(Radius); //physic collision radius
 	CollisionComp->BodyInstance.SetCollisionProfileName("Projectile");
 	if(OnContactPolicy == ContactPolicy::EXPLODE || OnContactPolicy == ContactPolicy::STICKY)
@@ -20,7 +20,7 @@ ASL_Projectile::ASL_Projectile()
 
 	RootComponent = CollisionComp;
 
-	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileComponent"));
+	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileComp"));
 	ProjectileMovement->UpdatedComponent = CollisionComp;
 	ProjectileMovement->InitialSpeed = InitialSpeed;
 	ProjectileMovement->MaxSpeed = MaxSpeed;
@@ -35,11 +35,13 @@ ASL_Projectile::ASL_Projectile()
 ASL_Projectile::ASL_Projectile(FVector& FireDirection)
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
-	CollisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComponent"));
+	CollisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
 	CollisionComp->InitSphereRadius(Radius); //physic collision radius
 	CollisionComp->BodyInstance.SetCollisionProfileName("Projectile");
+	if (OnContactPolicy == ContactPolicy::EXPLODE || OnContactPolicy == ContactPolicy::STICKY)
+		CollisionComp->OnComponentHit.AddDynamic(this, &ASL_Projectile::OnContact);
 
 	RootComponent = CollisionComp;
 
@@ -59,7 +61,7 @@ ASL_Projectile::ASL_Projectile(FVector& FireDirection)
 void ASL_Projectile::BeginPlay()
 {
 	Super::BeginPlay();
-	if(LifeSpan > 0.0f)
+	if (LifeSpan > 0.0f)
 		GetWorldTimerManager().SetTimer(TimerExplosion, this, &ASL_Projectile::OnExplode, LifeSpan, true);
 }
 
@@ -71,7 +73,7 @@ void ASL_Projectile::OnExplode()
 		SpawnInfo.Owner = GetOwner();
 		SpawnInfo.Instigator = GetInstigator();
 		SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-		GetWorld()->SpawnActor<AAreaEffect>(areaEffect, SpawnInfo);
+		GetWorld()->SpawnActor<AAreaEffect>(areaEffect, GetActorLocation(), GetActorRotation(), SpawnInfo);
 	}
 	DeleteProjectile();
 }

@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "../GameplayAbilitySoldier.h"
+#include "../../../Projectile/SL_Projectile.h"
 #include "GA_LaunchGrenade.generated.h"
 
 UCLASS()
@@ -21,6 +22,6 @@ protected:
 
 	virtual void CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateCancelAbility) override;
 
-	// UPROPERTY(BlueprintReadOnly, EditAnywhere)
-	// TSubclassOf<Project> MyProjectile;
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	TSubclassOf<ASL_Projectile> MyProjectile;
 };

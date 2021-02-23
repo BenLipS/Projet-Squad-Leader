@@ -22,6 +22,8 @@ public:
 	ASL_Projectile();
 	ASL_Projectile(FVector& FireDirection);
 
+	~ASL_Projectile() = default;
+
 	//Attributes
 protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Projectile")
