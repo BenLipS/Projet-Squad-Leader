@@ -29,6 +29,6 @@ public:
 	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 
 protected:
-	UPROPERTY(VisibleAnywhere, Replicated, Category = "SpawnCondition")
+	UPROPERTY(EditInstanceOnly, Replicated, Category = "SpawnCondition")
 	bool canBeUsed;
 };

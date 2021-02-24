@@ -30,6 +30,6 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnCondition")
-		bool initialyCanBeUsed;
+	UFUNCTION(BlueprintCallable)
+		void SetUsed(bool _canBeUsed) { canBeUsed = _canBeUsed; }
 };

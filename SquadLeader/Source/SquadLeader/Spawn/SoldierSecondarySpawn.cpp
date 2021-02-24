@@ -13,7 +13,6 @@ ASoldierSecondarySpawn::ASoldierSecondarySpawn() {
 
 void ASoldierSecondarySpawn::BeginPlay() {
 	Super::BeginPlay();
-	canBeUsed = initialyCanBeUsed;
 }
 
 

@@ -60,7 +60,7 @@ void AControlArea::NotifyActorBeginOverlap(AActor* OtherActor)
 	{  // server only
 		if (ASoldier* soldier = Cast<ASoldier>(OtherActor); soldier) {
 			if (TeamData.Find(soldier->PlayerTeam)) {
-				TeamData[soldier->PlayerTeam].presenceTeam++;
+				TeamData[soldier->PlayerTeam]->presenceTeam++;
 
 				// initiate the calculation of the control zone value if needed
 				if (!timerCalculationControlValue.IsValid())
@@ -78,11 +78,11 @@ void AControlArea::NotifyActorEndOverlap(AActor* OtherActor)
 	if (GetLocalRole() == ROLE_Authority) {  // server only
 		if (ASoldier* soldier = Cast<ASoldier>(OtherActor); soldier) {
 			if (TeamData.Find(soldier->PlayerTeam)) {
-				if (TeamData[soldier->PlayerTeam].presenceTeam > 0)
-					TeamData[soldier->PlayerTeam].presenceTeam--;
+				if (TeamData[soldier->PlayerTeam]->presenceTeam > 0)
+					TeamData[soldier->PlayerTeam]->presenceTeam--;
 
 				// begin the calculation if everybody of this team left and the calculation is not already working
-				if (TeamData[soldier->PlayerTeam].presenceTeam == 0)
+				if (TeamData[soldier->PlayerTeam]->presenceTeam == 0)
 					if (!timerCalculationControlValue.IsValid())
 						GetWorldTimerManager().SetTimer(timerCalculationControlValue, this,
 							&AControlArea::calculateControlValue, timeBetweenCalcuation, true, timeBetweenCalcuation);
@@ -96,12 +96,12 @@ void AControlArea::calculateControlValue()
 	/*GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("ControlArea : None"));
 	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("ControlArea : Max value reach"));*/
 	if (GetLocalRole() == ROLE_Authority) {  // only for the server
-		
+
 		// check info about the differents teams on point
 		int nbTeamOnPoint = 0;
 		TSubclassOf<ASoldierTeam> presentTeam;
 		for (auto team : TeamData) {
-			if (team.Value.presenceTeam > 0) {
+			if (team.Value->presenceTeam > 0) {
 				nbTeamOnPoint++;
 				presentTeam = team.Key;
 			}
@@ -109,27 +109,29 @@ void AControlArea::calculateControlValue()
 
 		// handling teams information
 		if (nbTeamOnPoint == 1) {
-			if (TeamData[presentTeam].controlValue < maxControlValue) {
+			if (TeamData[presentTeam]->controlValue < maxControlValue) {
 				bool needToDecreaseOtherPresenceFirst = false;
 				for (auto& otherTeam : TeamData) {  // reduce the control value in each other team by the number of teamate
 					if (otherTeam.Key != presentTeam) {
-						if (otherTeam.Value.controlValue >= TeamData[presentTeam].presenceTeam) {
-							otherTeam.Value.controlValue -= TeamData[presentTeam].presenceTeam;
+						if (otherTeam.Value->controlValue >= TeamData[presentTeam]->presenceTeam) {
+							otherTeam.Value->controlValue -= TeamData[presentTeam]->presenceTeam;
 							needToDecreaseOtherPresenceFirst = true;
 						}
 						else {
-							otherTeam.Value.controlValue = 0;
+							otherTeam.Value->controlValue = 0;
 						}
-						if (isTakenBy == otherTeam.Key && otherTeam.Value.controlValue < controlValueToTake) {  // remove isTakenBy if needed
+						if (isTakenBy == otherTeam.Key && otherTeam.Value->controlValue < controlValueToTake) {  // remove isTakenBy if needed
 							isTakenBy = nullptr;
+							otherTeam.Value->ChangeSpawnState(false);
 							GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("ControlArea : Team control = None"));
 						}
 					}
 				}
 				if (!needToDecreaseOtherPresenceFirst) {  // if all other presence value is 0
-					TeamData[presentTeam].controlValue += TeamData[presentTeam].presenceTeam;
-					if (isTakenBy != presentTeam && TeamData[presentTeam].controlValue >= controlValueToTake) {
+					TeamData[presentTeam]->controlValue += TeamData[presentTeam]->presenceTeam;
+					if (isTakenBy != presentTeam && TeamData[presentTeam]->controlValue >= controlValueToTake) {
 						isTakenBy = presentTeam;
+						TeamData[presentTeam]->ChangeSpawnState(true);
 						GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("ControlArea : Team control =" + presentTeam.GetDefaultObject()->TeamName));
 					}
 				}
@@ -141,7 +143,6 @@ void AControlArea::calculateControlValue()
 		}
 		else {  // too much teams on points or nobody
 			if (nbTeamOnPoint == 0) {
-				GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("ControlArea : Everybody left"));
 			}
 			// stop the timer
 			GetWorld()->GetTimerManager().ClearTimer(timerCalculationControlValue);
@@ -154,13 +155,30 @@ void AControlArea::UpdateTeamData()
 	if (GetLocalRole() == ROLE_Authority) {  // only for the server
 		auto gameMode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
 		auto teamCollection = gameMode->SoldierTeamCollection;
-		for (auto team : teamCollection) {
-			if (!TeamData.Find(team))
-				TeamData.Add(team);
+
+		TArray<TSubclassOf<ASoldierTeam>> keyToRemove;  // remove element
+		for (auto team : TeamData) {
+			if (teamCollection.Find(team.Key) == INDEX_NONE) {
+				keyToRemove.Add(team.Key);
+				GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("ControlArea Update : Unknown team removed : " + team.Key.GetDefaultObject()->TeamName));
+			}
 		}
-		/*for (auto team : TeamData) {  // remove element
-			if (!teamCollection.Find(team.Key))
-				TeamData.Remove(team.Key);
-		}*/
+		for (auto key : keyToRemove) {
+			TeamData.Remove(key);
+		}
+
+		for (auto team : teamCollection) {  // add element
+			if (!TeamData.Find(team)) {
+				TeamData.Add(team, NewObject<AControlAreaTeamStat>());
+				GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("ControlArea Update : Unknown team added : " + team.GetDefaultObject()->TeamName));
+			}
+		}
+
+		for (auto& team : TeamData) {  // update spawn state
+			if (team.Value) {
+				team.Value->ChangeSpawnState(isTakenBy == team.Key);
+				team.Value->ChangeSpawnTeam(team.Key);
+			}
+		}
 	}
 }

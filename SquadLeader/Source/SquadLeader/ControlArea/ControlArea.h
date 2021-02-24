@@ -6,25 +6,9 @@
 #include "GameFramework/Actor.h"
 #include "../Soldiers/SoldierTeam.h"
 #include "../Spawn/SoldierSecondarySpawn.h"
+#include "ControlAreaTeamStat.h"
 #include "Net/UnrealNetwork.h"
 #include "ControlArea.generated.h"
-
-
-USTRUCT()
-struct FTeamStat
-{
-	GENERATED_BODY()
-public:
-	UPROPERTY()
-		int controlValue = 0;
-	UPROPERTY()
-		int presenceTeam = 0;
-	UPROPERTY()
-		ASoldierSecondarySpawn* spawnTeam = nullptr;
-
-	// Sets default values for this actor's properties
-	FTeamStat() {};
-};
 
 
 UCLASS()
@@ -60,7 +44,7 @@ public:
 	UPROPERTY(BlueprintReadWrite, Category = "ControlValue")
 		int controlValueToTake;
 public:
-	UPROPERTY(EditDefaultsOnly, Replicated, Category = "IsTaken")
+	UPROPERTY(VisibleAnywhere, Replicated, Category = "IsTaken")
 		TSubclassOf<ASoldierTeam> isTakenBy;
 
 
@@ -86,8 +70,8 @@ protected:  // time value for calculation frequency
 		void calculateControlValue();
 
 protected:
-	UPROPERTY(VisibleAnywhere, Category = "ControlData")
-		TMap<TSubclassOf<ASoldierTeam>, FTeamStat> TeamData;
+	UPROPERTY(EditInstanceOnly, Category = "ControlData")
+		TMap<TSubclassOf<ASoldierTeam>, AControlAreaTeamStat*> TeamData;
 	UFUNCTION(Category = "ControlData")
 		void UpdateTeamData();
 };

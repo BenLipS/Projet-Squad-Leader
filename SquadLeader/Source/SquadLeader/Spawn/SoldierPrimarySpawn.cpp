@@ -14,11 +14,6 @@ ASoldierPrimarySpawn::ASoldierPrimarySpawn() {
 
 void ASoldierPrimarySpawn::BeginPlay() {
 	Super::BeginPlay();
-	if (teamOwner) {
-		teamOwner->AddSpawn(this);
-		if (previousTeamOwner) previousTeamOwner->RemoveSpawn(this);
-		previousTeamOwner = teamOwner;
-	}
 }
 
 
@@ -33,25 +28,4 @@ void ASoldierPrimarySpawn::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&
 void ASoldierPrimarySpawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-}
-
-void ASoldierPrimarySpawn::OnRep_ChangeTeamOwner() {
-	if (GetLocalRole() == ROLE_Authority) {
-		teamOwner->AddSpawn(this);
-		if (previousTeamOwner) previousTeamOwner->RemoveSpawn(this);
-		previousTeamOwner = teamOwner;
-	}
-	else {
-		ServerChangeTeamOwner(teamOwner);
-	}
-}
-
-void ASoldierPrimarySpawn::ServerChangeTeamOwner_Implementation(ASoldierTeam* _teamOwner)
-{
-	teamOwner = _teamOwner;
-}
-
-bool ASoldierPrimarySpawn::ServerChangeTeamOwner_Validate(ASoldierTeam* _teamOwner)
-{
-	return true;
 }

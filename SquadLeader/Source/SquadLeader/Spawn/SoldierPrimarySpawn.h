@@ -29,14 +29,7 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-protected: // Owner part
-	// Server call
-	UFUNCTION(Reliable, Server, WithValidation)
-	void ServerChangeTeamOwner(ASoldierTeam* _teamOwner);
-	UFUNCTION()
-	void OnRep_ChangeTeamOwner();
-	ASoldierTeam* previousTeamOwner = nullptr;// buffer to know the last owner
-public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, ReplicatedUsing = OnRep_ChangeTeamOwner, Category = "Team")
-		ASoldierTeam* teamOwner = nullptr;
+public:  // Owner part
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "SpawnCondition")
+		TSubclassOf<ASoldierTeam> teamOwner = nullptr;
 };
