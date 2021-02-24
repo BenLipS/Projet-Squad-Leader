@@ -7,7 +7,9 @@
 #include "../Soldiers/Soldier.h"
 #include "../Soldiers/AIs/SoldierAI.h"
 #include "Perception/AIPerceptiontypes.h"
+#include "Mission.h"
 #include "AIGeneralController.generated.h"
+
 
 /**
  * This enum contains the different behavior the AI can have
@@ -218,4 +220,7 @@ public:
 	*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Perception")
 		bool m_DetectNeutrals = true;
+
+	UPROPERTY()
+	UMission* Mission;
 };

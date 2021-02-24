@@ -14,6 +14,7 @@
 #include "Math/Vector.h"
 #include "GenericPlatform/GenericPlatformMath.h"
 #include "DrawDebugHelpers.h"
+#include "Mission.h"
 
 
 AAIBasicController::AAIBasicController() :
@@ -169,6 +170,14 @@ void AAIBasicController::UpdateFlockingPosition(float DeltaSeconds)
 	//DrawDebug();
 }
 
+void AAIBasicController::UpdateMission()
+{
+	if (Mission) {
+		if (Mission->Type == MissionType::MoveTo)
+			ObjectifLocation = Mission->Location;
+	}
+}
+
 EPathFollowingRequestResult::Type AAIBasicController::FollowFlocking() {
 	EPathFollowingRequestResult::Type _movetoResult = MoveToLocation(blackboard->GetValueAsVector("FlockingLocation"), 5.f);
 	return _movetoResult;
@@ -183,5 +192,6 @@ void AAIBasicController::setup_BehaviorTree() {
 
 void AAIBasicController::Tick(float DeltaSeconds) {
 	Super::Tick(DeltaSeconds);
+	UpdateMission();
 	UpdateFlockingPosition(DeltaSeconds);
 }

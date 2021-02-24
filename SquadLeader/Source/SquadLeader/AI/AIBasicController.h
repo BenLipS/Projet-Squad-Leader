@@ -101,6 +101,9 @@ protected:
 	UFUNCTION()
 	void UpdateFlockingPosition(float DeltaSeconds);
 
+	UFUNCTION()
+	void UpdateMission();
+
 public:
 	/* For BT Task  */
 	UFUNCTION(BlueprintCallable, Category = "Flocking Behaviour")
