@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Info.h"
 #include "../Spawn/SoldierSpawn.h"
+#include "../ControlArea/ControlArea.h"
 #include "SoldierTeam.generated.h"
 
 /**
@@ -31,6 +32,18 @@ public:
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "GlobalTeamData")
 		FString TeamName;
+
+
+protected:  // controlArea
+	UPROPERTY(EditAnywhere, Replicated, Category = "ControlArea")
+		TArray<AControlArea*> takenControlArea;
+public:
+	UFUNCTION(BlueprintCallable, Category = "ControlArea")
+		void AddControlArea(AControlArea* newControlArea);
+	UFUNCTION(BlueprintCallable, Category = "ControlArea")
+		void RemoveControlArea(AControlArea* newControlArea);
+	UFUNCTION(BlueprintCallable, Category = "ControlArea")
+		void CleanControlArea();
 
 
 protected: // Spawn points

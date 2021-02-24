@@ -20,5 +20,9 @@ ASquadLeaderGameModeBase::ASquadLeaderGameModeBase()
 }
 
 void ASquadLeaderGameModeBase::StartPlay() {
+	for (auto team : SoldierTeamCollection) {  // clean all team data at the begining
+		team.GetDefaultObject()->CleanControlArea();
+		team.GetDefaultObject()->CleanSpawnPoints();
+	}
 	Super::StartPlay();
 }

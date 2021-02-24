@@ -121,6 +121,7 @@ void AControlArea::calculateControlValue()
 							otherTeam.Value->controlValue = 0;
 						}
 						if (isTakenBy == otherTeam.Key && otherTeam.Value->controlValue < controlValueToTake) {  // remove isTakenBy if needed
+							isTakenBy.GetDefaultObject()->RemoveControlArea(this);
 							isTakenBy = nullptr;
 							otherTeam.Value->ChangeSpawnState(false);
 							GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("ControlArea : Team control = None"));
@@ -132,6 +133,7 @@ void AControlArea::calculateControlValue()
 					if (isTakenBy != presentTeam && TeamData[presentTeam]->controlValue >= controlValueToTake) {
 						isTakenBy = presentTeam;
 						TeamData[presentTeam]->ChangeSpawnState(true);
+						isTakenBy.GetDefaultObject()->AddControlArea(this);
 						GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("ControlArea : Team control =" + presentTeam.GetDefaultObject()->TeamName));
 					}
 				}

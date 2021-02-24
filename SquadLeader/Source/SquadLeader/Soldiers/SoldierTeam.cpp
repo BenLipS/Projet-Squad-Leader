@@ -6,9 +6,6 @@
 
 
 ASoldierTeam::ASoldierTeam() {
-
-	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
 }
 
@@ -31,16 +28,28 @@ void ASoldierTeam::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 }
 
 
-// Called every frame
-void ASoldierTeam::Tick(float DeltaTime)
+void ASoldierTeam::AddControlArea(AControlArea* newControlArea)
 {
-	Super::Tick(DeltaTime);
+	CleanControlArea();
+	takenControlArea.AddUnique(newControlArea);
+}
+
+
+void ASoldierTeam::RemoveControlArea(AControlArea* newControlArea)
+{
+	if (takenControlArea.Find(newControlArea))
+		takenControlArea.Remove(newControlArea);
+}
+
+
+void ASoldierTeam::CleanControlArea()
+{
+	takenControlArea.RemoveAll([](AControlArea* element) {return element == nullptr; });
 }
 
 
 void ASoldierTeam::AddSpawn(ASoldierSpawn* newSpawn)
 {
-	CleanSpawnPoints();
 	mainSpawnPoints.AddUnique(newSpawn);
 }
 
@@ -48,7 +57,7 @@ void ASoldierTeam::AddSpawn(ASoldierSpawn* newSpawn)
 void ASoldierTeam::RemoveSpawn(ASoldierSpawn* newSpawn)
 {
 	if (mainSpawnPoints.Find(newSpawn))
-			mainSpawnPoints.Remove(newSpawn);
+		mainSpawnPoints.Remove(newSpawn);
 }
 
 
