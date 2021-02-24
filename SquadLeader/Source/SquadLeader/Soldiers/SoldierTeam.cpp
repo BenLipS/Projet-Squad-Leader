@@ -40,6 +40,7 @@ void ASoldierTeam::Tick(float DeltaTime)
 
 void ASoldierTeam::AddSpawn(ASoldierSpawn* newSpawn)
 {
+	CleanSpawnPoints();
 	mainSpawnPoints.AddUnique(newSpawn);
 }
 
@@ -48,4 +49,10 @@ void ASoldierTeam::RemoveSpawn(ASoldierSpawn* newSpawn)
 {
 	if (mainSpawnPoints.Find(newSpawn))
 			mainSpawnPoints.Remove(newSpawn);
+}
+
+
+void ASoldierTeam::CleanSpawnPoints()
+{
+	mainSpawnPoints.RemoveAll([](ASoldierSpawn* element) {return element == nullptr; });
 }

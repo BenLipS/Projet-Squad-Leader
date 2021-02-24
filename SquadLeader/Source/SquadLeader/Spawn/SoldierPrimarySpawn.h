@@ -28,8 +28,18 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+	virtual void Destroyed() override;
 
-public:  // Owner part
+protected: // Owner part
+	// Server call
+	UFUNCTION(Reliable, Server, WithValidation)
+		void ServerChangeTeamOwner(TSubclassOf<ASoldierTeam> _teamOwner);
+	UFUNCTION()
+		void OnRep_ChangeTeamOwner();
+	TSubclassOf<ASoldierTeam> previousTeamOwner = nullptr;// buffer to know the last owner
+public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "SpawnCondition")
 		TSubclassOf<ASoldierTeam> teamOwner = nullptr;
+	UFUNCTION()
+		void UpdateTeamOwner();
 };

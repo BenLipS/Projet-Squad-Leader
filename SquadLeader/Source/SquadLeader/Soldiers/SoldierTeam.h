@@ -41,4 +41,6 @@ public:
 	void AddSpawn(ASoldierSpawn* newSpawn);
 	UFUNCTION(BlueprintCallable, Category = "SpawnPoints")
 	void RemoveSpawn(ASoldierSpawn* newSpawn);
+	UFUNCTION(BlueprintCallable, Category = "SpawnPoints")
+	void CleanSpawnPoints();
 };

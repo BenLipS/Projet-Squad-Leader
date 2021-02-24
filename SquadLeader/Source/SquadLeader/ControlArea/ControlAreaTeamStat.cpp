@@ -12,5 +12,6 @@ void AControlAreaTeamStat::ChangeSpawnState(bool state) {
 void AControlAreaTeamStat::ChangeSpawnTeam(TSubclassOf<ASoldierTeam> _teamOwner) {
 	if (spawnTeam) {
 		spawnTeam->teamOwner = _teamOwner;
+		spawnTeam->UpdateTeamOwner();
 	}
 }

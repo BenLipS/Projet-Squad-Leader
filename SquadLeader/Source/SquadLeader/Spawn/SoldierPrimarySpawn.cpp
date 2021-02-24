@@ -14,6 +14,17 @@ ASoldierPrimarySpawn::ASoldierPrimarySpawn() {
 
 void ASoldierPrimarySpawn::BeginPlay() {
 	Super::BeginPlay();
+	
+	UpdateTeamOwner();
+}
+
+
+void ASoldierPrimarySpawn::Destroyed()
+{
+	Super::Destroyed();
+	if (GetLocalRole() == ROLE_Authority && teamOwner) {
+		teamOwner.GetDefaultObject()->RemoveSpawn(this);
+	}
 }
 
 
@@ -28,4 +39,31 @@ void ASoldierPrimarySpawn::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&
 void ASoldierPrimarySpawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
+
+void ASoldierPrimarySpawn::OnRep_ChangeTeamOwner() {
+	if (GetLocalRole() == ROLE_Authority) {
+		UpdateTeamOwner();
+	}
+	else {
+		ServerChangeTeamOwner(teamOwner);
+	}
+}
+
+void ASoldierPrimarySpawn::ServerChangeTeamOwner_Implementation(TSubclassOf<ASoldierTeam> _teamOwner)
+{
+	teamOwner = _teamOwner;
+}
+
+bool ASoldierPrimarySpawn::ServerChangeTeamOwner_Validate(TSubclassOf<ASoldierTeam> _teamOwner)
+{
+	return true;
+}
+
+void ASoldierPrimarySpawn::UpdateTeamOwner() {
+	if (GetLocalRole() == ROLE_Authority && teamOwner && teamOwner != previousTeamOwner) {  // server only and if teamOwner exist and is changed
+		teamOwner.GetDefaultObject()->AddSpawn(this);
+		if (previousTeamOwner) previousTeamOwner.GetDefaultObject()->RemoveSpawn(this);
+		previousTeamOwner = teamOwner;
+	}
 }
