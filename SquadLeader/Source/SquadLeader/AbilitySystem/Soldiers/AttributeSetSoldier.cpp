@@ -52,8 +52,8 @@ void UAttributeSetSoldier::PostGameplayEffectExecute(const FGameplayEffectModCal
 				SetShield(FMath::Clamp(GetShield() - LocalDamage, 0.0f, GetMaxShield()));
 			else
 			{
-				SetShield(0.f);
 				SetHealth(FMath::Clamp(GetHealth() - (LocalDamage - GetShield()), 0.0f, GetMaxHealth()));
+				SetShield(0.f);
 
 				GEngine->AddOnScreenDebugMessage(78, 1.f, FColor::Red, FString::Printf(TEXT("%s still has %s HPs"), *TargetSoldier->GetName(), *FString::SanitizeFloat(GetHealth())));
 
