@@ -17,16 +17,16 @@
 
 
 AAIBasicController::AAIBasicController() :
-	AlignementWeight{ 100.f },
-	CohesionWeight{ 100.f },
-	SeparationWeight{ 200.f },
-	ObjectifWeight{ 500.f },
+	AlignementWeight{ 1.f },
+	CohesionWeight{ 1.f },
+	SeparationWeight{ 2.f },
+	ObjectifWeight{ 2.5f },
 	MovementVectorScale{ 2.f },
 	SeparationVector{ 0.f, 0.f, 0.f },
 	CohesionVector{ 0.f, 0.f, 0.f },
 	AlignementVector{ 0.f, 0.f, 0.f },
-	ObjectifLocation{ 1000.f, 0.f, 10.f },
 	MovementVector{ 0.f, 0.f, 0.f },
+	ObjectifLocation{ 0.f, 0.f, 10.f },
 	ObjectifVector{ 0.f, 0.f, 0.f }
 {
 	setup_BehaviorTree();
@@ -60,11 +60,22 @@ void AAIBasicController::UpdateCohesionVector()
 	FVector SoldierLocation = GetPawn()->GetActorLocation();
 	for (AAIBasicController* Boid : SeenBoids)
 	{
-		CohesionVector += Boid->GetPawn()->GetActorLocation() - SoldierLocation;
+		/* Cohesion throught pathfinding and not absolute*/
+		UNavigationSystemV1* navSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
+		UNavigationPath* path = navSys->FindPathToLocationSynchronously(GetWorld(), SoldierLocation, Boid->GetPawn()->GetActorLocation(), NULL);
+
+		FVector CohesionLocalDir;
+		if (path->PathPoints.Num() > 2)
+			CohesionLocalDir = path->PathPoints[1];
+		else
+			CohesionLocalDir = Boid->GetPawn()->GetActorLocation();
+
+		//DrawDebugPoint(GetWorld(), CohesionLocalDir, 10, FColor::Red);
+		
+		CohesionVector += CohesionLocalDir.GetSafeNormal(DefaultNormalizeVectorTolerance) * Boid->GetPawn()->GetActorLocation().Size() - SoldierLocation;
 	}
 
 	CohesionVector = (CohesionVector / SeenBoids.Num()) / 100;
-
 }
 
 void AAIBasicController::UpdateAlignementVector()
@@ -105,10 +116,9 @@ void AAIBasicController::UpdateObjectifVector()
 
 	ObjectifLocalDir.Z = SoldierLocation.Z;
 
-	DrawDebugPoint(GetWorld(), ObjectifLocalDir, 10, FColor::Red);
+	//DrawDebugPoint(GetWorld(), ObjectifLocalDir, 10, FColor::Red);
 
 	ObjectifVector = ObjectifLocalDir - SoldierLocation;
-	ObjectifLocation.Z = SoldierLocation.Z;
 	ObjectifVector = ObjectifVector.GetSafeNormal(DefaultNormalizeVectorTolerance);
 }
 
@@ -125,10 +135,10 @@ void AAIBasicController::DrawDebug()
 {
 	FVector SoldierLocation = GetPawn()->GetActorLocation();
 	SoldierLocation.Z += 100;
-	DrawDebugLine(GetWorld(), SoldierLocation, SoldierLocation + AlignementVector * AlignementWeight, FColor::Green); /*Alignement vector*/
-	DrawDebugLine(GetWorld(), SoldierLocation, SoldierLocation + CohesionVector * CohesionWeight, FColor::Blue); /*Cohesion vector*/
-	DrawDebugLine(GetWorld(), SoldierLocation, SoldierLocation + SeparationVector * SeparationWeight, FColor::Red); /*Separation vector*/
-	DrawDebugLine(GetWorld(), SoldierLocation, SoldierLocation + ObjectifVector  * ObjectifWeight, FColor::Yellow); /*Objectif vector*/
+	DrawDebugLine(GetWorld(), SoldierLocation, SoldierLocation + AlignementVector * AlignementWeight * 100, FColor::Green); /*Alignement vector*/
+	DrawDebugLine(GetWorld(), SoldierLocation, SoldierLocation + CohesionVector * CohesionWeight * 100, FColor::Blue); /*Cohesion vector*/
+	DrawDebugLine(GetWorld(), SoldierLocation, SoldierLocation + SeparationVector * SeparationWeight * 100, FColor::Red); /*Separation vector*/
+	DrawDebugLine(GetWorld(), SoldierLocation, SoldierLocation + ObjectifVector  * ObjectifWeight * 100, FColor::Yellow); /*Objectif vector*/
 	DrawDebugLine(GetWorld(), SoldierLocation, SoldierLocation + MovementVector, FColor::Black); /*Movement vector*/
 	DrawDebugPoint(GetWorld(), ObjectifLocation, 12, FColor::Purple);
 	DrawDebugPoint(GetWorld(), blackboard->GetValueAsVector("FlockingLocation"), 12, FColor::Black);
@@ -153,10 +163,10 @@ void AAIBasicController::UpdateFlockingPosition(float DeltaSeconds)
 	UpdateMovementVector();
 
 	float MaxSpeed = GetPawn()->GetMovementComponent()->GetMaxSpeed();
-	MovementVector = MovementVector * MaxSpeed;
+	MovementVector = MovementVector * MaxSpeed/2;
 	blackboard->SetValueAsVector("FlockingLocation", GetPawn()->GetActorLocation() + MovementVector);
 
-	DrawDebug();
+	//DrawDebug();
 }
 
 EPathFollowingRequestResult::Type AAIBasicController::FollowFlocking() {
@@ -172,5 +182,6 @@ void AAIBasicController::setup_BehaviorTree() {
 }
 
 void AAIBasicController::Tick(float DeltaSeconds) {
+	Super::Tick(DeltaSeconds);
 	UpdateFlockingPosition(DeltaSeconds);
 }
