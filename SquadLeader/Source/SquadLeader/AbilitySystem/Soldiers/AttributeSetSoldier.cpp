@@ -11,6 +11,8 @@ void UAttributeSetSoldier::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&
 	DOREPLIFETIME(UAttributeSetSoldier, Health);
 	DOREPLIFETIME(UAttributeSetSoldier, MaxHealth);
 	DOREPLIFETIME(UAttributeSetSoldier, HealthRegenRate);
+	DOREPLIFETIME(UAttributeSetSoldier, Shield);
+	DOREPLIFETIME(UAttributeSetSoldier, MaxShield);
 	DOREPLIFETIME(UAttributeSetSoldier, MoveSpeedWalk);
 	DOREPLIFETIME(UAttributeSetSoldier, MoveSpeedCrouch);
 	DOREPLIFETIME(UAttributeSetSoldier, MoveSpeedMultiplier);
@@ -82,6 +84,15 @@ void UAttributeSetSoldier::OnRep_HealthRegenRate(const FGameplayAttributeData& _
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAttributeSetSoldier, HealthRegenRate, _OldHealthRegenRate);
 }
 
+void UAttributeSetSoldier::OnRep_Shield(const FGameplayAttributeData& _OldMaxShield)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAttributeSetSoldier, Shield, _OldMaxShield);
+}
+
+void UAttributeSetSoldier::OnRep_MaxShield(const FGameplayAttributeData& _OldMaxHealth)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAttributeSetSoldier, MaxShield, _OldMaxHealth);
+}
 
 void UAttributeSetSoldier::OnRep_MoveSpeedWalk(const FGameplayAttributeData& _OldMoveSpeedWalk)
 {
