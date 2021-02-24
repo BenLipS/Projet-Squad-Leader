@@ -27,8 +27,10 @@ void UAttributeSetSoldier::PreAttributeChange(const FGameplayAttribute& Attribut
 {
 	Super::PreAttributeChange(Attribute, NewValue);
 
-	//if (Attribute == GetMaxHealthAttribute())
-	//	AdjustAttributeForMaxChange(Health, MaxHealth, NewValue, GetHealthAttribute());
+	if (Attribute == GetMaxHealthAttribute())
+		AdjustAttributeForMaxChange(Health, MaxHealth, NewValue, GetHealthAttribute());
+	else if (Attribute == GetMaxShieldAttribute())
+		AdjustAttributeForMaxChange(Shield, MaxShield, NewValue, GetShieldAttribute());
 }
 
 void UAttributeSetSoldier::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
@@ -70,6 +72,19 @@ void UAttributeSetSoldier::PostGameplayEffectExecute(const FGameplayEffectModCal
 		SetHealth(FMath::Clamp(GetHealth(), 0.0f, GetMaxHealth()));
 	else if (Data.EvaluatedData.Attribute == GetShieldAttribute())
 		SetShield(FMath::Clamp(GetShield(), 0.0f, GetMaxShield()));
+}
+
+void UAttributeSetSoldier::AdjustAttributeForMaxChange(FGameplayAttributeData& AffectedAttribute, const FGameplayAttributeData& MaxAttribute, const float NewMaxValue, const FGameplayAttribute& AffectedAttributeProperty)
+{
+	UAbilitySystemComponent* ASC = GetOwningAbilitySystemComponent();
+	const float CurrentMaxValue = MaxAttribute.GetCurrentValue();
+
+	if (!FMath::IsNearlyEqual(CurrentMaxValue, NewMaxValue) && ASC)
+	{
+		const float CurrentValue = AffectedAttribute.GetCurrentValue();
+		float NewDelta = (CurrentMaxValue > 0.f) ? (CurrentValue * NewMaxValue / CurrentMaxValue) - CurrentValue : NewMaxValue;
+		ASC->ApplyModToAttributeUnsafe(AffectedAttributeProperty, EGameplayModOp::Additive, FMath::CeilToFloat(NewDelta));
+	}
 }
 
 void UAttributeSetSoldier::OnRep_CharacterLevel(const FGameplayAttributeData& _OldCharacterLevel)

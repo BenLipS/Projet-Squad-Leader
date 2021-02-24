@@ -27,6 +27,9 @@ public:
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
 
+	// Adjust attributes to keep the same percentage when max has changed
+	void AdjustAttributeForMaxChange(FGameplayAttributeData& AffectedAttribute, const FGameplayAttributeData& MaxAttribute, const float NewMaxValue, const FGameplayAttribute& AffectedAttributeProperty);
+
 	// Character level
 	UPROPERTY(BlueprintReadOnly, Category = "Attributes | Character Level", ReplicatedUsing = OnRep_CharacterLevel)
 	FGameplayAttributeData CharacterLevel;
