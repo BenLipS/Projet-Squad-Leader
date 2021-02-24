@@ -48,20 +48,28 @@ void UAttributeSetSoldier::PostGameplayEffectExecute(const FGameplayEffectModCal
 
 		if (LocalDamage > 0.0f && TargetSoldier->IsAlive())
 		{
-			SetHealth(FMath::Clamp(GetHealth() - LocalDamage, 0.0f, GetMaxHealth()));
-
-			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("%s loses %s hp (remain %s hp)"), *TargetSoldier->GetName(), *FString::SanitizeFloat(LocalDamage), *FString::SanitizeFloat(GetHealth())));
-
-			if (!TargetSoldier->IsAlive()) // The soldier has been killed
+			if (LocalDamage <= GetShield())
+				SetShield(FMath::Clamp(GetShield() - LocalDamage, 0.0f, GetMaxShield()));
+			else
 			{
-				GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("%s is dead"), *TargetSoldier->GetName()));
-				//TargetSoldier->die();
-				//SourceSoldier->getBounty();
+				SetShield(0.f);
+				SetHealth(FMath::Clamp(GetHealth() - (LocalDamage - GetShield()), 0.0f, GetMaxHealth()));
+
+				GEngine->AddOnScreenDebugMessage(78, 1.f, FColor::Red, FString::Printf(TEXT("%s still has %s HPs"), *TargetSoldier->GetName(), *FString::SanitizeFloat(GetHealth())));
+
+				if (!TargetSoldier->IsAlive()) // The soldier has been killed
+				{
+					GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("%s is dead"), *TargetSoldier->GetName()));
+					//TargetSoldier->die();
+					//SourceSoldier->getBounty();
+				}
 			}
 		}
 	}
 	else if (Data.EvaluatedData.Attribute == GetHealthAttribute())
 		SetHealth(FMath::Clamp(GetHealth(), 0.0f, GetMaxHealth()));
+	else if (Data.EvaluatedData.Attribute == GetShieldAttribute())
+		SetHealth(FMath::Clamp(GetShield(), 0.0f, GetMaxShield()));
 }
 
 void UAttributeSetSoldier::OnRep_CharacterLevel(const FGameplayAttributeData& _OldCharacterLevel)
