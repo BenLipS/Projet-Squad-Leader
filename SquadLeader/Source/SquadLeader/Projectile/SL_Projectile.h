@@ -40,7 +40,7 @@ protected:
 
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Projectile")
-	float LifeSpan = 10.f; // 0.f pour infini
+	float ExplosionDelay = 15.f; // 0.f pour infini
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Projectile")
 	float Bounciness = 0.3f;
@@ -53,10 +53,10 @@ protected:
 	TArray<TSubclassOf<class AAreaEffect>> ExplosionAreaEffect;
 
 
-	//UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Projectile")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Projectile")
 	class UProjectileMovementComponent* ProjectileMovement;
 
-	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Projectile")
+	UPROPERTY(VisibleDefaultsOnly, Category = "Projectile")
 	class USphereComponent* CollisionComp;
 
 	FTimerHandle TimerExplosion;
