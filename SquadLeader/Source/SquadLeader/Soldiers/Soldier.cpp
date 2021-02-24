@@ -250,6 +250,7 @@ void ASoldier::DeadTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
 	{
 		// A setter is ok for this special case. Otherwise use GEs to handle attributes
 		AttributeSet->SetHealth(AttributeSet->GetMaxHealth());
+		AttributeSet->SetShield(AttributeSet->GetMaxShield());
 
 		GetCharacterMovement()->GravityScale = 1.f;
 		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
