@@ -71,4 +71,6 @@ public:
 	void RemoveSpawn(ASoldierSpawn* newSpawn);
 	UFUNCTION(BlueprintCallable, Category = "SpawnPoints")
 	void CleanSpawnPoints();
+	UFUNCTION(BlueprintCallable, Category = "SpawnPoints")
+	TArray<ASoldierSpawn*> GetUsableSpawnPoints();
 };

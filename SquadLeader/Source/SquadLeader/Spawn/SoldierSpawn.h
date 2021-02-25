@@ -31,4 +31,7 @@ public:
 protected:
 	UPROPERTY(EditInstanceOnly, Replicated, Category = "SpawnCondition")
 	bool canBeUsed;
+public:
+	UFUNCTION()
+	bool GetUsable() { return canBeUsed; }
 };

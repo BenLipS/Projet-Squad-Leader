@@ -243,6 +243,13 @@ public:
 	// Connected to the "L" key
 	void cycleBetweenTeam();
 
+
+public:
+	/////////////// Respawn
+	UFUNCTION()
+	virtual FVector GetRespawnPoint() { return FVector(0.f, 0.f, 1500.f); }  // function overide in SoldierPlayer and Soldier AI
+
+
 	//For AIPerception
 private:
 	class UAIPerceptionStimuliSourceComponent* stimulus;

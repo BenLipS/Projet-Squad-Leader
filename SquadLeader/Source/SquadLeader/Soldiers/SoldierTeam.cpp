@@ -80,3 +80,14 @@ void ASoldierTeam::CleanSpawnPoints()
 {
 	mainSpawnPoints.RemoveAll([](ASoldierSpawn* element) {return element == nullptr; });
 }
+
+TArray<ASoldierSpawn*> ASoldierTeam::GetUsableSpawnPoints()
+{
+	TArray<ASoldierSpawn*>result{};
+	for (auto element : mainSpawnPoints) {
+		if (element->GetUsable())
+			result.Add(element);
+	}
+
+	return result;
+}
