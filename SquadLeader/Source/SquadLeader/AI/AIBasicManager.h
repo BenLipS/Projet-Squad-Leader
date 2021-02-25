@@ -15,6 +15,7 @@ class SQUADLEADER_API UAIBasicManager : public UObject
 {
 	GENERATED_BODY()
 
+public:
 	UPROPERTY()
 	TArray<AAIBasicController*> AIBasicList;
 };

@@ -2,6 +2,7 @@
 #include "UObject/ConstructorHelpers.h"
 #include "Soldiers/Players/SoldierPlayerController.h"
 #include "Soldiers/Players/SoldierPlayerState.h"
+#include "SquadLeaderGameInstance.h"
 
 ASquadLeaderGameModeBase::ASquadLeaderGameModeBase()
 {
@@ -25,6 +26,8 @@ void ASquadLeaderGameModeBase::StartPlay() {
 
 	// todo : create teams as class
 
+	//Init for AI
+	Cast<USquadLeaderGameInstance>(GetGameInstance())->InitAIManagers();
 
 	Super::StartPlay();
 }

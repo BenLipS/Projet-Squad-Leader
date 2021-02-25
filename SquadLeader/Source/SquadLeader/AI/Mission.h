@@ -19,7 +19,7 @@ class SQUADLEADER_API UMission : public UObject
 	GENERATED_BODY()
 
 public:
-	UMission() = default;
+	UMission();
 
 	UPROPERTY()
 	MissionType Type;

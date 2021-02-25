@@ -14,6 +14,7 @@
 #include "Math/Vector.h"
 #include "GenericPlatform/GenericPlatformMath.h"
 #include "DrawDebugHelpers.h"
+#include "../SquadLeaderGameInstance.h"
 #include "Mission.h"
 
 
@@ -36,6 +37,7 @@ AAIBasicController::AAIBasicController() :
 
 void AAIBasicController::BeginPlay() {
 	Super::BeginPlay();
+	//Cast<USquadLeaderGameInstance>(GetGameInstance())->AddAIBasicToManager(this);
 }
 
 void AAIBasicController::ResetVectors()
