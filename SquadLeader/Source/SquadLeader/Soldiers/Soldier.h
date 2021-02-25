@@ -236,6 +236,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BluePrintReadWrite, ReplicatedUsing = OnRep_ChangeTeam, Category = "PlayerTeam")
 		TSubclassOf<ASoldierTeam> PlayerTeam;
+	TSubclassOf<ASoldierTeam> OldPlayerTeam;  // Local buffer used for team change
 	
 	UFUNCTION(Reliable, Server, WithValidation)
 		void ServerCycleBetweenTeam();

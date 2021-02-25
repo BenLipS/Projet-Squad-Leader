@@ -49,6 +49,14 @@ void ASoldier::BeginPlay()
 		setToFirstCameraPerson();
 	else
 		setToThirdCameraPerson();
+
+	if (GetLocalRole() == ROLE_Authority) {
+		// add this to the team data
+		if (PlayerTeam) {
+			OldPlayerTeam = PlayerTeam;
+			PlayerTeam.GetDefaultObject()->AddSoldierList(this);
+		}
+	}
 }
 
 
@@ -462,6 +470,13 @@ void ASoldier::SetCurrentWeapon(AWeapon* _newWeapon, AWeapon* _previousWeapon)
 void ASoldier::ServerChangeTeam_Implementation(TSubclassOf<ASoldierTeam> _PlayerTeam)
 {
 	PlayerTeam = _PlayerTeam;
+	
+	if(OldPlayerTeam)
+		OldPlayerTeam.GetDefaultObject()->RemoveSoldierList(this);
+	if(PlayerTeam)
+		PlayerTeam.GetDefaultObject()->AddSoldierList(this);
+	
+	OldPlayerTeam = PlayerTeam;
 }
 
 bool ASoldier::ServerChangeTeam_Validate(TSubclassOf<ASoldierTeam> _PlayerTeam)
