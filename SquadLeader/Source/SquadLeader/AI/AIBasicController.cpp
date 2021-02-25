@@ -27,9 +27,9 @@ AAIBasicController::AAIBasicController() :
 	SeparationVector{ 0.f, 0.f, 0.f },
 	CohesionVector{ 0.f, 0.f, 0.f },
 	AlignementVector{ 0.f, 0.f, 0.f },
+	ObjectifVector{ 0.f, 0.f, 0.f },
 	MovementVector{ 0.f, 0.f, 0.f },
-	ObjectifLocation{ 0.f, 0.f, 10.f },
-	ObjectifVector{ 0.f, 0.f, 0.f }
+	ObjectifLocation{ 200.f, 0.f, 10.f }
 {
 	setup_BehaviorTree();
 }
@@ -38,6 +38,7 @@ AAIBasicController::AAIBasicController() :
 void AAIBasicController::BeginPlay() {
 	Super::BeginPlay();
 	//Cast<USquadLeaderGameInstance>(GetGameInstance())->AddAIBasicToManager(this);
+	blackboard->SetValueAsBool("DoFlocking", false);
 }
 
 void AAIBasicController::ResetVectors()

@@ -2,6 +2,7 @@
 
 
 #include "FollowFlockingBTTaskNode.h"
+#include "BehaviorTree/BlackboardComponent.h"
 #include "../AIBasicController.h"
 
 UFollowFlockingBTTaskNode::UFollowFlockingBTTaskNode()
@@ -26,9 +27,11 @@ void UFollowFlockingBTTaskNode::TickTask(class UBehaviorTreeComponent& OwnerComp
 	AAIBasicController* AIBasicController = Cast<AAIBasicController>(OwnerComp.GetOwner());
 
 	EPathFollowingRequestResult::Type MoveToActorResult = AIBasicController->FollowFlocking();
-
-	if (MoveToActorResult == EPathFollowingRequestResult::AlreadyAtGoal)
+	FVector distToObjectif = AIBasicController->GetPawn()->GetActorLocation() - AIBasicController->GetObjectifLocation();
+	if (distToObjectif.Size() < 500) {
+		AIBasicController->get_blackboard()->SetValueAsBool("DoFlocking", false);
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+	}
 	if (MoveToActorResult == EPathFollowingRequestResult::Failed)
 		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
 
