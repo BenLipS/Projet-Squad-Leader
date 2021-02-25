@@ -3,6 +3,9 @@
 
 #include "SoldierTeam.h"
 #include "../SquadLeaderGameModeBase.h"
+#include "Soldier.h"
+#include "../Spawn/SoldierSpawn.h"
+#include "../ControlArea/ControlArea.h"
 
 
 ASoldierTeam::ASoldierTeam() {
@@ -12,19 +15,35 @@ ASoldierTeam::ASoldierTeam() {
 
 void ASoldierTeam::BeginPlay() {
 	Super::BeginPlay();
-
-	// notify the GameMode of the team existence
-	if (GetLocalRole() == ROLE_Authority) {
-		//auto gameMode = static_cast<ASquadLeaderGameModeBase*>(GetWorld()->GetAuthGameMode());
-		//gameMode->SoldierTeamCollection.Add(this);
-	}
 }
 
 
 void ASoldierTeam::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	//DOREPLIFETIME(ASoldierTeam, ...);
+
+	DOREPLIFETIME(ASoldierTeam, soldierList);
+	DOREPLIFETIME(ASoldierTeam, takenControlArea);
+	DOREPLIFETIME(ASoldierTeam, mainSpawnPoints);
+
+}
+
+
+void ASoldierTeam::AddSoldierList(ASoldier* newSoldier)
+{
+	CleanSoldierList();
+	soldierList.AddUnique(newSoldier);
+}
+
+void ASoldierTeam::RemoveSoldierList(ASoldier* newSoldier)
+{
+	if (soldierList.Find(newSoldier))
+		soldierList.Remove(newSoldier);
+}
+
+void ASoldierTeam::CleanSoldierList()
+{
+	soldierList.RemoveAll([](ASoldier* element) {return element == nullptr; });
 }
 
 
@@ -34,13 +53,11 @@ void ASoldierTeam::AddControlArea(AControlArea* newControlArea)
 	takenControlArea.AddUnique(newControlArea);
 }
 
-
 void ASoldierTeam::RemoveControlArea(AControlArea* newControlArea)
 {
 	if (takenControlArea.Find(newControlArea))
 		takenControlArea.Remove(newControlArea);
 }
-
 
 void ASoldierTeam::CleanControlArea()
 {
@@ -53,13 +70,11 @@ void ASoldierTeam::AddSpawn(ASoldierSpawn* newSpawn)
 	mainSpawnPoints.AddUnique(newSpawn);
 }
 
-
 void ASoldierTeam::RemoveSpawn(ASoldierSpawn* newSpawn)
 {
 	if (mainSpawnPoints.Find(newSpawn))
 		mainSpawnPoints.Remove(newSpawn);
 }
-
 
 void ASoldierTeam::CleanSpawnPoints()
 {

@@ -1,12 +1,18 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
+// forward declaration
+class ASoldier;
+class AControlArea;
+class ASoldierSpawn;
 
 #include "CoreMinimal.h"
 #include "GameFramework/Info.h"
-#include "../Spawn/SoldierSpawn.h"
-#include "../ControlArea/ControlArea.h"
+//#include "Soldier.h"
+//#include "../Spawn/SoldierSpawn.h"
+//#include "../ControlArea/ControlArea.h"
 #include "SoldierTeam.generated.h"
+
 
 /**
  * 
@@ -23,15 +29,24 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
 	// for replication purpose
 	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "GlobalTeamData")
 		FString TeamName;
+
+
+protected:  // Soldier List
+	UPROPERTY(EditAnywhere, Replicated, Category = "SoldierList")
+		TArray<ASoldier*> soldierList;
+public:
+	UFUNCTION(BlueprintCallable, Category = "SoldierList")
+		void AddSoldierList(ASoldier* newSoldier);
+	UFUNCTION(BlueprintCallable, Category = "SoldierList")
+		void RemoveSoldierList(ASoldier* newSoldier);
+	UFUNCTION(BlueprintCallable, Category = "SoldierList")
+		void CleanSoldierList();
 
 
 protected:  // controlArea

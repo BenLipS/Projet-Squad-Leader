@@ -5,7 +5,6 @@
 #include "Core.h"
 #include "GameFramework/Actor.h"
 #include "../Soldiers/SoldierTeam.h"
-#include "../Spawn/SoldierSecondarySpawn.h"
 #include "ControlAreaTeamStat.h"
 #include "Net/UnrealNetwork.h"
 #include "ControlArea.generated.h"
