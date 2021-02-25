@@ -9,43 +9,52 @@ USoldierMovementComponent::USoldierMovementComponent(const FObjectInitializer& _
 
 float USoldierMovementComponent::GetMaxSpeed() const
 {
-    ASoldier* soldier = Cast<ASoldier>(GetCharacterOwner());
-    UAbilitySystemSoldier* ASC = soldier ? soldier->GetAbilitySystemComponent() : nullptr;
+	ASoldier* soldier = Cast<ASoldier>(GetCharacterOwner());
 
-    float finalSpeed = 0.f;
+	if (!soldier)
+	{
+		UE_LOG(LogTemp, Error, TEXT("%s() No Soldier as owner"), *FString(__FUNCTION__));
+		return Super::GetMaxSpeed();
+	}
 
-    switch (MovementMode)
-    {
-    case MOVE_Walking:
-    case MOVE_NavWalking:
-        if (IsCrouching())
-            finalSpeed = ASC ? ASC->GetNumericAttribute(UAttributeSetSoldier::GetMoveSpeedCrouchAttribute()) : MaxWalkSpeedCrouched;
-        else
-            finalSpeed = ASC ? ASC->GetNumericAttribute(UAttributeSetSoldier::GetMoveSpeedWalkAttribute()) : MaxWalkSpeed;
-        break;
+	if (!soldier->IsAlive())
+		return 0.f;
 
-    case MOVE_Falling:
-        finalSpeed = ASC ? ASC->GetNumericAttribute(UAttributeSetSoldier::GetMoveSpeedWalkAttribute()) : MaxWalkSpeed;
-        break;
+	UAbilitySystemSoldier* ASC = soldier ? soldier->GetAbilitySystemComponent() : nullptr;
+	float finalSpeed = 0.f;
 
-    case MOVE_Swimming:
-        finalSpeed = MaxSwimSpeed;
-        break;
+	switch (MovementMode)
+	{
+	case MOVE_Walking:
+	case MOVE_NavWalking:
+		if (IsCrouching())
+			finalSpeed = ASC ? ASC->GetNumericAttribute(UAttributeSetSoldier::GetMoveSpeedCrouchAttribute()) : MaxWalkSpeedCrouched;
+		else
+			finalSpeed = ASC ? ASC->GetNumericAttribute(UAttributeSetSoldier::GetMoveSpeedWalkAttribute()) : MaxWalkSpeed;
+		break;
 
-    case MOVE_Flying:
-        finalSpeed = MaxFlySpeed;
-        break;
+	case MOVE_Falling:
+		finalSpeed = ASC ? ASC->GetNumericAttribute(UAttributeSetSoldier::GetMoveSpeedWalkAttribute()) : MaxWalkSpeed;
+		break;
 
-    case MOVE_Custom:
-        finalSpeed = MaxCustomMovementSpeed;
-        break;
+	case MOVE_Swimming:
+		finalSpeed = MaxSwimSpeed;
+		break;
 
-    case MOVE_None:
-    default:
-        finalSpeed = 0.f;
-        break;
-    }
+	case MOVE_Flying:
+		finalSpeed = MaxFlySpeed;
+		break;
 
-    const float moveSpeedMultiplier = ASC ? ASC->GetNumericAttribute(UAttributeSetSoldier::GetMoveSpeedMultiplierAttribute()) : 1.f;
-    return finalSpeed * moveSpeedMultiplier;
+	case MOVE_Custom:
+		finalSpeed = MaxCustomMovementSpeed;
+		break;
+
+	case MOVE_None:
+	default:
+		finalSpeed = 0.f;
+		break;
+	}
+
+	const float moveSpeedMultiplier = ASC ? ASC->GetNumericAttribute(UAttributeSetSoldier::GetMoveSpeedMultiplierAttribute()) : 1.f;
+	return finalSpeed * moveSpeedMultiplier;
 }

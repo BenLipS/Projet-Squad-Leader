@@ -24,8 +24,22 @@ UGE_DefaultStats::UGE_DefaultStats()
 	FGameplayModifierInfo modifierHealth;
 	modifierHealth.Attribute = UAttributeSetSoldier::GetHealthAttribute();
 	modifierHealth.ModifierOp = EGameplayModOp::Override;
-	modifierHealth.ModifierMagnitude = FScalableFloat(100.f);
+	modifierHealth.ModifierMagnitude = modifierMaxHealth.ModifierMagnitude;
 	Modifiers.Add(modifierHealth);
+
+	// Max Shield
+	FGameplayModifierInfo modifierMaxShield;
+	modifierMaxShield.Attribute = UAttributeSetSoldier::GetMaxShieldAttribute();
+	modifierMaxShield.ModifierOp = EGameplayModOp::Override;
+	modifierMaxShield.ModifierMagnitude = FScalableFloat(100.f);
+	Modifiers.Add(modifierMaxShield);
+
+	// Shield
+	FGameplayModifierInfo modifierShield;
+	modifierShield.Attribute = UAttributeSetSoldier::GetShieldAttribute();
+	modifierShield.ModifierOp = EGameplayModOp::Override;
+	modifierShield.ModifierMagnitude = modifierMaxShield.ModifierMagnitude;
+	Modifiers.Add(modifierShield);
 
 	// Health Regen Rate
 	FGameplayModifierInfo modifierHealthRegenRate;
