@@ -38,4 +38,5 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "GridSetUp")
 		TSubclassOf<class AGridBase> m_BP_AGridBase;
+
 };

@@ -28,7 +28,10 @@ void AGridBase::BeginPlay()
 void AGridBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+    TArray<AActor*> _array_wall; 
+    GetOverlappingActors(_array_wall, AWall::StaticClass());
+    if (_array_wall.Num() > 0)
+        Destroy();
 }
 
 void AGridBase::NotifyActorBeginOverlap(AActor* OtherActor)
@@ -42,10 +45,9 @@ void AGridBase::NotifyActorBeginOverlap(AActor* OtherActor)
 
 
 void AGridBase::NotifyActorEndOverlap(AActor* OtherActor) {
-  
     if (OtherActor && (OtherActor != this))
     {
         if (GEngine)
-            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Thius is the end....."));
+            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("This is the end....."));
     }
 }

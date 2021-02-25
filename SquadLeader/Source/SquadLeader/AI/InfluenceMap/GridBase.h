@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Components/BoxComponent.h"
+#include "../../WorldObject/Wall.h"
 #include "GridBase.generated.h"
 
 UCLASS()
@@ -42,6 +43,5 @@ public:
 
 	UFUNCTION()
 		virtual void NotifyActorEndOverlap(AActor* OtherActor) override;
-
 
 };
