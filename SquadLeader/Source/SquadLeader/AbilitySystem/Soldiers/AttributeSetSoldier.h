@@ -27,6 +27,9 @@ public:
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
 
+	// Adjust attributes to keep the same percentage when max has changed
+	void AdjustAttributeForMaxChange(FGameplayAttributeData& AffectedAttribute, const FGameplayAttributeData& MaxAttribute, const float NewMaxValue, const FGameplayAttribute& AffectedAttributeProperty);
+
 	// Character level
 	UPROPERTY(BlueprintReadOnly, Category = "Attributes | Character Level", ReplicatedUsing = OnRep_CharacterLevel)
 	FGameplayAttributeData CharacterLevel;
@@ -53,6 +56,16 @@ public:
 	FGameplayAttributeData HealthRegenRate;
 	ATTRIBUTE_ACCESSORS(UAttributeSetSoldier, HealthRegenRate)
 
+	// Shield
+	UPROPERTY(BlueprintReadOnly, Category = "Attributes | Shield", ReplicatedUsing = OnRep_Shield)
+	FGameplayAttributeData Shield;
+	ATTRIBUTE_ACCESSORS(UAttributeSetSoldier, Shield)
+
+	// Max shield
+	UPROPERTY(BlueprintReadOnly, Category = "Attributes | MaxShield", ReplicatedUsing = OnRep_MaxShield)
+	FGameplayAttributeData MaxShield;
+	ATTRIBUTE_ACCESSORS(UAttributeSetSoldier, MaxShield)
+
 	// Move Speed - Walk
 	UPROPERTY(BlueprintReadOnly, Category = "Attributes | MoveSpeedWalk", ReplicatedUsing = OnRep_MoveSpeedWalk)
 	FGameplayAttributeData MoveSpeedWalk;
@@ -77,6 +90,12 @@ protected:
 
 	UFUNCTION()
 	virtual void OnRep_MaxHealth(const FGameplayAttributeData& _OldMaxHealth);
+
+	UFUNCTION()
+	virtual void OnRep_Shield(const FGameplayAttributeData& _OldShield);
+
+	UFUNCTION()
+	virtual void OnRep_MaxShield(const FGameplayAttributeData& _OldMaxShield);
 
 	UFUNCTION()
 	virtual void OnRep_HealthRegenRate(const FGameplayAttributeData& _OldHealthRegenRate);
