@@ -37,7 +37,7 @@ void ASoldierTeam::AddSoldierList(ASoldier* newSoldier)
 
 void ASoldierTeam::RemoveSoldierList(ASoldier* newSoldier)
 {
-	if (soldierList.Find(newSoldier))
+	if (soldierList.Contains(newSoldier))
 		soldierList.Remove(newSoldier);
 }
 
@@ -55,7 +55,7 @@ void ASoldierTeam::AddControlArea(AControlArea* newControlArea)
 
 void ASoldierTeam::RemoveControlArea(AControlArea* newControlArea)
 {
-	if (takenControlArea.Find(newControlArea))
+	if (takenControlArea.Contains(newControlArea))
 		takenControlArea.Remove(newControlArea);
 }
 
@@ -72,7 +72,7 @@ void ASoldierTeam::AddSpawn(ASoldierSpawn* newSpawn)
 
 void ASoldierTeam::RemoveSpawn(ASoldierSpawn* newSpawn)
 {
-	if (mainSpawnPoints.Find(newSpawn))
+	if (mainSpawnPoints.Contains(newSpawn))
 		mainSpawnPoints.Remove(newSpawn);
 }
 

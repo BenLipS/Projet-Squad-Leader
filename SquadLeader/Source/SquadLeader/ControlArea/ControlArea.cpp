@@ -31,9 +31,8 @@ void AControlArea::BeginPlay()
 
 	timeBetweenCalcuation = 0.5;
 
-	if (GetLocalRole() == ROLE_Authority) {
+	if (auto gameMode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode()); gameMode) {
 		// add this to the game mode collection
-		auto gameMode = static_cast<ASquadLeaderGameModeBase*>(GetWorld()->GetAuthGameMode());
 		gameMode->controlAreaCollection.Add(this);
 
 		UpdateTeamData();
@@ -59,7 +58,7 @@ void AControlArea::NotifyActorBeginOverlap(AActor* OtherActor)
 	if (GetLocalRole() == ROLE_Authority) 
 	{  // server only
 		if (ASoldier* soldier = Cast<ASoldier>(OtherActor); soldier) {
-			if (TeamData.Find(soldier->PlayerTeam)) {
+			if (TeamData.Contains(soldier->PlayerTeam)) {
 				TeamData[soldier->PlayerTeam]->presenceTeam++;
 
 				// initiate the calculation of the control zone value if needed
@@ -77,15 +76,17 @@ void AControlArea::NotifyActorEndOverlap(AActor* OtherActor)
 	Super::NotifyActorEndOverlap(OtherActor);
 	if (GetLocalRole() == ROLE_Authority) {  // server only
 		if (ASoldier* soldier = Cast<ASoldier>(OtherActor); soldier) {
-			if (TeamData.Find(soldier->PlayerTeam)) {
-				if (TeamData[soldier->PlayerTeam]->presenceTeam > 0)
+			if (TeamData.Contains(soldier->PlayerTeam)) {
+				if (TeamData[soldier->PlayerTeam]->presenceTeam > 0) {
 					TeamData[soldier->PlayerTeam]->presenceTeam--;
+				}
 
 				// begin the calculation if everybody of this team left and the calculation is not already working
-				if (TeamData[soldier->PlayerTeam]->presenceTeam == 0)
+				else {
 					if (!timerCalculationControlValue.IsValid())
 						GetWorldTimerManager().SetTimer(timerCalculationControlValue, this,
 							&AControlArea::calculateControlValue, timeBetweenCalcuation, true, timeBetweenCalcuation);
+				}
 			}
 		}
 	}
@@ -129,7 +130,11 @@ void AControlArea::calculateControlValue()
 					}
 				}
 				if (!needToDecreaseOtherPresenceFirst) {  // if all other presence value is 0
-					TeamData[presentTeam]->controlValue += TeamData[presentTeam]->presenceTeam;
+					if (TeamData[presentTeam]->controlValue + TeamData[presentTeam]->presenceTeam < maxControlValue)
+						TeamData[presentTeam]->controlValue += TeamData[presentTeam]->presenceTeam;
+					else
+						TeamData[presentTeam]->controlValue = maxControlValue;
+
 					if (isTakenBy != presentTeam && TeamData[presentTeam]->controlValue >= controlValueToTake) {
 						isTakenBy = presentTeam;
 						TeamData[presentTeam]->ChangeSpawnState(true);
@@ -154,13 +159,12 @@ void AControlArea::calculateControlValue()
 
 void AControlArea::UpdateTeamData()
 {
-	if (GetLocalRole() == ROLE_Authority) {  // only for the server
-		auto gameMode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
+	if (auto gameMode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode()); gameMode) {  // only for the server
 		auto teamCollection = gameMode->SoldierTeamCollection;
 
 		TArray<TSubclassOf<ASoldierTeam>> keyToRemove;  // remove element
 		for (auto team : TeamData) {
-			if (teamCollection.Find(team.Key) == INDEX_NONE) {
+			if (teamCollection.Contains(team.Key)) {
 				keyToRemove.Add(team.Key);
 				GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("ControlArea Update : Unknown team removed : " + team.Key.GetDefaultObject()->TeamName));
 			}
@@ -170,7 +174,7 @@ void AControlArea::UpdateTeamData()
 		}
 
 		for (auto team : teamCollection) {  // add element
-			if (!TeamData.Find(team)) {
+			if (!TeamData.Contains(team)) {
 				TeamData.Add(team, NewObject<AControlAreaTeamStat>());
 				GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("ControlArea Update : Unknown team added : " + team.GetDefaultObject()->TeamName));
 			}

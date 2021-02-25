@@ -21,10 +21,10 @@ void ASoldierPrimarySpawn::BeginPlay() {
 
 void ASoldierPrimarySpawn::Destroyed()
 {
-	Super::Destroyed();
 	if (GetLocalRole() == ROLE_Authority && teamOwner) {
 		teamOwner.GetDefaultObject()->RemoveSpawn(this);
 	}
+	Super::Destroyed();
 }
 
 
