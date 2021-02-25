@@ -2,6 +2,7 @@
 #include "GameplayEffect.h"
 #include "GameplayEffectExtension.h"
 #include "../../Soldiers/Soldier.h"
+#include "GameplayEffects/States/GE_StateFighting.h"
 
 void UAttributeSetSoldier::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
@@ -37,13 +38,23 @@ void UAttributeSetSoldier::PostGameplayEffectExecute(const FGameplayEffectModCal
 {
 	Super::PostGameplayEffectExecute(Data);
 
-	if (!Data.Target.AbilityActorInfo.IsValid() || !Data.Target.AbilityActorInfo->AvatarActor.IsValid())
+	UAbilitySystemComponent* TargetASC = &Data.Target;
+
+	if (!TargetASC->AbilityActorInfo.IsValid() || !TargetASC->AbilityActorInfo->AvatarActor.IsValid())
 		return;
 
-	ASoldier* TargetSoldier = Cast<ASoldier>(Data.Target.AbilityActorInfo->AvatarActor.Get());
+	FGameplayEffectContextHandle Context = Data.EffectSpec.GetContext();
+	UAbilitySystemComponent* SourceASC = Context.GetOriginalInstigatorAbilitySystemComponent();
+
+	// You must test if the pointers below are valid in the appropriate attributs
+	ASoldier* SourceSoldier = Cast<ASoldier>(SourceASC->AbilityActorInfo->AvatarActor.Get());
+	ASoldier* TargetSoldier = Cast<ASoldier>(TargetASC->AbilityActorInfo->AvatarActor.Get());
 
 	if (Data.EvaluatedData.Attribute == GetDamageAttribute())
 	{
+		if (!TargetSoldier)
+			return;
+
 		// Make a local damage copy
 		const float LocalDamage = GetDamage();
 		SetDamage(0.f);
@@ -51,20 +62,24 @@ void UAttributeSetSoldier::PostGameplayEffectExecute(const FGameplayEffectModCal
 		if (LocalDamage > 0.0f && TargetSoldier->IsAlive())
 		{
 			if (LocalDamage <= GetShield())
-				SetShield(FMath::Clamp(GetShield() - LocalDamage, 0.0f, GetMaxShield()));
+				SetShield(GetShield() - LocalDamage);
 			else
 			{
-				SetHealth(FMath::Clamp(GetHealth() - (LocalDamage - GetShield()), 0.0f, GetMaxHealth()));
+				SetHealth(GetHealth() - (LocalDamage - GetShield()));
 				SetShield(0.f);
 
 				GEngine->AddOnScreenDebugMessage(78, 1.f, FColor::Red, FString::Printf(TEXT("%s still has %s HPs"), *TargetSoldier->GetName(), *FString::SanitizeFloat(GetHealth())));
-
-				if (!TargetSoldier->IsAlive()) // The soldier has been killed
-				{
-					GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("%s is dead"), *TargetSoldier->GetName()));
-					//TargetSoldier->die();
-					//SourceSoldier->getBounty();
-				}
+			}
+			if (!TargetSoldier->IsAlive()) // The soldier has been killed
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("%s is dead"), *TargetSoldier->GetName()));
+				//SourceSoldier->getBounty();
+			}
+			else if (SourceASC)
+			{
+				// Give fighting tag
+				FGameplayEffectSpecHandle FightingTagHandle = SourceASC->MakeOutgoingSpec(UGE_StateFighting::StaticClass(), 1.f, Context);
+				SourceASC->ApplyGameplayEffectSpecToTarget(*FightingTagHandle.Data.Get(), TargetASC);
 			}
 		}
 	}
