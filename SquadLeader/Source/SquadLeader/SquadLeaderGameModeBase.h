@@ -8,9 +8,6 @@
 #include "Soldiers/SoldierTeam.h"
 #include "SquadLeaderGameModeBase.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class SQUADLEADER_API ASquadLeaderGameModeBase : public AGameModeBase
 {
@@ -27,4 +24,11 @@ public:
 	TArray<class AControlArea*> controlAreaCollection;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "GameModeData")
 	TArray<TSubclassOf<ASoldierTeam>> SoldierTeamCollection;
+
+protected:
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Respawn")
+		float RespawnDelay;
+public:
+	void SoldierDied(AController* _Controller);
+	void RespawnSoldier(AController* _Controller);
 };

@@ -19,7 +19,7 @@ class SQUADLEADER_API ASoldier : public ACharacter, public IAbilitySystemInterfa
 	GENERATED_BODY()
 
 public:
-	ASoldier();
+	ASoldier(const FObjectInitializer& _ObjectInitializer);
 
 protected:
 	virtual void BeginPlay() override;
@@ -68,13 +68,23 @@ protected:
 	void InitializeAbilities();
 	void AddStartupEffects();
 	void InitializeTagChangeCallbacks();
+	void InitializeAttributeChangeCallbacks();
 
 //////////////// Tag Change Callbacks
 public:
+	// States
 	static FGameplayTag StateDeadTag;
 	static FGameplayTag StateRunningTag;
 	static FGameplayTag StateJumpingTag;
+	static FGameplayTag StateCrouchingTag;
 	static FGameplayTag StateFightingTag;
+
+	// Abilities
+	static FGameplayTag SkillRunTag;
+	static FGameplayTag SkillJumpTag;
+	static FGameplayTag SkillCrouchTag;
+	static FGameplayTag SkillFireWeaponTag;
+	static FGameplayTag SkillAreaEffectFromSelfTag;
 
 protected:
 	virtual void DeadTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
@@ -90,6 +100,7 @@ public:
 	UPROPERTY(BluePrintReadWrite, Category = "Attributes")
 	float fieldOfViewAim;
 
+	// Getters
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
 	int32 GetCharacterLevel() const;
 
@@ -100,10 +111,23 @@ public:
 	float GetMaxHealth() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
-	bool IsAlive() const;
+	float GetMoveSpeedWalk() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
-	float GetMoveSpeed() const;
+	float GetMoveSpeedCrouch() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
+	float GetMoveSpeedMultiplier() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
+	bool IsAlive() const;
+
+	// Attribute changed callbacks
+	FDelegateHandle HealthChangedDelegateHandle;
+	virtual void HealthChanged(const FOnAttributeChangeData& _Data);
+
+	virtual void Die();
+	virtual void Respawn();
 
 //////////////// Cameras
 protected:
@@ -140,22 +164,30 @@ public:
 //////////////// Movement
 	// Move direction
 	UFUNCTION()
-	void onMoveForward(const float _val);
+	void MoveForward(const float _Val);
 
 	UFUNCTION()
-	void onMoveRight(const float _val);
+	void MoveRight(const float _Val);
+
+	// Looking direction
+	UFUNCTION()
+	void LookUp(const float _Val);
+
+	UFUNCTION()
+	void Turn(const float _Val);
 
 	UFUNCTION(BlueprintCallable, Category = "Movement")
-	bool startRunning();
+	virtual FVector lookingAtPosition();
+
+	// Run
+	UFUNCTION(BlueprintCallable, Category = "Movement")
+	bool StartRunning();
 
 	UFUNCTION(BlueprintCallable, Category = "Movement")
-	bool stopRunning();
+	void StopRunning();
 	
 	UFUNCTION(BlueprintCallable, Category = "Movement")
-	bool walk();
-
-	UFUNCTION(BlueprintCallable, Category = "Sight")
-	FVector lookingAtPosition();
+	bool Walk();
 
 //////////////// Weapons
 protected:
@@ -194,13 +226,12 @@ protected:
 
 public:
 	AWeapon* getCurrentWeapon() const noexcept { return currentWeapon; }
-	
 	////////////////  PlayerTeam
-	// Appel du côté serveur pour actualiser l'état du repère 
+	// Appel du cï¿½tï¿½ serveur pour actualiser l'ï¿½tat du repï¿½re 
 	UFUNCTION(Reliable, Server, WithValidation)
 		void ServerChangeTeam(TSubclassOf<ASoldierTeam> _PlayerTeam);
 
-	UFUNCTION() // Doit toujours être UFUNCTION() quand il s'agit d'une fonction «OnRep notify»
+	UFUNCTION() // Doit toujours ï¿½tre UFUNCTION() quand il s'agit d'une fonction ï¿½OnRep notifyï¿½
 		void OnRep_ChangeTeam();
 
 	UPROPERTY(EditAnywhere, BluePrintReadWrite, ReplicatedUsing = OnRep_ChangeTeam, Category = "PlayerTeam")
@@ -209,5 +240,13 @@ public:
 	UFUNCTION(Reliable, Server, WithValidation)
 		void ServerCycleBetweenTeam();
 
-	void cycleBetweenTeam();  // Connected to the "L" key
+	// Connected to the "L" key
+	void cycleBetweenTeam();
+
+	//For AIPerception
+private:
+	class UAIPerceptionStimuliSourceComponent* stimulus;
+
+	void setup_stimulus();
+
 };

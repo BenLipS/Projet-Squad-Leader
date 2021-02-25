@@ -10,7 +10,7 @@ class SQUADLEADER_API ASoldierPlayer : public ASoldier
 	GENERATED_BODY()
 	
 public:
-	ASoldierPlayer();
+	ASoldierPlayer(const FObjectInitializer& _ObjectInitializer);
 
 protected:
 	virtual void BeginPlay() override;

@@ -24,8 +24,22 @@ UGE_DefaultStats::UGE_DefaultStats()
 	FGameplayModifierInfo modifierHealth;
 	modifierHealth.Attribute = UAttributeSetSoldier::GetHealthAttribute();
 	modifierHealth.ModifierOp = EGameplayModOp::Override;
-	modifierHealth.ModifierMagnitude = FScalableFloat(100.f);
+	modifierHealth.ModifierMagnitude = modifierMaxHealth.ModifierMagnitude;
 	Modifiers.Add(modifierHealth);
+
+	// Max Shield
+	FGameplayModifierInfo modifierMaxShield;
+	modifierMaxShield.Attribute = UAttributeSetSoldier::GetMaxShieldAttribute();
+	modifierMaxShield.ModifierOp = EGameplayModOp::Override;
+	modifierMaxShield.ModifierMagnitude = FScalableFloat(100.f);
+	Modifiers.Add(modifierMaxShield);
+
+	// Shield
+	FGameplayModifierInfo modifierShield;
+	modifierShield.Attribute = UAttributeSetSoldier::GetShieldAttribute();
+	modifierShield.ModifierOp = EGameplayModOp::Override;
+	modifierShield.ModifierMagnitude = modifierMaxShield.ModifierMagnitude;
+	Modifiers.Add(modifierShield);
 
 	// Health Regen Rate
 	FGameplayModifierInfo modifierHealthRegenRate;
@@ -34,10 +48,24 @@ UGE_DefaultStats::UGE_DefaultStats()
 	modifierHealthRegenRate.ModifierMagnitude = FScalableFloat(10.f);
 	Modifiers.Add(modifierHealthRegenRate);
 
-	// Move Speed
-	FGameplayModifierInfo modifierMoveSpeed;
-	modifierMoveSpeed.Attribute = UAttributeSetSoldier::GetMoveSpeedAttribute();
-	modifierMoveSpeed.ModifierOp = EGameplayModOp::Override;
-	modifierMoveSpeed.ModifierMagnitude = FScalableFloat(600.f);
-	Modifiers.Add(modifierMoveSpeed);
+	// Move Speed Walk
+	FGameplayModifierInfo modifierMoveSpeedWalk;
+	modifierMoveSpeedWalk.Attribute = UAttributeSetSoldier::GetMoveSpeedWalkAttribute();
+	modifierMoveSpeedWalk.ModifierOp = EGameplayModOp::Override;
+	modifierMoveSpeedWalk.ModifierMagnitude = FScalableFloat(600.f);
+	Modifiers.Add(modifierMoveSpeedWalk);
+
+	// Move Speed Crouch
+	FGameplayModifierInfo modifierMoveSpeedCrouch;
+	modifierMoveSpeedCrouch.Attribute = UAttributeSetSoldier::GetMoveSpeedCrouchAttribute();
+	modifierMoveSpeedCrouch.ModifierOp = EGameplayModOp::Override;
+	modifierMoveSpeedCrouch.ModifierMagnitude = FScalableFloat(200.f);
+	Modifiers.Add(modifierMoveSpeedCrouch);
+
+	// Move Speed Multiplier
+	FGameplayModifierInfo modifierMoveSpeedMultiplier;
+	modifierMoveSpeedMultiplier.Attribute = UAttributeSetSoldier::GetMoveSpeedMultiplierAttribute();
+	modifierMoveSpeedMultiplier.ModifierOp = EGameplayModOp::Override;
+	modifierMoveSpeedMultiplier.ModifierMagnitude = FScalableFloat(1.f);
+	Modifiers.Add(modifierMoveSpeedMultiplier);
 }

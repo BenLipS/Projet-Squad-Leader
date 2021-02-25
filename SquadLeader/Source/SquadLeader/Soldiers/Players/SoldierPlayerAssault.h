@@ -10,5 +10,5 @@ class SQUADLEADER_API ASoldierPlayerAssault : public ASoldierPlayer
 	GENERATED_BODY()
 	
 public:
-	ASoldierPlayerAssault() = default;
+	ASoldierPlayerAssault(const FObjectInitializer& _ObjectInitializer);
 };

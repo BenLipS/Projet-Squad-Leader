@@ -58,18 +58,18 @@ public:
 protected:
 	// Move direction
 	UFUNCTION()
-	void onMoveForward(const float _val);
+	void onMoveForward(const float _Val);
 
 	UFUNCTION()
-	void onMoveRight(const float _val);
-
-	/*// Run
-	UFUNCTION()
-	void onStartRunning();
+	void onMoveRight(const float _Val);
 
 	UFUNCTION()
-	void onStopRunning();*/
+	void onLookUp(const float _Val);
 
+	UFUNCTION()
+	void onTurn(const float _Val);
+
+//////////////// Teams
 	UFUNCTION()
 	void onChangeTeam();
 };

@@ -1,6 +1,6 @@
 #include "SoldierAI.h"
 
-ASoldierAI::ASoldierAI() : ASoldier()
+ASoldierAI::ASoldierAI(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer)
 {
 	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemSoldier>(TEXT("Ability System Component"));
 	AbilitySystemComponent->SetIsReplicated(true);
@@ -15,23 +15,64 @@ void ASoldierAI::BeginPlay()
 	check(AbilitySystemComponent);
 
 	AbilitySystemComponent->InitAbilityActorInfo(this, this);
+
+	InitializeTagChangeCallbacks();
+	InitializeAttributeChangeCallbacks();
 	InitializeAttributes();
 	InitializeAbilities();
 	AddStartupEffects();
-	InitializeTagChangeCallbacks();
 	initWeapons();
 }
 
-bool ASoldierAI::StartFiring()
+FVector ASoldierAI::lookingAtPosition()
 {
-	FGameplayTagContainer shootTag;
-	shootTag.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.FireWeapon")));
-	return GetAbilitySystemComponent()->TryActivateAbilitiesByTag(shootTag);
+	return LookingAtPosition;
 }
 
-void ASoldierAI::StopFiring()
+void ASoldierAI::SetLookingAtPosition(FVector _lookingAtPosition) {
+	LookingAtPosition = _lookingAtPosition;
+};
+
+bool ASoldierAI::ActivateAbilities(const FGameplayTagContainer &_TagContainer)
 {
-	FGameplayTagContainer shootTag;
-	shootTag.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.FireWeapon")));
-	GetAbilitySystemComponent()->CancelAbilities(&shootTag);
+	return AbilitySystemComponent->TryActivateAbilitiesByTag(_TagContainer);
+}
+
+bool ASoldierAI::ActivateAbility(const FGameplayTag &_Tag)
+{
+	FGameplayTagContainer TagContainer;
+	TagContainer.AddTag(_Tag);
+	return AbilitySystemComponent->TryActivateAbilitiesByTag(TagContainer);
+}
+
+void ASoldierAI::CancelAbilities(const FGameplayTagContainer &_TagContainer)
+{
+	AbilitySystemComponent->CancelAbilities(&_TagContainer);
+}
+
+void ASoldierAI::CancelAbility(const FGameplayTag &_Tag)
+{
+	FGameplayTagContainer TagContainer;
+	TagContainer.AddTag(_Tag);
+	AbilitySystemComponent->CancelAbilities(&TagContainer);
+}
+
+bool ASoldierAI::ActivateAbilityFire()
+{
+	return ActivateAbility(ASoldier::SkillFireWeaponTag);
+}
+
+void ASoldierAI::CancelAbilityFire()
+{
+	CancelAbility(ASoldier::SkillFireWeaponTag);
+}
+
+bool ASoldierAI::ActivateAbilityRun()
+{
+	return ActivateAbility(ASoldier::SkillRunTag);
+}
+
+void ASoldierAI::CancelAbilityRun()
+{
+	CancelAbility(ASoldier::SkillRunTag);
 }

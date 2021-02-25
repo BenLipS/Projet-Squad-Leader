@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "GameplayAbilitySpec.h"
 #include "../GameplayAbilitySoldier.h"
+#include "../GameplayEffects/States/GE_StateJumping.h"
 #include "GA_Jump.generated.h"
 
 UCLASS()
@@ -20,4 +21,8 @@ public:
 	virtual void InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) override;
 
 	virtual void CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateCancelAbility) override;
+
+protected:
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	TSubclassOf<UGE_StateJumping> JumpingGameplayEffect;
 };

@@ -27,6 +27,9 @@ public:
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
 
+	// Adjust attributes to keep the same percentage when max has changed
+	void AdjustAttributeForMaxChange(FGameplayAttributeData& AffectedAttribute, const FGameplayAttributeData& MaxAttribute, const float NewMaxValue, const FGameplayAttribute& AffectedAttributeProperty);
+
 	// Character level
 	UPROPERTY(BlueprintReadOnly, Category = "Attributes | Character Level", ReplicatedUsing = OnRep_CharacterLevel)
 	FGameplayAttributeData CharacterLevel;
@@ -53,24 +56,56 @@ public:
 	FGameplayAttributeData HealthRegenRate;
 	ATTRIBUTE_ACCESSORS(UAttributeSetSoldier, HealthRegenRate)
 
-	// Move Speed
-	UPROPERTY(BlueprintReadOnly, Category = "Attributes | MoveSpeed", ReplicatedUsing = OnRep_MoveSpeed)
-	FGameplayAttributeData MoveSpeed;
-	ATTRIBUTE_ACCESSORS(UAttributeSetSoldier, MoveSpeed)
+	// Shield
+	UPROPERTY(BlueprintReadOnly, Category = "Attributes | Shield", ReplicatedUsing = OnRep_Shield)
+	FGameplayAttributeData Shield;
+	ATTRIBUTE_ACCESSORS(UAttributeSetSoldier, Shield)
+
+	// Max shield
+	UPROPERTY(BlueprintReadOnly, Category = "Attributes | MaxShield", ReplicatedUsing = OnRep_MaxShield)
+	FGameplayAttributeData MaxShield;
+	ATTRIBUTE_ACCESSORS(UAttributeSetSoldier, MaxShield)
+
+	// Move Speed - Walk
+	UPROPERTY(BlueprintReadOnly, Category = "Attributes | MoveSpeedWalk", ReplicatedUsing = OnRep_MoveSpeedWalk)
+	FGameplayAttributeData MoveSpeedWalk;
+	ATTRIBUTE_ACCESSORS(UAttributeSetSoldier, MoveSpeedWalk)
+
+	// Move Speed - Crouch
+	UPROPERTY(BlueprintReadOnly, Category = "Attributes | MoveSpeedCrouch", ReplicatedUsing = OnRep_MoveSpeedCrouch)
+	FGameplayAttributeData MoveSpeedCrouch;
+	ATTRIBUTE_ACCESSORS(UAttributeSetSoldier, MoveSpeedCrouch)
+
+	// Move Speed - Multiplier (for buffs and debuffs)
+	UPROPERTY(BlueprintReadOnly, Category = "Attributes | MoveSpeedMultiplier", ReplicatedUsing = OnRep_MoveSpeedMultiplier)
+	FGameplayAttributeData MoveSpeedMultiplier;
+	ATTRIBUTE_ACCESSORS(UAttributeSetSoldier, MoveSpeedMultiplier)
 
 protected:
 	UFUNCTION()
-	virtual void OnRep_CharacterLevel(const FGameplayAttributeData& OldCharacterLevel);
+	virtual void OnRep_CharacterLevel(const FGameplayAttributeData& _OldCharacterLevel);
 
 	UFUNCTION()
-	virtual void OnRep_Health(const FGameplayAttributeData& OldValue);
+	virtual void OnRep_Health(const FGameplayAttributeData& _OldHealth);
 
 	UFUNCTION()
-	virtual void OnRep_MaxHealth(const FGameplayAttributeData& OldValue);
+	virtual void OnRep_MaxHealth(const FGameplayAttributeData& _OldMaxHealth);
 
 	UFUNCTION()
-	virtual void OnRep_HealthRegenRate(const FGameplayAttributeData& OldHealthRegenRate);
+	virtual void OnRep_Shield(const FGameplayAttributeData& _OldShield);
 
 	UFUNCTION()
-	virtual void OnRep_MoveSpeed(const FGameplayAttributeData& OldValue);
+	virtual void OnRep_MaxShield(const FGameplayAttributeData& _OldMaxShield);
+
+	UFUNCTION()
+	virtual void OnRep_HealthRegenRate(const FGameplayAttributeData& _OldHealthRegenRate);
+
+	UFUNCTION()
+	virtual void OnRep_MoveSpeedWalk(const FGameplayAttributeData& _OldMoveSpeedWalk);
+
+	UFUNCTION()
+	virtual void OnRep_MoveSpeedCrouch(const FGameplayAttributeData& _OldMoveSpeedCrouch);
+
+	UFUNCTION()
+	virtual void OnRep_MoveSpeedMultiplier(const FGameplayAttributeData& _OldMoveSpeedMultiplier);
 };
