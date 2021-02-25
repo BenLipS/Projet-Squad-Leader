@@ -3,6 +3,7 @@
 #include "Soldiers/Players/SoldierPlayerController.h"
 #include "Soldiers/Players/SoldierPlayerState.h"
 #include "SquadLeaderGameInstance.h"
+#include "Soldiers/Soldier.h"
 
 ASquadLeaderGameModeBase::ASquadLeaderGameModeBase() : RespawnDelay{ 3.f }
 {
@@ -21,14 +22,14 @@ ASquadLeaderGameModeBase::ASquadLeaderGameModeBase() : RespawnDelay{ 3.f }
 }
 
 void ASquadLeaderGameModeBase::StartPlay() {
-	// init collections
-	controlAreaCollection = {};
-
-	// todo : create teams as class
-
+	for (auto team : SoldierTeamCollection) {  // clean all team data at the begining
+		team.GetDefaultObject()->CleanControlArea();
+		team.GetDefaultObject()->CleanSpawnPoints();
+		team.GetDefaultObject()->CleanSoldierList();
+	}
+	
 	//Init for AI
 	Cast<USquadLeaderGameInstance>(GetGameInstance())->InitAIManagers();
-
 	Super::StartPlay();
 }
 
@@ -45,8 +46,7 @@ void ASquadLeaderGameModeBase::RespawnSoldier(AController* _Controller)
 {
 	if (ASoldier* soldier = Cast<ASoldier>(_Controller->GetPawn()); soldier)
 	{
-		// TODO: improve respawn
-		soldier->SetActorLocation(FVector(0.f, 0.f, 1500.f));
+		soldier->SetActorLocation(soldier->GetRespawnPoint());
 		soldier->Respawn();
 	}
 }

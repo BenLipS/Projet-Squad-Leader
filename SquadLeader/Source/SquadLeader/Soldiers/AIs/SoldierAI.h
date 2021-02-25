@@ -50,4 +50,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Shoot")
 	void SetLookingAtPosition(FVector lookingAtPosition);
+
+
+/////////// Respawn
+public:
+	virtual FVector GetRespawnPoint() override;
 };

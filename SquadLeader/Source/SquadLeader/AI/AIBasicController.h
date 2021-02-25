@@ -14,7 +14,6 @@ class SQUADLEADER_API AAIBasicController : public AAIGeneralController
 {
 	GENERATED_BODY()
 
-
 	AAIBasicController();
 
 protected:
@@ -111,4 +110,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Flocking Behaviour")
 	FVector GetObjectifLocation() { return ObjectifLocation; };
+/////////// Respawn
+public:
+	virtual FVector GetRespawnPoint() override;
 };

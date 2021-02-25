@@ -1,4 +1,5 @@
 #include "SoldierAI.h"
+#include "../../AI/AIGeneralController.h"
 
 ASoldierAI::ASoldierAI(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer)
 {
@@ -75,4 +76,12 @@ bool ASoldierAI::ActivateAbilityRun()
 void ASoldierAI::CancelAbilityRun()
 {
 	CancelAbility(ASoldier::SkillRunTag);
+}
+
+FVector ASoldierAI::GetRespawnPoint()
+{
+	if (auto AIController = Cast<AAIGeneralController>(GetController()); AIController) {
+		return AIController->GetRespawnPoint();
+	}
+	return FVector(0.f, 0.f, 1500.f); // else return default
 }

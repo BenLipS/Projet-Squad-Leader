@@ -8,15 +8,10 @@
 #include "../AbilitySystem/Soldiers/AttributeSetSoldier.h"
 #include "../AbilitySystem/Soldiers/AbilitySystemSoldier.h"
 #include "../Weapons/Weapon.h"
+#include "SoldierTeam.h"
 #include "Net/UnrealNetwork.h"
 #include "Soldier.generated.h"
 
-UENUM()
-enum class ENUM_PlayerTeam : uint8 {
-	None        UMETA(DisplayName = "None"),
-	Team1       UMETA(DisplayName = "PlayerTeam1"),
-	Team2       UMETA(DisplayName = "PlayerTeam2"),
-};
 
 UCLASS()
 class SQUADLEADER_API ASoldier : public ACharacter, public IAbilitySystemInterface
@@ -234,16 +229,27 @@ public:
 	////////////////  PlayerTeam
 	// Appel du c�t� serveur pour actualiser l'�tat du rep�re 
 	UFUNCTION(Reliable, Server, WithValidation)
-		void ServerChangeTeam(ENUM_PlayerTeam _PlayerTeam);
+		void ServerChangeTeam(TSubclassOf<ASoldierTeam> _PlayerTeam);
 
 	UFUNCTION() // Doit toujours �tre UFUNCTION() quand il s'agit d'une fonction �OnRep notify�
 		void OnRep_ChangeTeam();
 
-	UPROPERTY(EditInstanceOnly, BluePrintReadWrite, ReplicatedUsing = OnRep_ChangeTeam, Category = "PlayerTeam")
-		ENUM_PlayerTeam PlayerTeam;
+	UPROPERTY(EditAnywhere, BluePrintReadWrite, ReplicatedUsing = OnRep_ChangeTeam, Category = "PlayerTeam")
+		TSubclassOf<ASoldierTeam> PlayerTeam;
+	TSubclassOf<ASoldierTeam> OldPlayerTeam;  // Local buffer used for team change
+	
+	UFUNCTION(Reliable, Server, WithValidation)
+		void ServerCycleBetweenTeam();
 
 	// Connected to the "L" key
 	void cycleBetweenTeam();
+
+
+public:
+	/////////////// Respawn
+	UFUNCTION()
+	virtual FVector GetRespawnPoint() { return FVector(0.f, 0.f, 1500.f); }  // function overide in SoldierPlayer and Soldier AI
+
 
 	//For AIPerception
 private:
