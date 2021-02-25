@@ -42,8 +42,6 @@ void ASquadLeaderGameModeBase::RespawnSoldier(AController* _Controller)
 {
 	if (ASoldier* soldier = Cast<ASoldier>(_Controller->GetPawn()); soldier)
 	{
-		// TODO: improve respawn
-		//soldier->SetActorLocation(FVector(0.f, 0.f, 1500.f));
 		soldier->SetActorLocation(soldier->GetRespawnPoint());
 		soldier->Respawn();
 	}

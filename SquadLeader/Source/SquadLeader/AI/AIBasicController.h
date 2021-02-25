@@ -13,5 +13,8 @@ UCLASS()
 class SQUADLEADER_API AAIBasicController : public AAIGeneralController
 {
 	GENERATED_BODY()
-	
+
+/////////// Respawn
+public:
+	virtual FVector GetRespawnPoint() override;
 };
