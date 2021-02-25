@@ -165,4 +165,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Perception")
 		float m_distancePerception = 5000.f;
 
+
+/////////// Respawn
+public:
+	UFUNCTION()
+	virtual FVector GetRespawnPoint() { return FVector(0.f, 0.f, 1500.f); }  // function overide in in each controller
 };

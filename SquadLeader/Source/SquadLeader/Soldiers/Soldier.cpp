@@ -2,6 +2,7 @@
 #include "SoldierMovementComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "EngineUtils.h"
+#include "../SquadLeaderGameModeBase.h"
 #include "../AbilitySystem/Soldiers/GameplayAbilitySoldier.h"
 #include "../AbilitySystem/Soldiers/GameplayEffects/States/GE_StateDead.h"
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
@@ -48,6 +49,14 @@ void ASoldier::BeginPlay()
 		setToFirstCameraPerson();
 	else
 		setToThirdCameraPerson();
+
+	if (GetLocalRole() == ROLE_Authority) {
+		// add this to the team data
+		if (PlayerTeam) {
+			OldPlayerTeam = PlayerTeam;
+			PlayerTeam.GetDefaultObject()->AddSoldierList(this);
+		}
+	}
 }
 
 
@@ -455,12 +464,22 @@ void ASoldier::SetCurrentWeapon(AWeapon* _newWeapon, AWeapon* _previousWeapon)
 
 }
 
-void ASoldier::ServerChangeTeam_Implementation(ENUM_PlayerTeam _PlayerTeam)
+
+// network for debug team change
+
+void ASoldier::ServerChangeTeam_Implementation(TSubclassOf<ASoldierTeam> _PlayerTeam)
 {
 	PlayerTeam = _PlayerTeam;
+	
+	if(OldPlayerTeam)
+		OldPlayerTeam.GetDefaultObject()->RemoveSoldierList(this);
+	if(PlayerTeam)
+		PlayerTeam.GetDefaultObject()->AddSoldierList(this);
+	
+	OldPlayerTeam = PlayerTeam;
 }
 
-bool ASoldier::ServerChangeTeam_Validate(ENUM_PlayerTeam _PlayerTeam)
+bool ASoldier::ServerChangeTeam_Validate(TSubclassOf<ASoldierTeam> _PlayerTeam)
 {
 	return true;
 }
@@ -472,28 +491,37 @@ void ASoldier::OnRep_ChangeTeam()
 	}
 }
 
+void ASoldier::ServerCycleBetweenTeam_Implementation() {
+	cycleBetweenTeam();
+}
+
+bool ASoldier::ServerCycleBetweenTeam_Validate() {
+	return true;
+}
+
 void ASoldier::cycleBetweenTeam()
 {
-	FString message;
-	switch (PlayerTeam)
-	{
-	case ENUM_PlayerTeam::None:
-		PlayerTeam = ENUM_PlayerTeam::Team1;
-		message = FString::Printf(TEXT("You now are in team1"));
-		break;
-	case ENUM_PlayerTeam::Team1:
-		PlayerTeam = ENUM_PlayerTeam::Team2;
-		message = FString::Printf(TEXT("You now are in team2"));
-		break;
-	case ENUM_PlayerTeam::Team2:
-		message = FString::Printf(TEXT("You now are in no team"));
-		PlayerTeam = ENUM_PlayerTeam::None;
-		break;
-	default:
-		break;
+	if (GetLocalRole() == ROLE_Authority) {
+		FString message;
+		auto gameMode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
+		auto initialIndex = gameMode->SoldierTeamCollection.Find(PlayerTeam);
+		if (initialIndex != INDEX_NONE) {
+			auto index = initialIndex + 1;
+			if (!(gameMode->SoldierTeamCollection.IsValidIndex(index))) {
+				index = 0;
+			}
+			PlayerTeam = gameMode->SoldierTeamCollection[index];
+			message = PlayerTeam.GetDefaultObject()->TeamName;
+		}
+		else {
+			if (gameMode->SoldierTeamCollection.Max() > 0) {
+				PlayerTeam = gameMode->SoldierTeamCollection[0];
+				message = PlayerTeam.GetDefaultObject()->TeamName;
+			}
+		}
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, message);
 	}
-	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, message);
-
+	else ServerCycleBetweenTeam();
 }
 
 void ASoldier::setup_stimulus() {

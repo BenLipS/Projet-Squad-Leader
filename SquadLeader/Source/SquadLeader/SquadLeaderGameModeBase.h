@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
 #include "ControlArea/ControlArea.h"
+#include "Soldiers/SoldierTeam.h"
 #include "SquadLeaderGameModeBase.generated.h"
 
 UCLASS()
@@ -19,11 +20,14 @@ public:
 
 public:
 	// storage of global data for all the game
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "GameModeData")
 	TArray<class AControlArea*> controlAreaCollection;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "GameModeData")
+	TArray<TSubclassOf<ASoldierTeam>> SoldierTeamCollection;
 
 protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Respawn")
-	float RespawnDelay;
+		float RespawnDelay;
 public:
 	void SoldierDied(AController* _Controller);
 	void RespawnSoldier(AController* _Controller);
