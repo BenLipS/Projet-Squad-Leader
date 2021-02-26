@@ -22,7 +22,7 @@
 AAIBasicController::AAIBasicController() :
 	AlignementWeight{ 1.f },
 	CohesionWeight{ 1.f },
-	SeparationWeight{ 2.f },
+	SeparationWeight{ 5.f },
 	ObjectifWeight{ 2.5f },
 	MovementVectorScale{ 2.f },
 	SeparationVector{ 0.f, 0.f, 0.f },
@@ -38,7 +38,7 @@ AAIBasicController::AAIBasicController() :
 
 void AAIBasicController::BeginPlay() {
 	Super::BeginPlay();
-	//Cast<USquadLeaderGameInstance>(GetGameInstance())->AddAIBasicToManager(this);
+	Cast<USquadLeaderGameInstance>(GetGameInstance())->AddAIBasicToManager(this);
 	blackboard->SetValueAsBool("DoFlocking", false);
 }
 

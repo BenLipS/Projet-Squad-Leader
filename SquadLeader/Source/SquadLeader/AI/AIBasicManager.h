@@ -16,6 +16,15 @@ class SQUADLEADER_API UAIBasicManager : public UObject
 	GENERATED_BODY()
 
 public:
+	UAIBasicManager() = default;
+
+	UFUNCTION()
+	void Init(TSubclassOf<ASoldierTeam> _Team);
+
 	UPROPERTY()
 	TArray<AAIBasicController*> AIBasicList;
+
+	UPROPERTY()
+	TSubclassOf<ASoldierTeam> Team;
+
 };

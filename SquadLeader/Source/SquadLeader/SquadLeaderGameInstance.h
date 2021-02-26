@@ -18,20 +18,24 @@ class SQUADLEADER_API USquadLeaderGameInstance : public UGameInstance
 	GENERATED_BODY()
 
 	UPROPERTY()
-	UAIBasicManager* AIBasicManagerTeam1;
+	class UAIBasicManager* AIBasicManagerTeam1;
 
 	UPROPERTY()
-	UAIBasicManager* AIBasicManagerTeam2;
+	class UAIBasicManager* AIBasicManagerTeam2;
 
 	UPROPERTY()
 	TArray<UAISquadManager*> ListAISquadManagers;
 
 
 public:
+	USquadLeaderGameInstance();
+
 	UFUNCTION()
 	void InitAIManagers();
 
+	UFUNCTION()
 	void AddAIBasicToManager(AAIBasicController* AIBasic);
 
-
+	UFUNCTION()
+	TArray<UAISquadManager*> GetSquadManagers() { return ListAISquadManagers; }
 };

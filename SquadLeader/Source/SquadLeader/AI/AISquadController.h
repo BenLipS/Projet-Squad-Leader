@@ -17,4 +17,6 @@ class SQUADLEADER_API AAISquadController : public AAIGeneralController
 /////////// Respawn
 public:
 	virtual FVector GetRespawnPoint() override;
+
+
 };

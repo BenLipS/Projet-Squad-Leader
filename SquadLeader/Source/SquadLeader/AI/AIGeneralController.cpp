@@ -270,3 +270,8 @@ void AAIGeneralController::DefenseBehavior() {
 		blackboard->SetValueAsVector("VectorLocation", FVector(0.f, 0.f, 0.f));
 	}
 }
+
+void AAIGeneralController::SetMission(UMission* _Mission)
+{
+	Mission = _Mission;
+}

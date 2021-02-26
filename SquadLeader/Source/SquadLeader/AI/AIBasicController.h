@@ -100,9 +100,6 @@ protected:
 	UFUNCTION()
 	void UpdateFlockingPosition(float DeltaSeconds);
 
-	UFUNCTION()
-	void UpdateMission();
-
 public:
 	/* For BT Task  */
 	UFUNCTION(BlueprintCallable, Category = "Flocking Behaviour")
@@ -113,4 +110,8 @@ public:
 /////////// Respawn
 public:
 	virtual FVector GetRespawnPoint() override;
+
+public://Mission
+	UFUNCTION()
+	void UpdateMission();
 };
