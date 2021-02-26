@@ -30,18 +30,15 @@ void AGrdiSetUp::Tick(float DeltaTime)
 	if (GetLocalRole() == ROLE_Authority) {
 		
 	}
-	/*for (TSubclassOf<ASoldierTeam> _team : m_Gamemode->SoldierTeamCollection) {
+	for (TSubclassOf<ASoldierTeam> _team : m_Gamemode->SoldierTeamCollection) {
 		ASoldierTeam* _teamclass = Cast<ASoldierTeam>(_team->GetDefaultObject());
 		for (ASoldier* _soldier : _teamclass->soldierList) {
 			int _index_tile = FindTile(_soldier->GetLocation());
 			if (_index_tile >= 0)
-				m_GridBases[_index_tile]->SetValue(1.f);
+				m_GridBases[_index_tile] =1.f;
 		}
-	}*/
-	for (int index = 0; index != m_GridBases.Num(); ++index)
-		if(m_GridBases[index] <= 1.f)
-			m_GridBases[index] = 1.f;
-	//DrawGrid();
+	}
+	DrawGrid();
 }
 
 void AGrdiSetUp::DrawGrid() {
@@ -106,9 +103,16 @@ void AGrdiSetUp::AddGridBase(int index_i, int index_j, FVector _location) {
 }
 
 int AGrdiSetUp::FindTile(FVector _location) {
-	/*for (int i = 0; i != size_array_X; ++i)
-		for (int j = 0; j != size_array_Y; ++j)
-			if (m_GridBases[i * size_array_X + j] != NULL && (_location - m_GridBases[i * size_array_X + j]->GetLocation()).Size() < 10.f)
-				return i * size_array_X + j;*/
+
+	int index_i = _location.X / m_GridBaseSize_X;
+	int index_j = _location.Y / m_GridBaseSize_Y;
+
+	if (index_i < 0.f)
+		index_i = 0.f;
+	if (index_j < 0.f)
+		index_j = 0.f;
+
+	if (index_i < size_array_X && index_j < size_array_Y && m_GridBases[index_i * size_array_X + index_j] <= 1.0f)
+		return index_i * size_array_X + index_j;
 	return -1;
 }
