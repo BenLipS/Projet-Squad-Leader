@@ -14,7 +14,7 @@ void ASoldierPlayerController::BeginPlay()
 	Super::BeginPlay();
 }
 
-void ASoldierPlayerController::createHUD()
+void ASoldierPlayerController::CreateHUD()
 {
 	if (HUDWidget || !IsLocalPlayerController()) // We only want the HUD in local
 		return;
@@ -25,11 +25,21 @@ void ASoldierPlayerController::createHUD()
 		return;
 	}
 
+	ASoldierPlayerState* PS = GetPlayerState<ASoldierPlayerState>();
+	if (!PS)
+		return;
+
 	HUDWidget = CreateWidget<UHUDWidget>(this, HUDWidgetClass);
 	HUDWidget->AddToViewport();
+
+	// Player stats
+	HUDWidget->SetMaxHealth(PS->GetMaxHealth());
+	HUDWidget->SetHealth(PS->GetHealth());
+	HUDWidget->SetMaxShield(PS->GetMaxShield());
+	HUDWidget->SetShield(PS->GetShield());
 }
 
-UUserWidget* ASoldierPlayerController::getHUD() const
+UHUDWidget* ASoldierPlayerController::GetHUD() const
 {
 	return HUDWidget;
 }
@@ -46,6 +56,9 @@ void ASoldierPlayerController::OnPossess(APawn* InPawn)
 void ASoldierPlayerController::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();
+
+	// For edge cases where the PlayerState is repped before the Hero is possessed.
+	CreateHUD();
 }
 
 

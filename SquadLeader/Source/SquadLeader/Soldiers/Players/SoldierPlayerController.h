@@ -51,8 +51,8 @@ protected:
 	class UHUDWidget* HUDWidget;
 
 public:
-	void createHUD();
-	UUserWidget* getHUD() const;
+	void CreateHUD();
+	UHUDWidget* GetHUD() const;
 
 //////////////// Movements
 protected:

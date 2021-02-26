@@ -111,6 +111,12 @@ public:
 	float GetMaxHealth() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
+	float GetShield() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
+	float GetMaxShield() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
 	float GetMoveSpeedWalk() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Attributes")

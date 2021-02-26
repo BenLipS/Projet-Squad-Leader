@@ -25,9 +25,8 @@ void ASoldierPlayer::PossessedBy(AController* _newController)
 	SetAbilitySystemComponent();
 	initWeapons();
 
-	// TODO: Do we need to have the hud in server ?
 	if (ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(GetController()); PC)
-		PC->createHUD();
+		PC->CreateHUD();
 }
 
 // Client only 
@@ -38,7 +37,7 @@ void ASoldierPlayer::OnRep_PlayerState()
 	initWeapons();
 
 	if (ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(GetController()); PC)
-		PC->createHUD();
+		PC->CreateHUD();
 }
 
 void ASoldierPlayer::SetAbilitySystemComponent()
