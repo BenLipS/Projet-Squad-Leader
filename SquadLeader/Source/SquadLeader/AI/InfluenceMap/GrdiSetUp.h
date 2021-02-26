@@ -61,6 +61,8 @@ public:
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Grid")
 		int m_GridBaseSize_Y = 10;
 
+
+private:
 	/*
 	* The size of the array m_GridBases
 	*/

@@ -18,31 +18,48 @@ public:
 
 	UGridBase(bool _valid, float _value, FVector _location);
 
-	UFUNCTION()
+	/*
+	* Check of the GridBase is valid or not
+	*/
+	UFUNCTION(BlueprintCallable)
 		bool IsValid() const noexcept { return m_isValid; }
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 		void SetValue(float _value) noexcept { m_value = _value; }
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 		float GetValue() const noexcept { return m_value; }
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 		void SetIsValid(bool _valid) noexcept { m_isValid = _valid; }
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 		void SetLocation(FVector _location) noexcept { m_location = _location; }
 
-	UFUNCTION()
+	/*
+	* Draw a DebugSolidBox
+	* only use this if you want to debbug
+	*/
+	UFUNCTION(BlueprintCallable)
 		void DrawBase(UWorld* _world);
-protected:
 
+protected:
+	/*
+	* Boolean to know if the GridBase is Valid or not
+	*/
 	UPROPERTY()
 		bool m_isValid;
 
+	/*
+	* The data of the GridBase
+	* the value is between [-1; 1]
+	*/
 	UPROPERTY()
 		float m_value;
 
+	/*
+	* Only use for debbuging the code
+	*/
 	UPROPERTY()
 		FVector m_location;
 
