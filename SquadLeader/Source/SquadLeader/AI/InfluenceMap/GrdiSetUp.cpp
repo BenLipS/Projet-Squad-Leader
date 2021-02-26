@@ -2,8 +2,6 @@
 
 
 #include "GrdiSetUp.h"
-#include "NavigationSystem.h"
-#include "NavigationPath.h"
 
 // Sets default values
 AGrdiSetUp::AGrdiSetUp()
@@ -23,15 +21,13 @@ void AGrdiSetUp::BeginPlay()
 void AGrdiSetUp::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 	//DrawGrid();
 }
 
 void AGrdiSetUp::DrawGrid() {
-	for (int i = 0; i != size_array_X; ++i)
-		for (int j = 0; j != size_array_Y; ++j)
-			if (m_GridBases[i * size_array_X + j] != NULL && m_GridBases[i * size_array_X + j]->IsValid())
-				m_GridBases[i * size_array_X + j]->DrawBase(GetWorld());
+	for(UGridBase* _gb : m_GridBases)
+		if (_gb != NULL && _gb->IsValid())
+			_gb->DrawBase(GetWorld());
 }
 
 void AGrdiSetUp::CreateGrid() {
@@ -47,19 +43,29 @@ void AGrdiSetUp::CreateGrid() {
 	for (int i = 0; i != size_array_X; ++i) {
 		for (int j = 0; j != size_array_Y; ++j) {
 			FVector _location = FVector(dist_X, dist_Y, 30.f);
-			UNavigationPath* path = navSys->FindPathToLocationSynchronously(GetWorld(), FVector(0.f, 0.f, 0.f), _location);
-			if (path->IsValid() && (path->PathPoints.Last()-_location).Size()<50.f) {
-				m_GridBases[i * size_array_X + j] = NewObject<UGridBase>();
-				m_GridBases[i * size_array_X + j]->SetIsValid(true);
-				m_GridBases[i * size_array_X + j]->SetLocation(_location);
-			}
-			else {
-				m_GridBases[i * size_array_X + j] = NULL;
-			}
+			IsValidLocation(_location, navSys)? AddGridBase(i, j, _location) : AddGridBase(i, j, FVector());
 			dist_Y += m_GridBaseSize_Y;
 		}
-
 		dist_X += m_GridBaseSize_X;
 		dist_Y = m_GridBaseSize_Y / 2;
 	}
+}
+
+bool AGrdiSetUp::IsValidLocation(FVector _location, UNavigationSystemV1* navSys) {
+	UNavigationPath* path = navSys->FindPathToLocationSynchronously(GetWorld(), FVector(0.f, 0.f, 0.f), _location);
+	return path->IsValid() && (path->PathPoints.Last() - _location).Size() < 50.f;
+	
+	//We found out that Unreal said a point is good even when the path doens't reach the location
+	//So this explain the line "path->PathPoints.Last() - _location).Size() < 50.f"
+	//If the last point of the Path is near the location then it's a good location
+}
+
+void AGrdiSetUp::AddGridBase(int index_i, int index_j, FVector _location) {
+	if (_location.Size() > 0.f) {
+		m_GridBases[index_i * size_array_X + index_j] = NewObject<UGridBase>();
+		m_GridBases[index_i * size_array_X + index_j]->SetIsValid(true);
+		m_GridBases[index_i * size_array_X + index_j]->SetLocation(_location);
+	}
+	else
+		m_GridBases[index_i * size_array_X + index_j] = NULL;
 }
