@@ -44,6 +44,17 @@ UHUDWidget* ASoldierPlayerController::GetHUD() const
 	return HUDWidget;
 }
 
+void ASoldierPlayerController::SetRespawnCountdown_Implementation(const float _RespawnTimeRemaining)
+{
+	if (HUDWidget)
+		HUDWidget->SetRespawnCountdown(_RespawnTimeRemaining);
+}
+
+bool ASoldierPlayerController::SetRespawnCountdown_Validate(const float _RespawnTimeRemaining)
+{
+	return true;
+}
+
 // Server only
 void ASoldierPlayerController::OnPossess(APawn* InPawn)
 {
@@ -57,10 +68,9 @@ void ASoldierPlayerController::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();
 
-	// For edge cases where the PlayerState is repped before the Hero is possessed.
+	// For edge cases where the PlayerState is repped before the Soldier is possessed.
 	CreateHUD();
 }
-
 
 void ASoldierPlayerController::Tick(float _deltaTime)
 {

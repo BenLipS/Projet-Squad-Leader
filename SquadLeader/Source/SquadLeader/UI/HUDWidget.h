@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/TextBlock.h"
 #include "HUDWidget.generated.h"
 
 UCLASS()
@@ -9,8 +10,9 @@ class SQUADLEADER_API UHUDWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
+//////////////// Setters - called from a controller
 public:
-	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	UFUNCTION(BlueprintCallable)
 	void SetRespawnCountdown(const float _TimeRemaining);
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
@@ -24,4 +26,17 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void SetShield(float const _Shield);
+
+//////////////// Respawn
+protected:
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UTextBlock* TextRespawnRemainTime;
+
+	float RespawnRemainTime = 0.f;
+
+	UFUNCTION()
+	void UpdateTextRespawnRemainTime();
+
+//////////////// Timers
+	FTimerHandle RespawnTimer;
 };
