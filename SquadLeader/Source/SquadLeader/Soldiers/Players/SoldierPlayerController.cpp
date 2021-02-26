@@ -67,8 +67,8 @@ void ASoldierPlayerController::SetupInputComponent()
 	InputComponent->BindAxis("MoveForward", this, &ASoldierPlayerController::onMoveForward);
 	InputComponent->BindAxis("MoveRight", this, &ASoldierPlayerController::onMoveRight);
 
-	InputComponent->BindAxis("Turn", this, &ASoldierPlayerController::AddYawInput);
-	InputComponent->BindAxis("LookUp", this, &ASoldierPlayerController::AddPitchInput);
+	InputComponent->BindAxis("Turn", this, &ASoldierPlayerController::onTurn);
+	InputComponent->BindAxis("LookUp", this, &ASoldierPlayerController::onLookUp);
 
 	//TODO : change debug bindAction when not need anymore
 	InputComponent->BindAction("ChangeTeam", IE_Released, this, &ASoldierPlayerController::onChangeTeam);
@@ -80,16 +80,28 @@ void ASoldierPlayerController::onSwitchCamera()
 		soldier->onSwitchCamera();
 }
 
-void ASoldierPlayerController::onMoveForward(const float _val)
+void ASoldierPlayerController::onMoveForward(const float _Val)
 {
 	if (ASoldier* soldier = Cast<ASoldier>(K2_GetPawn()); soldier)
-		soldier->onMoveForward(_val);
+		soldier->MoveForward(_Val);
 }
 
-void ASoldierPlayerController::onMoveRight(const float _val) {
+void ASoldierPlayerController::onMoveRight(const float _Val) {
 
 	if (ASoldier* soldier = Cast<ASoldier>(K2_GetPawn()); soldier)
-		soldier->onMoveRight(_val);
+		soldier->MoveRight(_Val);
+}
+
+void ASoldierPlayerController::onLookUp(const float _Val)
+{
+	if (ASoldier* soldier = Cast<ASoldier>(K2_GetPawn()); soldier)
+		soldier->LookUp(_Val);
+}
+
+void ASoldierPlayerController::onTurn(const float _Val)
+{
+	if (ASoldier* soldier = Cast<ASoldier>(K2_GetPawn()); soldier)
+		soldier->Turn(_Val);
 }
 
 void ASoldierPlayerController::onChangeTeam()

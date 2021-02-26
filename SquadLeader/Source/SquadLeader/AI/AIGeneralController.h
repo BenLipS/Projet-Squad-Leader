@@ -221,4 +221,9 @@ public:
 	*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Perception")
 		bool m_DetectNeutrals = true;
+
+/////////// Respawn
+public:
+	UFUNCTION()
+	virtual FVector GetRespawnPoint() { return FVector(0.f, 0.f, 1500.f); }  // function overide in in each controller
 };

@@ -22,4 +22,7 @@ protected:
 	void BindASCInput();
 
 	bool ASCInputBound;
+
+public:  // Respawn
+	virtual FVector GetRespawnPoint() override;
 };

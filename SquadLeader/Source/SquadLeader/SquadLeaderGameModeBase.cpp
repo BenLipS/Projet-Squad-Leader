@@ -2,12 +2,13 @@
 #include "UObject/ConstructorHelpers.h"
 #include "Soldiers/Players/SoldierPlayerController.h"
 #include "Soldiers/Players/SoldierPlayerState.h"
+#include "Soldiers/Soldier.h"
 
-ASquadLeaderGameModeBase::ASquadLeaderGameModeBase()
+ASquadLeaderGameModeBase::ASquadLeaderGameModeBase() : RespawnDelay{ 3.f }
 {
-	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnObject(TEXT("/Game/BluePrints/Players/BP_SoldierPlayerSupport"));
-	static ConstructorHelpers::FClassFinder<ASoldierPlayerController> PlayerControllerObject(TEXT("/Game/BluePrints/Players/BP_SoldierPlayerController"));
-	static ConstructorHelpers::FClassFinder<ASoldierPlayerState> PlayerStateObject(TEXT("/Game/BluePrints/Players/BP_SoldierPlayerState"));
+	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnObject(TEXT("/Game/BluePrints/Soldiers/Players/BP_SoldierPlayerSupport"));
+	static ConstructorHelpers::FClassFinder<ASoldierPlayerController> PlayerControllerObject(TEXT("/Game/BluePrints/Soldiers/Players/BP_SoldierPlayerController"));
+	static ConstructorHelpers::FClassFinder<ASoldierPlayerState> PlayerStateObject(TEXT("/Game/BluePrints/Soldiers/Players/BP_SoldierPlayerState"));
 
 	if (PlayerPawnObject.Class != NULL)
 		DefaultPawnClass = PlayerPawnObject.Class;
@@ -20,10 +21,28 @@ ASquadLeaderGameModeBase::ASquadLeaderGameModeBase()
 }
 
 void ASquadLeaderGameModeBase::StartPlay() {
-	// init collections
-	controlAreaCollection = {};
-
-	// todo : create teams as class
-
+	for (auto team : SoldierTeamCollection) {  // clean all team data at the begining
+		team.GetDefaultObject()->CleanControlArea();
+		team.GetDefaultObject()->CleanSpawnPoints();
+		team.GetDefaultObject()->CleanSoldierList();
+	}
 	Super::StartPlay();
+}
+
+void ASquadLeaderGameModeBase::SoldierDied(AController* _Controller)
+{
+	FTimerHandle RespawnTimerHandle;
+	FTimerDelegate RespawnDelegate;
+
+	RespawnDelegate = FTimerDelegate::CreateUObject(this, &ASquadLeaderGameModeBase::RespawnSoldier, _Controller);
+	GetWorldTimerManager().SetTimer(RespawnTimerHandle, RespawnDelegate, RespawnDelay, false);
+}
+
+void ASquadLeaderGameModeBase::RespawnSoldier(AController* _Controller)
+{
+	if (ASoldier* soldier = Cast<ASoldier>(_Controller->GetPawn()); soldier)
+	{
+		soldier->SetActorLocation(soldier->GetRespawnPoint());
+		soldier->Respawn();
+	}
 }
