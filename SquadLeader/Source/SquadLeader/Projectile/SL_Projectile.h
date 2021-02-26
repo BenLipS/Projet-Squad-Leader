@@ -20,7 +20,6 @@ class SQUADLEADER_API ASL_Projectile : public AActor
 public:	
 	// Sets default values for this actor's properties
 	ASL_Projectile();
-	ASL_Projectile(FVector& FireDirection);
 
 	~ASL_Projectile() = default;
 
@@ -46,7 +45,7 @@ protected:
 	float Bounciness = 0.3f;
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Projectile")
-	ContactPolicy OnContactPolicy = ContactPolicy::BOUNCE;
+	ContactPolicy OnContactPolicy;
 
 	// AreaEffect to apply on contact/explosion
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Projectile")
@@ -72,8 +71,7 @@ protected:
 
 	void InitVelocity();
 
-	void InitVelocity(FVector& FireDirection);
-
 public:
-	void OnContact(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit);
+	UFUNCTION()
+	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit);
 };
