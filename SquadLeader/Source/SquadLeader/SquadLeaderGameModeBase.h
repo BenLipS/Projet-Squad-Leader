@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
 #include "ControlArea/ControlArea.h"
+#include "../SquadLeader/AI/InfluenceMap/GrdiSetUp.h"
 #include "SquadLeaderGameModeBase.generated.h"
 
 /**
@@ -23,4 +24,6 @@ public:
 public:
 	// storage of global data for all the game
 	TArray<class AControlArea*> controlAreaCollection;
+
+
 };

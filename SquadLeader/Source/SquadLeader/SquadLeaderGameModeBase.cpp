@@ -25,6 +25,5 @@ void ASquadLeaderGameModeBase::StartPlay() {
 
 	// todo : create teams as class
 
-
 	Super::StartPlay();
 }
