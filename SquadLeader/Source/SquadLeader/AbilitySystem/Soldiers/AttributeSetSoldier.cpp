@@ -68,11 +68,11 @@ void UAttributeSetSoldier::PostGameplayEffectExecute(const FGameplayEffectModCal
 				SetHealth(GetHealth() - (LocalDamage - GetShield()));
 				SetShield(0.f);
 
-				GEngine->AddOnScreenDebugMessage(78, 1.f, FColor::Red, FString::Printf(TEXT("%s still has %s HPs"), *TargetSoldier->GetName(), *FString::SanitizeFloat(GetHealth())));
+				//GEngine->AddOnScreenDebugMessage(78, 1.f, FColor::Red, FString::Printf(TEXT("%s still has %s HPs"), *TargetSoldier->GetName(), *FString::SanitizeFloat(GetHealth())));
 			}
 			if (!TargetSoldier->IsAlive()) // The soldier has been killed
 			{
-				GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("%s is dead"), *TargetSoldier->GetName()));
+				//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("%s is dead"), *TargetSoldier->GetName()));
 				//SourceSoldier->getBounty();
 			}
 			else if (SourceASC)

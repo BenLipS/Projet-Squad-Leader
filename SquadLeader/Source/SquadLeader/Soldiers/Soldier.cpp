@@ -388,6 +388,10 @@ bool ASoldier::IsAlive() const
 	return GetHealth() > 0.0f;
 }
 
+FVector ASoldier::GetLocation() const noexcept {
+	return GetActorLocation();
+}
+
 float ASoldier::GetMoveSpeedWalk() const
 {
 	return AttributeSet ? AttributeSet->GetMoveSpeedWalk() : -1.0f;

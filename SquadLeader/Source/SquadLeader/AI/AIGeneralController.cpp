@@ -19,7 +19,7 @@ AAIGeneralController::AAIGeneralController(FObjectInitializer const& object_init
 {
 	setup_BehaviorTree();
 	setup_perception_system();
-	m_destination = FVector(0.f, 0.f, 0.f);
+	m_destination = FVector(8870.f, 9000.f, 0.f);
 }
 
 void AAIGeneralController::BeginPlay() {
@@ -284,6 +284,6 @@ void AAIGeneralController::DefenseBehavior() {
 	if (m_behavior == AIBehavior::Attack) {
 		m_behavior = AIBehavior::Defense;
 		blackboard->SetValueAsBool("is_attacking", false);
-		blackboard->SetValueAsVector("VectorLocation", FVector(0.f, 0.f, 0.f));
+		blackboard->SetValueAsVector("VectorLocation", FVector(8870.f, 9000.f, 0.f));
 	}
 }

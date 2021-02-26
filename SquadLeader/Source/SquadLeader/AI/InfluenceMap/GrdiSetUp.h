@@ -7,6 +7,7 @@
 #include "GridBase.h"
 #include "NavigationSystem.h"
 #include "NavigationPath.h"
+#include "../../SquadLeaderGameModeBase.h"
 #include "GrdiSetUp.generated.h"
 
 UCLASS()
@@ -22,6 +23,8 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UFUNCTION()
+		int FindTile(FVector _location);
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -40,8 +43,9 @@ public:
 	void CreateGrid();
 
 protected:
-	TArray<UGridBase*> m_GridBases;
+	TArray<float> m_GridBases;
 
+	ASquadLeaderGameModeBase* m_Gamemode;
 public:
 	/*
 	* The dimension of the Grid

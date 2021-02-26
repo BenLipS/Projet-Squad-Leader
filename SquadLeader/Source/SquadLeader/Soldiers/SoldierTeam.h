@@ -37,7 +37,7 @@ public:
 		FString TeamName;
 
 
-protected:  // Soldier List
+public:  // Soldier List
 	UPROPERTY(EditAnywhere, Replicated, Category = "SoldierList")
 		TArray<ASoldier*> soldierList;
 public:

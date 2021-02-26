@@ -34,6 +34,8 @@ public:
 		void SetIsValid(bool _valid) noexcept { m_isValid = _valid; }
 
 	UFUNCTION(BlueprintCallable)
+		FVector GetLocation() const noexcept { return m_location; }
+	UFUNCTION(BlueprintCallable)
 		void SetLocation(FVector _location) noexcept { m_location = _location; }
 
 	/*

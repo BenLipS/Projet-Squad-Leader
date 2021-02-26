@@ -2,6 +2,8 @@
 
 
 #include "GrdiSetUp.h"
+#include "../../Soldiers/Soldier.h"
+#include "DrawDebugHelpers.h"
 
 // Sets default values
 AGrdiSetUp::AGrdiSetUp()
@@ -14,20 +16,55 @@ AGrdiSetUp::AGrdiSetUp()
 void AGrdiSetUp::BeginPlay()
 {
 	Super::BeginPlay();
+	if (GetLocalRole() == ROLE_Authority) {
+		
+	}
 	CreateGrid();
+	m_Gamemode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
 }
 
 // Called every frame
 void AGrdiSetUp::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	if (GetLocalRole() == ROLE_Authority) {
+		
+	}
+	/*for (TSubclassOf<ASoldierTeam> _team : m_Gamemode->SoldierTeamCollection) {
+		ASoldierTeam* _teamclass = Cast<ASoldierTeam>(_team->GetDefaultObject());
+		for (ASoldier* _soldier : _teamclass->soldierList) {
+			int _index_tile = FindTile(_soldier->GetLocation());
+			if (_index_tile >= 0)
+				m_GridBases[_index_tile]->SetValue(1.f);
+		}
+	}*/
+	for (int index = 0; index != m_GridBases.Num(); ++index)
+		if(m_GridBases[index] <= 1.f)
+			m_GridBases[index] = 1.f;
 	//DrawGrid();
 }
 
 void AGrdiSetUp::DrawGrid() {
-	for(UGridBase* _gb : m_GridBases)
-		if (_gb != NULL && _gb->IsValid())
-			_gb->DrawBase(GetWorld());
+	int dist_X = m_GridBaseSize_X / 2;
+	int dist_Y = m_GridBaseSize_Y / 2;
+	int test = 0;
+	for (int i = 0; i != size_array_X; ++i) {
+		for (int j = 0; j != size_array_Y; ++j) {
+			if (m_GridBases[i * size_array_X + j] <= 1.f) {
+				FVector _location = FVector(dist_X, dist_Y, 30.f);
+				if (m_GridBases[i * size_array_X + j] > 0.f)
+					DrawDebugSolidBox(GetWorld(), _location, FVector(95.f, 95.f, 10.f), FColor::Blue);
+				else if (m_GridBases[i * size_array_X + j] < 0.f)
+					DrawDebugSolidBox(GetWorld(), _location, FVector(95.f, 95.f, 10.f), FColor::Red);
+				else
+					DrawDebugSolidBox(GetWorld(), _location, FVector(95.f, 95.f, 10.f), FColor::Black);
+			}
+			
+			dist_Y += m_GridBaseSize_Y;
+		}
+		dist_X += m_GridBaseSize_X;
+		dist_Y = m_GridBaseSize_Y / 2;
+	}
 }
 
 void AGrdiSetUp::CreateGrid() {
@@ -53,7 +90,7 @@ void AGrdiSetUp::CreateGrid() {
 
 bool AGrdiSetUp::IsValidLocation(FVector _location, UNavigationSystemV1* navSys) {
 	UNavigationPath* path = navSys->FindPathToLocationSynchronously(GetWorld(), FVector(0.f, 0.f, 0.f), _location);
-	return path->IsValid() && (path->PathPoints.Last() - _location).Size() < 50.f;
+	return path->IsValid() && (!path->IsPartial());
 	
 	//We found out that Unreal said a point is good even when the path doens't reach the location
 	//So this explain the line "path->PathPoints.Last() - _location).Size() < 50.f"
@@ -62,10 +99,16 @@ bool AGrdiSetUp::IsValidLocation(FVector _location, UNavigationSystemV1* navSys)
 
 void AGrdiSetUp::AddGridBase(int index_i, int index_j, FVector _location) {
 	if (_location.Size() > 0.f) {
-		m_GridBases[index_i * size_array_X + index_j] = NewObject<UGridBase>();
-		m_GridBases[index_i * size_array_X + index_j]->SetIsValid(true);
-		m_GridBases[index_i * size_array_X + index_j]->SetLocation(_location);
+		m_GridBases[index_i * size_array_X + index_j] = 0.f;
 	}
 	else
-		m_GridBases[index_i * size_array_X + index_j] = NULL;
+		m_GridBases[index_i * size_array_X + index_j] = 100.f;
+}
+
+int AGrdiSetUp::FindTile(FVector _location) {
+	/*for (int i = 0; i != size_array_X; ++i)
+		for (int j = 0; j != size_array_Y; ++j)
+			if (m_GridBases[i * size_array_X + j] != NULL && (_location - m_GridBases[i * size_array_X + j]->GetLocation()).Size() < 10.f)
+				return i * size_array_X + j;*/
+	return -1;
 }

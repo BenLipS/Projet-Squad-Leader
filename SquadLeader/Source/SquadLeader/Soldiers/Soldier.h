@@ -122,6 +122,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
 	bool IsAlive() const;
 
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
+		FVector GetLocation() const noexcept;
+
 	// Attribute changed callbacks
 	FDelegateHandle HealthChangedDelegateHandle;
 	virtual void HealthChanged(const FOnAttributeChangeData& _Data);
