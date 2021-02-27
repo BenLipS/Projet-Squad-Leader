@@ -55,7 +55,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Projectile")
 	class UProjectileMovementComponent* ProjectileMovement;
 
-	UPROPERTY(VisibleDefaultsOnly, Category = "Projectile")
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Projectile")
 	class USphereComponent* CollisionComp;
 
 	FTimerHandle TimerExplosion;
@@ -65,8 +65,6 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	void OnExplode();
-
 	void DeleteProjectile();
 
 	void InitVelocity();
@@ -74,4 +72,11 @@ protected:
 public:
 	UFUNCTION()
 	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit);
+
+	UFUNCTION()
+	void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION(BlueprintCallable, Category = "Projectile")
+	void OnExplode();
+
 };

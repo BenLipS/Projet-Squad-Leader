@@ -4,6 +4,7 @@
 #include "SL_Projectile.h"
 #include "Components/SPhereComponent.h"
 #include "../AreaEffect/AreaEffect.h"
+#include "../Soldiers/Soldier.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 
 // Sets default values
@@ -30,8 +31,11 @@ void ASL_Projectile::BeginPlay()
 {
 	Super::BeginPlay();
 
+	CollisionComp->SetCollisionResponseToChannel(ECC_EngineTraceChannel1, ECR_Overlap);
 
 	CollisionComp->InitSphereRadius(Radius); //physic collision radius
+
+	CollisionComp->OnComponentBeginOverlap.AddDynamic(this, &ASL_Projectile::OnOverlapBegin);
 
 	if (OnContactPolicy == ContactPolicy::EXPLODE || OnContactPolicy == ContactPolicy::STICKY)
 		CollisionComp->OnComponentHit.AddDynamic(this, &ASL_Projectile::OnHit);
@@ -98,4 +102,34 @@ void ASL_Projectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor
 	}
 	
 }
+
+void ASL_Projectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (OnContactPolicy == ContactPolicy::EXPLODE)
+	{
+		ASoldier* soldierOwner = Cast<ASoldier>(GetOwner());
+		ASoldier* soldier = Cast<ASoldier>(OtherActor);
+
+		if (soldier)
+		{
+			if (soldierOwner)
+			{
+				if (soldierOwner->PlayerTeam != soldier->PlayerTeam)
+				{
+					OnExplode();
+				}
+			}
+			else
+			{
+				OnExplode();
+			}
+		}
+		else
+		{
+			OnExplode();
+		}
+	}
+}
+
+
 //FGameplayEffectSpecHandle DamageEffectSpecHandle = MakeOutgoingGameplayEffectSpec(DamageGameplayEffect, GetAbilityLevel());

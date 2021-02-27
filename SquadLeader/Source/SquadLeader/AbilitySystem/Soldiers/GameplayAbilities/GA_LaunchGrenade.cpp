@@ -21,7 +21,9 @@ void UGA_LaunchGrenade::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		SpawnInfo.Owner = ActorInfo->AvatarActor.Get();
 		SpawnInfo.Instigator = ActorInfo->AvatarActor.Get()->GetInstigator();
 		SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-		GetWorld()->SpawnActor<ASL_Projectile>(MyProjectile, SpawnInfo.Owner->GetActorLocation() + (SpawnInfo.Owner->GetActorForwardVector() * 50.0f),Cast<ASoldier>(SpawnInfo.Owner)->Controller->GetControlRotation(), SpawnInfo);
+		
+		GetWorld()->SpawnActor<ASL_Projectile>(MyProjectile, SpawnInfo.Owner->GetActorLocation(), Cast<ASoldier>(SpawnInfo.Owner), SpawnInfo);
+		
 		GEngine->AddOnScreenDebugMessage(7891, 0.5f, FColor::Green, FString::Printf(TEXT("Grenade launched")));
 		CancelAbility(Handle, ActorInfo, ActivationInfo, true);
 	}
