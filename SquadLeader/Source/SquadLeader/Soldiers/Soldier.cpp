@@ -23,6 +23,7 @@ FGameplayTag ASoldier::SkillJumpTag = FGameplayTag::RequestGameplayTag(FName("Ab
 FGameplayTag ASoldier::SkillCrouchTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Crouch"));
 FGameplayTag ASoldier::SkillFireWeaponTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.FireWeapon"));
 FGameplayTag ASoldier::SkillAreaEffectFromSelfTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.AreaEffectFromSelf"));
+FGameplayTag ASoldier::SkillGiveOrderTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.GiveOrder"));
 
 ASoldier::ASoldier(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer.SetDefaultSubobjectClass<USoldierMovementComponent>(ACharacter::CharacterMovementComponentName)), bAbilitiesInitialized{ false }, bDefaultWeaponsInitialized{ false }
 {
