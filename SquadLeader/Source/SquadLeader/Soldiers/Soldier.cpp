@@ -22,14 +22,13 @@ FGameplayTag ASoldier::SkillRunTag = FGameplayTag::RequestGameplayTag(FName("Abi
 FGameplayTag ASoldier::SkillJumpTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Jump"));
 FGameplayTag ASoldier::SkillCrouchTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Crouch"));
 FGameplayTag ASoldier::SkillFireWeaponTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.FireWeapon"));
+FGameplayTag ASoldier::SkillAimTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Aim"));
 FGameplayTag ASoldier::SkillAreaEffectFromSelfTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.AreaEffectFromSelf"));
 
 ASoldier::ASoldier(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer.SetDefaultSubobjectClass<USoldierMovementComponent>(ACharacter::CharacterMovementComponentName)), bAbilitiesInitialized{ false }, bDefaultWeaponsInitialized{ false }
 {
 	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
-
-	initStats();
 	initCameras();
 	initMovements();
 	initMeshes();
@@ -86,7 +85,7 @@ void ASoldier::initCameras()
 	FirstPersonCameraComponent->SetupAttachment(GetCapsuleComponent());
 	FirstPersonCameraComponent->SetRelativeLocation(FVector(2.f, 0.f, BaseEyeHeight));
 	FirstPersonCameraComponent->bUsePawnControlRotation = true;
-	FirstPersonCameraComponent->SetFieldOfView(fieldOfViewNormal);
+	FirstPersonCameraComponent->SetFieldOfView(90.f);
 
 	// 3rd person camera
 	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
@@ -101,7 +100,7 @@ void ASoldier::initCameras()
 
 	ThirdPersonCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("ThirdPersonCamera"));
 	ThirdPersonCameraComponent->SetupAttachment(SpringArmComponent);
-	ThirdPersonCameraComponent->SetFieldOfView(fieldOfViewNormal);
+	ThirdPersonCameraComponent->SetFieldOfView(90.f);
 
 	bIsFirstPerson = true;
 	CurrentCameraComponent = FirstPersonCameraComponent;
@@ -117,12 +116,6 @@ void ASoldier::initMeshes()
 	FirstPersonMesh->CastShadow = false;
 
 	// 3rd person mesh - already defined with ACharacter
-}
-
-void ASoldier::initStats()
-{
-	fieldOfViewNormal = 90.f;
-	fieldOfViewAim = 50.f;
 }
 
 void ASoldier::initMovements()
@@ -435,7 +428,7 @@ void ASoldier::SetWantsToFire(const bool _want)
 {
 	wantsToFire = _want;
 	if (wantsToFire) {
-		currentWeapon->tryFiring();
+		currentWeapon->TryFiring();
 	}
 }
 
@@ -443,8 +436,21 @@ void ASoldier::SetWantsToFire(const bool _want, const FGameplayEffectSpecHandle 
 {
 	wantsToFire = _want;
 	if (wantsToFire) {
-		currentWeapon->tryFiring(_damageEffectSpecHandle);
+		currentWeapon->TryFiring(_damageEffectSpecHandle);
 	}
+}
+
+void ASoldier::StartAiming()
+{
+	FirstPersonCameraComponent->SetFieldOfView(currentWeapon->GetFieldOfViewAim());
+	ThirdPersonCameraComponent->SetFieldOfView(currentWeapon->GetFieldOfViewAim());
+}
+
+void ASoldier::StopAiming()
+{
+	// TODO: Should we have a variable for that ?
+	FirstPersonCameraComponent->SetFieldOfView(90.f);
+	ThirdPersonCameraComponent->SetFieldOfView(90.f);
 }
 
 void ASoldier::OnRep_CurrentWeapon(AWeapon* _lastWeapon)

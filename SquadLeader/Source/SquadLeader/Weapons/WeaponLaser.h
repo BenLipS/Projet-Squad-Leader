@@ -11,7 +11,7 @@ class SQUADLEADER_API AWeaponLaser : public AWeapon
 
 public:
 	AWeaponLaser();
-	void fire() override;
+	void Fire() override;
 
 protected:
 	virtual void BeginPlay() override;

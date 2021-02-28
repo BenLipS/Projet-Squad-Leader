@@ -33,7 +33,6 @@ public:
 protected:
 	void initCameras();
 	void initMeshes();
-	void initStats(); // TODO: Move all the remain stat to attributset ?
 	void initMovements();
 	virtual void initWeapons();
 
@@ -84,6 +83,7 @@ public:
 	static FGameplayTag SkillJumpTag;
 	static FGameplayTag SkillCrouchTag;
 	static FGameplayTag SkillFireWeaponTag;
+	static FGameplayTag SkillAimTag;
 	static FGameplayTag SkillAreaEffectFromSelfTag;
 
 protected:
@@ -94,12 +94,6 @@ protected:
 
 //////////////// Attributes
 public:
-	UPROPERTY(BluePrintReadWrite, Category = "Attributes")
-	float fieldOfViewNormal;
-
-	UPROPERTY(BluePrintReadWrite, Category = "Attributes")
-	float fieldOfViewAim;
-
 	// Getters
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
 	int32 GetCharacterLevel() const;
@@ -202,6 +196,12 @@ public:
 	void SetWantsToFire(const bool _want);
 
 	void SetWantsToFire(const bool _want, const FGameplayEffectSpecHandle _damageEffectSpecHandle);
+
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	void StartAiming();
+
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	void StopAiming();
 
 protected:
 	bool bDefaultWeaponsInitialized;
