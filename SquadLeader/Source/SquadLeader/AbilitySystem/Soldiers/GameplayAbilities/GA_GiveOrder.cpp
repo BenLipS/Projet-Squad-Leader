@@ -17,6 +17,10 @@ void UGA_GiveOrder::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 			EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
 
 		Activation();
+
+		ASoldier* soldier = CastChecked<ASoldier>(ActorInfo->AvatarActor.Get());
+		FGameplayEffectSpecHandle GivingOrderEffectSpecHandle = MakeOutgoingGameplayEffectSpec(GivingOrderGameplayEffect, GetAbilityLevel());
+		soldier->GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*GivingOrderEffectSpecHandle.Data.Get());
 	}
 }
 
@@ -47,4 +51,10 @@ void UGA_GiveOrder::CancelAbility(const FGameplayAbilitySpecHandle Handle, const
 	}
 
 	Super::CancelAbility(Handle, ActorInfo, ActivationInfo, bReplicateCancelAbility);
+
+	ASoldier* soldier = CastChecked<ASoldier>(ActorInfo->AvatarActor.Get());
+
+	FGameplayTagContainer EffectTagsToRemove;
+	EffectTagsToRemove.AddTag(ASoldier::StateGivingOrderTag);
+	soldier->GetAbilitySystemComponent()->RemoveActiveEffectsWithGrantedTags(EffectTagsToRemove);
 }

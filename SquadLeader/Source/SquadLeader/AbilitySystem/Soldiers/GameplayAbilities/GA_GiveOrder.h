@@ -2,8 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "../GameplayAbilitySoldier.h"
-// TODO: State giving order
-//#include "../GameplayEffects/States/GE_StateGivingOrder.h"
+#include "../GameplayEffects/States/GE_StateGivingOrder.h"
 #include "GA_GiveOrder.generated.h"
 
 UCLASS()
@@ -21,6 +20,10 @@ public:
 	virtual void InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) override;
 
 	virtual void CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateCancelAbility) override;
+
+protected:
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	TSubclassOf<UGE_StateGivingOrder> GivingOrderGameplayEffect;
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void Activation();

@@ -78,8 +78,7 @@ public:
 	static FGameplayTag StateJumpingTag;
 	static FGameplayTag StateCrouchingTag;
 	static FGameplayTag StateFightingTag;
-	// TODO below
-	//static FGameplayTag StateGivingOrderTag;
+	static FGameplayTag StateGivingOrderTag;
 
 	// Abilities
 	static FGameplayTag SkillRunTag;
@@ -94,8 +93,7 @@ protected:
 	virtual void RunningTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 	virtual void JumpingTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 	virtual void FightingTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
-	// TODO Below
-	//virtual void GivingOrderTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
+	virtual void GivingOrderTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 
 //////////////// Attributes
 public:
