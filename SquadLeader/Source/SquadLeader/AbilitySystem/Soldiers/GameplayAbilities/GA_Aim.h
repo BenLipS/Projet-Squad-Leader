@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "../GameplayAbilitySoldier.h"
+#include "../GameplayEffects/States/GE_StateAiming.h"
 #include "GA_Aim.generated.h"
 
 UCLASS()
@@ -20,4 +21,7 @@ protected:
 	virtual void InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) override;
 
 	virtual void CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateCancelAbility) override;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	TSubclassOf<UGE_StateAiming> AimingGameplayEffect;
 };
