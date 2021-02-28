@@ -8,6 +8,7 @@
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "Perception/AISense_Sight.h"
 #include "../SquadLeaderGameModeBase.h"
+#include "Kismet/KismetMathLibrary.h"
 //#include "DrawDebugHelpers.h"
 
 // States
@@ -310,12 +311,12 @@ void ASoldier::setToThirdCameraPerson()
 
 void ASoldier::MoveForward(const float _Val)
 {
-	AddMovementInput(FRotationMatrix(Controller->GetControlRotation()).GetScaledAxis(EAxis::X), _Val);
+	AddMovementInput(UKismetMathLibrary::GetForwardVector(FRotator(0, GetControlRotation().Yaw, 0)), _Val);
 }
 
 void ASoldier::MoveRight(const float _Val)
 {
-	AddMovementInput(FRotationMatrix(Controller->GetControlRotation()).GetScaledAxis(EAxis::Y), _Val);
+	AddMovementInput(UKismetMathLibrary::GetRightVector(FRotator(0, GetControlRotation().Yaw, 0)), _Val);
 }
 
 void ASoldier::LookUp(const float _Val)
