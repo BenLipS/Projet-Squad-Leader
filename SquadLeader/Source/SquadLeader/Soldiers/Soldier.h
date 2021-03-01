@@ -126,7 +126,7 @@ public:
 	virtual void Respawn();
 
 //////////////// Cameras
-protected:
+public:
 	void setToFirstCameraPerson();
 	void setToThirdCameraPerson();
 
