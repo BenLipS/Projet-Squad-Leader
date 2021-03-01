@@ -131,9 +131,15 @@ void AAreaEffect::OnAreaTick()
 				}
 				for (auto effect : ExplosionEffects)
 				{
+					auto realEffect = Cast<UGameplayEffect>(effect);
+					realEffect;
 					FGameplayEffectSpecHandle NewHandle = ASC->MakeOutgoingSpec(effect, 1.f, EffectContext);
+
 					if (NewHandle.IsValid())
-						ASC->ApplyGameplayEffectSpecToTarget(*NewHandle.Data.Get(), soldier->GetAbilitySystemComponent());
+					{
+						auto inter = NewHandle.Data.Get();
+						ASC->ApplyGameplayEffectSpecToTarget(*inter, soldier->GetAbilitySystemComponent());
+					}
 				}
 			}
 		}

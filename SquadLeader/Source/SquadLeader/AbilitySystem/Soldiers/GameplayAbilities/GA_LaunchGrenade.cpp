@@ -23,6 +23,7 @@ void UGA_LaunchGrenade::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 		
 		GetWorld()->SpawnActor<ASL_Projectile>(MyProjectile, SpawnInfo.Owner->GetActorLocation(), Cast<ASoldier>(SpawnInfo.Owner)->CurrentCameraComponent->GetForwardVector().Rotation(), SpawnInfo);
+
 		
 		GEngine->AddOnScreenDebugMessage(7891, 0.5f, FColor::Green, FString::Printf(TEXT("Grenade launched")));
 		CancelAbility(Handle, ActorInfo, ActivationInfo, true);

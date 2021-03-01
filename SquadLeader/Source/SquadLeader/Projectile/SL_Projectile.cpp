@@ -31,13 +31,10 @@ void ASL_Projectile::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//CollisionComp->SetCollisionResponseToChannel(ECC_EngineTraceChannel1, ECR_Overlap);
-
 	if (OnContactPolicy == ContactPolicy::STICKY) {
 		//CollisionComp->SetCollisionResponseToAllChannel(ECC_EngineTraceChannel1, ECR_Overlap);
 		//CollisionComp->SetCollisionResponseToAllChannels(ECR_Overlap);
 	}
-
 	CollisionComp->InitSphereRadius(Radius); //physic collision radius
 
 	CollisionComp->OnComponentBeginOverlap.AddDynamic(this, &ASL_Projectile::OnOverlapBegin);
@@ -75,6 +72,10 @@ void ASL_Projectile::OnExplode()
 	DeleteProjectile();
 }
 
+void ASL_Projectile::OnStick()
+{
+}
+
 void ASL_Projectile::DeleteProjectile()
 {
 	Destroy();
@@ -82,7 +83,12 @@ void ASL_Projectile::DeleteProjectile()
 
 void ASL_Projectile::InitVelocity()
 {
-	if (GetOwner()) {
+
+	ASoldier* soldier = Cast<ASoldier>(GetOwner());
+	if (soldier) {
+		ProjectileMovement->Velocity = soldier->CurrentCameraComponent->GetForwardVector() * ProjectileMovement->InitialSpeed;
+	}
+	else if (GetOwner()) {
 		ProjectileMovement->Velocity = GetOwner()->GetActorForwardVector() * ProjectileMovement->InitialSpeed;
 	}
 }
@@ -100,8 +106,10 @@ void ASL_Projectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor
 			OnExplode();
 			break;
 		case ContactPolicy::STICKY:
-			CollisionComp->Deactivate();
-			ProjectileMovement->Deactivate();
+			/*CollisionComp->Deactivate();
+			ProjectileMovement->Deactivate();*/
+			AttachToActor(OtherActor, FAttachmentTransformRules(EAttachmentRule::KeepWorld, true));
+			OnStick();
 			//AttachToActor(OtherActor, FAttachmentTransformRules::KeepRelativeTransform);
 			//AttachToComponent(OtherComponent, FAttachmentTransformRules::KeepRelativeTransform);
 			break;
@@ -140,8 +148,16 @@ void ASL_Projectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor*
 	}
 	else if (OnContactPolicy == ContactPolicy::STICKY)
 	{
-		ProjectileMovement->Deactivate();
-		AttachToActor(OtherActor, FAttachmentTransformRules::KeepRelativeTransform);
+		ASoldier* soldier = Cast<ASoldier>(OtherActor);
+		if (soldier)
+		{
+		}
+		else
+		{
+			//ProjectileMovement->Deactivate();
+			AttachToActor(OtherActor, FAttachmentTransformRules(EAttachmentRule::KeepWorld, true));
+			OnStick();
+		}
 	}
 }
 
