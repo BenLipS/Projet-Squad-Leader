@@ -3,3 +3,7 @@
 
 #include "AIBasicManager.h"
 
+void UAIBasicManager::Init(TSubclassOf<ASoldierTeam> _Team)
+{
+	Team = _Team;
+}

@@ -2,6 +2,7 @@
 #include "UObject/ConstructorHelpers.h"
 #include "Soldiers/Players/SoldierPlayerController.h"
 #include "Soldiers/Players/SoldierPlayerState.h"
+#include "SquadLeaderGameInstance.h"
 #include "Soldiers/Soldier.h"
 
 ASquadLeaderGameModeBase::ASquadLeaderGameModeBase() : RespawnDelay{ 3.f }
@@ -26,6 +27,9 @@ void ASquadLeaderGameModeBase::StartPlay() {
 		team.GetDefaultObject()->CleanSpawnPoints();
 		team.GetDefaultObject()->CleanSoldierList();
 	}
+	
+	//Init for AI
+	Cast<USquadLeaderGameInstance>(GetGameInstance())->InitAIManagers();
 	Super::StartPlay();
 }
 

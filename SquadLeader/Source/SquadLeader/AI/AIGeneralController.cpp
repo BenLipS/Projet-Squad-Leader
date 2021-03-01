@@ -33,9 +33,12 @@ void AAIGeneralController::ontargetperception_update_sight(AActor* actor, FAISti
 };
 
 void AAIGeneralController::ActorsPerceptionUpdated(const TArray < AActor* >& UpdatedActors) {
+
 	for (auto& Elem : UpdatedActors) {
-		if (SeenActor.Contains(Elem));
-		else SeenActor.Add(Elem);
+		if(ASoldier* soldier = Cast<ASoldier>(Elem); soldier){
+			if (SeenSoldier.Contains(soldier));
+			else SeenSoldier.Add(soldier);
+		}
 	}
 	//if (GEngine)GEngine->AddOnScreenDebugMessage(5960, 1.f, FColor::Blue, TEXT("ActorsPerceptionUpdated"));
 };
@@ -51,13 +54,13 @@ void AAIGeneralController::setup_perception_system() {
 	{
 		SetPerceptionComponent(*CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("Perception Component")));
 		sight_config->SightRadius = m_distancePerception;
-		sight_config->LoseSightRadius = sight_config->SightRadius + 200.0f;
-		sight_config->PeripheralVisionAngleDegrees = 82.5f;
-		sight_config->SetMaxAge(1.f);
-		sight_config->AutoSuccessRangeFromLastSeenLocation = 100.0f;
-		sight_config->DetectionByAffiliation.bDetectEnemies = true;
-		sight_config->DetectionByAffiliation.bDetectFriendlies = true;
-		sight_config->DetectionByAffiliation.bDetectNeutrals = true;
+		sight_config->LoseSightRadius = sight_config->SightRadius + m_LoseSightOffset;
+		sight_config->PeripheralVisionAngleDegrees = m_PeripheralVisionAngleDegrees;
+		sight_config->SetMaxAge(m_MaxAge);
+		sight_config->AutoSuccessRangeFromLastSeenLocation = m_AutoSuccessRangeFromLastSeenLocation;
+		sight_config->DetectionByAffiliation.bDetectEnemies = m_DetectEnemies;
+		sight_config->DetectionByAffiliation.bDetectFriendlies = m_DetectFriendlies;
+		sight_config->DetectionByAffiliation.bDetectNeutrals = m_DetectNeutrals;
 
 		// add sight configuration component to perception component
 		GetPerceptionComponent()->SetDominantSense(*sight_config->GetSenseImplementation());
@@ -86,9 +89,11 @@ EPathFollowingRequestResult::Type AAIGeneralController::MoveToVectorLocation() {
 		return EPathFollowingRequestResult::Type::Failed;
 
 	//TO-DO : if follow an enemy be at the distance to shoot 
-	EPathFollowingRequestResult::Type _movetoResult = MoveToLocation(blackboard->GetValueAsVector("VectorLocation"), 10.f);
-	//if(_movetoResult == EPathFollowingRequestResult::Type::AlreadyAtGoal)
-	//	blackboard->ClearValue("VectorLocation");
+	EPathFollowingRequestResult::Type _movetoResult = MoveToLocation(blackboard->GetValueAsVector("VectorLocation"), 50.f);
+	if (_movetoResult == EPathFollowingRequestResult::Type::AlreadyAtGoal) {
+		blackboard->ClearValue("VectorLocation");
+		blackboard->ClearValue("need_GoBackward");
+	}
 	
 	return _movetoResult;
 }
@@ -101,7 +106,9 @@ EPathFollowingRequestResult::Type AAIGeneralController::MoveToEnemyLocation() {
 		Run(_soldier, _soldier_enemy);
 
 		//TO-DO : if follow an enemy be at the distance to shoot 
-		EPathFollowingRequestResult::Type _movetoResult = MoveToLocation(_soldier_enemy->GetActorLocation(), m_distanceShootAndStop);
+		EPathFollowingRequestResult::Type _movetoResult = MoveToLocation(blackboard->GetValueAsVector("EnemyLocation"), m_distanceShootAndStop);
+		if (_movetoResult == EPathFollowingRequestResult::AlreadyAtGoal)
+			blackboard->ClearValue("EnemyLocation");
 		return _movetoResult;
 	}
 	return EPathFollowingRequestResult::Failed;
@@ -129,8 +136,7 @@ void AAIGeneralController::Tick(float DeltaSeconds) {
 void AAIGeneralController::Sens() {
 	if (GEngine)
 		GEngine->AddOnScreenDebugMessage(10, 1.f, FColor::Yellow, TEXT("Sens !!"));
-	UpdateSeenActor();
-	SearchEnemy();
+	UpdateSeenSoldier();
 }
 
 void AAIGeneralController::Think() {
@@ -139,12 +145,13 @@ void AAIGeneralController::Think() {
 	ChooseBehavior();
 	if(AIBehavior::Attack == m_behavior){
 		//see if in a good range
+		TooFar();
 		TooClose();
 	}
 }
 
 void AAIGeneralController::Act() {
-	UpdateFocus();
+	FocusEnemy();
 }
 
 UBlackboardComponent* AAIGeneralController::get_blackboard() const
@@ -154,47 +161,34 @@ UBlackboardComponent* AAIGeneralController::get_blackboard() const
 
 void AAIGeneralController::ChooseBehavior() {
 	if (blackboard->GetValueAsObject("FocusActor")) {
-		//Attack Comportment
-		if (GEngine)
-			GEngine->AddOnScreenDebugMessage(21, 1.f, FColor::Purple, TEXT("In Attack mode"));
-		m_behavior = AIBehavior::Attack;
-		blackboard->SetValueAsBool("is_attacking", true);
+		AttackBehavior();
 	}
 	else {
-		//Defens comportment
-		if (GEngine)
-			GEngine->AddOnScreenDebugMessage(21, 1.f, FColor::Purple, TEXT("In Defensiv mode"));
-		m_behavior = AIBehavior::Defense;
-		blackboard->SetValueAsBool("is_attacking", false);
-		blackboard->SetValueAsVector("VectorLocation", FVector(0.f, 0.f, 0.f));
+		DefenseBehavior();
 	}
 }
-void AAIGeneralController::SortActorPerception() {
-	/* Update Seen Actors/ Delete hidden Actors*/
-	TArray<AActor*> ActorToRemove;
-	for (auto& Elem : SeenActor) {
-		FActorPerceptionBlueprintInfo info;
-		GetPerceptionComponent()->GetActorsPerception(Elem, info);
-		if (info.LastSensedStimuli.Last().IsExpired()) {
-			ActorToRemove.Add(Elem);
-		}
-	}
-	for (auto& Elem : ActorToRemove) {
-		SeenActor.Remove(Elem);
-	}
-}
-void AAIGeneralController::SearchEnemy() {
-	//ClearFocus(EAIFocusPriority::Gameplay);
+
+void AAIGeneralController::FocusEnemy() {
+	ClearFocus(EAIFocusPriority::Gameplay);
 	blackboard->ClearValue("FocusActor");
-	if (SeenActor.Num() > 0) {
-		this->SetFocalPoint(SeenActor[0]->GetTargetLocation());
-		blackboard->SetValueAsObject("FocusActor", SeenActor[0]);
+	if (SeenSoldier.Num() > 0) {
+		bool enemyDetected = false;
+		int i = 0;
+		while (!enemyDetected && i < SeenSoldier.Num()) {
+			if (Cast<ASoldier>(SeenSoldier[i])->PlayerTeam != Cast<ASoldier>(GetPawn())->PlayerTeam) {
+				this->SetFocus(SeenSoldier[i]);
+				blackboard->SetValueAsObject("FocusActor", SeenSoldier[i]);
+				enemyDetected = true;
+			}
+			i++;
+		}
 	}
 	else {
 		ASoldierAI* _solider = Cast<ASoldierAI>(GetPawn());
 		_solider->CancelAbilityRun();
 	}
 }
+
 void AAIGeneralController::Run(ASoldierAI* _soldier, ASoldier* _soldier_enemy) {
 	if (_soldier) {
 		UNavigationSystemV1* navSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
@@ -206,18 +200,17 @@ void AAIGeneralController::Run(ASoldierAI* _soldier, ASoldier* _soldier_enemy) {
 			_soldier->CancelAbilityRun();
 	}
 }
+
 void AAIGeneralController::TooClose() {
 	ASoldier* _FocusEnemy = Cast<ASoldier>(blackboard->GetValueAsObject("FocusActor"));
 	float _distance = FVector::Dist(GetPawn()->GetActorLocation(), _FocusEnemy->GetActorLocation());
 
-	if (_distance < m_distanceShootAndStop) {
+	if (_distance < m_distanceShootAndStop - 100.f) {
 		blackboard->SetValueAsBool("need_GoBackward", true);
 		FVector _DestinationToGo;
-		float _d = _distance - m_distanceShootAndStop;
-		float t = _distance / _d;
-		_DestinationToGo.X = ((1 - t) * GetPawn()->GetActorLocation().X + t * _FocusEnemy->GetActorLocation().X);
-		_DestinationToGo.Y = ((1 - t) * GetPawn()->GetActorLocation().Y + t * _FocusEnemy->GetActorLocation().Y);
-		_DestinationToGo.Z = GetPawn()->GetActorLocation().Z;
+		float _d = m_distanceShootAndStop - _distance;
+		FVector _unitaire = _FocusEnemy->GetActorForwardVector(); 
+		_DestinationToGo = _unitaire * _d + GetPawn()->GetActorLocation();
 		blackboard->SetValueAsVector("VectorLocation", _DestinationToGo);
 	}
 	else {
@@ -225,29 +218,60 @@ void AAIGeneralController::TooClose() {
 		blackboard->ClearValue("VectorLocation");
 	}
 }
-void AAIGeneralController::UpdateFocus() {
-	ClearFocus(EAIFocusPriority::Gameplay);
-	blackboard->ClearValue("FocusActor");
-	if (SeenActor.Num() > 0) {
-		this->SetFocus(SeenActor[0]);
-		blackboard->SetValueAsObject("FocusActor", SeenActor[0]);
+void AAIGeneralController::TooFar() {
+	ASoldier* _FocusEnemy = Cast<ASoldier>(blackboard->GetValueAsObject("FocusActor"));
+	float _distance = FVector::Dist(GetPawn()->GetActorLocation(), _FocusEnemy->GetActorLocation());
+
+	if (_distance > m_distanceShootAndStop + 100.f) {
+		blackboard->SetValueAsBool("need_GoForward", true);
+		ASoldier* _enemy = Cast<ASoldier>(blackboard->GetValueAsObject("FocusActor"));
+		blackboard->SetValueAsVector("EnemyLocation", _enemy->GetActorLocation());
 	}
 	else {
-		ASoldierAI* _solider = Cast<ASoldierAI>(GetPawn());
-		_solider->CancelAbilityRun();
+		blackboard->SetValueAsBool("need_GoForward", false);
+		blackboard->ClearValue("EnemyLocation");
 	}
 }
-void AAIGeneralController::UpdateSeenActor() {
+
+void AAIGeneralController::UpdateSeenSoldier() {
 	/* Update Seen Actors/ Delete hidden Actors*/
-	TArray<AActor*> ActorToRemove;
-	for (auto& Elem : SeenActor) {
+	TArray<ASoldier*> ActorToRemove;
+	for (auto& Elem : SeenSoldier) {
 		FActorPerceptionBlueprintInfo info;
 		GetPerceptionComponent()->GetActorsPerception(Elem, info);
-		if (info.Target == nullptr || info.LastSensedStimuli.Last().IsExpired()) {
+		if (info.Target == nullptr || info.LastSensedStimuli.Last().IsExpired() || !Cast<ASoldier>(Elem)->IsAlive()) {
 			ActorToRemove.Add(Elem);
 		}
 	}
 	for (auto& Elem : ActorToRemove) {
-		SeenActor.Remove(Elem);
+		SeenSoldier.Remove(Elem);
 	}
+}
+
+void AAIGeneralController::AttackBehavior() {
+	//Attack Comportment
+	if (GEngine)
+		GEngine->AddOnScreenDebugMessage(21, 1.f, FColor::Purple, TEXT("In Attack mode"));
+	if (m_behavior == AIBehavior::Defense) {
+		m_behavior = AIBehavior::Attack;
+		blackboard->SetValueAsBool("is_attacking", true);
+		ASoldier* _enemy = Cast<ASoldier>(blackboard->GetValueAsObject("FocusActor"));
+		blackboard->SetValueAsVector("EnemyLocation", _enemy->GetActorLocation());
+	}
+}
+void AAIGeneralController::DefenseBehavior() {
+	//Defens comportment
+	if (GEngine)
+		GEngine->AddOnScreenDebugMessage(21, 1.f, FColor::Purple, TEXT("In Defensiv mode"));
+	//Check if it's new or not
+	if (m_behavior == AIBehavior::Attack) {
+		m_behavior = AIBehavior::Defense;
+		blackboard->SetValueAsBool("is_attacking", false);
+		blackboard->SetValueAsVector("VectorLocation", FVector(0.f, 0.f, 0.f));
+	}
+}
+
+void AAIGeneralController::SetMission(UMission* _Mission)
+{
+	Mission = _Mission;
 }
