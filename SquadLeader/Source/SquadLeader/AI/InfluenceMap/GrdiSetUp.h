@@ -126,5 +126,9 @@ private:
 	*/
 	void SetValue(int _index, float _value);
 
+
+	/*
+	* Set Up all the good tile in the radius of influence of the character
+	*/
 	void SetRadiusValue(int _index, float _value, int _radius);
 };
