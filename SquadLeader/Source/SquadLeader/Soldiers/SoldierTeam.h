@@ -81,5 +81,5 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "SpawnPoints")
 		void RemoveOneTicket();
 	UFUNCTION(BlueprintCallable, Category = "SpawnPoints")
-		int GetTicket() { return Tickets; }
+		int GetTicket() const { return Tickets; }
 };
