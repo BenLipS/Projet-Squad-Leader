@@ -89,3 +89,15 @@ TArray<ASoldierSpawn*> ASoldierTeam::GetUsableSpawnPoints()
 
 	return result;
 }
+
+
+void ASoldierTeam::RemoveOneTicket()
+{
+	Tickets--;
+	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TeamName + TEXT(" : Loses a ticket."));
+	
+	// TODO : End game here if no tickets left and team is primordial
+	if (Tickets <= 0 /*&& ...*/) {
+		GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Black, TEXT("END GAME : ") +  TeamName + TEXT(" lose !"));
+	}
+}
