@@ -36,9 +36,6 @@ public:
 	UFUNCTION()
 	void InitAIManagers();
 
-	/*
-	* For AI placed via drag and drop
-	*/
 	UFUNCTION()
 	void AddAIBasicToManager(AAIBasicController* AIBasic);
 
