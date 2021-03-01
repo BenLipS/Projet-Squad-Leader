@@ -25,18 +25,15 @@ void UAISquadManager::Init(TSubclassOf<ASoldierTeam> _Team, ASoldierPlayer* _Pla
 	if (SquadAI) {
 		SquadAI->SpawnDefaultController();
 		SquadAI->FinishSpawning(LocationAI);
-		AISquadList.Add(Cast<AAISquadController>(SquadAI->Controller));
 	}
 	ASoldierAI* SquadAI1 = GEngine->GetWorldFromContextObject(WorldContextObject)->SpawnActorDeferred<ASoldierAI>(ClassAI, LocationAI1, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 	if (SquadAI1) {
 		SquadAI1->SpawnDefaultController();
 		SquadAI1->FinishSpawning(LocationAI1);
-		AISquadList.Add(Cast<AAISquadController>(SquadAI1->Controller));
 	}
 	ASoldierAI* SquadAI2 = GEngine->GetWorldFromContextObject(WorldContextObject)->SpawnActorDeferred<ASoldierAI>(ClassAI, LocationAI2, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 	if (SquadAI2) {
 		SquadAI2->SpawnDefaultController();
 		SquadAI2->FinishSpawning(LocationAI2);
-		AISquadList.Add(Cast<AAISquadController>(SquadAI2->Controller));
 	}
 }
