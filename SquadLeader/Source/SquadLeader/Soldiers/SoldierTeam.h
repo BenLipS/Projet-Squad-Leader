@@ -76,7 +76,7 @@ public:
 
 public:  // Tickets
 	UPROPERTY(EditDefaultsOnly, Replicated, Category = "Tickets")
-		int Tickets = 1;
+		int Tickets = 100;
 	UFUNCTION(BlueprintCallable, Category = "SpawnPoints")
 		void RemoveOneTicket();
 };
