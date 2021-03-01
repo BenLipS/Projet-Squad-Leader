@@ -22,18 +22,12 @@ void UAISquadManager::Init(TSubclassOf<ASoldierTeam> _Team, ASoldierPlayer* _Pla
 	FActorSpawnParameters SpawnInfo;
 	SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn; // La maniere de faire le respawn
 	ASoldierAI* SquadAI = GEngine->GetWorldFromContextObject(WorldContextObject)->SpawnActorDeferred<ASoldierAI>(ClassAI, LocationAI, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
-	if (SquadAI) {
-		SquadAI->SpawnDefaultController();
-		SquadAI->FinishSpawning(LocationAI);
-	}
+	SquadAI->AIControllerClass = ClassAIController;
+	SquadAI->FinishSpawning(LocationAI);
 	ASoldierAI* SquadAI1 = GEngine->GetWorldFromContextObject(WorldContextObject)->SpawnActorDeferred<ASoldierAI>(ClassAI, LocationAI1, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
-	if (SquadAI1) {
-		SquadAI1->SpawnDefaultController();
-		SquadAI1->FinishSpawning(LocationAI1);
-	}
+	SquadAI->AIControllerClass = ClassAIController;
+	SquadAI1->FinishSpawning(LocationAI1);
 	ASoldierAI* SquadAI2 = GEngine->GetWorldFromContextObject(WorldContextObject)->SpawnActorDeferred<ASoldierAI>(ClassAI, LocationAI2, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
-	if (SquadAI2) {
-		SquadAI2->SpawnDefaultController();
-		SquadAI2->FinishSpawning(LocationAI2);
-	}
+	SquadAI->AIControllerClass = ClassAIController;
+	SquadAI2->FinishSpawning(LocationAI2);
 }
