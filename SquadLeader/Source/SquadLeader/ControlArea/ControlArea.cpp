@@ -33,7 +33,7 @@ void AControlArea::BeginPlay()
 
 	if (auto gameMode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode()); gameMode) {
 		// add this to the game mode collection
-		gameMode->controlAreaCollection.Add(this);
+		gameMode->ControlAreaManager.GetDefaultObject()->AddControlArea(this);
 
 		UpdateTeamData();
 	}

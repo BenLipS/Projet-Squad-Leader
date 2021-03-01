@@ -31,7 +31,6 @@ void ASoldierTeam::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 
 void ASoldierTeam::AddSoldierList(ASoldier* newSoldier)
 {
-	CleanSoldierList();
 	soldierList.AddUnique(newSoldier);
 }
 
@@ -49,7 +48,6 @@ void ASoldierTeam::CleanSoldierList()
 
 void ASoldierTeam::AddControlArea(AControlArea* newControlArea)
 {
-	CleanControlArea();
 	takenControlArea.AddUnique(newControlArea);
 }
 
