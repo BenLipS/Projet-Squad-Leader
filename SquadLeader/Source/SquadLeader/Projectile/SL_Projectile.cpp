@@ -31,7 +31,12 @@ void ASL_Projectile::BeginPlay()
 {
 	Super::BeginPlay();
 
-	CollisionComp->SetCollisionResponseToChannel(ECC_EngineTraceChannel1, ECR_Overlap);
+	//CollisionComp->SetCollisionResponseToChannel(ECC_EngineTraceChannel1, ECR_Overlap);
+
+	if (OnContactPolicy == ContactPolicy::STICKY) {
+		//CollisionComp->SetCollisionResponseToAllChannel(ECC_EngineTraceChannel1, ECR_Overlap);
+		//CollisionComp->SetCollisionResponseToAllChannels(ECR_Overlap);
+	}
 
 	CollisionComp->InitSphereRadius(Radius); //physic collision radius
 
@@ -95,6 +100,10 @@ void ASL_Projectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor
 			OnExplode();
 			break;
 		case ContactPolicy::STICKY:
+			CollisionComp->Deactivate();
+			ProjectileMovement->Deactivate();
+			//AttachToActor(OtherActor, FAttachmentTransformRules::KeepRelativeTransform);
+			//AttachToComponent(OtherComponent, FAttachmentTransformRules::KeepRelativeTransform);
 			break;
 		default:
 			break;
@@ -128,6 +137,11 @@ void ASL_Projectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor*
 		{
 			OnExplode();
 		}
+	}
+	else if (OnContactPolicy == ContactPolicy::STICKY)
+	{
+		ProjectileMovement->Deactivate();
+		AttachToActor(OtherActor, FAttachmentTransformRules::KeepRelativeTransform);
 	}
 }
 
