@@ -18,9 +18,11 @@ void UGA_GiveOrder::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 
 		Activation();
 
-		ASoldier* soldier = CastChecked<ASoldier>(ActorInfo->AvatarActor.Get());
-		FGameplayEffectSpecHandle GivingOrderEffectSpecHandle = MakeOutgoingGameplayEffectSpec(GivingOrderGameplayEffect, GetAbilityLevel());
-		soldier->GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*GivingOrderEffectSpecHandle.Data.Get());
+		if (ASoldier* soldier = Cast<ASoldier>(ActorInfo->AvatarActor.Get()); soldier)
+		{
+			FGameplayEffectSpecHandle GivingOrderEffectSpecHandle = MakeOutgoingGameplayEffectSpec(GivingOrderGameplayEffect, GetAbilityLevel());
+			soldier->GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*GivingOrderEffectSpecHandle.Data.Get());
+		}
 	}
 }
 
@@ -35,13 +37,6 @@ void UGA_GiveOrder::InputReleased(const FGameplayAbilitySpecHandle Handle, const
 	//	CancelAbility(Handle, ActorInfo, ActivationInfo, true);
 }
 
-// Epic's comment
-/**
- *	Canceling an non instanced ability is tricky. Right now this works for Jump since there is nothing that can go wrong by calling
- *	StopJumping() if you aren't already jumping. If we had a montage playing non instanced ability, it would need to make sure the
- *	Montage that *it* played was still playing, and if so, to cancel it. If this is something we need to support, we may need some
- *	light weight data structure to represent 'non intanced abilities in action' with a way to cancel/end them.
- */
 void UGA_GiveOrder::CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateCancelAbility)
 {
 	if (ScopeLockCount > 0)
@@ -52,9 +47,10 @@ void UGA_GiveOrder::CancelAbility(const FGameplayAbilitySpecHandle Handle, const
 
 	Super::CancelAbility(Handle, ActorInfo, ActivationInfo, bReplicateCancelAbility);
 
-	ASoldier* soldier = CastChecked<ASoldier>(ActorInfo->AvatarActor.Get());
-
-	FGameplayTagContainer EffectTagsToRemove;
-	EffectTagsToRemove.AddTag(ASoldier::StateGivingOrderTag);
-	soldier->GetAbilitySystemComponent()->RemoveActiveEffectsWithGrantedTags(EffectTagsToRemove);
+	if (ASoldier* soldier = Cast<ASoldier>(ActorInfo->AvatarActor.Get()); soldier)
+	{
+		FGameplayTagContainer EffectTagsToRemove;
+		EffectTagsToRemove.AddTag(ASoldier::StateGivingOrderTag);
+		soldier->GetAbilitySystemComponent()->RemoveActiveEffectsWithGrantedTags(EffectTagsToRemove);
+	}
 }

@@ -16,11 +16,13 @@ void UGA_Jump::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FG
 		if (!CommitAbility(Handle, ActorInfo, ActivationInfo))
 			EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
 
-		ASoldier* soldier = CastChecked<ASoldier>(ActorInfo->AvatarActor.Get());
-		soldier->Jump();
+		if (ASoldier* soldier = Cast<ASoldier>(ActorInfo->AvatarActor.Get()); soldier)
+		{
+			soldier->Jump();
 
-		FGameplayEffectSpecHandle JumpingEffectSpecHandle = MakeOutgoingGameplayEffectSpec(JumpingGameplayEffect, GetAbilityLevel());
-		soldier->GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*JumpingEffectSpecHandle.Data.Get());
+			FGameplayEffectSpecHandle JumpingEffectSpecHandle = MakeOutgoingGameplayEffectSpec(JumpingGameplayEffect, GetAbilityLevel());
+			soldier->GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*JumpingEffectSpecHandle.Data.Get());
+		}
 	}
 }
 
@@ -56,10 +58,12 @@ void UGA_Jump::CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGam
 
 	Super::CancelAbility(Handle, ActorInfo, ActivationInfo, bReplicateCancelAbility);
 
-	ASoldier* soldier = CastChecked<ASoldier>(ActorInfo->AvatarActor.Get());
-	soldier->StopJumping();
+	if (ASoldier* soldier = Cast<ASoldier>(ActorInfo->AvatarActor.Get()); soldier)
+	{
+		soldier->StopJumping();
 
-	FGameplayTagContainer EffectTagsToRemove;
-	EffectTagsToRemove.AddTag(ASoldier::StateJumpingTag);
-	soldier->GetAbilitySystemComponent()->RemoveActiveEffectsWithGrantedTags(EffectTagsToRemove);
+		FGameplayTagContainer EffectTagsToRemove;
+		EffectTagsToRemove.AddTag(ASoldier::StateJumpingTag);
+		soldier->GetAbilitySystemComponent()->RemoveActiveEffectsWithGrantedTags(EffectTagsToRemove);
+	}
 }
