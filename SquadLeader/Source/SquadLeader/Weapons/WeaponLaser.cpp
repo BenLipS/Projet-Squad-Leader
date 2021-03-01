@@ -12,9 +12,9 @@ void AWeaponLaser::BeginPlay()
 	Super::BeginPlay();
 }
 
-void AWeaponLaser::fire()
+void AWeaponLaser::Fire()
 {
-	Super::fire();
+	Super::Fire();
 
 	ASoldier* soldierOwner = Cast<ASoldier>(GetOwner());
 	if (!soldierOwner && GetLocalRole() != ROLE_Authority)
@@ -22,7 +22,7 @@ void AWeaponLaser::fire()
 
 	TArray<FHitResult> outHits = GetActorsFromLineTrace(soldierOwner->GetActorLocation(), soldierOwner->lookingAtPosition());
 
-	int remainPenetration = penetration;
+	int remainPenetration = Penetration;
 	for (auto it = outHits.begin(); it != outHits.end() && remainPenetration > 0; ++it)
 	{
 		if (auto actor = (*it).GetActor(); actor != nullptr)

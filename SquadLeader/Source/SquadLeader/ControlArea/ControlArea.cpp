@@ -82,7 +82,7 @@ void AControlArea::NotifyActorEndOverlap(AActor* OtherActor)
 				}
 
 				// begin the calculation if everybody of this team left and the calculation is not already working
-				else {
+				if (TeamData[soldier->PlayerTeam]->presenceTeam == 0) {
 					if (!timerCalculationControlValue.IsValid())
 						GetWorldTimerManager().SetTimer(timerCalculationControlValue, this,
 							&AControlArea::calculateControlValue, timeBetweenCalcuation, true, timeBetweenCalcuation);
@@ -164,7 +164,7 @@ void AControlArea::UpdateTeamData()
 
 		TArray<TSubclassOf<ASoldierTeam>> keyToRemove;  // remove element
 		for (auto team : TeamData) {
-			if (teamCollection.Contains(team.Key)) {
+			if (!teamCollection.Contains(team.Key)) {
 				keyToRemove.Add(team.Key);
 				GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("ControlArea Update : Unknown team removed : " + team.Key.GetDefaultObject()->TeamName));
 			}

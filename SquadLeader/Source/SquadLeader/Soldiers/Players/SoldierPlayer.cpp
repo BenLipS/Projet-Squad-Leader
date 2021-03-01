@@ -1,6 +1,8 @@
 #include "SoldierPlayer.h"
 #include "SoldierPlayerState.h"
 #include "SoldierPlayerController.h"
+#include "../../SquadLeaderGameInstance.h"
+#include "../../AI/AISquadController.h"
 #include "../../AbilitySystem/Soldiers/GameplayAbilitySoldier.h"
 #include "../../Spawn/SoldierSpawn.h"
 
@@ -24,6 +26,11 @@ void ASoldierPlayer::PossessedBy(AController* _newController)
 	Super::PossessedBy(_newController);
 	SetAbilitySystemComponent();
 	initWeapons();
+
+	/*Init Squad Manager for this Player*/
+	UAISquadManager* PlayerSquadManager = NewObject<UAISquadManager>(this, AISquadManagerClass);
+	PlayerSquadManager->Init(PlayerTeam,this,GetWorld());
+	Cast<USquadLeaderGameInstance>(GetGameInstance())->GetSquadManagers().Add(PlayerSquadManager);
 
 	// TODO: Do we need to have the hud in server ?
 	if (ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(GetController()); PC)

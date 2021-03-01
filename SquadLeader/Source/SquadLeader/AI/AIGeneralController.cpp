@@ -33,10 +33,12 @@ void AAIGeneralController::ontargetperception_update_sight(AActor* actor, FAISti
 };
 
 void AAIGeneralController::ActorsPerceptionUpdated(const TArray < AActor* >& UpdatedActors) {
+
 	for (auto& Elem : UpdatedActors) {
-		if(ASoldier* soldier = Cast<ASoldier>(Elem); soldier && soldier->PlayerTeam != Cast<ASoldier>(GetPawn())->PlayerTeam)
-			if (SeenActor.Contains(Elem));
-			else SeenActor.Add(Elem);
+		if(ASoldier* soldier = Cast<ASoldier>(Elem); soldier){
+			if (SeenSoldier.Contains(soldier));
+			else SeenSoldier.Add(soldier);
+		}
 	}
 	//if (GEngine)GEngine->AddOnScreenDebugMessage(5960, 1.f, FColor::Blue, TEXT("ActorsPerceptionUpdated"));
 };
@@ -134,8 +136,7 @@ void AAIGeneralController::Tick(float DeltaSeconds) {
 void AAIGeneralController::Sens() {
 	if (GEngine)
 		GEngine->AddOnScreenDebugMessage(10, 1.f, FColor::Yellow, TEXT("Sens !!"));
-	UpdateSeenActor();
-	SearchEnemy();
+	UpdateSeenSoldier();
 }
 
 void AAIGeneralController::Think() {
@@ -150,7 +151,7 @@ void AAIGeneralController::Think() {
 }
 
 void AAIGeneralController::Act() {
-	UpdateFocus();
+	FocusEnemy();
 }
 
 UBlackboardComponent* AAIGeneralController::get_blackboard() const
@@ -167,26 +168,20 @@ void AAIGeneralController::ChooseBehavior() {
 	}
 }
 
-void AAIGeneralController::SortActorPerception() {
-	/* Update Seen Actors/ Delete hidden Actors*/
-	TArray<AActor*> ActorToRemove;
-	for (auto& Elem : SeenActor) {
-		FActorPerceptionBlueprintInfo info;
-		GetPerceptionComponent()->GetActorsPerception(Elem, info);
-		if (info.LastSensedStimuli.Last().IsExpired()) {
-			ActorToRemove.Add(Elem);
-		}
-	}
-	for (auto& Elem : ActorToRemove) {
-		SeenActor.Remove(Elem);
-	}
-}
-void AAIGeneralController::SearchEnemy() {
+void AAIGeneralController::FocusEnemy() {
 	ClearFocus(EAIFocusPriority::Gameplay);
 	blackboard->ClearValue("FocusActor");
-	if (SeenActor.Num() > 0) {
-		this->SetFocalPoint(SeenActor[0]->GetTargetLocation());
-		blackboard->SetValueAsObject("FocusActor", SeenActor[0]);
+	if (SeenSoldier.Num() > 0) {
+		bool enemyDetected = false;
+		int i = 0;
+		while (!enemyDetected && i < SeenSoldier.Num()) {
+			if (Cast<ASoldier>(SeenSoldier[i])->PlayerTeam != Cast<ASoldier>(GetPawn())->PlayerTeam) {
+				this->SetFocus(SeenSoldier[i]);
+				blackboard->SetValueAsObject("FocusActor", SeenSoldier[i]);
+				enemyDetected = true;
+			}
+			i++;
+		}
 	}
 	else {
 		ASoldierAI* _solider = Cast<ASoldierAI>(GetPawn());
@@ -238,30 +233,18 @@ void AAIGeneralController::TooFar() {
 	}
 }
 
-void AAIGeneralController::UpdateFocus() {
-	ClearFocus(EAIFocusPriority::Gameplay);
-	blackboard->ClearValue("FocusActor");
-	if (SeenActor.Num() > 0) {
-		this->SetFocus(SeenActor[0]);
-		blackboard->SetValueAsObject("FocusActor", SeenActor[0]);
-	}
-	else {
-		ASoldierAI* _solider = Cast<ASoldierAI>(GetPawn());
-		_solider->CancelAbilityRun();
-	}
-}
-void AAIGeneralController::UpdateSeenActor() {
+void AAIGeneralController::UpdateSeenSoldier() {
 	/* Update Seen Actors/ Delete hidden Actors*/
-	TArray<AActor*> ActorToRemove;
-	for (auto& Elem : SeenActor) {
+	TArray<ASoldier*> ActorToRemove;
+	for (auto& Elem : SeenSoldier) {
 		FActorPerceptionBlueprintInfo info;
 		GetPerceptionComponent()->GetActorsPerception(Elem, info);
-		if (info.Target == nullptr || info.LastSensedStimuli.Last().IsExpired()) {
+		if (info.Target == nullptr || info.LastSensedStimuli.Last().IsExpired() || !Cast<ASoldier>(Elem)->IsAlive()) {
 			ActorToRemove.Add(Elem);
 		}
 	}
 	for (auto& Elem : ActorToRemove) {
-		SeenActor.Remove(Elem);
+		SeenSoldier.Remove(Elem);
 	}
 }
 
@@ -286,4 +269,9 @@ void AAIGeneralController::DefenseBehavior() {
 		blackboard->SetValueAsBool("is_attacking", false);
 		blackboard->SetValueAsVector("VectorLocation", FVector(9260.f, 9760.f, 0.f));
 	}
+}
+
+void AAIGeneralController::SetMission(UMission* _Mission)
+{
+	Mission = _Mission;
 }

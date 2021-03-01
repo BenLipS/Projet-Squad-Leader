@@ -11,7 +11,7 @@ class SQUADLEADER_API AWeaponProjectile : public AWeapon
 
 public:
 	AWeaponProjectile();
-	void fire() override;
+	void Fire() override;
 
 protected:
 	virtual void BeginPlay() override;
