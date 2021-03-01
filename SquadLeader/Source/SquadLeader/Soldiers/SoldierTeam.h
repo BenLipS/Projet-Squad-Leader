@@ -66,17 +66,20 @@ protected: // Spawn points
 		TArray<ASoldierSpawn*> mainSpawnPoints;
 public:
 	UFUNCTION(BlueprintCallable, Category = "SpawnPoints")
-	void AddSpawn(ASoldierSpawn* newSpawn);
+		void AddSpawn(ASoldierSpawn* newSpawn);
 	UFUNCTION(BlueprintCallable, Category = "SpawnPoints")
-	void RemoveSpawn(ASoldierSpawn* newSpawn);
+		void RemoveSpawn(ASoldierSpawn* newSpawn);
 	UFUNCTION(BlueprintCallable, Category = "SpawnPoints")
-	void CleanSpawnPoints();
+		void CleanSpawnPoints();
 	UFUNCTION(BlueprintCallable, Category = "SpawnPoints")
-	TArray<ASoldierSpawn*> GetUsableSpawnPoints();
+		TArray<ASoldierSpawn*> GetUsableSpawnPoints();
 
-public:  // Tickets
+protected:  // Tickets
 	UPROPERTY(EditDefaultsOnly, Replicated, Category = "Tickets")
-		int Tickets = 100;
+		int Tickets = 100;  // default value, must be changed in blueprint
+public:
 	UFUNCTION(BlueprintCallable, Category = "SpawnPoints")
 		void RemoveOneTicket();
+	UFUNCTION(BlueprintCallable, Category = "SpawnPoints")
+		int GetTicket() { return Tickets; }
 };

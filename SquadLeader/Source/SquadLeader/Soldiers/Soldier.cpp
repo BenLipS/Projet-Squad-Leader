@@ -244,7 +244,7 @@ void ASoldier::DeadTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
 {
 	if (NewCount > 0) // If dead tag is added - Handle death
 	{
-		// remove ticket from team
+		// remove ticket from team (only on server)
 		if (PlayerTeam && GetLocalRole() == ROLE_Authority)
 			PlayerTeam.GetDefaultObject()->RemoveOneTicket();
 
