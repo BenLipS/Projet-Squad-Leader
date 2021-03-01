@@ -73,4 +73,10 @@ public:
 	void CleanSpawnPoints();
 	UFUNCTION(BlueprintCallable, Category = "SpawnPoints")
 	TArray<ASoldierSpawn*> GetUsableSpawnPoints();
+
+public:  // Tickets
+	UPROPERTY(EditDefaultsOnly, Replicated, Category = "Tickets")
+		int Tickets = 1;
+	UFUNCTION(BlueprintCallable, Category = "SpawnPoints")
+		void RemoveOneTicket();
 };

@@ -243,6 +243,10 @@ void ASoldier::DeadTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
 {
 	if (NewCount > 0) // If dead tag is added - Handle death
 	{
+		// remove ticket from team
+		if (PlayerTeam && GetLocalRole() == ROLE_Authority)
+			PlayerTeam.GetDefaultObject()->RemoveOneTicket();
+
 		// Stop the soldier and remove any interaction with the world
 		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		GetCharacterMovement()->GravityScale = 0.f;
