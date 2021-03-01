@@ -30,7 +30,13 @@ void AControlAreaManager::CleanControlAreaList()
 
 TArray<AControlArea*> AControlAreaManager::GetAreaControlledByTeam(TSubclassOf<ASoldierTeam> _Team)
 {
-	return TArray<AControlArea*>();
+	TArray<AControlArea*> selection;
+	for (auto element : ControlAreaList) {
+		if (element->isTakenBy == _Team) {
+			selection.Add(element);
+		}
+	}
+	return selection;
 }
 
 
