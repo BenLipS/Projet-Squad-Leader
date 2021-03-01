@@ -100,6 +100,12 @@ public:
 	UPROPERTY(BluePrintReadWrite, Category = "Attributes")
 	float fieldOfViewAim;
 
+	UPROPERTY(BluePrintReadWrite, Category = "Attributes")
+		uint8 InfluenceRadius = 1;
+
+	UPROPERTY(BluePrintReadWrite, Category = "Attributes")
+		float InfluenceWeight = 0.6f;
+	
 	// Getters
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
 	int32 GetCharacterLevel() const;
@@ -124,6 +130,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
 		FVector GetLocation() const noexcept;
+
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
+		uint8 GetInfluenceRadius() const noexcept;
 
 	// Attribute changed callbacks
 	FDelegateHandle HealthChangedDelegateHandle;

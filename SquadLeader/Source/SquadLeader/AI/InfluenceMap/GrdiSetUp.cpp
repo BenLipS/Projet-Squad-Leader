@@ -4,6 +4,7 @@
 #include "GrdiSetUp.h"
 #include "../../Soldiers/Soldier.h"
 #include "DrawDebugHelpers.h"
+#include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
 AGrdiSetUp::AGrdiSetUp()
@@ -17,10 +18,10 @@ void AGrdiSetUp::BeginPlay()
 {
 	Super::BeginPlay();
 	if (GetLocalRole() == ROLE_Authority) {
-		
+		CreateGrid();
+		m_Gamemode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
 	}
-	CreateGrid();
-	m_Gamemode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
+	
 }
 
 // Called every frame
@@ -28,17 +29,20 @@ void AGrdiSetUp::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	if (GetLocalRole() == ROLE_Authority) {
-		
-	}
-	for (TSubclassOf<ASoldierTeam> _team : m_Gamemode->SoldierTeamCollection) {
-		ASoldierTeam* _teamclass = Cast<ASoldierTeam>(_team->GetDefaultObject());
-		for (ASoldier* _soldier : _teamclass->soldierList) {
-			int _index_tile = FindTile(_soldier->GetLocation());
-			if (_index_tile >= 0)
-				m_GridBases[_index_tile] =1.f;
+		m_nbr_tick++;
+		switch (m_nbr_tick) {
+		case 1:
+			CleanGrid();
+			break;
+		case 2:
+			UpdateGrid();
+			m_nbr_tick = 0;
+			break;
+		default:
+			break;
 		}
+		DrawGrid();
 	}
-	DrawGrid();
 }
 
 void AGrdiSetUp::DrawGrid() {
@@ -50,11 +54,9 @@ void AGrdiSetUp::DrawGrid() {
 			if (m_GridBases[i * size_array_X + j] <= 1.f) {
 				FVector _location = FVector(dist_X, dist_Y, 30.f);
 				if (m_GridBases[i * size_array_X + j] > 0.f)
-					DrawDebugSolidBox(GetWorld(), _location, FVector(95.f, 95.f, 10.f), FColor::Blue);
+					DrawDebugSolidBox(GetWorld(), _location, FVector(95.f, 95.f, 10.f), FColor(0,0, m_GridBases[i * size_array_X + j] * 255));
 				else if (m_GridBases[i * size_array_X + j] < 0.f)
-					DrawDebugSolidBox(GetWorld(), _location, FVector(95.f, 95.f, 10.f), FColor::Red);
-				else
-					DrawDebugSolidBox(GetWorld(), _location, FVector(95.f, 95.f, 10.f), FColor::Black);
+					DrawDebugSolidBox(GetWorld(), _location, FVector(95.f, 95.f, 10.f), FColor(m_GridBases[i * size_array_X + j] * 255, 0, 0));
 			}
 			
 			dist_Y += m_GridBaseSize_Y;
@@ -115,4 +117,72 @@ int AGrdiSetUp::FindTile(FVector _location) {
 	if (index_i < size_array_X && index_j < size_array_Y && m_GridBases[index_i * size_array_X + index_j] <= 1.0f)
 		return index_i * size_array_X + index_j;
 	return -1;
+}
+
+void AGrdiSetUp::CleanGrid() {
+	for (int i = 0; i != size_array_X; ++i) {
+		for (int j = 0; j != size_array_Y; ++j) {
+			m_GridBases[i * size_array_X + j] = 0.f;
+		}
+	}
+}
+
+void AGrdiSetUp::UpdateGrid(){
+	UpdateGridSoldier();
+	UpdateGridControlArea();
+}
+
+void AGrdiSetUp::UpdateGridSoldier() {
+	int _team_value = 1;
+	for (TSubclassOf<ASoldierTeam> _team : m_Gamemode->SoldierTeamCollection) {
+		
+		ASoldierTeam* _teamclass = Cast<ASoldierTeam>(_team->GetDefaultObject());
+		
+		for (ASoldier* _soldier : _teamclass->soldierList) {
+			
+			int _index_tile_origin = FindTile(_soldier->GetLocation());
+			float _value_im = _soldier->InfluenceWeight * _team_value;
+
+			SetValue(_index_tile_origin, _value_im);
+			SetRadiusValue(_index_tile_origin, _value_im, _soldier->InfluenceRadius);
+		}
+
+		_team_value = -1;
+	}
+}
+
+void AGrdiSetUp::UpdateGridControlArea() {
+
+}
+
+void AGrdiSetUp::SetValue(int _index, float _value) {
+	if (_index >= 0) {
+		if (m_GridBases[_index] + _value <= 1.0f)
+			m_GridBases[_index] += _value;
+		else
+			m_GridBases[_index] = 1.f;
+	}
+		
+}
+
+void AGrdiSetUp::SetRadiusValue(int _index, float _value, int _radius) {
+	float _value_im_side = 0.f;
+
+	int _index_tile_left = _index;
+	int _index_tile_right = _index;
+	int _index_tile_up = _index;
+	int _index_tile_down = _index;
+
+	for (int i = 0; i != _radius; ++i) {
+		_index_tile_up -= size_array_Y;
+		_index_tile_down += size_array_Y;
+		_index_tile_left -= 1;
+		_index_tile_right += 1;
+		_value_im_side = _value / FMath::Square(1.f + (i + 1));
+
+		SetValue(_index_tile_up, _value_im_side);
+		SetValue(_index_tile_down, _value_im_side);
+		SetValue(_index_tile_left, _value_im_side);
+		SetValue(_index_tile_right, _value_im_side);
+	}
 }

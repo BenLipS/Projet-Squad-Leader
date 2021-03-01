@@ -81,6 +81,9 @@ private:
 
 	UPROPERTY()
 		int size_array_Y;
+
+	UPROPERTY()
+		int m_nbr_tick = 0.f;
 private:
 
 	/*
@@ -96,4 +99,32 @@ private:
 	* pointer in the array.
 	*/
 	void AddGridBase(int index_i, int index_j, FVector _location);
+
+	/*
+	* we clean the grid and reset it
+	*/
+	void CleanGrid();
+
+	/*
+	* we update the grid with date comming from the environment
+	*/
+	void UpdateGrid();
+
+	/*
+	*Update all the info of the player in the influence map 
+	*/
+	void UpdateGridSoldier();
+
+	/*
+	* Update all the info of the control area in the map
+	*/
+	void UpdateGridControlArea();
+
+	/*
+	* Set The value of 
+	* a Grid Base who's index is _index
+	*/
+	void SetValue(int _index, float _value);
+
+	void SetRadiusValue(int _index, float _value, int _radius);
 };

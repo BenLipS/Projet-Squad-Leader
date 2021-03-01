@@ -533,3 +533,7 @@ void ASoldier::setup_stimulus() {
 	stimulus->RegisterForSense(TSubclassOf <UAISense_Sight>());
 	stimulus->RegisterWithPerceptionSystem();
 };
+
+uint8 ASoldier::GetInfluenceRadius() const noexcept{
+	return InfluenceRadius;
+}
