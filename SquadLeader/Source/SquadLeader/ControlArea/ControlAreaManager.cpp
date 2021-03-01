@@ -2,6 +2,7 @@
 
 
 #include "ControlAreaManager.h"
+#include "../SquadLeaderGameModeBase.h"
 
 
 AControlAreaManager::AControlAreaManager()
@@ -40,7 +41,15 @@ TArray<AControlArea*> AControlAreaManager::GetAreaControlledByTeam(TSubclassOf<A
 }
 
 
-TSubclassOf<ASoldierTeam> AControlAreaManager::GetTeamWithMostControl()
+TSubclassOf<ASoldierTeam> AControlAreaManager::GetTeamWithMostControl()  // to try with UI
 {
+	if (auto gameMode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode()); gameMode) {  // only for the server
+		int nbControleAreaToObtain = ControlAreaList.Num() - (ControlAreaList.Num() / 2); /*TODO: use teams politic here*/
+		for (TSubclassOf<ASoldierTeam> team : gameMode->SoldierTeamCollection) {
+			if (GetAreaControlledByTeam(team).Num() >= nbControleAreaToObtain) {
+				return team;
+			}
+		}
+	}
 	return TSubclassOf<ASoldierTeam>();
 }
