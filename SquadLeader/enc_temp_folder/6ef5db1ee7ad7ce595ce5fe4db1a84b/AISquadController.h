@@ -16,9 +16,6 @@ class SQUADLEADER_API AAISquadController : public AAIGeneralController
 	
 protected:
 	virtual void setup_BehaviorTree() override;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Formation Behaviour")
-	float RuningDistanceForFormation = 100.f;
 /////////// Respawn
 public:
 	AAISquadController();

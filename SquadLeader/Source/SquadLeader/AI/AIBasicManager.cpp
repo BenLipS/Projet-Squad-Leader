@@ -4,13 +4,19 @@
 #include "AIBasicManager.h"
 #include "../SquadLeaderGameModeBase.h"
 
-void UAIBasicManager::Init(TSubclassOf<ASoldierTeam> _Team, UObject* WorldContextObject)
+AAIBasicManager::AAIBasicManager() {
+	PrimaryActorTick.bStartWithTickEnabled = true;
+	PrimaryActorTick.bCanEverTick = true;
+}
+
+void AAIBasicManager::Init(TSubclassOf<ASoldierTeam> _Team, UObject* WorldContextObject)
 {
 	Team = _Team;
 
 	/*For now Each AIBasicManager Spawn with 4 AIs*/
 	/*TEMPORARY*/
-	auto gameMode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
+	if (GEngine)GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Purple, TEXT("Init AIBasicManger"));
+	auto gameMode = Cast<ASquadLeaderGameModeBase>(GEngine->GetWorldFromContextObject(WorldContextObject)->GetAuthGameMode());
 	FVector Start{};
 	if (Team == gameMode->SoldierTeamCollection[0]) {
 		Start = { 1310.0f, 3420.0f, 87.999985f };

@@ -15,10 +15,10 @@ void USquadLeaderGameInstance::InitAIManagers()
 	auto gameMode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
 
 	/*Init AIBasic Manager*/
-	AIBasicManagerTeam1 = NewObject<UAIBasicManager>(this, AIBasicManagerClass);
+	AIBasicManagerTeam1 = NewObject<AAIBasicManager>(this, AIBasicManagerClass);
 	AIBasicManagerTeam1->Init(gameMode->SoldierTeamCollection[0], GetWorld());
 
-	AIBasicManagerTeam2 = NewObject<UAIBasicManager>(this, AIBasicManagerClass);
+	AIBasicManagerTeam2 = NewObject<AAIBasicManager>(this, AIBasicManagerClass);
 	AIBasicManagerTeam2->Init(gameMode->SoldierTeamCollection[1], GetWorld());
 
 	/*Init AISquad Manager*/

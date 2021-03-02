@@ -11,12 +11,12 @@
  * 
  */
 UCLASS(Blueprintable)
-class SQUADLEADER_API UAIBasicManager : public UObject
+class SQUADLEADER_API AAIBasicManager : public AInfo
 {
 	GENERATED_BODY()
 
 public:
-	UAIBasicManager() = default;
+	AAIBasicManager();
 
 	UFUNCTION()
 	void Init(TSubclassOf<ASoldierTeam> _Team, UObject* WorldContextObject);

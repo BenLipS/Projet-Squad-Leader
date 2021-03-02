@@ -45,11 +45,5 @@ FVector AAISquadController::GetRespawnPoint()  // TODO : Change this function to
 
 EPathFollowingRequestResult::Type AAISquadController::FollowFormation() {
 	EPathFollowingRequestResult::Type _movetoResult = MoveToLocation(blackboard->GetValueAsVector("FormationLocation"), 5.f);
-
-	if ((blackboard->GetValueAsVector("FormationLocation") - GetPawn()->GetActorLocation()).Size() >= RuningDistanceForFormation)
-		Cast<ASoldierAI>(GetPawn())->ActivateAbilityRun();
-	else
-		Cast<ASoldierAI>(GetPawn())->CancelAbilityRun();
-
 	return _movetoResult;
 }

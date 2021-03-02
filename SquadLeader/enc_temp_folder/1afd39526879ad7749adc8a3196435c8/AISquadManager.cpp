@@ -56,7 +56,7 @@ void AAISquadManager::Init(TSubclassOf<ASoldierTeam> _Team, ASoldierPlayer* _Pla
 
 void AAISquadManager::Tick(float DeltaTime)
 {
-	//if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Black, FString::Printf(TEXT("Tick for: %s"), *Leader->GetName()));
+	if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Black, FString::Printf(TEXT("Tick for: %s"), *Leader->GetName()));
 
 	if (Mission->Type == MissionType::Formation) {
 		UpdateFormation();
@@ -86,7 +86,6 @@ void AAISquadManager::UpdateFormation()
 void AAISquadManager::UpdateCircleFormation()
 {
 	FVector DirPlayer = Leader->GetActorForwardVector();
-	DirPlayer = -DirPlayer;
 	FVector LocPlayer = Leader->GetActorLocation();
 	float angle = FMath::RadiansToDegrees(FGenericPlatformMath::Acos(FVector::DotProduct({ 1,0,0 }, DirPlayer) / (1 * DirPlayer.Size())));
 	if (DirPlayer.Y < 0) angle = -angle;
@@ -98,7 +97,7 @@ void AAISquadManager::UpdateCircleFormation()
 		Offset = Offset.RotateAngleAxis(angle, { 0, 0, 1 });
 		Offset = Offset.RotateAngleAxis(AnglePerAI * AISquadList.IndexOfByKey(BoidController), { 0, 0, 1 });
 		Pos = LocPlayer + Offset;
-		//DrawDebugPoint(Leader->GetWorld(), Pos, 20, FColor::Yellow);
+		DrawDebugPoint(Leader->GetWorld(), Pos, 20, FColor::Yellow);
 		FormationPos.Add(Pos);
 		});
 }
