@@ -7,6 +7,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "../../ControlArea/ControlAreaManager.h"
 #include "../../ControlArea/ControlArea.h"
+#include "../../ControlArea/ControlAreaTeamStat.h"
 
 // Sets default values
 AGrdiSetUp::AGrdiSetUp()
@@ -54,7 +55,7 @@ void AGrdiSetUp::DrawGrid() {
 	for (int i = 0; i != size_array_X; ++i) {
 		for (int j = 0; j != size_array_Y; ++j) {
 			if (m_GridBases[i * size_array_X + j] <= 1.f) {
-				FVector _location = FVector(dist_X, dist_Y, 800.f);
+				FVector _location = FVector(dist_X, dist_Y, 30.f);
 				if (m_GridBases[i * size_array_X + j] > 0.f)
 					DrawDebugSolidBox(GetWorld(), _location, FVector(95.f, 95.f, 10.f), FColor(0,0, m_GridBases[i * size_array_X + j] * 255));
 				else if (m_GridBases[i * size_array_X + j] < 0.f)
@@ -160,10 +161,23 @@ void AGrdiSetUp::UpdateGridControlArea() {
 	if (m_controlAreaManager) {
 		for (AControlArea* m_controlArea : m_controlAreaManager->GetControlArea()) {
 			int _index_tile_origin = FindTile(m_controlArea->GetActorLocation());
-			float _value_im = -1.f;
+			float _value_im = 0.f;
+			/*m_controlArea*/
+			int controlValue_team = 0;
+			float possessTeam = 0;
 
-			SetValue(_index_tile_origin, _value_im);
-			SetRadiusValue(_index_tile_origin, _value_im, 10);
+			for (auto _stat : m_controlArea->TeamData) {
+				if (controlValue_team < _stat.Value->controlValue) {
+					controlValue_team = _stat.Value->controlValue;
+					if (_stat.Key.GetDefaultObject()->TeamName == "Team1")
+						possessTeam = 1.0f;
+					else
+						possessTeam = -1.0f;
+				}
+			}
+
+			SetValue(_index_tile_origin, possessTeam);
+			SetRadiusValue(_index_tile_origin, possessTeam, 10);
 		}
 	}
 }
