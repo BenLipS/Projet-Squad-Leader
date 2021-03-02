@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "../Soldier.h"
 #include "SoldierPlayer.generated.h"
+class UAISquadManager;
 
 UCLASS()
 class SQUADLEADER_API ASoldierPlayer : public ASoldier
@@ -17,9 +18,15 @@ protected:
 	void PossessedBy(AController* _newController) override;
 	void OnRep_PlayerState() override;
 
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UAISquadManager> AISquadManagerClass;
+
 protected:
 	void SetAbilitySystemComponent();
 	void BindASCInput();
 
 	bool ASCInputBound;
+
+public:  // Respawn
+	virtual FVector GetRespawnPoint() override;
 };

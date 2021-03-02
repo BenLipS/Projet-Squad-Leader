@@ -26,20 +26,28 @@ public:
 
 //////////////// Fire
 protected:
-	bool isNextFireReady;
+	bool IsNextFireReady;
 
 	// TODO: Use cooldown from ability system
-	FTimerHandle timerReloadNextShoot;
+	FTimerHandle TimerReloadNextShoot;
 
 	UPROPERTY(EditDefaultsOnly, BluePrintReadWrite, Category = "Stats")
-	float timeToReloadNextShoot;
+	float TimeToReloadNextShoot;
 
 	UPROPERTY(EditDefaultsOnly, BluePrintReadWrite, Category = "Stats")
-	bool isAutomatic;
+	bool IsAutomatic;
 
 	UPROPERTY(EditDefaultsOnly, BluePrintReadWrite, Category = "Stats")
-	int penetration;
+	int Penetration;
 
+	UPROPERTY(EditDefaultsOnly, BluePrintReadWrite, Category = "Stats")
+	float FieldOfViewAim;
+
+public:
+	UFUNCTION(BlueprintCallable, Category = "Stats")
+	float GetFieldOfViewAim() const;
+
+protected:
 	UPROPERTY(BluePrintReadWrite, EditAnywhere, Category = "Stats")
 	float Damage;
 
@@ -59,12 +67,12 @@ protected:
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Fire")
-	virtual void tryFiring();
-	void tryFiring(const FGameplayEffectSpecHandle _damageEffectSpecHandle);
+	virtual void TryFiring();
+	void TryFiring(const FGameplayEffectSpecHandle _damageEffectSpecHandle);
 
 	UFUNCTION(BlueprintCallable, Category = "Fire")
-	virtual void fire();
+	virtual void Fire();
 
 	virtual void BeginPlay() override;
-	virtual void onReadyToShoot();
+	virtual void OnReadyToShoot();
 };

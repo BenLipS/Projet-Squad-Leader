@@ -2,12 +2,14 @@
 #include "UObject/ConstructorHelpers.h"
 #include "Soldiers/Players/SoldierPlayerController.h"
 #include "Soldiers/Players/SoldierPlayerState.h"
+#include "SquadLeaderGameInstance.h"
+#include "Soldiers/Soldier.h"
 
 ASquadLeaderGameModeBase::ASquadLeaderGameModeBase() : RespawnDelay{ 3.f }
 {
-	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnObject(TEXT("/Game/BluePrints/Players/BP_SoldierPlayerSupport"));
-	static ConstructorHelpers::FClassFinder<ASoldierPlayerController> PlayerControllerObject(TEXT("/Game/BluePrints/Players/BP_SoldierPlayerController"));
-	static ConstructorHelpers::FClassFinder<ASoldierPlayerState> PlayerStateObject(TEXT("/Game/BluePrints/Players/BP_SoldierPlayerState"));
+	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnObject(TEXT("/Game/BluePrints/Soldiers/Players/BP_SoldierPlayerSupport"));
+	static ConstructorHelpers::FClassFinder<ASoldierPlayerController> PlayerControllerObject(TEXT("/Game/BluePrints/Soldiers/Players/BP_SoldierPlayerController"));
+	static ConstructorHelpers::FClassFinder<ASoldierPlayerState> PlayerStateObject(TEXT("/Game/BluePrints/Soldiers/Players/BP_SoldierPlayerState"));
 
 	if (PlayerPawnObject.Class != NULL)
 		DefaultPawnClass = PlayerPawnObject.Class;
@@ -20,12 +22,15 @@ ASquadLeaderGameModeBase::ASquadLeaderGameModeBase() : RespawnDelay{ 3.f }
 }
 
 void ASquadLeaderGameModeBase::StartPlay() {
-	// init collections
-	controlAreaCollection = {};
+	for (auto team : SoldierTeamCollection) {  // clean all team data at the begining
+		team.GetDefaultObject()->CleanSpawnPoints();
+		team.GetDefaultObject()->CleanSoldierList();
+	}
 
-	// todo : create teams as class
-
-
+	ControlAreaManager.GetDefaultObject()->CleanControlAreaList();  // clean the list of all control area
+	
+	//Init for AI
+	Cast<USquadLeaderGameInstance>(GetGameInstance())->InitAIManagers();
 	Super::StartPlay();
 }
 
@@ -42,8 +47,7 @@ void ASquadLeaderGameModeBase::RespawnSoldier(AController* _Controller)
 {
 	if (ASoldier* soldier = Cast<ASoldier>(_Controller->GetPawn()); soldier)
 	{
-		// TODO: improve respawn
-		soldier->SetActorLocation(FVector(0.f, 0.f, 1500.f));
+		soldier->SetActorLocation(soldier->GetRespawnPoint());
 		soldier->Respawn();
 	}
 }

@@ -2,11 +2,13 @@
 #include "SoldierMovementComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "EngineUtils.h"
+#include "../SquadLeaderGameModeBase.h"
 #include "../AbilitySystem/Soldiers/GameplayAbilitySoldier.h"
 #include "../AbilitySystem/Soldiers/GameplayEffects/States/GE_StateDead.h"
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "Perception/AISense_Sight.h"
 #include "../SquadLeaderGameModeBase.h"
+#include "Kismet/KismetMathLibrary.h"
 //#include "DrawDebugHelpers.h"
 
 // States
@@ -15,6 +17,7 @@ FGameplayTag ASoldier::StateRunningTag = FGameplayTag::RequestGameplayTag(FName(
 FGameplayTag ASoldier::StateJumpingTag = FGameplayTag::RequestGameplayTag(FName("State.Jumping"));
 FGameplayTag ASoldier::StateCrouchingTag = FGameplayTag::RequestGameplayTag(FName("State.Crouching"));
 FGameplayTag ASoldier::StateFightingTag = FGameplayTag::RequestGameplayTag(FName("State.Fighting"));
+FGameplayTag ASoldier::StateAimingTag = FGameplayTag::RequestGameplayTag(FName("State.Aiming"));
 
 // Abilities
 FGameplayTag ASoldier::SkillRunTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Run"));
@@ -22,13 +25,13 @@ FGameplayTag ASoldier::SkillJumpTag = FGameplayTag::RequestGameplayTag(FName("Ab
 FGameplayTag ASoldier::SkillCrouchTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Crouch"));
 FGameplayTag ASoldier::SkillFireWeaponTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.FireWeapon"));
 FGameplayTag ASoldier::SkillGrenadeTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Grenade"));
+FGameplayTag ASoldier::SkillAimTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Aim"));
+FGameplayTag ASoldier::SkillAreaEffectFromSelfTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.AreaEffectFromSelf"));
 
 ASoldier::ASoldier(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer.SetDefaultSubobjectClass<USoldierMovementComponent>(ACharacter::CharacterMovementComponentName)), bAbilitiesInitialized{ false }, bDefaultWeaponsInitialized{ false }
 {
 	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
-
-	initStats();
 	initCameras();
 	initMovements();
 	initMeshes();
@@ -49,6 +52,14 @@ void ASoldier::BeginPlay()
 		setToFirstCameraPerson();
 	else
 		setToThirdCameraPerson();
+
+	if (GetLocalRole() == ROLE_Authority) {
+		// add this to the team data
+		if (PlayerTeam) {
+			OldPlayerTeam = PlayerTeam;
+			PlayerTeam.GetDefaultObject()->AddSoldierList(this);
+		}
+	}
 }
 
 
@@ -78,7 +89,7 @@ void ASoldier::initCameras()
 	FirstPersonCameraComponent->SetupAttachment(GetCapsuleComponent());
 	FirstPersonCameraComponent->SetRelativeLocation(FVector(2.f, 0.f, BaseEyeHeight));
 	FirstPersonCameraComponent->bUsePawnControlRotation = true;
-	FirstPersonCameraComponent->SetFieldOfView(fieldOfViewNormal);
+	FirstPersonCameraComponent->SetFieldOfView(90.f);
 
 	// 3rd person camera
 	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
@@ -93,7 +104,7 @@ void ASoldier::initCameras()
 
 	ThirdPersonCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("ThirdPersonCamera"));
 	ThirdPersonCameraComponent->SetupAttachment(SpringArmComponent);
-	ThirdPersonCameraComponent->SetFieldOfView(fieldOfViewNormal);
+	ThirdPersonCameraComponent->SetFieldOfView(90.f);
 
 	bIsFirstPerson = true;
 	CurrentCameraComponent = FirstPersonCameraComponent;
@@ -109,12 +120,6 @@ void ASoldier::initMeshes()
 	FirstPersonMesh->CastShadow = false;
 
 	// 3rd person mesh - already defined with ACharacter
-}
-
-void ASoldier::initStats()
-{
-	fieldOfViewNormal = 90.f;
-	fieldOfViewAim = 50.f;
 }
 
 void ASoldier::initMovements()
@@ -224,6 +229,7 @@ void ASoldier::InitializeTagChangeCallbacks()
 	AbilitySystemComponent->RegisterGameplayTagEvent(ASoldier::StateRunningTag, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ASoldier::RunningTagChanged);
 	AbilitySystemComponent->RegisterGameplayTagEvent(ASoldier::StateJumpingTag, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ASoldier::JumpingTagChanged);
 	AbilitySystemComponent->RegisterGameplayTagEvent(ASoldier::StateFightingTag, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ASoldier::FightingTagChanged);
+	AbilitySystemComponent->RegisterGameplayTagEvent(ASoldier::StateAimingTag, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ASoldier::AimingTagChanged);
 }
 
 void ASoldier::InitializeAttributeChangeCallbacks()
@@ -235,6 +241,10 @@ void ASoldier::DeadTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
 {
 	if (NewCount > 0) // If dead tag is added - Handle death
 	{
+		// remove ticket from team (only on server)
+		if (PlayerTeam && GetLocalRole() == ROLE_Authority)
+			PlayerTeam.GetDefaultObject()->RemoveOneTicket();
+
 		// Stop the soldier and remove any interaction with the world
 		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		GetCharacterMovement()->GravityScale = 0.f;
@@ -251,6 +261,7 @@ void ASoldier::DeadTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
 	{
 		// A setter is ok for this special case. Otherwise use GEs to handle attributes
 		AttributeSet->SetHealth(AttributeSet->GetMaxHealth());
+		AttributeSet->SetShield(AttributeSet->GetMaxShield());
 
 		GetCharacterMovement()->GravityScale = 1.f;
 		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
@@ -266,6 +277,10 @@ void ASoldier::JumpingTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
 }
 
 void ASoldier::FightingTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
+{
+}
+
+void ASoldier::AimingTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
 {
 }
 
@@ -301,12 +316,12 @@ void ASoldier::setToThirdCameraPerson()
 
 void ASoldier::MoveForward(const float _Val)
 {
-	AddMovementInput(FRotationMatrix(Controller->GetControlRotation()).GetScaledAxis(EAxis::X), _Val);
+	AddMovementInput(UKismetMathLibrary::GetForwardVector(FRotator(0, GetControlRotation().Yaw, 0)), _Val);
 }
 
 void ASoldier::MoveRight(const float _Val)
 {
-	AddMovementInput(FRotationMatrix(Controller->GetControlRotation()).GetScaledAxis(EAxis::Y), _Val);
+	AddMovementInput(UKismetMathLibrary::GetRightVector(FRotator(0, GetControlRotation().Yaw, 0)), _Val);
 }
 
 void ASoldier::LookUp(const float _Val)
@@ -426,7 +441,7 @@ void ASoldier::SetWantsToFire(const bool _want)
 {
 	wantsToFire = _want;
 	if (wantsToFire) {
-		currentWeapon->tryFiring();
+		currentWeapon->TryFiring();
 	}
 }
 
@@ -434,8 +449,21 @@ void ASoldier::SetWantsToFire(const bool _want, const FGameplayEffectSpecHandle 
 {
 	wantsToFire = _want;
 	if (wantsToFire) {
-		currentWeapon->tryFiring(_damageEffectSpecHandle);
+		currentWeapon->TryFiring(_damageEffectSpecHandle);
 	}
+}
+
+void ASoldier::StartAiming()
+{
+	FirstPersonCameraComponent->SetFieldOfView(currentWeapon->GetFieldOfViewAim());
+	ThirdPersonCameraComponent->SetFieldOfView(currentWeapon->GetFieldOfViewAim());
+}
+
+void ASoldier::StopAiming()
+{
+	// TODO: Should we have a variable for that ?
+	FirstPersonCameraComponent->SetFieldOfView(90.f);
+	ThirdPersonCameraComponent->SetFieldOfView(90.f);
 }
 
 void ASoldier::OnRep_CurrentWeapon(AWeapon* _lastWeapon)
@@ -455,12 +483,22 @@ void ASoldier::SetCurrentWeapon(AWeapon* _newWeapon, AWeapon* _previousWeapon)
 
 }
 
-void ASoldier::ServerChangeTeam_Implementation(ENUM_PlayerTeam _PlayerTeam)
+
+// network for debug team change
+
+void ASoldier::ServerChangeTeam_Implementation(TSubclassOf<ASoldierTeam> _PlayerTeam)
 {
 	PlayerTeam = _PlayerTeam;
+	
+	if(OldPlayerTeam)
+		OldPlayerTeam.GetDefaultObject()->RemoveSoldierList(this);
+	if(PlayerTeam)
+		PlayerTeam.GetDefaultObject()->AddSoldierList(this);
+	
+	OldPlayerTeam = PlayerTeam;
 }
 
-bool ASoldier::ServerChangeTeam_Validate(ENUM_PlayerTeam _PlayerTeam)
+bool ASoldier::ServerChangeTeam_Validate(TSubclassOf<ASoldierTeam> _PlayerTeam)
 {
 	return true;
 }
@@ -472,28 +510,39 @@ void ASoldier::OnRep_ChangeTeam()
 	}
 }
 
+void ASoldier::ServerCycleBetweenTeam_Implementation() {
+	cycleBetweenTeam();
+}
+
+bool ASoldier::ServerCycleBetweenTeam_Validate() {
+	return true;
+}
+
 void ASoldier::cycleBetweenTeam()
 {
-	FString message;
-	switch (PlayerTeam)
-	{
-	case ENUM_PlayerTeam::None:
-		PlayerTeam = ENUM_PlayerTeam::Team1;
-		message = FString::Printf(TEXT("You now are in team1"));
-		break;
-	case ENUM_PlayerTeam::Team1:
-		PlayerTeam = ENUM_PlayerTeam::Team2;
-		message = FString::Printf(TEXT("You now are in team2"));
-		break;
-	case ENUM_PlayerTeam::Team2:
-		message = FString::Printf(TEXT("You now are in no team"));
-		PlayerTeam = ENUM_PlayerTeam::None;
-		break;
-	default:
-		break;
-	}
-	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, message);
+	if (GetLocalRole() == ROLE_Authority) {
+		FString message;
+		auto gameMode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
+		auto initialIndex = gameMode->SoldierTeamCollection.Find(PlayerTeam);
+		if (initialIndex != INDEX_NONE) {  // cycle between existant team
+			auto index = initialIndex + 1;
+			if (!(gameMode->SoldierTeamCollection.IsValidIndex(index))) {
+				index = 0;
+			}
+			PlayerTeam = gameMode->SoldierTeamCollection[index];
 
+			message = PlayerTeam.GetDefaultObject()->TeamName;  // Log
+		}
+		else {  // if the player have no team for now give the first one
+			if (gameMode->SoldierTeamCollection.Max() > 0) {
+				PlayerTeam = gameMode->SoldierTeamCollection[0];
+
+				message = PlayerTeam.GetDefaultObject()->TeamName;  // Log
+			}
+		}
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, message);
+	}
+	else ServerCycleBetweenTeam();
 }
 
 void ASoldier::setup_stimulus() {

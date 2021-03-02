@@ -1,7 +1,7 @@
 #include "Weapon.h"
 #include "../Soldiers/Soldier.h"
 
-AWeapon::AWeapon() : isNextFireReady{ true }, timeToReloadNextShoot{ 0.2f }, isAutomatic{ true }, penetration{ 1 }
+AWeapon::AWeapon() : IsNextFireReady{ true }, TimeToReloadNextShoot{0.2f}, IsAutomatic{true}, Penetration{1}, FieldOfViewAim{ 50.f }
 {
 	PrimaryActorTick.bCanEverTick = false;
 }
@@ -21,6 +21,11 @@ UAbilitySystemSoldier* AWeapon::GetAbilitySystemComponent() const
 	return AbilitySystemComponent;
 }
 
+float AWeapon::GetFieldOfViewAim() const
+{
+	return FieldOfViewAim;
+}
+
 void AWeapon::ApplyImpactDamage(UAbilitySystemComponent* _targetASC)
 {
 }
@@ -29,29 +34,29 @@ void AWeapon::ApplyImpactEffects(UAbilitySystemComponent* _targetASC)
 {
 }
 
-void AWeapon::tryFiring()
+void AWeapon::TryFiring()
 {
 	ASoldier* soldier = Cast<ASoldier>(GetOwner());
-	if (soldier && soldier->GetWantsToFire() && isNextFireReady)
-		fire();
+	if (soldier && soldier->GetWantsToFire() && IsNextFireReady)
+		Fire();
 }
 
-void AWeapon::tryFiring(const FGameplayEffectSpecHandle _damageEffectSpecHandle)
+void AWeapon::TryFiring(const FGameplayEffectSpecHandle _damageEffectSpecHandle)
 {
 	DamageEffectSpecHandle = _damageEffectSpecHandle;
 	DamageEffectSpecHandle.Data.Get()->SetSetByCallerMagnitude(FGameplayTag::RequestGameplayTag(FName("Data.Damage")), Damage);
-	tryFiring();
+	TryFiring();
 }
 
-void AWeapon::fire()
+void AWeapon::Fire()
 {
-	isNextFireReady = false;
-	GetWorldTimerManager().SetTimer(timerReloadNextShoot, this, &AWeapon::onReadyToShoot, timeToReloadNextShoot, false);
+	IsNextFireReady = false;
+	GetWorldTimerManager().SetTimer(TimerReloadNextShoot, this, &AWeapon::OnReadyToShoot, TimeToReloadNextShoot, false);
 }
 
-void AWeapon::onReadyToShoot()
+void AWeapon::OnReadyToShoot()
 {
-	isNextFireReady = true;
-	if (isAutomatic)
-		tryFiring();
+	IsNextFireReady = true;
+	if (IsAutomatic)
+		TryFiring();
 }

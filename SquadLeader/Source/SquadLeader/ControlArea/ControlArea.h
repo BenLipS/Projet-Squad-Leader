@@ -4,9 +4,11 @@
 
 #include "Core.h"
 #include "GameFramework/Actor.h"
-#include "../Soldiers/Soldier.h"
+#include "../Soldiers/SoldierTeam.h"
+#include "ControlAreaTeamStat.h"
 #include "Net/UnrealNetwork.h"
 #include "ControlArea.generated.h"
+
 
 UCLASS()
 class SQUADLEADER_API AControlArea : public AActor
@@ -40,16 +42,9 @@ public:
 		int maxControlValue;
 	UPROPERTY(BlueprintReadWrite, Category = "ControlValue")
 		int controlValueToTake;
-protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "ControlValue")
-		int controlValue;
-	UPROPERTY(BlueprintReadWrite, Category = "ControlValue")
-		int presenceTeam1;
-	UPROPERTY(BlueprintReadWrite, Category = "ControlValue")
-		int presenceTeam2;
 public:
 	UPROPERTY(VisibleAnywhere, Replicated, Category = "IsTaken")
-		ENUM_PlayerTeam isTakenBy;
+		TSubclassOf<ASoldierTeam> isTakenBy;
 
 
 	/**
@@ -65,11 +60,17 @@ public:
 	 */
 	virtual void NotifyActorEndOverlap(AActor* OtherActor) override;
 
-protected:
+protected:  // time value for calculation frequency
 	FTimerHandle timerCalculationControlValue;
 	UPROPERTY(BlueprintReadWrite, Category = "ControlValue")
 		float timeBetweenCalcuation;
 
 	UFUNCTION(BlueprintCallable, Category = "ControlValue")
 		void calculateControlValue();
+
+protected:
+	UPROPERTY(EditInstanceOnly, Category = "ControlData")
+		TMap<TSubclassOf<ASoldierTeam>, AControlAreaTeamStat*> TeamData;
+	UFUNCTION(Category = "ControlData")
+		void UpdateTeamData();
 };

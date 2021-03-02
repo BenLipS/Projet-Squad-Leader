@@ -1,7 +1,10 @@
 #include "SoldierPlayer.h"
 #include "SoldierPlayerState.h"
 #include "SoldierPlayerController.h"
+#include "../../SquadLeaderGameInstance.h"
+#include "../../AI/AISquadController.h"
 #include "../../AbilitySystem/Soldiers/GameplayAbilitySoldier.h"
+#include "../../Spawn/SoldierSpawn.h"
 
 ASoldierPlayer::ASoldierPlayer(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer), ASCInputBound{ false }
 {
@@ -23,6 +26,11 @@ void ASoldierPlayer::PossessedBy(AController* _newController)
 	Super::PossessedBy(_newController);
 	SetAbilitySystemComponent();
 	initWeapons();
+
+	/*Init Squad Manager for this Player*/
+	UAISquadManager* PlayerSquadManager = NewObject<UAISquadManager>(this, AISquadManagerClass);
+	PlayerSquadManager->Init(PlayerTeam,this,GetWorld());
+	Cast<USquadLeaderGameInstance>(GetGameInstance())->GetSquadManagers().Add(PlayerSquadManager);
 
 	// TODO: Do we need to have the hud in server ?
 	if (ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(GetController()); PC)
@@ -77,4 +85,29 @@ void ASoldierPlayer::BindASCInput()
 
 		ASCInputBound = true;
 	}
+}
+
+FVector ASoldierPlayer::GetRespawnPoint()
+{
+	if (PlayerTeam) {
+		auto AvailableSpawnPoints = PlayerTeam.GetDefaultObject()->GetUsableSpawnPoints();
+		if (AvailableSpawnPoints.Num() > 0) {
+
+			FVector OptimalPosition = AvailableSpawnPoints[0]->GetActorLocation();
+			auto CalculateMinimalDistance = [](FVector PlayerPos, FVector FirstPoint, FVector SecondPoint) {  // return true if the first point is closest
+				float dist1 = FVector::Dist(PlayerPos, FirstPoint);
+				float dist2 = FVector::Dist(PlayerPos, SecondPoint);
+				return dist1 < dist2;
+			};
+
+			for (auto loop : AvailableSpawnPoints) {
+				if (CalculateMinimalDistance(this->GetActorLocation(), loop->GetActorLocation(), OptimalPosition)) {
+					OptimalPosition = loop->GetActorLocation();
+				}
+			}
+
+			return OptimalPosition;
+		}
+	}
+	return FVector(0.f, 0.f, 1500.f); // else return default
 }

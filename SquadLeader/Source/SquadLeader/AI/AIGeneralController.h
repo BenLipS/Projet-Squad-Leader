@@ -7,7 +7,9 @@
 #include "../Soldiers/Soldier.h"
 #include "../Soldiers/AIs/SoldierAI.h"
 #include "Perception/AIPerceptiontypes.h"
+#include "Mission.h"
 #include "AIGeneralController.generated.h"
+
 
 /**
  * This enum contains the different behavior the AI can have
@@ -37,7 +39,7 @@ public:
 	void ActorsPerceptionUpdated(const TArray < AActor* >& UpdatedActors);
 
 	UFUNCTION()
-	void BeginPlay();
+	virtual void BeginPlay();
 	
 	/*Move to a location, the location must be an AActor*/
 	UFUNCTION(BlueprintCallable, Category = "SquadLeader")
@@ -62,9 +64,10 @@ public:
 	*/
 	UFUNCTION(BluePrintCallable, Category = "Comportement")
 		virtual void Tick(float DeltaSeconds) override;
-private:
+protected:
 	/*Set-up the BehaviorTree at the construction*/
-	void setup_BehaviorTree();
+	virtual void setup_BehaviorTree();
+private:
 
 	/*
 	* The next two method are part of the 
@@ -85,11 +88,6 @@ private:
 	UFUNCTION()
 		void Act();
 
-	UFUNCTION()
-		void UpdateFocus();
-
-	UFUNCTION()
-		void UpdateSeenActor();
 	
 		void ChooseBehavior();
 
@@ -99,14 +97,14 @@ private:
 	* And will erase the Actor we can't see anymore
 	*/
 	UFUNCTION()
-		void SortActorPerception();
+		void UpdateSeenSoldier();
 
 	/*
 	* After sorting the Actor we see we will choose the enemy to kill
 	* if there is one
 	*/
 	UFUNCTION()
-		void SearchEnemy();
+		void FocusEnemy();
 
 	/*
 	* Make the AI run if it's possible
@@ -122,27 +120,43 @@ private:
 	*/
 	UFUNCTION()
 		void TooClose();
-private:
 
+	/*
+	* Calculate the point where the AI is
+	* in a good range
+	* if the enemy is too far.
+	* This method is called only when the AI is in the Attack Behavior
+	*/	
+	UFUNCTION()
+		void TooFar();
+
+	UFUNCTION()
+		void AttackBehavior();
+
+	UFUNCTION()
+		void DefenseBehavior();
+
+protected:
 	/*The behaviorTree that we are running*/
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))
 	UBehaviorTree* m_behaviorTree;
-	
+
+
 	class UBlackboardComponent* blackboard;
-	
+
+	UPROPERTY()
+	TArray<ASoldier*> SeenSoldier;
+private:
 	class UAISenseConfig_Sight* sight_config;
 
 	UPROPERTY()
-	TArray<AActor*> SeenActor;
+	class UBlackboardComponent* m_BlackBoard;
 
 	UPROPERTY()
-		class UBlackboardComponent* m_BlackBoard;
+	TEnumAsByte<AIBehavior> m_behavior;
 
 	UPROPERTY()
-		TEnumAsByte<AIBehavior> m_behavior;
-
-	UPROPERTY()
-		FVector m_destination;
+	FVector m_destination;
 
 public:
 
@@ -165,4 +179,57 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Perception")
 		float m_distancePerception = 5000.f;
 
+	/*
+	* Lose Sight Offset
+	*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Perception")
+		float m_LoseSightOffset = 200.0f;
+
+	/*
+	* PeripheralVisionAngleDegrees
+	*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Perception")
+		float m_PeripheralVisionAngleDegrees = 82.5f;
+
+	/*
+	* Stimulus Max Age
+	*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Perception")
+		float m_MaxAge = 1.f;
+
+	/*
+	* AutoSuccessRangeFromLastSeenLocation
+	*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Perception")
+		float m_AutoSuccessRangeFromLastSeenLocation = 100.0f;
+
+	/*
+	* Detect Enemies
+	*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Perception")
+		bool m_DetectEnemies = true;
+
+	/*
+	* Detect Friendlies
+	*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Perception")
+		bool m_DetectFriendlies = true;
+
+	/*
+	* Detect Neutrals
+	*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Perception")
+		bool m_DetectNeutrals = true;
+
+/////////// Respawn
+public:
+	UFUNCTION()
+	virtual FVector GetRespawnPoint() { return FVector(0.f, 0.f, 1500.f); }  // function overide in in each controller
+
+public:	//Mission
+	void SetMission(UMission* _Mission);
+
+protected:
+	UPROPERTY()
+	UMission* Mission;
 };
