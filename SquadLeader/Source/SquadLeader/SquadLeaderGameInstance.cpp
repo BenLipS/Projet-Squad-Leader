@@ -1,9 +1,11 @@
 #include "SquadLeaderGameInstance.h"
 #include "SquadLeaderGameModeBase.h"
+#include "AbilitySystemGlobals.h"
 
 USquadLeaderGameInstance::USquadLeaderGameInstance() : 
 		ListAISquadManagers{}
 {
+	UAbilitySystemGlobals::Get().InitGlobalData();
 }
 
 void USquadLeaderGameInstance::InitAIManagers()
