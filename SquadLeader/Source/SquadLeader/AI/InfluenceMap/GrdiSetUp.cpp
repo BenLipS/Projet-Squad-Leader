@@ -24,7 +24,6 @@ void AGrdiSetUp::BeginPlay()
 		CreateGrid();
 		m_Gamemode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
 	}
-	
 }
 
 // Called every frame
@@ -44,7 +43,7 @@ void AGrdiSetUp::Tick(float DeltaTime)
 		default:
 			break;
 		}
-		DrawGrid();
+		//DrawGrid();
 	}
 }
 
@@ -55,7 +54,7 @@ void AGrdiSetUp::DrawGrid() {
 	for (int i = 0; i != size_array_X; ++i) {
 		for (int j = 0; j != size_array_Y; ++j) {
 			if (m_GridBases[i * size_array_X + j] <= 1.f) {
-				FVector _location = FVector(dist_X, dist_Y, 30.f);
+				FVector _location = FVector(dist_X, dist_Y, 800.f);
 				if (m_GridBases[i * size_array_X + j] > 0.f)
 					DrawDebugSolidBox(GetWorld(), _location, FVector(95.f, 95.f, 10.f), FColor(0,0, m_GridBases[i * size_array_X + j] * 255));
 				else if (m_GridBases[i * size_array_X + j] < 0.f)
@@ -162,7 +161,7 @@ void AGrdiSetUp::UpdateGridControlArea() {
 		for (AControlArea* m_controlArea : m_controlAreaManager->GetControlArea()) {
 			int _index_tile_origin = FindTile(m_controlArea->GetActorLocation());
 			float _value_im = 0.f;
-			/*m_controlArea*/
+
 			int controlValue_team = 0;
 			float possessTeam = 0;
 
@@ -170,9 +169,9 @@ void AGrdiSetUp::UpdateGridControlArea() {
 				if (controlValue_team < _stat.Value->controlValue) {
 					controlValue_team = _stat.Value->controlValue;
 					if (_stat.Key.GetDefaultObject()->TeamName == "Team1")
-						possessTeam = 1.0f;
+						possessTeam = static_cast<float>(controlValue_team) / static_cast<float>(m_controlArea->maxControlValue);
 					else
-						possessTeam = -1.0f;
+						possessTeam = -(static_cast<float>(controlValue_team) / static_cast<float>(m_controlArea->maxControlValue));
 				}
 			}
 
@@ -189,7 +188,6 @@ void AGrdiSetUp::SetValue(int _index, float _value) {
 		else
 			m_GridBases[_index] = 1.f;
 	}
-		
 }
 
 void AGrdiSetUp::SetRadiusValue(int _index, float _value, int _radius) {
@@ -199,7 +197,10 @@ void AGrdiSetUp::SetRadiusValue(int _index, float _value, int _radius) {
 
 	for (int _index_y = _index_tile_left_up; _index_y != _index_tile_left_down; _index_y -= size_array_Y) {
 		for (int _index_x = _index_y; _index_x != _index_y + ( 2*_radius ); ++_index_x) {
-			SetValue(_index_x, _value_im_side);
+			if (_value_im_side != 0.f && _value_im_side != 100.f) {
+				_value_im_side = 1.f / FMath::Square(1.f + FMath::Abs(_index - _index_x));
+				SetValue(_index_x, _value_im_side);
+			}
 		}
 	}
 }
