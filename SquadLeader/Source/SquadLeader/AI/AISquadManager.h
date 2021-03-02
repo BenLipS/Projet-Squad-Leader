@@ -7,7 +7,6 @@
 #include "../Soldiers/AIs/SoldierAI.h"
 #include "AISquadManager.generated.h"
 
-
 /**
  * 
  */

@@ -25,7 +25,7 @@ protected:
 	UAISquadManager* SquadManager;
 
 public:
-	UAISquadManager* GetSquadManager() const;
+	UAISquadManager* GetSquadManager();
 
 protected:
 	void SetAbilitySystemComponent();
