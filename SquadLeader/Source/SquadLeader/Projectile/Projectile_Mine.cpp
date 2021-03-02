@@ -19,7 +19,7 @@ void AProjectile_Mine::BeginPlay()
 void AProjectile_Mine::InitVelocity()
 {
 	Super::InitVelocity();
-	
+
 }
 
 void AProjectile_Mine::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit)
