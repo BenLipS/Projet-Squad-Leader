@@ -97,7 +97,7 @@ protected:
 //////////////// Attributes
 public:
 	UPROPERTY(BluePrintReadWrite, Category = "Attributes")
-		uint8 InfluenceRadius = 1;
+		uint8 InfluenceRadius = 2;
 
 	UPROPERTY(BluePrintReadWrite, Category = "Attributes")
 		float InfluenceWeight = 0.6f;

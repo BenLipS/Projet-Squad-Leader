@@ -73,4 +73,12 @@ protected:
 		TMap<TSubclassOf<ASoldierTeam>, AControlAreaTeamStat*> TeamData;
 	UFUNCTION(Category = "ControlData")
 		void UpdateTeamData();
+
+protected:
+	UPROPERTY(EditInstanceOnly, Category = "InfluenceMap")
+		int InfluenceRadius = 10;
+public:
+
+	UFUNCTION(Category = "InfluenceMap")
+		int GetInfluenceRadius() const noexcept { return InfluenceRadius; }
 };

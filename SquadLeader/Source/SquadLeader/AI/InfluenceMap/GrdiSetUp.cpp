@@ -161,12 +161,13 @@ void AGrdiSetUp::UpdateGridControlArea() {
 			float _value_im = 1.0f;
 
 			SetValue(_index_tile_origin, _value_im);
+			SetRadiusValue(_index_tile_origin, _value_im, 10);
 		}
 	}
 }
 
 void AGrdiSetUp::SetValue(int _index, float _value) {
-	if (_index >= 0) {
+	if (_index >= 0 && _index < size_array_X * size_array_Y) {
 		if (m_GridBases[_index] + _value <= 1.0f)
 			m_GridBases[_index] += _value;
 		else
@@ -176,23 +177,13 @@ void AGrdiSetUp::SetValue(int _index, float _value) {
 }
 
 void AGrdiSetUp::SetRadiusValue(int _index, float _value, int _radius) {
-	float _value_im_side = 0.f;
+	float _value_im_side = 1.f;
+	int _index_tile_left_up = _index - _radius + (_radius * size_array_Y);
+	int _index_tile_left_down = _index - _radius - (_radius * size_array_Y);
 
-	int _index_tile_left = _index;
-	int _index_tile_right = _index;
-	int _index_tile_up = _index;
-	int _index_tile_down = _index;
-
-	for (int i = 0; i != _radius; ++i) {
-		_index_tile_up -= size_array_Y;
-		_index_tile_down += size_array_Y;
-		_index_tile_left -= 1;
-		_index_tile_right += 1;
-		_value_im_side = _value / FMath::Square(1.f + (i + 1));
-
-		SetValue(_index_tile_up, _value_im_side);
-		SetValue(_index_tile_down, _value_im_side);
-		SetValue(_index_tile_left, _value_im_side);
-		SetValue(_index_tile_right, _value_im_side);
+	for (int _index_y = _index_tile_left_up; _index_y != _index_tile_left_down; _index_y -= size_array_Y) {
+		for (int _index_x = _index_y; _index_x != _index_y + ( 2*_radius ); ++_index_x) {
+			SetValue(_index_x, _value_im_side);
+		}
 	}
 }
