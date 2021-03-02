@@ -54,11 +54,13 @@ void AGrdiSetUp::DrawGrid() {
 	for (int i = 0; i != size_array_X; ++i) {
 		for (int j = 0; j != size_array_Y; ++j) {
 			if (m_GridBases[i * size_array_X + j] <= 1.f) {
-				FVector _location = FVector(dist_X, dist_Y, 30.f);
+				FVector _location = FVector(dist_X, dist_Y, 800.f);
 				if (m_GridBases[i * size_array_X + j] > 0.f)
 					DrawDebugSolidBox(GetWorld(), _location, FVector(95.f, 95.f, 10.f), FColor(0,0, m_GridBases[i * size_array_X + j] * 255));
 				else if (m_GridBases[i * size_array_X + j] < 0.f)
-					DrawDebugSolidBox(GetWorld(), _location, FVector(95.f, 95.f, 10.f), FColor(m_GridBases[i * size_array_X + j] * 255, 0, 0));
+					DrawDebugSolidBox(GetWorld(), _location, FVector(95.f, 95.f, 10.f), FColor(FMath::Abs(m_GridBases[i * size_array_X + j]) * 255, 0, 0));
+				/*else
+					DrawDebugSolidBox(GetWorld(), _location, FVector(95.f, 95.f, 10.f), FColor(0, 0, 0));*/
 			}
 			
 			dist_Y += m_GridBaseSize_Y;
@@ -158,7 +160,7 @@ void AGrdiSetUp::UpdateGridControlArea() {
 	if (m_controlAreaManager) {
 		for (AControlArea* m_controlArea : m_controlAreaManager->GetControlArea()) {
 			int _index_tile_origin = FindTile(m_controlArea->GetActorLocation());
-			float _value_im = 1.0f;
+			float _value_im = -1.f;
 
 			SetValue(_index_tile_origin, _value_im);
 			SetRadiusValue(_index_tile_origin, _value_im, 10);
@@ -177,7 +179,7 @@ void AGrdiSetUp::SetValue(int _index, float _value) {
 }
 
 void AGrdiSetUp::SetRadiusValue(int _index, float _value, int _radius) {
-	float _value_im_side = 1.f;
+	float _value_im_side = _value;
 	int _index_tile_left_up = _index - _radius + (_radius * size_array_Y);
 	int _index_tile_left_down = _index - _radius - (_radius * size_array_Y);
 
