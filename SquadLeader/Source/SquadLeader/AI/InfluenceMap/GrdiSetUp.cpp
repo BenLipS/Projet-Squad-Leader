@@ -5,6 +5,8 @@
 #include "../../Soldiers/Soldier.h"
 #include "DrawDebugHelpers.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "../../ControlArea/ControlAreaManager.h"
+#include "../../ControlArea/ControlArea.h"
 
 // Sets default values
 AGrdiSetUp::AGrdiSetUp()
@@ -152,7 +154,15 @@ void AGrdiSetUp::UpdateGridSoldier() {
 }
 
 void AGrdiSetUp::UpdateGridControlArea() {
+	AControlAreaManager* m_controlAreaManager = Cast<AControlAreaManager>(m_Gamemode->ControlAreaManager->GetDefaultObject());
+	if (m_controlAreaManager) {
+		for (AControlArea* m_controlArea : m_controlAreaManager->GetControlArea()) {
+			int _index_tile_origin = FindTile(m_controlArea->GetActorLocation());
+			float _value_im = 1.0f;
 
+			SetValue(_index_tile_origin, _value_im);
+		}
+	}
 }
 
 void AGrdiSetUp::SetValue(int _index, float _value) {
