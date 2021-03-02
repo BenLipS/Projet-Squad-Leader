@@ -23,10 +23,11 @@ ASquadLeaderGameModeBase::ASquadLeaderGameModeBase() : RespawnDelay{ 3.f }
 
 void ASquadLeaderGameModeBase::StartPlay() {
 	for (auto team : SoldierTeamCollection) {  // clean all team data at the begining
-		team.GetDefaultObject()->CleanControlArea();
 		team.GetDefaultObject()->CleanSpawnPoints();
 		team.GetDefaultObject()->CleanSoldierList();
 	}
+
+	ControlAreaManager.GetDefaultObject()->CleanControlAreaList();  // clean the list of all control area
 	
 	//Init for AI
 	Cast<USquadLeaderGameInstance>(GetGameInstance())->InitAIManagers();

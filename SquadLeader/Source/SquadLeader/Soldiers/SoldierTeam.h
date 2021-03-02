@@ -49,18 +49,6 @@ public:
 		void CleanSoldierList();
 
 
-protected:  // controlArea
-	UPROPERTY(EditAnywhere, Replicated, Category = "ControlArea")
-		TArray<AControlArea*> takenControlArea;
-public:
-	UFUNCTION(BlueprintCallable, Category = "ControlArea")
-		void AddControlArea(AControlArea* newControlArea);
-	UFUNCTION(BlueprintCallable, Category = "ControlArea")
-		void RemoveControlArea(AControlArea* newControlArea);
-	UFUNCTION(BlueprintCallable, Category = "ControlArea")
-		void CleanControlArea();
-
-
 protected: // Spawn points
 	UPROPERTY(EditAnywhere, Replicated, Category = "SpawnPoints")
 		TArray<ASoldierSpawn*> mainSpawnPoints;
@@ -73,6 +61,7 @@ public:
 		void CleanSpawnPoints();
 	UFUNCTION(BlueprintCallable, Category = "SpawnPoints")
 		TArray<ASoldierSpawn*> GetUsableSpawnPoints();
+
 
 protected:  // Tickets
 	UPROPERTY(EditDefaultsOnly, Replicated, Category = "Tickets")

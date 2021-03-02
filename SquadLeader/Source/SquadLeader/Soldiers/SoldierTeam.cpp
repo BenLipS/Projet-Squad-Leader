@@ -23,7 +23,6 @@ void ASoldierTeam::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ASoldierTeam, soldierList);
-	DOREPLIFETIME(ASoldierTeam, takenControlArea);
 	DOREPLIFETIME(ASoldierTeam, mainSpawnPoints);
 
 }
@@ -31,7 +30,6 @@ void ASoldierTeam::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 
 void ASoldierTeam::AddSoldierList(ASoldier* newSoldier)
 {
-	CleanSoldierList();
 	soldierList.AddUnique(newSoldier);
 }
 
@@ -44,24 +42,6 @@ void ASoldierTeam::RemoveSoldierList(ASoldier* newSoldier)
 void ASoldierTeam::CleanSoldierList()
 {
 	soldierList.RemoveAll([](ASoldier* element) {return element == nullptr; });
-}
-
-
-void ASoldierTeam::AddControlArea(AControlArea* newControlArea)
-{
-	CleanControlArea();
-	takenControlArea.AddUnique(newControlArea);
-}
-
-void ASoldierTeam::RemoveControlArea(AControlArea* newControlArea)
-{
-	if (takenControlArea.Contains(newControlArea))
-		takenControlArea.Remove(newControlArea);
-}
-
-void ASoldierTeam::CleanControlArea()
-{
-	takenControlArea.RemoveAll([](AControlArea* element) {return element == nullptr; });
 }
 
 
