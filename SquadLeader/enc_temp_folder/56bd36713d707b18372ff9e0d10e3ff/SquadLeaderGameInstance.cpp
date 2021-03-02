@@ -28,21 +28,15 @@ void USquadLeaderGameInstance::InitAIManagers()
 void USquadLeaderGameInstance::AddAIBasicToManager(AAIBasicController* AIBasic)
 {
 	auto gameMode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
-	if (!AIBasicManagerTeam1->AIBasicList.Contains(AIBasic) && !AIBasicManagerTeam2->AIBasicList.Contains(AIBasic)) {
-		if (gameMode && Cast<ASoldier>(AIBasic->GetPawn())->PlayerTeam == gameMode->SoldierTeamCollection[0]) {
-			AIBasicManagerTeam1->AIBasicList.Add(AIBasic);
-			if (GEngine)GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("AIBasic Team 1 added"));
-		}
-		else if (gameMode && Cast<ASoldier>(AIBasic->GetPawn())->PlayerTeam == gameMode->SoldierTeamCollection[1]) {
-			AIBasicManagerTeam2->AIBasicList.Add(AIBasic);
-			if (GEngine)GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("AIBasic Team 2 added"));
-		}
-		else {
-			if (GEngine)GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("Une AI n'a pas d'equipe"));
-		}
+	if (gameMode && Cast<ASoldier>(AIBasic->GetPawn())->PlayerTeam == gameMode->SoldierTeamCollection[0]) {
+		AIBasicManagerTeam1->AIBasicList.Add(AIBasic);
+		if (GEngine)GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("AIBasic Team 1 added"));
+	}
+	else if (gameMode && Cast<ASoldier>(AIBasic->GetPawn())->PlayerTeam == gameMode->SoldierTeamCollection[1]) {
+		AIBasicManagerTeam2->AIBasicList.Add(AIBasic);
+		if (GEngine)GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("AIBasic Team 2 added"));
 	}
 	else {
-		if (GEngine)GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("AI Spawned thought the manager"));
+		if (GEngine)GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("Une AI n'a pas d'equipe"));
 	}
-	
 }
