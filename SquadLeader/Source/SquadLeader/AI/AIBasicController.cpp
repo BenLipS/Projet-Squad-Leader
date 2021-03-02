@@ -114,10 +114,13 @@ void AAIBasicController::UpdateObjectifVector()
 	UNavigationPath* path = navSys->FindPathToLocationSynchronously(GetWorld(), SoldierLocation, ObjectifLocation, NULL);
 	
 	FVector ObjectifLocalDir;
-	if (path->PathPoints.Num() > 1)
-		ObjectifLocalDir = path->PathPoints[1];
-	else
-		ObjectifLocalDir = ObjectifLocation;
+	if (path) {
+		if (path->PathPoints.Num() > 1)
+			ObjectifLocalDir = path->PathPoints[1];
+		else
+			ObjectifLocalDir = ObjectifLocation;
+	}
+
 
 	ObjectifLocalDir.Z = SoldierLocation.Z;
 
