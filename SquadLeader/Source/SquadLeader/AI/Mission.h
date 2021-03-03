@@ -11,7 +11,7 @@
  */
 
 UENUM()
-enum class MissionType{ None, Defence, Attack, MoveTo };
+enum class MissionType{ None, Defence, Attack, MoveTo, Formation };
 
 UCLASS()
 class SQUADLEADER_API UMission : public UObject
@@ -24,5 +24,6 @@ public:
 	UPROPERTY()
 	MissionType Type;
 
+	UPROPERTY()
 	FVector Location;
 };

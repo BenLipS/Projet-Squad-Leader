@@ -14,9 +14,20 @@ class SQUADLEADER_API AAISquadController : public AAIGeneralController
 {
 	GENERATED_BODY()
 	
+protected:
+	virtual void setup_BehaviorTree() override;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Formation Behaviour")
+	float RuningDistanceForFormation = 100.f;
 /////////// Respawn
 public:
+	AAISquadController();
+
 	virtual FVector GetRespawnPoint() override;
 
+public:
+	/* For BT Task  */
+	UFUNCTION(BlueprintCallable, Category = "Formation Behaviour")
+	EPathFollowingRequestResult::Type FollowFormation();
 
 };

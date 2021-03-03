@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "../Soldier.h"
 #include "SoldierPlayer.generated.h"
-class UAISquadManager;
+class AAISquadManager;
 
 UCLASS()
 class SQUADLEADER_API ASoldierPlayer : public ASoldier
@@ -19,7 +19,7 @@ protected:
 	void OnRep_PlayerState() override;
 
 	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<UAISquadManager> AISquadManagerClass;
+	TSubclassOf<AAISquadManager> AISquadManagerClass;
 
 protected:
 	void SetAbilitySystemComponent();
