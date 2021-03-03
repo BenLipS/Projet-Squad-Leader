@@ -98,7 +98,7 @@ private:
 	* if _location is empty then it put a NULL
 	* pointer in the array.
 	*/
-	void AddGridBase(int index_i, int index_j, FVector _location);
+	void AddGridBase(int index_i, int index_j, bool _isvalid);
 
 	/*
 	* we clean the grid and reset it

@@ -83,7 +83,10 @@ void AGrdiSetUp::CreateGrid() {
 	for (int i = 0; i != size_array_X; ++i) {
 		for (int j = 0; j != size_array_Y; ++j) {
 			FVector _location = FVector(dist_X, dist_Y, 30.f);
-			IsValidLocation(_location, navSys)? AddGridBase(i, j, _location) : AddGridBase(i, j, FVector());
+			if(IsValidLocation(_location, navSys)) 
+				AddGridBase(i, j, true);
+			else
+				AddGridBase(i, j, false);
 			dist_Y += m_GridBaseSize_Y;
 		}
 		dist_X += m_GridBaseSize_X;
@@ -92,7 +95,7 @@ void AGrdiSetUp::CreateGrid() {
 }
 
 bool AGrdiSetUp::IsValidLocation(FVector _location, UNavigationSystemV1* navSys) {
-	UNavigationPath* path = navSys->FindPathToLocationSynchronously(GetWorld(), FVector(0.f, 0.f, 0.f), _location);
+	UNavigationPath* path = navSys->FindPathToLocationSynchronously(GetWorld(), FVector(11740.f, 7030.f, 20.f), _location);
 	return path->IsValid() && (!path->IsPartial());
 	
 	//We found out that Unreal said a point is good even when the path doens't reach the location
@@ -100,11 +103,10 @@ bool AGrdiSetUp::IsValidLocation(FVector _location, UNavigationSystemV1* navSys)
 	//If the last point of the Path is near the location then it's a good location
 }
 
-void AGrdiSetUp::AddGridBase(int index_i, int index_j, FVector _location) {
-	if (_location.Size() > 0.f) {
+void AGrdiSetUp::AddGridBase(int index_i, int index_j, bool _isvalid) {
+	if(_isvalid)
 		m_GridBases[index_i * size_array_X + index_j] = 0.f;
-	}
-	else
+	else 
 		m_GridBases[index_i * size_array_X + index_j] = 100.f;
 }
 
@@ -126,7 +128,8 @@ int AGrdiSetUp::FindTile(FVector _location) {
 void AGrdiSetUp::CleanGrid() {
 	for (int i = 0; i != size_array_X; ++i) {
 		for (int j = 0; j != size_array_Y; ++j) {
-			m_GridBases[i * size_array_X + j] = 0.f;
+			if(m_GridBases[i * size_array_X + j] < 100.f)
+				m_GridBases[i * size_array_X + j] = 0.f;
 		}
 	}
 }
@@ -182,7 +185,7 @@ void AGrdiSetUp::UpdateGridControlArea() {
 }
 
 void AGrdiSetUp::SetValue(int _index, float _value) {
-	if (_index >= 0 && _index < size_array_X * size_array_Y) {
+	if (_index >= 0 && _index < size_array_X * size_array_Y && m_GridBases[_index] < 100.f) {
 		if (m_GridBases[_index] + _value <= 1.0f)
 			m_GridBases[_index] += _value;
 		else
