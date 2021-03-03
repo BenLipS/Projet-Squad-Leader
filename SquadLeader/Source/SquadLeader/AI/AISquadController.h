@@ -25,6 +25,11 @@ public:
 
 	virtual FVector GetRespawnPoint() override;
 
+	virtual void BeginPlay() override;
+
+	/*not used*/
+	void Init();
+
 public:
 	/* For BT Task  */
 	UFUNCTION(BlueprintCallable, Category = "Formation Behaviour")
