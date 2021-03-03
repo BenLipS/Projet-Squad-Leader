@@ -8,6 +8,7 @@
 
 AAISquadManager::AAISquadManager() {
 	PrimaryActorTick.bStartWithTickEnabled = true;
+	bReplicates = true;
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.TickGroup = TG_PrePhysics;
 }
@@ -107,6 +108,17 @@ void AAISquadManager::UpdateMission(const MissionType _MissionType, const FVecto
 {
 	Mission->Type = _MissionType;
 	Mission->Location = _Location;
+
+	for (AAISquadController* AISquad : AISquadList) {
+		AISquad->SetMission(Mission);
+		if(Mission->Type == MissionType::Formation){
+			AISquad->get_blackboard()->SetValueAsBool("IsInFormation", true);
+			AISquad->get_blackboard()->SetValueAsBool("HasOrder", false);
+		}else {
+			AISquad->get_blackboard()->SetValueAsBool("IsInFormation", false);
+			AISquad->get_blackboard()->SetValueAsBool("HasOrder", true);
+		}
+	}
 
 	// Sorry for that...
 	switch (Mission->Type)

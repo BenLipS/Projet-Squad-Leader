@@ -47,6 +47,7 @@ void AAISquadController::BeginPlay()
 {
 	Super::BeginPlay();
 	blackboard->SetValueAsBool("IsInFormation", true);
+	blackboard->SetValueAsBool("HasOrder", false);
 }
 
 void AAISquadController::Init()

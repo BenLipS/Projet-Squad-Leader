@@ -25,6 +25,7 @@ protected:
 	AAISquadManager* SquadManager;
 
 public:
+	UFUNCTION()
 	AAISquadManager* GetSquadManager();
 
 protected:
