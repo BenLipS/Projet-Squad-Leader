@@ -13,10 +13,10 @@ void UAIBasicManager::Init(TSubclassOf<ASoldierTeam> _Team, UObject* WorldContex
 	auto gameMode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
 	FVector Start{};
 	if (Team == gameMode->SoldierTeamCollection[0]) {
-		Start = { 1310.0f, 3420.0f, 87.999985f };
+		Start = { 8760.f, 15590.f, 87.999985f };
 	}
 	else if (Team == gameMode->SoldierTeamCollection[1]){
-		Start = { -7940.0f, 4780.0f, 87.999985f };
+		Start = { 16350.f, 15590.f, 87.999985f };
 	}
 	
 	FVector OffSet{ 0.f, 500.f, 0.f };

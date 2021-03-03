@@ -30,7 +30,7 @@ AAIBasicController::AAIBasicController() :
 	AlignementVector{ 0.f, 0.f, 0.f },
 	ObjectifVector{ 0.f, 0.f, 0.f },
 	MovementVector{ 0.f, 0.f, 0.f },
-	ObjectifLocation{ 200.f, 0.f, 10.f }
+	ObjectifLocation{ 11410.f, 2950.f, 10.f }
 {
 	setup_BehaviorTree();
 }
@@ -171,7 +171,7 @@ void AAIBasicController::UpdateFlockingPosition(float DeltaSeconds)
 	MovementVector = MovementVector * MaxSpeed/2;
 	blackboard->SetValueAsVector("FlockingLocation", GetPawn()->GetActorLocation() + MovementVector);
 
-	//DrawDebug();
+	DrawDebug();
 }
 
 void AAIBasicController::UpdateMission()

@@ -43,7 +43,7 @@ void AGrdiSetUp::Tick(float DeltaTime)
 		default:
 			break;
 		}
-		//DrawGrid();
+		DrawGrid();
 	}
 }
 
