@@ -7,7 +7,6 @@
 #include "../AbilitySystem/Soldiers/GameplayEffects/States/GE_StateDead.h"
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "Perception/AISense_Sight.h"
-#include "../SquadLeaderGameModeBase.h"
 #include "Kismet/KismetMathLibrary.h"
 //#include "DrawDebugHelpers.h"
 

@@ -2,10 +2,8 @@
 
 
 #include "SoldierTeam.h"
-#include "../SquadLeaderGameModeBase.h"
 #include "Soldier.h"
 #include "../Spawn/SoldierSpawn.h"
-#include "../ControlArea/ControlArea.h"
 
 
 ASoldierTeam::ASoldierTeam() {

@@ -3,13 +3,11 @@
 #pragma once
 // forward declaration
 class ASoldier;
-class AControlArea;
 class ASoldierSpawn;
 
 #include "CoreMinimal.h"
 #include "GameFramework/Info.h"
 //#include "Soldier.h"
-//#include "../Spawn/SoldierSpawn.h"
 //#include "../ControlArea/ControlArea.h"
 #include "SoldierTeam.generated.h"
 
