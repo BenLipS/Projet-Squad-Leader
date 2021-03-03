@@ -187,7 +187,6 @@ EPathFollowingRequestResult::Type AAIBasicController::FollowFlocking() {
 	return _movetoResult;
 }
 
-
 void AAIBasicController::setup_BehaviorTree() {
 	static ConstructorHelpers::FObjectFinder<UBehaviorTree> obj(TEXT("BehaviorTree'/Game/AI/BT_AIBasic.BT_AIBasic'"));
 	if (obj.Succeeded())

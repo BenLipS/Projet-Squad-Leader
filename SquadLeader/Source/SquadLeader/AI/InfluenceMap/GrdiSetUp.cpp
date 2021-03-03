@@ -198,7 +198,11 @@ void AGrdiSetUp::SetRadiusValue(int _index, float _value, int _radius) {
 	for (int _index_y = _index_tile_left_up; _index_y != _index_tile_left_down; _index_y -= size_array_Y) {
 		for (int _index_x = _index_y; _index_x != _index_y + ( 2*_radius ); ++_index_x) {
 			if (_value_im_side != 0.f && _value_im_side != 100.f) {
-				_value_im_side = 1.f / FMath::Square(1.f + FMath::Abs(_index - _index_x));
+				if (_value_im_side < 0.f) 
+					_value_im_side = 1.f / FMath::Square(1.f + FMath::Abs(_index - _index_x)) * -1.f;
+				else
+					_value_im_side = 1.f / FMath::Square(1.f + FMath::Abs(_index - _index_x));
+				
 				SetValue(_index_x, _value_im_side);
 			}
 		}
