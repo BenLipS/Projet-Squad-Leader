@@ -35,7 +35,7 @@ void ASoldierPlayer::PossessedBy(AController* _newController)
 	AAISquadManager* PlayerSquadManager = GetWorld()->SpawnActorDeferred<AAISquadManager>(AISquadManagerClass, LocationTemp, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 	if (PlayerSquadManager) {
 		PlayerSquadManager->FinishSpawning(LocationTemp);
-		PlayerSquadManager->Init(PlayerTeam, this, GetWorld());
+		PlayerSquadManager->Init(PlayerTeam, this);
 		Cast<USquadLeaderGameInstance>(GetGameInstance())->ListAISquadManagers.Add(PlayerSquadManager);
 	}
 

@@ -19,7 +19,7 @@ public:
 	AAIBasicManager();
 
 	UFUNCTION()
-	void Init(TSubclassOf<ASoldierTeam> _Team, UObject* WorldContextObject);
+	void Init(TSubclassOf<ASoldierTeam> _Team);
 
 	UPROPERTY()
 	TArray<AAIBasicController*> AIBasicList;

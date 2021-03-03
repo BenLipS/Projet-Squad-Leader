@@ -9,14 +9,14 @@ AAIBasicManager::AAIBasicManager() {
 	PrimaryActorTick.bCanEverTick = true;
 }
 
-void AAIBasicManager::Init(TSubclassOf<ASoldierTeam> _Team, UObject* WorldContextObject)
+void AAIBasicManager::Init(TSubclassOf<ASoldierTeam> _Team)
 {
 	Team = _Team;
 
 	/*For now Each AIBasicManager Spawn with 4 AIs*/
 	/*TEMPORARY*/
 	if (GEngine)GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Purple, TEXT("Init AIBasicManger"));
-	auto gameMode = Cast<ASquadLeaderGameModeBase>(GEngine->GetWorldFromContextObject(WorldContextObject)->GetAuthGameMode());
+	auto gameMode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
 	FVector Start{};
 	if (Team == gameMode->SoldierTeamCollection[0]) {
 		Start = { 1310.0f, 3420.0f, 87.999985f };
@@ -31,7 +31,7 @@ void AAIBasicManager::Init(TSubclassOf<ASoldierTeam> _Team, UObject* WorldContex
 	LocationAI.SetLocation(Start);
 	FActorSpawnParameters SpawnInfo;
 	SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn; // La maniere de faire le respawn
-	ASoldierAI* BasicAI = GEngine->GetWorldFromContextObject(WorldContextObject)->SpawnActorDeferred<ASoldierAI>(ClassAI, LocationAI, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+	ASoldierAI* BasicAI = GetWorld()->SpawnActorDeferred<ASoldierAI>(ClassAI, LocationAI, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 	if (BasicAI) {
 		BasicAI->PlayerTeam = Team;
 		BasicAI->SpawnDefaultController();
@@ -41,7 +41,7 @@ void AAIBasicManager::Init(TSubclassOf<ASoldierTeam> _Team, UObject* WorldContex
 
 	FTransform LocationAI1{};
 	LocationAI1.SetLocation(LocationAI.GetLocation() + OffSet);
-	ASoldierAI* BasicAI1 = GEngine->GetWorldFromContextObject(WorldContextObject)->SpawnActorDeferred<ASoldierAI>(ClassAI, LocationAI, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+	ASoldierAI* BasicAI1 = GetWorld()->SpawnActorDeferred<ASoldierAI>(ClassAI, LocationAI, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 	if (BasicAI1) {
 		BasicAI1->PlayerTeam = Team;
 		BasicAI1->SpawnDefaultController();
@@ -51,7 +51,7 @@ void AAIBasicManager::Init(TSubclassOf<ASoldierTeam> _Team, UObject* WorldContex
 
 	FTransform LocationAI2{};
 	LocationAI2.SetLocation(LocationAI1.GetLocation() + OffSet);
-	ASoldierAI* BasicAI2 = GEngine->GetWorldFromContextObject(WorldContextObject)->SpawnActorDeferred<ASoldierAI>(ClassAI, LocationAI, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+	ASoldierAI* BasicAI2 = GetWorld()->SpawnActorDeferred<ASoldierAI>(ClassAI, LocationAI, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 	if (BasicAI2) {
 		BasicAI2->PlayerTeam = Team;
 		BasicAI2->SpawnDefaultController();
@@ -61,7 +61,7 @@ void AAIBasicManager::Init(TSubclassOf<ASoldierTeam> _Team, UObject* WorldContex
 
 	FTransform LocationAI3{};
 	LocationAI3.SetLocation(LocationAI2.GetLocation() + OffSet);
-	ASoldierAI* BasicAI3 = GEngine->GetWorldFromContextObject(WorldContextObject)->SpawnActorDeferred<ASoldierAI>(ClassAI, LocationAI, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+	ASoldierAI* BasicAI3 = GetWorld()->SpawnActorDeferred<ASoldierAI>(ClassAI, LocationAI, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 	if (BasicAI3) {
 		BasicAI3->PlayerTeam = Team;
 		BasicAI3->SpawnDefaultController();

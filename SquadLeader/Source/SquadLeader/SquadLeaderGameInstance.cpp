@@ -15,11 +15,25 @@ void USquadLeaderGameInstance::InitAIManagers()
 	auto gameMode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
 
 	/*Init AIBasic Manager*/
-	AIBasicManagerTeam1 = NewObject<AAIBasicManager>(this, AIBasicManagerClass);
-	AIBasicManagerTeam1->Init(gameMode->SoldierTeamCollection[0], GetWorld());
 
-	AIBasicManagerTeam2 = NewObject<AAIBasicManager>(this, AIBasicManagerClass);
-	AIBasicManagerTeam2->Init(gameMode->SoldierTeamCollection[1], GetWorld());
+	FTransform LocationTemp{ {0.f, -1000.f, 0.f}, {0.f,0.f,0.f} };
+	AAIBasicManager* AIBasicManager = GetWorld()->SpawnActorDeferred<AAIBasicManager>(AIBasicManagerClass, LocationTemp, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+	if (AIBasicManager) {
+		AIBasicManager->FinishSpawning(LocationTemp);
+		AIBasicManagerTeam1 = AIBasicManager;
+		AIBasicManagerTeam1->Init(gameMode->SoldierTeamCollection[0]);
+	}
+
+	//AIBasicManagerTeam1 = NewObject<AAIBasicManager>(this, AIBasicManagerClass);
+	//AIBasicManagerTeam1->Init(gameMode->SoldierTeamCollection[0], GetWorld());
+
+	AAIBasicManager* AIBasicManager2 = GetWorld()->SpawnActorDeferred<AAIBasicManager>(AIBasicManagerClass, LocationTemp, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+	if (AIBasicManager2) {
+		AIBasicManager2->FinishSpawning(LocationTemp);
+		AIBasicManagerTeam2 = AIBasicManager2;
+		AIBasicManagerTeam2->Init(gameMode->SoldierTeamCollection[1]);
+	}
+
 
 	/*Init AISquad Manager*/
 	//Each Player init a SquadManager in SoldierPlayer.cpp PossessedBy

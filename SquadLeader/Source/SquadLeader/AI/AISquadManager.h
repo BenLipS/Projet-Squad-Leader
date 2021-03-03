@@ -32,7 +32,7 @@ public:
 	TSubclassOf<ASoldierAI> ClassAI;
 
 	UFUNCTION()
-	void Init(TSubclassOf<ASoldierTeam> _Team, ASoldierPlayer* _Player, UObject* WorldContextObject);
+	void Init(TSubclassOf<ASoldierTeam> _Team, ASoldierPlayer* _Player);
 	
 	UPROPERTY()
 	TSubclassOf<ASoldierTeam> Team;
