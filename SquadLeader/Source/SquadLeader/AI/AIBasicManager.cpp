@@ -2,16 +2,25 @@
 
 
 #include "AIBasicManager.h"
+#include "../SquadLeaderGameInstance.h"
+#include "../ControlArea/ControlArea.h"
 #include "../SquadLeaderGameModeBase.h"
+#include "../AI/Mission.h"
 
 AAIBasicManager::AAIBasicManager() {
 	PrimaryActorTick.bStartWithTickEnabled = true;
 	PrimaryActorTick.bCanEverTick = true;
 }
 
+void AAIBasicManager::BeginPlay() {
+	InitValue();
+	FirstTick();
+}
+
 void AAIBasicManager::Init(TSubclassOf<ASoldierTeam> _Team)
 {
 	Team = _Team;
+	InitInfluenceMap();
 
 	/*For now Each AIBasicManager Spawn with 4 AIs*/
 	/*TEMPORARY*/
@@ -67,5 +76,45 @@ void AAIBasicManager::Init(TSubclassOf<ASoldierTeam> _Team)
 		BasicAI3->SpawnDefaultController();
 		BasicAI3->FinishSpawning(LocationAI3);
 		AIBasicList.Add(Cast<AAIBasicController>(BasicAI3->GetController()));
+	}
+
+}
+
+void AAIBasicManager::Tick(float DeltaSeconds) {
+	Super::Tick(DeltaSeconds);
+	/*if (GEngine)
+		GEngine->AddOnScreenDebugMessage(80, 2.f, FColor::Black, TEXT("I'm the AIBasicManager"));*/
+	
+}
+
+void AAIBasicManager::InitInfluenceMap() {
+	m_influenceMap = Cast<AGrdiSetUp>(Cast<USquadLeaderGameInstance>(GetGameInstance())->InfluenceMap);
+}
+
+void AAIBasicManager::InitValue() {
+	ASquadLeaderGameModeBase* _Gamemode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
+	m_controlAreaManager = Cast<AControlAreaManager>(_Gamemode->ControlAreaManager->GetDefaultObject());
+	if (m_controlAreaManager) {
+		nbr_controlArea = m_controlAreaManager->GetControlArea().Num();
+		nbr_unite = AIBasicList.Num();
+	}
+}
+
+void AAIBasicManager::FirstTick() {
+	int _index_player = 0;
+	int _index_control_area = 0;
+	int nbr_unit_per_controlArea = nbr_unite / nbr_controlArea;
+
+	while (_index_player < nbr_unite) {
+		if (_index_control_area >= nbr_controlArea)
+			_index_control_area = 0;
+		for (int i = 0; i != nbr_unit_per_controlArea; ++i) {
+			UMission* _mission = NewObject<UMission>(this, UMission::StaticClass());;
+			_mission->Type = MissionType::MoveTo;
+			_mission->Location = m_controlAreaManager->GetControlArea()[_index_control_area]->GetActorLocation();
+			AIBasicList[_index_player]->SetMission(_mission);
+			_index_player++;
+		}
+		_index_control_area++;
 	}
 }

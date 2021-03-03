@@ -31,19 +31,10 @@ void AGrdiSetUp::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	if (GetLocalRole() == ROLE_Authority) {
-		m_nbr_tick++;
-		switch (m_nbr_tick) {
-		case 1:
-			CleanGrid();
-			break;
-		case 2:
-			UpdateGrid();
-			m_nbr_tick = 0;
-			break;
-		default:
-			break;
-		}
-		DrawGrid();
+
+		CleanGrid();
+		UpdateGrid();
+		//DrawGrid();
 	}
 }
 
@@ -188,8 +179,8 @@ void AGrdiSetUp::SetValue(int _index, float _value) {
 	if (_index >= 0 && _index < size_array_X * size_array_Y && m_GridBases[_index] < 100.f) {
 		if (m_GridBases[_index] + _value <= 1.0f)
 			m_GridBases[_index] += _value;
-		else
-			m_GridBases[_index] = 1.f;
+		else if(m_GridBases[_index] + _value <= -1.0f)
+			m_GridBases[_index] += _value;
 	}
 }
 
@@ -210,4 +201,8 @@ void AGrdiSetUp::SetRadiusValue(int _index, float _value, int _radius) {
 			}
 		}
 	}
+}
+
+float AGrdiSetUp::GetValue(FVector _location) {
+	return m_GridBases[FindTile(_location)];
 }

@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
 #include "AIBasicController.h"
+#include "../ControlArea/ControlAreaManager.h"
+#include "InfluenceMap/GrdiSetUp.h"
 #include "AIBasicManager.generated.h"
 
 /**
@@ -21,6 +23,10 @@ public:
 	UFUNCTION()
 	void Init(TSubclassOf<ASoldierTeam> _Team);
 
+	virtual void Tick(float DeltaSeconds) override;
+
+	virtual void BeginPlay() override;
+
 	UPROPERTY()
 	TArray<AAIBasicController*> AIBasicList;
 
@@ -31,5 +37,43 @@ public:
 	TSubclassOf<ASoldierAI> ClassAI;
 private:
 
+	/*
+	* Get the influence map that is in the Game Instance
+	*/
+	UFUNCTION()
+		void InitInfluenceMap();
+
+	/*
+	* Initialize the number of unit and the number of control area 
+	*/
+	UFUNCTION()
+		void InitValue();
+
+	/*
+	* Will determine the first order of all the AI
+	* Happend only once at the beginning
+	*/
+	UFUNCTION()
+		void FirstTick();
+
+private:
+	
+	UPROPERTY()
+		AGrdiSetUp* m_influenceMap;
+
+	/*
+	* Get the number of control area in the world
+	*/
+	UPROPERTY()
+		int nbr_controlArea;
+
+	/*
+	* Get the number of unit available 
+	*/
+	UPROPERTY()
+		int nbr_unite;
+
+	UPROPERTY()
+		AControlAreaManager* m_controlAreaManager;
 
 };

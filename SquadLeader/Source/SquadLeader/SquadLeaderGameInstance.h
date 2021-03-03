@@ -7,6 +7,7 @@
 #include "AI/AIBasicManager.h"
 #include "AI/AISquadManager.h"
 #include "AI/AIBasicController.h"
+#include "AI/InfluenceMap/GrdiSetUp.h"
 #include "SquadLeaderGameInstance.generated.h"
 
 /**
@@ -20,6 +21,9 @@ class SQUADLEADER_API USquadLeaderGameInstance : public UGameInstance
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<AAIBasicManager> AIBasicManagerClass;
 
+	UPROPERTY(EditDefaultsOnly)
+		TSubclassOf<AGrdiSetUp> InfluenceMapClass;
+
 public:
 
 	UPROPERTY()
@@ -29,6 +33,9 @@ public:
 	AAIBasicManager* AIBasicManagerTeam2;
 
 	UPROPERTY()
+	AGrdiSetUp* InfluenceMap;
+
+	UPROPERTY()
 	TArray<AAISquadManager*> ListAISquadManagers;
 
 	USquadLeaderGameInstance();
@@ -36,6 +43,9 @@ public:
 	UFUNCTION()
 	void InitAIManagers();
 
+	UFUNCTION()
+	void InitInfluenceMap();
+	
 	/*
 	* For AI placed via drag and drop
 	*/

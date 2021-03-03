@@ -42,6 +42,12 @@ public:
 	*/
 	void CreateGrid();
 
+	/*
+	* Return the value of the influence 
+	* at the _location
+	*/
+	float GetValue(FVector _location);
+
 protected:
 	TArray<float> m_GridBases;
 
@@ -51,19 +57,19 @@ public:
 	* The dimension of the Grid
 	*/
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Grid")
-		int m_GridSize_X = 100;
+		int m_GridSize_X = 100000;
 
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Grid")
-		int m_GridSize_Y = 100;
+		int m_GridSize_Y = 100000;
 
 	/*
 	* The dimension of a GridBase
 	*/
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Grid")
-		int m_GridBaseSize_X = 10;
+		int m_GridBaseSize_X = 200;
 
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Grid")
-		int m_GridBaseSize_Y = 10;
+		int m_GridBaseSize_Y = 200;
 
 
 private:
