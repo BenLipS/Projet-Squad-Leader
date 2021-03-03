@@ -49,28 +49,26 @@ public:
 		void CleanSoldierList();
 
 
-protected:  // controlArea
-	UPROPERTY(EditAnywhere, Replicated, Category = "ControlArea")
-		TArray<AControlArea*> takenControlArea;
-public:
-	UFUNCTION(BlueprintCallable, Category = "ControlArea")
-		void AddControlArea(AControlArea* newControlArea);
-	UFUNCTION(BlueprintCallable, Category = "ControlArea")
-		void RemoveControlArea(AControlArea* newControlArea);
-	UFUNCTION(BlueprintCallable, Category = "ControlArea")
-		void CleanControlArea();
-
-
 protected: // Spawn points
 	UPROPERTY(EditAnywhere, Replicated, Category = "SpawnPoints")
 		TArray<ASoldierSpawn*> mainSpawnPoints;
 public:
 	UFUNCTION(BlueprintCallable, Category = "SpawnPoints")
-	void AddSpawn(ASoldierSpawn* newSpawn);
+		void AddSpawn(ASoldierSpawn* newSpawn);
 	UFUNCTION(BlueprintCallable, Category = "SpawnPoints")
-	void RemoveSpawn(ASoldierSpawn* newSpawn);
+		void RemoveSpawn(ASoldierSpawn* newSpawn);
 	UFUNCTION(BlueprintCallable, Category = "SpawnPoints")
-	void CleanSpawnPoints();
+		void CleanSpawnPoints();
 	UFUNCTION(BlueprintCallable, Category = "SpawnPoints")
-	TArray<ASoldierSpawn*> GetUsableSpawnPoints();
+		TArray<ASoldierSpawn*> GetUsableSpawnPoints();
+
+
+protected:  // Tickets
+	UPROPERTY(EditDefaultsOnly, Replicated, Category = "Tickets")
+		int Tickets = 100;  // default value, must be changed in blueprint
+public:
+	UFUNCTION(BlueprintCallable, Category = "SpawnPoints")
+		void RemoveOneTicket();
+	UFUNCTION(BlueprintCallable, Category = "SpawnPoints")
+		int GetTicket() const { return Tickets; }
 };

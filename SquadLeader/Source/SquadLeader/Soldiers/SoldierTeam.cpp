@@ -23,7 +23,6 @@ void ASoldierTeam::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ASoldierTeam, soldierList);
-	DOREPLIFETIME(ASoldierTeam, takenControlArea);
 	DOREPLIFETIME(ASoldierTeam, mainSpawnPoints);
 
 }
@@ -31,7 +30,6 @@ void ASoldierTeam::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 
 void ASoldierTeam::AddSoldierList(ASoldier* newSoldier)
 {
-	CleanSoldierList();
 	soldierList.AddUnique(newSoldier);
 }
 
@@ -44,24 +42,6 @@ void ASoldierTeam::RemoveSoldierList(ASoldier* newSoldier)
 void ASoldierTeam::CleanSoldierList()
 {
 	soldierList.RemoveAll([](ASoldier* element) {return element == nullptr; });
-}
-
-
-void ASoldierTeam::AddControlArea(AControlArea* newControlArea)
-{
-	CleanControlArea();
-	takenControlArea.AddUnique(newControlArea);
-}
-
-void ASoldierTeam::RemoveControlArea(AControlArea* newControlArea)
-{
-	if (takenControlArea.Contains(newControlArea))
-		takenControlArea.Remove(newControlArea);
-}
-
-void ASoldierTeam::CleanControlArea()
-{
-	takenControlArea.RemoveAll([](AControlArea* element) {return element == nullptr; });
 }
 
 
@@ -90,4 +70,16 @@ TArray<ASoldierSpawn*> ASoldierTeam::GetUsableSpawnPoints()
 	}
 
 	return result;
+}
+
+
+void ASoldierTeam::RemoveOneTicket()
+{
+	Tickets--;
+	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TeamName + TEXT(" : Loses a ticket."));
+	
+	// TODO : End game here if no tickets left and team is primordial
+	if (Tickets <= 0 /*&& ...*/) {
+		GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Black, TEXT("END GAME : ") +  TeamName + TEXT(" lose !"));
+	}
 }

@@ -33,7 +33,6 @@ public:
 protected:
 	void initCameras();
 	void initMeshes();
-	void initStats(); // TODO: Move all the remain stat to attributset ?
 	void initMovements();
 	virtual void initWeapons();
 
@@ -78,12 +77,15 @@ public:
 	static FGameplayTag StateJumpingTag;
 	static FGameplayTag StateCrouchingTag;
 	static FGameplayTag StateFightingTag;
+	static FGameplayTag StateAimingTag;
 
 	// Abilities
 	static FGameplayTag SkillRunTag;
 	static FGameplayTag SkillJumpTag;
 	static FGameplayTag SkillCrouchTag;
 	static FGameplayTag SkillFireWeaponTag;
+	static FGameplayTag SkillGrenadeTag;
+	static FGameplayTag SkillAimTag;
 	static FGameplayTag SkillAreaEffectFromSelfTag;
 
 protected:
@@ -91,15 +93,10 @@ protected:
 	virtual void RunningTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 	virtual void JumpingTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 	virtual void FightingTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
+	virtual void AimingTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 
 //////////////// Attributes
 public:
-	UPROPERTY(BluePrintReadWrite, Category = "Attributes")
-	float fieldOfViewNormal;
-
-	UPROPERTY(BluePrintReadWrite, Category = "Attributes")
-	float fieldOfViewAim;
-
 	// Getters
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
 	int32 GetCharacterLevel() const;
@@ -136,7 +133,7 @@ public:
 	virtual void Respawn();
 
 //////////////// Cameras
-protected:
+public:
 	void setToFirstCameraPerson();
 	void setToThirdCameraPerson();
 
@@ -208,6 +205,12 @@ public:
 	void SetWantsToFire(const bool _want);
 
 	void SetWantsToFire(const bool _want, const FGameplayEffectSpecHandle _damageEffectSpecHandle);
+
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	void StartAiming();
+
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	void StopAiming();
 
 protected:
 	bool bDefaultWeaponsInitialized;

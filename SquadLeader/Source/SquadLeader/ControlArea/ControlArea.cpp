@@ -33,7 +33,7 @@ void AControlArea::BeginPlay()
 
 	if (auto gameMode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode()); gameMode) {
 		// add this to the game mode collection
-		gameMode->controlAreaCollection.Add(this);
+		gameMode->ControlAreaManager.GetDefaultObject()->AddControlArea(this);
 
 		UpdateTeamData();
 	}
@@ -82,7 +82,7 @@ void AControlArea::NotifyActorEndOverlap(AActor* OtherActor)
 				}
 
 				// begin the calculation if everybody of this team left and the calculation is not already working
-				else {
+				if (TeamData[soldier->PlayerTeam]->presenceTeam == 0) {
 					if (!timerCalculationControlValue.IsValid())
 						GetWorldTimerManager().SetTimer(timerCalculationControlValue, this,
 							&AControlArea::calculateControlValue, timeBetweenCalcuation, true, timeBetweenCalcuation);
@@ -122,7 +122,7 @@ void AControlArea::calculateControlValue()
 							otherTeam.Value->controlValue = 0;
 						}
 						if (isTakenBy == otherTeam.Key && otherTeam.Value->controlValue < controlValueToTake) {  // remove isTakenBy if needed
-							isTakenBy.GetDefaultObject()->RemoveControlArea(this);
+							// notify here the changement if needed
 							isTakenBy = nullptr;
 							otherTeam.Value->ChangeSpawnState(false);
 							GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("ControlArea : Team control = None"));
@@ -138,7 +138,7 @@ void AControlArea::calculateControlValue()
 					if (isTakenBy != presentTeam && TeamData[presentTeam]->controlValue >= controlValueToTake) {
 						isTakenBy = presentTeam;
 						TeamData[presentTeam]->ChangeSpawnState(true);
-						isTakenBy.GetDefaultObject()->AddControlArea(this);
+						// notify here the changement if needed
 						GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("ControlArea : Team control =" + presentTeam.GetDefaultObject()->TeamName));
 					}
 				}
@@ -164,7 +164,7 @@ void AControlArea::UpdateTeamData()
 
 		TArray<TSubclassOf<ASoldierTeam>> keyToRemove;  // remove element
 		for (auto team : TeamData) {
-			if (teamCollection.Contains(team.Key)) {
+			if (!teamCollection.Contains(team.Key)) {
 				keyToRemove.Add(team.Key);
 				GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("ControlArea Update : Unknown team removed : " + team.Key.GetDefaultObject()->TeamName));
 			}

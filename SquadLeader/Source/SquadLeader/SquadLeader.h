@@ -22,6 +22,8 @@ enum class ESoldierAbilityInputID : uint8
 	BasicAttack		UMETA(DisplayName = "BasicAttack"),
 	// MMB
 	MeleeAttack		UMETA(DisplayName = "MeleeAttack"),
+	// RMB
+	Aim				UMETA(DisplayName = "Aim"),
 	// Q
 	Ability1		UMETA(DisplayName = "Ability1"),
 	// E
