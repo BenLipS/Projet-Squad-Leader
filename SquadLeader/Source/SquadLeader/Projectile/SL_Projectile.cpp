@@ -49,11 +49,10 @@ void ASL_Projectile::BeginPlay()
 	ProjectileMovement->Bounciness = Bounciness;
 	ProjectileMovement->ProjectileGravityScale = GravityScale;
 
-
 	InitVelocity();
 
-	if (auto temp = Cast<USphereComponent>(RootComponent))
-		temp->IgnoreActorWhenMoving(GetOwner(), true);
+	//if (auto temp = Cast<USphereComponent>(RootComponent))
+	//	temp->IgnoreActorWhenMoving(GetOwner(), true);
 
 	if (ExplosionDelay > 0.0f)
 		GetWorldTimerManager().SetTimer(TimerExplosion, this, &ASL_Projectile::OnExplode, ExplosionDelay, true);

@@ -137,8 +137,7 @@ void AAreaEffect::OnAreaTick()
 
 					if (NewHandle.IsValid())
 					{
-						auto inter = NewHandle.Data.Get();
-						ASC->ApplyGameplayEffectSpecToTarget(*inter, soldier->GetAbilitySystemComponent());
+						ASC->ApplyGameplayEffectSpecToTarget(*NewHandle.Data.Get(), soldier->GetAbilitySystemComponent());
 					}
 				}
 			}
