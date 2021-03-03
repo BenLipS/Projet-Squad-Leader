@@ -84,6 +84,7 @@ public:
 	static FGameplayTag SkillJumpTag;
 	static FGameplayTag SkillCrouchTag;
 	static FGameplayTag SkillFireWeaponTag;
+	static FGameplayTag SkillGrenadeTag;
 	static FGameplayTag SkillAimTag;
 	static FGameplayTag SkillAreaEffectFromSelfTag;
 

@@ -24,6 +24,7 @@ FGameplayTag ASoldier::SkillRunTag = FGameplayTag::RequestGameplayTag(FName("Abi
 FGameplayTag ASoldier::SkillJumpTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Jump"));
 FGameplayTag ASoldier::SkillCrouchTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Crouch"));
 FGameplayTag ASoldier::SkillFireWeaponTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.FireWeapon"));
+FGameplayTag ASoldier::SkillGrenadeTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Grenade"));
 FGameplayTag ASoldier::SkillAimTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Aim"));
 FGameplayTag ASoldier::SkillAreaEffectFromSelfTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.AreaEffectFromSelf"));
 
@@ -35,6 +36,7 @@ ASoldier::ASoldier(const FObjectInitializer& _ObjectInitializer) : Super(_Object
 	initMovements();
 	initMeshes();
 	setup_stimulus();
+	GetCapsuleComponent()->BodyInstance.SetObjectType(ECollisionChannel::ECC_EngineTraceChannel1);
 }
 
 /*
