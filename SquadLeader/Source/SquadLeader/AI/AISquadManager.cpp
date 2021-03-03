@@ -103,7 +103,7 @@ void AAISquadManager::UpdateCircleFormation()
 		});
 }
 
-void UAISquadManager::UpdateMission(const MissionType _MissionType, const FVector& _Location)
+void AAISquadManager::UpdateMission(const MissionType _MissionType, const FVector& _Location)
 {
 	Mission->Type = _MissionType;
 	Mission->Location = _Location;

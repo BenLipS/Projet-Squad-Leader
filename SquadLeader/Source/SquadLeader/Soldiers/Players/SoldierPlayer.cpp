@@ -55,7 +55,7 @@ void ASoldierPlayer::OnRep_PlayerState()
 		PC->createHUD();
 }
 
-UAISquadManager* ASoldierPlayer::GetSquadManager()
+AAISquadManager* ASoldierPlayer::GetSquadManager()
 {
 	return SquadManager;
 }
