@@ -18,8 +18,14 @@ protected:
 	void PossessedBy(AController* _newController) override;
 	void OnRep_PlayerState() override;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "SquadManager")
 	TSubclassOf<AAISquadManager> AISquadManagerClass;
+
+	UPROPERTY(BlueprintReadOnly, Category = "SquadManager")
+	AAISquadManager* SquadManager;
+
+public:
+	AAISquadManager* GetSquadManager();
 
 protected:
 	void SetAbilitySystemComponent();

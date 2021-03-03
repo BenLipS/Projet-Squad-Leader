@@ -17,11 +17,13 @@ void UGA_Crouch::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const 
 		if (!CommitAbility(Handle, ActorInfo, ActivationInfo))
 			EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
 
-		ASoldier* soldier = CastChecked<ASoldier>(ActorInfo->AvatarActor.Get());
-		soldier->Crouch();
+		if (ASoldier* soldier = Cast<ASoldier>(ActorInfo->AvatarActor.Get()); soldier)
+		{
+			soldier->Crouch();
 
-		FGameplayEffectSpecHandle CrouchingEffectSpecHandle = MakeOutgoingGameplayEffectSpec(CrouchingGameplayEffect, GetAbilityLevel());
-		soldier->GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*CrouchingEffectSpecHandle.Data.Get());
+			FGameplayEffectSpecHandle CrouchingEffectSpecHandle = MakeOutgoingGameplayEffectSpec(CrouchingGameplayEffect, GetAbilityLevel());
+			soldier->GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*CrouchingEffectSpecHandle.Data.Get());
+		}
 	}
 }
 
@@ -31,7 +33,7 @@ bool UGA_Crouch::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 		return false;
 
 	const ASoldier* soldier = CastChecked<ASoldier>(ActorInfo->AvatarActor.Get(), ECastCheckedType::NullAllowed);
-	return soldier && soldier->CanJump();
+	return soldier && soldier->CanCrouch();
 }
 
 void UGA_Crouch::InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo)
@@ -57,10 +59,12 @@ void UGA_Crouch::CancelAbility(const FGameplayAbilitySpecHandle Handle, const FG
 
 	Super::CancelAbility(Handle, ActorInfo, ActivationInfo, bReplicateCancelAbility);
 
-	ASoldier* soldier = CastChecked<ASoldier>(ActorInfo->AvatarActor.Get());
-	soldier->UnCrouch();
+	if (ASoldier* soldier = Cast<ASoldier>(ActorInfo->AvatarActor.Get()); soldier)
+	{
+		soldier->UnCrouch();
 
-	FGameplayTagContainer EffectTagsToRemove;
-	EffectTagsToRemove.AddTag(ASoldier::StateCrouchingTag);
-	soldier->GetAbilitySystemComponent()->RemoveActiveEffectsWithGrantedTags(EffectTagsToRemove);
+		FGameplayTagContainer EffectTagsToRemove;
+		EffectTagsToRemove.AddTag(ASoldier::StateCrouchingTag);
+		soldier->GetAbilitySystemComponent()->RemoveActiveEffectsWithGrantedTags(EffectTagsToRemove);
+	}
 }
