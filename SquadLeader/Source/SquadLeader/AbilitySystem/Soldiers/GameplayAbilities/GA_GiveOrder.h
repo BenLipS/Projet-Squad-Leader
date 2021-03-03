@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "../GameplayAbilitySoldier.h"
 #include "../GameplayEffects/States/GE_StateGivingOrder.h"
+#include "Abilities/Tasks/AbilityTask_WaitTargetData.h"
 #include "GA_GiveOrder.generated.h"
 
 UCLASS()
@@ -24,7 +25,13 @@ public:
 protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	TSubclassOf<UGE_StateGivingOrder> GivingOrderGameplayEffect;
+	
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	TSubclassOf<AGameplayAbilityTargetActor> TargetActorClass;
 
-	UFUNCTION(BlueprintImplementableEvent)
-	void Activation();
+	UFUNCTION()
+	void OnOrderValid(const FGameplayAbilityTargetDataHandle& _Data);
+
+	UFUNCTION()
+	void OnOrderCancelled(const FGameplayAbilityTargetDataHandle& _Data);
 };
