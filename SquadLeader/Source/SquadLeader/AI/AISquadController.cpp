@@ -3,6 +3,18 @@
 
 #include "AISquadController.h"
 #include "../Spawn/SoldierSpawn.h"
+#include "BehaviorTree/BlackboardComponent.h"
+#include "BehaviorTree/BehaviorTree.h"
+
+AAISquadController::AAISquadController() {
+	setup_BehaviorTree();
+}
+
+void AAISquadController::setup_BehaviorTree() {
+	static ConstructorHelpers::FObjectFinder<UBehaviorTree> obj(TEXT("BehaviorTree'/Game/AI/BT_AISquad.BT_AISquad'"));
+	if (obj.Succeeded())
+		m_behaviorTree = obj.Object;
+}
 
 FVector AAISquadController::GetRespawnPoint()  // TODO : Change this function to adapt the squad AI respawn
 {
@@ -29,4 +41,15 @@ FVector AAISquadController::GetRespawnPoint()  // TODO : Change this function to
 		}
 	}
 	return FVector(0.f, 0.f, 1500.f); // else return default
+}
+
+EPathFollowingRequestResult::Type AAISquadController::FollowFormation() {
+	EPathFollowingRequestResult::Type _movetoResult = MoveToLocation(blackboard->GetValueAsVector("FormationLocation"), 5.f);
+
+	if ((blackboard->GetValueAsVector("FormationLocation") - GetPawn()->GetActorLocation()).Size() >= RuningDistanceForFormation)
+		Cast<ASoldierAI>(GetPawn())->ActivateAbilityRun();
+	else
+		Cast<ASoldierAI>(GetPawn())->CancelAbilityRun();
+
+	return _movetoResult;
 }

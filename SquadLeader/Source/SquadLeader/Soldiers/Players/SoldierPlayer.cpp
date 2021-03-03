@@ -28,9 +28,16 @@ void ASoldierPlayer::PossessedBy(AController* _newController)
 	initWeapons();
 
 	/*Init Squad Manager for this Player*/
-	UAISquadManager* PlayerSquadManager = NewObject<UAISquadManager>(this, AISquadManagerClass);
-	PlayerSquadManager->Init(PlayerTeam,this,GetWorld());
-	Cast<USquadLeaderGameInstance>(GetGameInstance())->GetSquadManagers().Add(PlayerSquadManager);
+
+	FActorSpawnParameters SpawnInfo;
+	SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn; // La maniere de faire le respawn
+	FTransform LocationTemp{ {0.f, -1000.f, 0.f}, {0.f,0.f,0.f} };
+	AAISquadManager* PlayerSquadManager = GetWorld()->SpawnActorDeferred<AAISquadManager>(AISquadManagerClass, LocationTemp, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+	if (PlayerSquadManager) {
+		PlayerSquadManager->FinishSpawning(LocationTemp);
+		PlayerSquadManager->Init(PlayerTeam, this);
+		Cast<USquadLeaderGameInstance>(GetGameInstance())->ListAISquadManagers.Add(PlayerSquadManager);
+	}
 
 	// TODO: Do we need to have the hud in server ?
 	if (ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(GetController()); PC)
