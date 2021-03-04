@@ -17,9 +17,26 @@ EBTNodeResult::Type UShootEnemy::ExecuteTask(UBehaviorTreeComponent& OwnerComp,
 
 	AAIGeneralController* AIGeneralController = Cast<AAIGeneralController>(OwnerComp.GetOwner());
 
-	AIGeneralController->ShootEnemy();
-	//Nous retournons Succeeded
-	return EBTNodeResult::Succeeded;
+	ResultState _result = AIGeneralController->ShootEnemy();
+	if (_result == ResultState::Success)
+		return EBTNodeResult::Succeeded;
+	if (_result == ResultState::Failed)
+		return EBTNodeResult::Failed;
+	return EBTNodeResult::InProgress;
+}
+
+void UShootEnemy::TickTask(class UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) {
+	AAIGeneralController* _controller = Cast<AAIGeneralController>(OwnerComp.GetOwner());
+
+	if (_controller) {
+		ResultState _result = _controller->ShootEnemy();
+		if(_result == ResultState::Success)
+			FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+		if(_result == ResultState::InProgress)
+			FinishLatentTask(OwnerComp, EBTNodeResult::InProgress);
+		if(_result == ResultState::Failed)
+			FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+	}
 }
 /** Permet de définir une description pour la tâche. C'est ce texte qui
  apparaîtra dans le noeud que nous ajouterons au Behavior Tree */

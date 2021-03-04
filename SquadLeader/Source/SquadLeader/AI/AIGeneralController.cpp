@@ -115,7 +115,7 @@ EPathFollowingRequestResult::Type AAIGeneralController::MoveToEnemyLocation() {
 	return EPathFollowingRequestResult::Failed;
 }
 
-void AAIGeneralController::ShootEnemy() {
+ResultState AAIGeneralController::ShootEnemy() {
 	if (GEngine) GEngine->AddOnScreenDebugMessage(10, 1.f, FColor::Red, TEXT("I shoot !"));
 
 	if (ASoldierAI* soldier = Cast<ASoldierAI>(GetPawn()); soldier && GetFocusActor())
@@ -125,8 +125,11 @@ void AAIGeneralController::ShootEnemy() {
 		soldier->CancelAbilityFire();
 		if (auto _solider = Cast<ASoldier>(GetFocusActor()); !_solider->IsAlive()) {
 			blackboard->SetValueAsObject("FocusActor", NULL);
+			return ResultState::Success;
 		}
+		return ResultState::InProgress;
 	}
+	return ResultState::Failed;
 }
 
 void AAIGeneralController::Tick(float DeltaSeconds) {

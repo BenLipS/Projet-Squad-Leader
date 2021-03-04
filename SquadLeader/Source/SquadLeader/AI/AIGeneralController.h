@@ -20,6 +20,13 @@ enum AIBehavior {
 	Defense UMETA(DisplayName = "Defense"),
 };
 
+UENUM()
+enum ResultState {
+	Success UMETA(DisplayName = "Success"),
+	Failed UMETA(DisplayName = "Failed"),
+	InProgress UMETA(DisplayName = "InProgress"),
+};
+
 UCLASS()
 class SQUADLEADER_API AAIGeneralController : public AAIController
 {
@@ -55,7 +62,7 @@ public:
 
 	/*Shoot the enemy we see*/
 	UFUNCTION(BlueprintCallable, Category = "Shoot")
-	void ShootEnemy();
+	ResultState ShootEnemy();
 
 	class UBlackboardComponent* get_blackboard() const;
 	
