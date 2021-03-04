@@ -30,7 +30,7 @@ AAIBasicController::AAIBasicController() :
 	AlignementVector{ 0.f, 0.f, 0.f },
 	ObjectifVector{ 0.f, 0.f, 0.f },
 	MovementVector{ 0.f, 0.f, 0.f },
-	ObjectifLocation{ 200.f, 0.f, 10.f }
+	ObjectifLocation{ 11410.f, 2950.f, 10.f }
 {
 	setup_BehaviorTree();
 }
@@ -39,7 +39,6 @@ AAIBasicController::AAIBasicController() :
 void AAIBasicController::BeginPlay() {
 	Super::BeginPlay();
 	Cast<USquadLeaderGameInstance>(GetGameInstance())->AddAIBasicToManager(this);
-	blackboard->SetValueAsBool("DoFlocking", false);
 }
 
 void AAIBasicController::ResetVectors()
@@ -55,7 +54,7 @@ void AAIBasicController::UpdateNeighbourhood()
 {
 	for (ASoldier* soldier : SeenSoldier)
 	{
-		if (AAIBasicController* AIBasic = Cast<AAIBasicController>(soldier->Controller); AIBasic && soldier->PlayerTeam == Cast<ASoldier>(GetPawn())->PlayerTeam)
+		if (AAIBasicController* AIBasic = Cast<AAIBasicController>(soldier->Controller); AIBasic && soldier->PlayerTeam == Cast<ASoldier>(GetPawn())->PlayerTeam && this->ObjectifLocation == AIBasic->ObjectifLocation)
 			SeenBoids.Add(AIBasic);
 	};
 }
@@ -114,10 +113,13 @@ void AAIBasicController::UpdateObjectifVector()
 	UNavigationPath* path = navSys->FindPathToLocationSynchronously(GetWorld(), SoldierLocation, ObjectifLocation, NULL);
 	
 	FVector ObjectifLocalDir;
-	if (path->PathPoints.Num() > 1)
-		ObjectifLocalDir = path->PathPoints[1];
-	else
-		ObjectifLocalDir = ObjectifLocation;
+	if (path) {
+		if (path->PathPoints.Num() > 1)
+			ObjectifLocalDir = path->PathPoints[1];
+		else
+			ObjectifLocalDir = ObjectifLocation;
+	}
+
 
 	ObjectifLocalDir.Z = SoldierLocation.Z;
 
@@ -167,11 +169,13 @@ void AAIBasicController::UpdateFlockingPosition(float DeltaSeconds)
 
 	UpdateMovementVector();
 
+	UpdateMission();
+
 	float MaxSpeed = GetPawn()->GetMovementComponent()->GetMaxSpeed();
 	MovementVector = MovementVector * MaxSpeed/2;
 	blackboard->SetValueAsVector("FlockingLocation", GetPawn()->GetActorLocation() + MovementVector);
 
-	//DrawDebug();
+	DrawDebug();
 }
 
 void AAIBasicController::UpdateMission()
@@ -183,13 +187,14 @@ void AAIBasicController::UpdateMission()
 }
 
 EPathFollowingRequestResult::Type AAIBasicController::FollowFlocking() {
+	if (!blackboard->GetValueAsBool("DoFlocking"))
+		return EPathFollowingRequestResult::Failed;
 	EPathFollowingRequestResult::Type _movetoResult = MoveToLocation(blackboard->GetValueAsVector("FlockingLocation"), 5.f);
 	return _movetoResult;
 }
 
-
 void AAIBasicController::setup_BehaviorTree() {
-	static ConstructorHelpers::FObjectFinder<UBehaviorTree> obj(TEXT("BehaviorTree'/Game/AI/BT_AIBasic.BT_AIBasic'"));
+	static ConstructorHelpers::FObjectFinder<UBehaviorTree> obj(TEXT("BehaviorTree'/Game/AI/AIBasic/BT_AIBasic.BT_AIBasic'"));
 	if (obj.Succeeded())
 		m_behaviorTree = obj.Object;
 }
@@ -198,6 +203,7 @@ void AAIBasicController::Tick(float DeltaSeconds) {
 	Super::Tick(DeltaSeconds);
 	UpdateMission();
 	UpdateFlockingPosition(DeltaSeconds);
+	//blackboard->SetValueAsVector("VectorLocation", ObjectifLocation);
 }
 
 FVector AAIBasicController::GetRespawnPoint()  // TODO : Change this function to adapt the squad AI respawn
@@ -225,4 +231,9 @@ FVector AAIBasicController::GetRespawnPoint()  // TODO : Change this function to
 		}
 	}
 	return FVector(0.f, 0.f, 1500.f); // else return default
+}
+
+void AAIBasicController::Die() const {
+	Super::Die();
+	blackboard->SetValueAsBool("DoFlocking", false);
 }
