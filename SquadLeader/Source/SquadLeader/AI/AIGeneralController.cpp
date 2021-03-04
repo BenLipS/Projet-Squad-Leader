@@ -123,6 +123,9 @@ void AAIGeneralController::ShootEnemy() {
 		soldier->SetLookingAtPosition(GetFocusActor()->GetTargetLocation());
 		soldier->ActivateAbilityFire();
 		soldier->CancelAbilityFire();
+		if (auto _solider = Cast<ASoldier>(GetFocusActor()); !_solider->IsAlive()) {
+			blackboard->SetValueAsObject("FocusActor", NULL);
+		}
 	}
 }
 
@@ -256,6 +259,7 @@ void AAIGeneralController::AttackBehavior() {
 	if (m_behavior == AIBehavior::Defense) {
 		m_behavior = AIBehavior::Attack;
 		blackboard->SetValueAsBool("is_attacking", true);
+		blackboard->SetValueAsBool("DoFlocking", false);
 		ASoldier* _enemy = Cast<ASoldier>(blackboard->GetValueAsObject("FocusActor"));
 		blackboard->SetValueAsVector("EnemyLocation", _enemy->GetActorLocation());
 	}
@@ -268,12 +272,21 @@ void AAIGeneralController::DefenseBehavior() {
 	if (m_behavior == AIBehavior::Attack) {
 		m_behavior = AIBehavior::Defense;
 		blackboard->SetValueAsBool("is_attacking", false);
+		blackboard->SetValueAsBool("DoFlocking", true);
 		//blackboard->SetValueAsVector("VectorLocation", FVector(11410.f, 2950.f, 0.f));
-		blackboard->SetValueAsVector("VectorLocation", FVector(5000.f, 5000.f, 0.f));
+		//blackboard->SetValueAsVector("VectorLocation", FVector(5000.f, 5000.f, 0.f));
 	}
 }
 
 void AAIGeneralController::SetMission(UMission* _Mission)
 {
 	Mission = _Mission;
+}
+
+void AAIGeneralController::Die() const {
+	blackboard->SetValueAsBool("is_attacking", false);
+	blackboard->SetValueAsBool("need_GoBackward", false);
+	blackboard->SetValueAsBool("need_GoForward", false);
+	blackboard->SetValueAsObject("FocusActor", NULL);
+	blackboard->SetValueAsVector("EnemyLocation", FVector());
 }

@@ -39,7 +39,6 @@ AAIBasicController::AAIBasicController() :
 void AAIBasicController::BeginPlay() {
 	Super::BeginPlay();
 	Cast<USquadLeaderGameInstance>(GetGameInstance())->AddAIBasicToManager(this);
-	blackboard->SetValueAsBool("DoFlocking", false);
 }
 
 void AAIBasicController::ResetVectors()
@@ -188,12 +187,14 @@ void AAIBasicController::UpdateMission()
 }
 
 EPathFollowingRequestResult::Type AAIBasicController::FollowFlocking() {
+	if (!blackboard->GetValueAsBool("DoFlocking"))
+		return EPathFollowingRequestResult::Failed;
 	EPathFollowingRequestResult::Type _movetoResult = MoveToLocation(blackboard->GetValueAsVector("FlockingLocation"), 5.f);
 	return _movetoResult;
 }
 
 void AAIBasicController::setup_BehaviorTree() {
-	static ConstructorHelpers::FObjectFinder<UBehaviorTree> obj(TEXT("BehaviorTree'/Game/AI/BT_AIBasic.BT_AIBasic'"));
+	static ConstructorHelpers::FObjectFinder<UBehaviorTree> obj(TEXT("BehaviorTree'/Game/AI/AIBasic/BT_AIBasic.BT_AIBasic'"));
 	if (obj.Succeeded())
 		m_behaviorTree = obj.Object;
 }
@@ -230,4 +231,9 @@ FVector AAIBasicController::GetRespawnPoint()  // TODO : Change this function to
 		}
 	}
 	return FVector(0.f, 0.f, 1500.f); // else return default
+}
+
+void AAIBasicController::Die() const {
+	Super::Die();
+	blackboard->SetValueAsBool("DoFlocking", false);
 }

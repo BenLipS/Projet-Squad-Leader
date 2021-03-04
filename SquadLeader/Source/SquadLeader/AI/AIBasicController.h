@@ -116,4 +116,7 @@ public:
 public://Mission
 	UFUNCTION()
 	void UpdateMission();
+
+	virtual void Die() const override;
+
 };

@@ -54,7 +54,7 @@ private:
 	* Happend only once at the beginning
 	*/
 	UFUNCTION()
-		void FirstTick();
+		void ChooseCOntrolArea();
 
 private:
 	

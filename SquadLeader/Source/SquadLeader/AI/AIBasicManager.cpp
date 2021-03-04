@@ -14,7 +14,7 @@ AAIBasicManager::AAIBasicManager() {
 
 void AAIBasicManager::BeginPlay() {
 	InitValue();
-	FirstTick();
+	ChooseCOntrolArea();
 }
 
 void AAIBasicManager::Init(TSubclassOf<ASoldierTeam> _Team)
@@ -100,7 +100,7 @@ void AAIBasicManager::InitValue() {
 	}
 }
 
-void AAIBasicManager::FirstTick() {
+void AAIBasicManager::ChooseCOntrolArea() {
 	int _index_player = 0;
 	int _index_control_area = 0;
 	int nbr_unit_per_controlArea = nbr_unite / nbr_controlArea;

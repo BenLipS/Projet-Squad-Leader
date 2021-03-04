@@ -51,6 +51,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Shoot")
 	void SetLookingAtPosition(FVector lookingAtPosition);
 
+	virtual void Die() override;
 
 /////////// Respawn
 public:

@@ -64,6 +64,8 @@ public:
 	*/
 	UFUNCTION(BluePrintCallable, Category = "Comportement")
 		virtual void Tick(float DeltaSeconds) override;
+
+	virtual void Die() const;
 protected:
 	/*Set-up the BehaviorTree at the construction*/
 	virtual void setup_BehaviorTree();
