@@ -51,10 +51,13 @@ void ASoldier::BeginPlay()
 		setToThirdCameraPerson();
 
 	if (GetLocalRole() == ROLE_Authority) {
+		// init team:
+		if (initialTeam && !(GetTeam()))
+			SetTeam(initialTeam);
+
 		// add this to the team data
-		if (PlayerTeam) {
-			OldPlayerTeam = PlayerTeam;
-			PlayerTeam.GetDefaultObject()->AddSoldierList(this);
+		if (GetTeam()) {
+			GetTeam().GetDefaultObject()->AddSoldierList(this);
 		}
 	}
 }
@@ -70,7 +73,6 @@ void ASoldier::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifeti
 	// everyone except local owner: flag change is locally instigated
 
 	// everyone
-	DOREPLIFETIME(ASoldier, PlayerTeam);
 	//DOREPLIFETIME(AShooterCharacter, CurrentWeapon);
 }
 
@@ -239,8 +241,8 @@ void ASoldier::DeadTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
 	if (NewCount > 0) // If dead tag is added - Handle death
 	{
 		// remove ticket from team (only on server)
-		if (PlayerTeam && GetLocalRole() == ROLE_Authority)
-			PlayerTeam.GetDefaultObject()->RemoveOneTicket();
+		if (GetTeam() && GetLocalRole() == ROLE_Authority)
+			GetTeam().GetDefaultObject()->RemoveOneTicket();
 
 		// Stop the soldier and remove any interaction with the world
 		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -482,31 +484,6 @@ void ASoldier::SetCurrentWeapon(AWeapon* _newWeapon, AWeapon* _previousWeapon)
 
 
 // network for debug team change
-
-void ASoldier::ServerChangeTeam_Implementation(TSubclassOf<ASoldierTeam> _PlayerTeam)
-{
-	PlayerTeam = _PlayerTeam;
-	
-	if(OldPlayerTeam)
-		OldPlayerTeam.GetDefaultObject()->RemoveSoldierList(this);
-	if(PlayerTeam)
-		PlayerTeam.GetDefaultObject()->AddSoldierList(this);
-	
-	OldPlayerTeam = PlayerTeam;
-}
-
-bool ASoldier::ServerChangeTeam_Validate(TSubclassOf<ASoldierTeam> _PlayerTeam)
-{
-	return true;
-}
-
-void ASoldier::OnRep_ChangeTeam()
-{
-	if (GetLocalRole() < ROLE_Authority) {
-		ServerChangeTeam(PlayerTeam);
-	}
-}
-
 void ASoldier::ServerCycleBetweenTeam_Implementation() {
 	cycleBetweenTeam();
 }

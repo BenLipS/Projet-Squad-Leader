@@ -231,28 +231,20 @@ protected:
 
 public:
 	AWeapon* getCurrentWeapon() const noexcept { return currentWeapon; }
-	
-	////////////////  PlayerTeam
-	// Appel du c�t� serveur pour actualiser l'�tat du rep�re 
-	UFUNCTION(Reliable, Server, WithValidation)
-		void ServerChangeTeam(TSubclassOf<ASoldierTeam> _PlayerTeam);
 
-	UFUNCTION() // Doit toujours �tre UFUNCTION() quand il s'agit d'une fonction �OnRep notify�
-		void OnRep_ChangeTeam();
-
-	UPROPERTY(EditAnywhere, BluePrintReadWrite, ReplicatedUsing = OnRep_ChangeTeam, Category = "PlayerTeam")
-	TSubclassOf<ASoldierTeam> PlayerTeam;
-	TSubclassOf<ASoldierTeam> OldPlayerTeam;  // Local buffer used for team change
-	
-	//////////////// Teamable
-	virtual TSubclassOf<ASoldierTeam> GetTeam() override { return nullptr; };  // function overide in SoldierPlayer and Soldier AI
-	virtual bool SetTeam(TSubclassOf<ASoldierTeam> _Team) override { return false; };  // function overide in SoldierPlayer and Soldier AI
+	//////////////// Soldier team
+	UPROPERTY(EditAnywhere, Category = "PlayerTeam")
+		TSubclassOf<ASoldierTeam> initialTeam;  // for debug use
 
 	UFUNCTION(Reliable, Server, WithValidation)
 		void ServerCycleBetweenTeam();
 
 	// Connected to the "L" key
 	void cycleBetweenTeam();
+	
+	//////////////// Teamable
+	virtual TSubclassOf<ASoldierTeam> GetTeam() override { return nullptr; };  // function overide in SoldierPlayer and Soldier AI
+	virtual bool SetTeam(TSubclassOf<ASoldierTeam> _Team) override { return false; };  // function overide in SoldierPlayer and Soldier AI
 
 
 public:

@@ -202,7 +202,7 @@ void AAIGeneralController::FocusEnemy() {
 		bool enemyDetected = false;
 		int i = 0;
 		while (!enemyDetected && i < SeenSoldier.Num()) {
-			if (Cast<ASoldier>(SeenSoldier[i])->PlayerTeam != Cast<ASoldier>(GetPawn())->PlayerTeam) {
+			if (Cast<ASoldier>(SeenSoldier[i])->GetTeam() != Cast<ASoldier>(GetPawn())->GetTeam()) {
 				this->SetFocus(SeenSoldier[i]);
 				blackboard->SetValueAsObject("FocusActor", SeenSoldier[i]);
 				enemyDetected = true;

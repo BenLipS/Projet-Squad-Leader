@@ -29,7 +29,7 @@ void ASoldierPlayer::PossessedBy(AController* _newController)
 
 	/*Init Squad Manager for this Player*/
 	UAISquadManager* PlayerSquadManager = NewObject<UAISquadManager>(this, AISquadManagerClass);
-	PlayerSquadManager->Init(PlayerTeam,this,GetWorld());
+	PlayerSquadManager->Init(GetTeam(),this,GetWorld());
 	Cast<USquadLeaderGameInstance>(GetGameInstance())->GetSquadManagers().Add(PlayerSquadManager);
 
 	// TODO: Do we need to have the hud in server ?
@@ -103,8 +103,8 @@ void ASoldierPlayer::BindASCInput()
 
 FVector ASoldierPlayer::GetRespawnPoint()
 {
-	if (PlayerTeam) {
-		auto AvailableSpawnPoints = PlayerTeam.GetDefaultObject()->GetUsableSpawnPoints();
+	if (GetTeam()) {
+		auto AvailableSpawnPoints = GetTeam().GetDefaultObject()->GetUsableSpawnPoints();
 		if (AvailableSpawnPoints.Num() > 0) {
 
 			FVector OptimalPosition = AvailableSpawnPoints[0]->GetActorLocation();

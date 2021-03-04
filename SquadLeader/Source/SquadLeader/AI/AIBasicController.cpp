@@ -55,7 +55,7 @@ void AAIBasicController::UpdateNeighbourhood()
 {
 	for (ASoldier* soldier : SeenSoldier)
 	{
-		if (AAIBasicController* AIBasic = Cast<AAIBasicController>(soldier->Controller); AIBasic && soldier->PlayerTeam == Cast<ASoldier>(GetPawn())->PlayerTeam)
+		if (AAIBasicController* AIBasic = Cast<AAIBasicController>(soldier->Controller); AIBasic && soldier->GetTeam() == Cast<ASoldier>(GetPawn())->GetTeam())
 			SeenBoids.Add(AIBasic);
 	};
 }
@@ -203,8 +203,8 @@ void AAIBasicController::Tick(float DeltaSeconds) {
 FVector AAIBasicController::GetRespawnPoint()  // TODO : Change this function to adapt the squad AI respawn
 {
 	if (ASoldier* soldier = Cast<ASoldier>(GetPawn()); soldier) {
-		if (soldier->PlayerTeam) {
-			auto AvailableSpawnPoints = soldier->PlayerTeam.GetDefaultObject()->GetUsableSpawnPoints();
+		if (soldier->GetTeam()) {
+			auto AvailableSpawnPoints = soldier->GetTeam().GetDefaultObject()->GetUsableSpawnPoints();
 			if (AvailableSpawnPoints.Num() > 0) {
 
 				FVector OptimalPosition = AvailableSpawnPoints[0]->GetActorLocation();
