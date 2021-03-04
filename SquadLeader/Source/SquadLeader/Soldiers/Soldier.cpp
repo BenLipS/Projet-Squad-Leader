@@ -38,7 +38,7 @@ ASoldier::ASoldier(const FObjectInitializer& _ObjectInitializer) : Super(_Object
 	initMovements();
 	initMeshes();
 	setup_stimulus();
-	GetCapsuleComponent()->BodyInstance.SetObjectType(ECollisionChannel::ECC_EngineTraceChannel1);
+	GetCapsuleComponent()->BodyInstance.SetObjectType(ECC_Player);
 }
 
 /*

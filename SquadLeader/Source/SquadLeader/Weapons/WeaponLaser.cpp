@@ -46,17 +46,19 @@ TArray<FHitResult> AWeaponLaser::GetActorsFromLineTrace(const FVector& _StartLoc
 {
 	TArray<FHitResult> outHits;
 	FCollisionObjectQueryParams objectTypes;
-	objectTypes.AddObjectTypesToQuery(ECC_Pawn);
+	objectTypes.AddObjectTypesToQuery(CollisionChannelImpact);
 
 	// Ignore itself and the owner
 	FCollisionQueryParams collisionParams;
 	collisionParams.AddIgnoredActor(this);
 	collisionParams.AddIgnoredActor(Cast<ASoldier>(GetOwner()));
 
-	// TODO: Find out how to handle multi detection. The line trace tracing stops at the first pawn.
-	// TODO: See if lineTracing could use the penetration
-	GetWorld()->LineTraceMultiByObjectType(outHits, _StartLocation, _EndLocation, objectTypes, collisionParams);
-	DrawDebugLine(GetWorld(), _StartLocation, _EndLocation, FColor::Red, false, 6.f);
+	GetWorld()->LineTraceMultiByObjectType(outHits, _StartLocation, _EndLocation /*+ _EndLocation - _StartLocation*/, objectTypes, collisionParams);
+
+	if (HasAuthority())
+		DrawDebugLine(GetWorld(), _StartLocation, _EndLocation + _EndLocation - _StartLocation, FColor::Green, false, 6.f);
+	else
+		DrawDebugLine(GetWorld(), _StartLocation, _EndLocation + _EndLocation - _StartLocation, FColor::Red, false, 6.f);
 
 	return outHits;
 }

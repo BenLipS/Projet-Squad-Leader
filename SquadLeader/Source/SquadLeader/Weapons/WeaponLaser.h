@@ -24,4 +24,8 @@ protected:
 
 	// Additional impact effects
 	virtual void ApplyImpactEffects(UAbilitySystemComponent* _TargetASC) override;
+
+	// CollisionChannel the weapon should detect
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Collision")
+	TEnumAsByte<ECollisionChannel> CollisionChannelImpact;
 };
