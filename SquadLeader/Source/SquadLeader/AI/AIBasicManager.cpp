@@ -14,7 +14,8 @@ AAIBasicManager::AAIBasicManager() {
 
 void AAIBasicManager::BeginPlay() {
 	InitValue();
-	ChooseCOntrolArea();
+	if(nbr_controlArea > 0)
+		ChooseCOntrolArea();
 }
 
 void AAIBasicManager::Init(TSubclassOf<ASoldierTeam> _Team)
