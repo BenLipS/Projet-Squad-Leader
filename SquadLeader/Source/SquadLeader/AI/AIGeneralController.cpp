@@ -262,6 +262,7 @@ void AAIGeneralController::AttackBehavior() {
 	if (m_behavior == AIBehavior::Defense) {
 		m_behavior = AIBehavior::Attack;
 		blackboard->SetValueAsBool("is_attacking", true);
+		m_state = AIBasicState::Attacking;
 		blackboard->SetValueAsBool("DoFlocking", false);
 		ASoldier* _enemy = Cast<ASoldier>(blackboard->GetValueAsObject("FocusActor"));
 		blackboard->SetValueAsVector("EnemyLocation", _enemy->GetActorLocation());
@@ -276,9 +277,8 @@ void AAIGeneralController::DefenseBehavior() {
 		m_behavior = AIBehavior::Defense;
 		blackboard->SetValueAsBool("is_attacking", false);
 		blackboard->SetValueAsBool("DoFlocking", true);
-		//blackboard->SetValueAsVector("VectorLocation", FVector(11410.f, 2950.f, 0.f));
-		//blackboard->SetValueAsVector("VectorLocation", FVector(5000.f, 5000.f, 0.f));
-	}
+		m_state = AIBasicState::Moving;
+		}
 }
 
 void AAIGeneralController::SetMission(UMission* _Mission)
@@ -292,4 +292,8 @@ void AAIGeneralController::Die() const {
 	blackboard->SetValueAsBool("need_GoForward", false);
 	blackboard->SetValueAsObject("FocusActor", NULL);
 	blackboard->SetValueAsVector("EnemyLocation", FVector());
+}
+
+void AAIGeneralController::SetState(AIBasicState _state) noexcept {
+	m_state = _state;
 }
