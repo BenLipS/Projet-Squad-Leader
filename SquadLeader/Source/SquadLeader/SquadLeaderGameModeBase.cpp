@@ -22,18 +22,17 @@ ASquadLeaderGameModeBase::ASquadLeaderGameModeBase() : RespawnDelay{ 3.f }
 }
 
 void ASquadLeaderGameModeBase::StartPlay() {
-	if (GetLocalRole() == ROLE_Authority){
-		for (auto team : SoldierTeamCollection) {  // clean all team data at the begining
-			team.GetDefaultObject()->CleanSpawnPoints();
-			team.GetDefaultObject()->CleanSoldierList();
-		}
-
-		ControlAreaManager.GetDefaultObject()->CleanControlAreaList();  // clean the list of all control area
-
-		//Init for AI
-		Cast<USquadLeaderGameInstance>(GetGameInstance())->InitInfluenceMap();
-		Cast<USquadLeaderGameInstance>(GetGameInstance())->InitAIManagers();
+	for (auto team : SoldierTeamCollection) {  // clean all team data at the begining
+		team.GetDefaultObject()->CleanSpawnPoints();
+		team.GetDefaultObject()->CleanSoldierList();
 	}
+
+	ControlAreaManager.GetDefaultObject()->CleanControlAreaList();  // clean the list of all control area
+
+	//Init for AI
+	Cast<USquadLeaderGameInstance>(GetGameInstance())->InitInfluenceMap();
+	Cast<USquadLeaderGameInstance>(GetGameInstance())->InitAIManagers();
+
 	Super::StartPlay();
 }
 
