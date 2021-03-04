@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -9,7 +7,6 @@
 #include "../Soldiers/AIs/SoldierAI.h"
 #include "Mission.h"
 #include "AISquadManager.generated.h"
-
 
 /**
  * 
@@ -23,8 +20,7 @@ class SQUADLEADER_API AAISquadManager : public AInfo
 {
 	GENERATED_BODY()
 
-	UPROPERTY()
-	UMission* Mission;
+// TODO: Check if all this should be public
 public:
 	AAISquadManager();
 
@@ -60,4 +56,9 @@ public:
 	void UpdateCircleFormation();
 
 
+	UPROPERTY()
+	UMission* Mission;
+
+	UFUNCTION(BlueprintCallable)
+	void UpdateMission(const MissionType _MissionType, const FVector& _Location);
 };

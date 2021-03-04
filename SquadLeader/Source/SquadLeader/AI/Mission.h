@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -11,7 +9,7 @@
  */
 
 UENUM()
-enum class MissionType{ None, Defence, Attack, MoveTo, Formation };
+enum class MissionType : uint8 { None, Defence, Attack, MoveTo, Formation };
 
 UCLASS()
 class SQUADLEADER_API UMission : public UObject

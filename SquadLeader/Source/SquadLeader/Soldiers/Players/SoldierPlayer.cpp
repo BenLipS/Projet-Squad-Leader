@@ -55,6 +55,11 @@ void ASoldierPlayer::OnRep_PlayerState()
 		PC->createHUD();
 }
 
+AAISquadManager* ASoldierPlayer::GetSquadManager()
+{
+	return SquadManager;
+}
+
 void ASoldierPlayer::SetAbilitySystemComponent()
 {
 	check(IsValid(GetPlayerState()))
@@ -87,8 +92,8 @@ void ASoldierPlayer::BindASCInput()
 
 	if (!ASCInputBound && AbilitySystemComponent && IsValid(inputComponent))
 	{
-		AbilitySystemComponent->BindAbilityActivationToInputComponent(inputComponent, FGameplayAbilityInputBinds(FString("Confirm"),
-			FString("Cancel"), FString("ESoldierAbilityInputID"), static_cast<int32>(ESoldierAbilityInputID::Confirm), static_cast<int32>(ESoldierAbilityInputID::Cancel)));
+		AbilitySystemComponent->BindAbilityActivationToInputComponent(inputComponent, FGameplayAbilityInputBinds(FString("ConfirmSkill"),
+			FString("CancelSkill"), FString("ESoldierAbilityInputID"), static_cast<int32>(ESoldierAbilityInputID::ConfirmSkill), static_cast<int32>(ESoldierAbilityInputID::CancelSkill)));
 
 		ASCInputBound = true;
 	}

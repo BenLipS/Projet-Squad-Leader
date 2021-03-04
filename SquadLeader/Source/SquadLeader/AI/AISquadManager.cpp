@@ -8,6 +8,7 @@
 
 AAISquadManager::AAISquadManager() {
 	PrimaryActorTick.bStartWithTickEnabled = true;
+	bReplicates = true;
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.TickGroup = TG_PrePhysics;
 }
@@ -101,4 +102,38 @@ void AAISquadManager::UpdateCircleFormation()
 		//DrawDebugPoint(Leader->GetWorld(), Pos, 20, FColor::Yellow);
 		FormationPos.Add(Pos);
 		});
+}
+
+void AAISquadManager::UpdateMission(const MissionType _MissionType, const FVector& _Location)
+{
+	Mission->Type = _MissionType;
+	Mission->Location = _Location;
+
+	for (AAISquadController* AISquad : AISquadList) {
+		AISquad->SetMission(Mission);
+		if(Mission->Type == MissionType::Formation){
+			AISquad->get_blackboard()->SetValueAsBool("IsInFormation", true);
+			AISquad->get_blackboard()->SetValueAsBool("HasOrder", false);
+		}else {
+			AISquad->get_blackboard()->SetValueAsBool("IsInFormation", false);
+			AISquad->get_blackboard()->SetValueAsBool("HasOrder", true);
+		}
+	}
+
+	// Sorry for that...
+	switch (Mission->Type)
+	{
+	case MissionType::Defence:
+		GEngine->AddOnScreenDebugMessage(4563, 4.f, FColor::Red, FString::Printf(TEXT("Order Defence on (%s,%s,%s) from %s"), *FString::SanitizeFloat(Mission->Location.X), *FString::SanitizeFloat(Mission->Location.Y), *FString::SanitizeFloat(Mission->Location.Z), *Leader->GetName()));
+		break;
+	case MissionType::Attack:
+		GEngine->AddOnScreenDebugMessage(4563, 4.f, FColor::Red, FString::Printf(TEXT("Order Attack on (%s,%s,%s) from %s"), *FString::SanitizeFloat(Mission->Location.X), *FString::SanitizeFloat(Mission->Location.Y), *FString::SanitizeFloat(Mission->Location.Z), *Leader->GetName()));
+		break;
+	case MissionType::MoveTo:
+		GEngine->AddOnScreenDebugMessage(4563, 4.f, FColor::Red, FString::Printf(TEXT("Order MoveTo on (%s,%s,%s) from %s"), *FString::SanitizeFloat(Mission->Location.X), *FString::SanitizeFloat(Mission->Location.Y), *FString::SanitizeFloat(Mission->Location.Z), *Leader->GetName()));
+		break;
+	default:
+		GEngine->AddOnScreenDebugMessage(4563, 4.f, FColor::Red, FString::Printf(TEXT("Order Unknown on (%s,%s,%s) from %s"), *FString::SanitizeFloat(Mission->Location.X), *FString::SanitizeFloat(Mission->Location.Y), *FString::SanitizeFloat(Mission->Location.Z), *Leader->GetName()));
+		break;
+	}
 }

@@ -43,6 +43,18 @@ FVector AAISquadController::GetRespawnPoint()  // TODO : Change this function to
 	return FVector(0.f, 0.f, 1500.f); // else return default
 }
 
+void AAISquadController::BeginPlay()
+{
+	Super::BeginPlay();
+	blackboard->SetValueAsBool("IsInFormation", true);
+	blackboard->SetValueAsBool("HasOrder", false);
+}
+
+void AAISquadController::Init()
+{
+
+}
+
 EPathFollowingRequestResult::Type AAISquadController::FollowFormation() {
 	EPathFollowingRequestResult::Type _movetoResult = MoveToLocation(blackboard->GetValueAsVector("FormationLocation"), 5.f);
 

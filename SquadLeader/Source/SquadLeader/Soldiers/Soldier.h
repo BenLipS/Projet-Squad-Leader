@@ -78,14 +78,17 @@ public:
 	static FGameplayTag StateCrouchingTag;
 	static FGameplayTag StateFightingTag;
 	static FGameplayTag StateAimingTag;
+	static FGameplayTag StateGivingOrderTag;
 
 	// Abilities
 	static FGameplayTag SkillRunTag;
 	static FGameplayTag SkillJumpTag;
 	static FGameplayTag SkillCrouchTag;
 	static FGameplayTag SkillFireWeaponTag;
+	static FGameplayTag SkillGrenadeTag;
 	static FGameplayTag SkillAimTag;
 	static FGameplayTag SkillAreaEffectFromSelfTag;
+	static FGameplayTag SkillGiveOrderTag;
 
 protected:
 	virtual void DeadTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
@@ -93,6 +96,7 @@ protected:
 	virtual void JumpingTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 	virtual void FightingTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 	virtual void AimingTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
+	virtual void GivingOrderTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 
 //////////////// Attributes
 public:
