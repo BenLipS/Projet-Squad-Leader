@@ -17,11 +17,11 @@ protected:
 	virtual void BeginPlay() override;
 
 //////////////// Fire
-	TArray<FHitResult> GetActorsFromLineTrace(const FVector& _startLocation, const FVector& _endLocation);
+	TArray<FHitResult> GetActorsFromLineTrace(const FVector& _StartLocation, const FVector& _EndLocation);
 
 	// Damage impact
-	virtual void ApplyImpactDamage(UAbilitySystemComponent* _targetASC) override;
+	virtual void ApplyImpactDamage(UAbilitySystemComponent* _TargetASC) override;
 
 	// Additional impact effects
-	virtual void ApplyImpactEffects(UAbilitySystemComponent* _targetASC) override;
+	virtual void ApplyImpactEffects(UAbilitySystemComponent* _TargetASC) override;
 };
