@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "../Soldier.h"
 #include "SoldierPlayer.generated.h"
-class UAISquadManager;
+class AAISquadManager;
 
 UCLASS()
 class SQUADLEADER_API ASoldierPlayer : public ASoldier
@@ -19,13 +19,14 @@ protected:
 	void OnRep_PlayerState() override;
 
 	UPROPERTY(EditDefaultsOnly, Category = "SquadManager")
-	TSubclassOf<UAISquadManager> AISquadManagerClass;
+	TSubclassOf<AAISquadManager> AISquadManagerClass;
 
 	UPROPERTY(BlueprintReadOnly, Category = "SquadManager")
-	UAISquadManager* SquadManager;
+	AAISquadManager* SquadManager;
 
 public:
-	UAISquadManager* GetSquadManager();
+	UFUNCTION()
+	AAISquadManager* GetSquadManager();
 
 //////////////// Camera
 public:

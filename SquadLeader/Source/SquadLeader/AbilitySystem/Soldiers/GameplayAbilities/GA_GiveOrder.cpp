@@ -19,6 +19,7 @@ void UGA_GiveOrder::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 
 		if (ASoldierPlayer* Soldier = Cast<ASoldierPlayer>(ActorInfo->AvatarActor.Get()); Soldier)
 		{
+			//Activation();
 			// Init task
 			UAbilityTask_WaitTargetData *Task = UAbilityTask_WaitTargetData::WaitTargetData(this, FName("WaitTargetData Give Order"), TEnumAsByte<EGameplayTargetingConfirmation::Type>(EGameplayTargetingConfirmation::UserConfirmed), TargetActorClass);
 
@@ -39,7 +40,7 @@ void UGA_GiveOrder::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 			FGameplayAbilityTargetingLocationInfo TargetingLocationInfo = MakeTargetLocationInfoFromOwnerActor();
 			TargetingLocationInfo.LiteralTransform.SetLocation(Soldier->GetActorForwardVector() * 200 + TargetingLocationInfo.LiteralTransform.GetLocation());
 			SpawnedActor->StartLocation = TargetingLocationInfo;
-
+			
 			// Apply Gameplay effect
 			FGameplayEffectSpecHandle GivingOrderEffectSpecHandle = MakeOutgoingGameplayEffectSpec(GivingOrderGameplayEffect, GetAbilityLevel());
 			Soldier->GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*GivingOrderEffectSpecHandle.Data.Get());

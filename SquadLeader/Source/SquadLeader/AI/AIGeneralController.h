@@ -20,6 +20,23 @@ enum AIBehavior {
 	Defense UMETA(DisplayName = "Defense"),
 };
 
+UENUM()
+enum AIBasicState {
+	Attacking UMETA(DisplayName = "Attacking"),
+	Patroling UMETA(DisplayName = "Patroling"),
+	Moving UMETA(DisplayName = "Moving"),
+};
+
+UENUM()
+enum ResultState {
+	Success UMETA(DisplayName = "Success"),
+	Failed UMETA(DisplayName = "Failed"),
+	InProgress UMETA(DisplayName = "InProgress"),
+};
+
+
+
+
 UCLASS()
 class SQUADLEADER_API AAIGeneralController : public AAIController
 {
@@ -55,7 +72,7 @@ public:
 
 	/*Shoot the enemy we see*/
 	UFUNCTION(BlueprintCallable, Category = "Shoot")
-	void ShootEnemy();
+	ResultState ShootEnemy();
 
 	class UBlackboardComponent* get_blackboard() const;
 	
@@ -64,6 +81,11 @@ public:
 	*/
 	UFUNCTION(BluePrintCallable, Category = "Comportement")
 		virtual void Tick(float DeltaSeconds) override;
+
+	virtual void Die() const;
+
+	UFUNCTION()
+		void SetState(AIBasicState _state) noexcept;
 protected:
 	/*Set-up the BehaviorTree at the construction*/
 	virtual void setup_BehaviorTree();
@@ -146,6 +168,9 @@ protected:
 
 	UPROPERTY()
 	TArray<ASoldier*> SeenSoldier;
+
+	UPROPERTY()
+		int m_state;
 private:
 	class UAISenseConfig_Sight* sight_config;
 

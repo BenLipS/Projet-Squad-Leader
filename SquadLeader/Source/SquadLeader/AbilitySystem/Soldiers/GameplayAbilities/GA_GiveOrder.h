@@ -34,4 +34,7 @@ protected:
 
 	UFUNCTION()
 	void OnOrderCancelled(const FGameplayAbilityTargetDataHandle& _Data);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void Activation();
 };

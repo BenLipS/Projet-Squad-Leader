@@ -27,7 +27,7 @@ void AWeaponLaser::Fire()
 	{
 		if (auto actor = (*it).GetActor(); actor != nullptr)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("You are hitting: %s"), *actor->GetName()));
+			//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("You are hitting: %s"), *actor->GetName()));
 
 			if (auto soldierTarget = Cast<ASoldier>(actor); soldierTarget)
 			{
