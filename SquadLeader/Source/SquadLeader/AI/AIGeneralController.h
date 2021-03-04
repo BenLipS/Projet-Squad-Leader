@@ -8,7 +8,7 @@
 #include "../Soldiers/AIs/SoldierAI.h"
 #include "Perception/AIPerceptiontypes.h"
 #include "Mission.h"
-#include "../Soldiers/Interface/TeamableContainer.h"
+#include "../Soldiers/Interface/Teamable.h"
 #include "AIGeneralController.generated.h"
 
 
@@ -22,15 +22,18 @@ enum AIBehavior {
 };
 
 UCLASS()
-class SQUADLEADER_API AAIGeneralController : public AAIController, public ITeamableContainer
+class SQUADLEADER_API AAIGeneralController : public AAIController, public ITeamable
 {
 	GENERATED_BODY()
 
 public:
 	AAIGeneralController(FObjectInitializer const& object_initializer = FObjectInitializer::Get());
-
+	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 
 //////////////// Teamable
+protected:
+	UPROPERTY(Replicated)
+		TSubclassOf<ASoldierTeam> Team = nullptr;  // only server can replicate it
 public:
 	virtual TSubclassOf<ASoldierTeam> GetTeam() override;
 	virtual bool SetTeam(TSubclassOf<ASoldierTeam> _Team) override;

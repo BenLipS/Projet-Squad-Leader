@@ -28,14 +28,31 @@ void AAIGeneralController::BeginPlay() {
 	blackboard = BrainComponent->GetBlackboardComponent();
 }
 
+void AAIGeneralController::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	// everyone
+	DOREPLIFETIME(AAIGeneralController, Team);
+}
+
 TSubclassOf<ASoldierTeam> AAIGeneralController::GetTeam()
 {
-	return ITeamableContainer::GetTeam();
+	return Team;
 }
 
 bool AAIGeneralController::SetTeam(TSubclassOf<ASoldierTeam> _Team)
 {
-	return ITeamableContainer::SetTeam(_Team);
+	if (GetLocalRole() == ROLE_Authority) {  // only server can change team
+		if (Team)
+			Team.GetDefaultObject()->RemoveSoldierList(Cast<ASoldier>(GetPawn()));
+		if (_Team)
+			_Team.GetDefaultObject()->AddSoldierList(Cast<ASoldier>(GetPawn()));
+
+		Team = _Team;
+		return true;
+	}
+	return false;
 }
 
 void AAIGeneralController::ontargetperception_update_sight(AActor* actor, FAIStimulus stimulus) {
