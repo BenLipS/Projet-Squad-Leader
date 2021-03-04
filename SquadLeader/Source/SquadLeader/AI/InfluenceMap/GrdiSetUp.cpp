@@ -34,7 +34,7 @@ void AGrdiSetUp::Tick(float DeltaTime)
 
 		CleanGrid();
 		UpdateGrid();
-		//DrawGrid();
+		DrawGrid();
 	}
 }
 
