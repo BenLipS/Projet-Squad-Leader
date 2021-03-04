@@ -348,7 +348,13 @@ void ASoldier::LookUp(const float _Val)
 void ASoldier::Turn(const float _Val)
 {
 	if (IsAlive())
+	{
 		AddControllerYawInput(_Val);
+		if (APlayerController* PlayerController = Cast<APlayerController>(Controller); PlayerController)
+		{
+			SyncControlRotation = PlayerController->GetControlRotation();
+		}
+	}
 }
 
 // TODO: For now, we directly change the move speed multiplier with a setter. This is should be changed 
@@ -375,8 +381,8 @@ FVector ASoldier::lookingAtPosition()
 {
 	FHitResult outHit;
 
-	FVector startLocation = CurrentCameraComponent->GetComponentTransform().GetLocation();
-	FVector forwardVector = CurrentCameraComponent->GetForwardVector();
+	FVector startLocation = ThirdPersonCameraComponent->GetComponentTransform().GetLocation();
+	FVector forwardVector = ThirdPersonCameraComponent->GetForwardVector();
 	FVector endLocation = startLocation + forwardVector * 10000.f;
 
 	FCollisionQueryParams collisionParams;
@@ -499,6 +505,7 @@ void ASoldier::ServerSyncControlRotation_Implementation(const FRotator& _Rotatio
 		FirstPersonCameraComponent->SetWorldRotation(SyncControlRotation);
 		ThirdPersonCameraComponent->SetWorldRotation(SyncControlRotation);
 	}
+	GEngine->AddOnScreenDebugMessage(474, 100.f, FColor::Green, FString::Printf(TEXT("%s %s"), *FString::SanitizeFloat(SyncControlRotation.Pitch), *FString::SanitizeFloat(SyncControlRotation.Yaw)));
 }
 
 bool ASoldier::ServerSyncControlRotation_Validate(const FRotator& _Rotation)
@@ -515,6 +522,7 @@ void ASoldier::MulticastSyncControlRotation_Implementation(const FRotator& _Rota
 		FirstPersonCameraComponent->SetWorldRotation(SyncControlRotation);
 		ThirdPersonCameraComponent->SetWorldRotation(SyncControlRotation);
 	}
+	GEngine->AddOnScreenDebugMessage(471, 100.f, FColor::Green, FString::Printf(TEXT("%s %s"), *FString::SanitizeFloat(SyncControlRotation.Pitch), *FString::SanitizeFloat(SyncControlRotation.Yaw)));
 }
 
 bool ASoldier::MulticastSyncControlRotation_Validate(const FRotator& _Rotation)

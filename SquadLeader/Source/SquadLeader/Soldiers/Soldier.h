@@ -149,6 +149,7 @@ public:
 	USpringArmComponent* SpringArmComponent;
 
 protected:
+	UPROPERTY(VisibleAnywhere)
 	FRotator SyncControlRotation;
 
 public:
@@ -192,7 +193,7 @@ public:
 	virtual void LookUp(const float _Val);
 
 	UFUNCTION()
-	void Turn(const float _Val);
+	virtual void Turn(const float _Val);
 
 	UFUNCTION(BlueprintCallable, Category = "Movement")
 	virtual FVector lookingAtPosition();

@@ -30,6 +30,7 @@ public:
 //////////////// Camera
 public:
 	virtual void LookUp(const float _Val) override;
+	virtual void Turn(const float _Val) override;
 
 //////////////// Ability System Component
 protected:
