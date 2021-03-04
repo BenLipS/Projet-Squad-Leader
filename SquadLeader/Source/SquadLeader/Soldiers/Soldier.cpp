@@ -17,14 +17,17 @@ FGameplayTag ASoldier::StateJumpingTag = FGameplayTag::RequestGameplayTag(FName(
 FGameplayTag ASoldier::StateCrouchingTag = FGameplayTag::RequestGameplayTag(FName("State.Crouching"));
 FGameplayTag ASoldier::StateFightingTag = FGameplayTag::RequestGameplayTag(FName("State.Fighting"));
 FGameplayTag ASoldier::StateAimingTag = FGameplayTag::RequestGameplayTag(FName("State.Aiming"));
+FGameplayTag ASoldier::StateGivingOrderTag = FGameplayTag::RequestGameplayTag(FName("State.GivingOrder"));
 
 // Abilities
 FGameplayTag ASoldier::SkillRunTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Run"));
 FGameplayTag ASoldier::SkillJumpTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Jump"));
 FGameplayTag ASoldier::SkillCrouchTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Crouch"));
 FGameplayTag ASoldier::SkillFireWeaponTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.FireWeapon"));
+FGameplayTag ASoldier::SkillGrenadeTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Grenade"));
 FGameplayTag ASoldier::SkillAimTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Aim"));
 FGameplayTag ASoldier::SkillAreaEffectFromSelfTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.AreaEffectFromSelf"));
+FGameplayTag ASoldier::SkillGiveOrderTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.GiveOrder"));
 
 ASoldier::ASoldier(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer.SetDefaultSubobjectClass<USoldierMovementComponent>(ACharacter::CharacterMovementComponentName)), bAbilitiesInitialized{ false }, bDefaultWeaponsInitialized{ false }
 {
@@ -34,6 +37,7 @@ ASoldier::ASoldier(const FObjectInitializer& _ObjectInitializer) : Super(_Object
 	initMovements();
 	initMeshes();
 	setup_stimulus();
+	GetCapsuleComponent()->BodyInstance.SetObjectType(ECollisionChannel::ECC_EngineTraceChannel1);
 }
 
 /*
@@ -229,6 +233,7 @@ void ASoldier::InitializeTagChangeCallbacks()
 	AbilitySystemComponent->RegisterGameplayTagEvent(ASoldier::StateJumpingTag, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ASoldier::JumpingTagChanged);
 	AbilitySystemComponent->RegisterGameplayTagEvent(ASoldier::StateFightingTag, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ASoldier::FightingTagChanged);
 	AbilitySystemComponent->RegisterGameplayTagEvent(ASoldier::StateAimingTag, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ASoldier::AimingTagChanged);
+	AbilitySystemComponent->RegisterGameplayTagEvent(ASoldier::StateGivingOrderTag, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ASoldier::GivingOrderTagChanged);
 }
 
 void ASoldier::InitializeAttributeChangeCallbacks()
@@ -280,6 +285,10 @@ void ASoldier::FightingTagChanged(const FGameplayTag CallbackTag, int32 NewCount
 }
 
 void ASoldier::AimingTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
+{
+}
+
+void ASoldier::GivingOrderTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
 {
 }
 

@@ -28,9 +28,9 @@ void ASoldierPlayer::PossessedBy(AController* _newController)
 	initWeapons();
 
 	/*Init Squad Manager for this Player*/
-	UAISquadManager* PlayerSquadManager = NewObject<UAISquadManager>(this, AISquadManagerClass);
-	PlayerSquadManager->Init(GetTeam(),this,GetWorld());
-	Cast<USquadLeaderGameInstance>(GetGameInstance())->GetSquadManagers().Add(PlayerSquadManager);
+	SquadManager = NewObject<UAISquadManager>(this, AISquadManagerClass);
+	SquadManager->Init(GetTeam(),this,GetWorld());
+	Cast<USquadLeaderGameInstance>(GetGameInstance())->GetSquadManagers().Add(SquadManager);
 
 	// TODO: Do we need to have the hud in server ?
 	if (ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(GetController()); PC)
@@ -46,6 +46,11 @@ void ASoldierPlayer::OnRep_PlayerState()
 
 	if (ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(GetController()); PC)
 		PC->createHUD();
+}
+
+UAISquadManager* ASoldierPlayer::GetSquadManager()
+{
+	return SquadManager;
 }
 
 TSubclassOf<ASoldierTeam> ASoldierPlayer::GetTeam()
@@ -94,8 +99,8 @@ void ASoldierPlayer::BindASCInput()
 
 	if (!ASCInputBound && AbilitySystemComponent && IsValid(inputComponent))
 	{
-		AbilitySystemComponent->BindAbilityActivationToInputComponent(inputComponent, FGameplayAbilityInputBinds(FString("Confirm"),
-			FString("Cancel"), FString("ESoldierAbilityInputID"), static_cast<int32>(ESoldierAbilityInputID::Confirm), static_cast<int32>(ESoldierAbilityInputID::Cancel)));
+		AbilitySystemComponent->BindAbilityActivationToInputComponent(inputComponent, FGameplayAbilityInputBinds(FString("ConfirmSkill"),
+			FString("CancelSkill"), FString("ESoldierAbilityInputID"), static_cast<int32>(ESoldierAbilityInputID::ConfirmSkill), static_cast<int32>(ESoldierAbilityInputID::CancelSkill)));
 
 		ASCInputBound = true;
 	}

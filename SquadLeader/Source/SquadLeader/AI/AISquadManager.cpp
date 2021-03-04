@@ -27,4 +27,29 @@ void UAISquadManager::Init(TSubclassOf<ASoldierTeam> _Team, ASoldierPlayer* _Pla
 	SquadAI1->FinishSpawning(LocationAI1);
 	ASoldierAI* SquadAI2 = GEngine->GetWorldFromContextObject(WorldContextObject)->SpawnActorDeferred<ASoldierAI>(ClassAI, LocationAI2, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 	SquadAI2->FinishSpawning(LocationAI2);
+
+	Mission = NewObject<UMission>(this, UMission::StaticClass());
+}
+
+void UAISquadManager::UpdateMission(const MissionType _MissionType, const FVector& _Location)
+{
+	Mission->Type = _MissionType;
+	Mission->Location = _Location;
+
+	// Sorry for that...
+	switch (Mission->Type)
+	{
+	case MissionType::Defence:
+		GEngine->AddOnScreenDebugMessage(4563, 4.f, FColor::Red, FString::Printf(TEXT("Order Defence on (%s,%s,%s) from %s"), *FString::SanitizeFloat(Mission->Location.X), *FString::SanitizeFloat(Mission->Location.Y), *FString::SanitizeFloat(Mission->Location.Z), *Leader->GetName()));
+		break;
+	case MissionType::Attack:
+		GEngine->AddOnScreenDebugMessage(4563, 4.f, FColor::Red, FString::Printf(TEXT("Order Attack on (%s,%s,%s) from %s"), *FString::SanitizeFloat(Mission->Location.X), *FString::SanitizeFloat(Mission->Location.Y), *FString::SanitizeFloat(Mission->Location.Z), *Leader->GetName()));
+		break;
+	case MissionType::MoveTo:
+		GEngine->AddOnScreenDebugMessage(4563, 4.f, FColor::Red, FString::Printf(TEXT("Order MoveTo on (%s,%s,%s) from %s"), *FString::SanitizeFloat(Mission->Location.X), *FString::SanitizeFloat(Mission->Location.Y), *FString::SanitizeFloat(Mission->Location.Z), *Leader->GetName()));
+		break;
+	default:
+		GEngine->AddOnScreenDebugMessage(4563, 4.f, FColor::Red, FString::Printf(TEXT("Order Unknown on (%s,%s,%s) from %s"), *FString::SanitizeFloat(Mission->Location.X), *FString::SanitizeFloat(Mission->Location.Y), *FString::SanitizeFloat(Mission->Location.Z), *Leader->GetName()));
+		break;
+	}
 }

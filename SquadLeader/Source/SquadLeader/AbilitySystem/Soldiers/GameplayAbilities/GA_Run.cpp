@@ -16,9 +16,7 @@ void UGA_Run::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGa
 		if (!CommitAbility(Handle, ActorInfo, ActivationInfo))
 			EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
 
-		ASoldier* soldier = CastChecked<ASoldier>(ActorInfo->AvatarActor.Get());
-
-		if (soldier->StartRunning())
+		if (ASoldier* soldier = Cast<ASoldier>(ActorInfo->AvatarActor.Get()); soldier && soldier->StartRunning())
 		{
 			FGameplayEffectSpecHandle RunningEffectSpecHandle = MakeOutgoingGameplayEffectSpec(RunningGameplayEffect, GetAbilityLevel());
 			soldier->GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*RunningEffectSpecHandle.Data.Get());
@@ -55,10 +53,12 @@ void UGA_Run::CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGame
 
 	Super::CancelAbility(Handle, ActorInfo, ActivationInfo, bReplicateCancelAbility);
 
-	ASoldier* soldier = CastChecked<ASoldier>(ActorInfo->AvatarActor.Get());
-	soldier->StopRunning();
+	if (ASoldier* soldier = Cast<ASoldier>(ActorInfo->AvatarActor.Get()); soldier)
+	{
+		soldier->StopRunning();
 
-	FGameplayTagContainer EffectTagsToRemove;
-	EffectTagsToRemove.AddTag(ASoldier::StateRunningTag);
-	soldier->GetAbilitySystemComponent()->RemoveActiveEffectsWithGrantedTags(EffectTagsToRemove);
+		FGameplayTagContainer EffectTagsToRemove;
+		EffectTagsToRemove.AddTag(ASoldier::StateRunningTag);
+		soldier->GetAbilitySystemComponent()->RemoveActiveEffectsWithGrantedTags(EffectTagsToRemove);
+	}
 }

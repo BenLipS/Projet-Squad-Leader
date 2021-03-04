@@ -8,10 +8,10 @@ enum class ESoldierAbilityInputID : uint8
 {
 	// None
 	None			UMETA(DisplayName = "None"),
-	// Confirm
-	Confirm			UMETA(DisplayName = "Confirm"),
-	// Cancel
-	Cancel			UMETA(DisplayName = "Cancel"),
+	// ConfirmSkill
+	ConfirmSkill	UMETA(DisplayName = "ConfirmSkill"),
+	// CancelSkill
+	CancelSkill		UMETA(DisplayName = "CancelSkill"),
 	// Shift
 	Run				UMETA(DisplayName = "Run"),
 	// C
@@ -28,4 +28,6 @@ enum class ESoldierAbilityInputID : uint8
 	Ability1		UMETA(DisplayName = "Ability1"),
 	// E
 	Ability2		UMETA(DisplayName = "Ability2"),
+	// T
+	GiveOrder		UMETA(DisplayName = "GiveOrder"),
 };
