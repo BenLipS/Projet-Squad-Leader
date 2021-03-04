@@ -5,10 +5,11 @@
 #include "AbilitySystemInterface.h"
 #include "../../AbilitySystem/Soldiers/AttributeSetSoldier.h"
 #include "../../AbilitySystem/Soldiers/AbilitySystemSoldier.h"
+#include "../Interface/TeamableContainer.h"
 #include "SoldierPlayerState.generated.h"
 
 UCLASS()
-class SQUADLEADER_API ASoldierPlayerState : public APlayerState, public IAbilitySystemInterface
+class SQUADLEADER_API ASoldierPlayerState : public APlayerState, public IAbilitySystemInterface, public ITeamableContainer
 {
 	GENERATED_BODY()
 
@@ -17,6 +18,11 @@ public:
 
 private:
 	void BeginPlay() override;
+
+//////////////// Teamable
+public:
+	virtual TSubclassOf<ASoldierTeam> GetTeam() override;
+	virtual bool SetTeam(TSubclassOf<ASoldierTeam> _Team) override;
 
 //////////////// Ability System
 protected:

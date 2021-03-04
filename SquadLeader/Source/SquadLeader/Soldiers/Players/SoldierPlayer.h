@@ -21,6 +21,11 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UAISquadManager> AISquadManagerClass;
 
+//////////////// Teamable
+public:
+	virtual TSubclassOf<ASoldierTeam> GetTeam() override;
+	virtual bool SetTeam(TSubclassOf<ASoldierTeam> _Team) override;
+
 protected:
 	void SetAbilitySystemComponent();
 	void BindASCInput();

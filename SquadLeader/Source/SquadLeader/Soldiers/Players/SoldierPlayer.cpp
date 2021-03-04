@@ -48,6 +48,20 @@ void ASoldierPlayer::OnRep_PlayerState()
 		PC->createHUD();
 }
 
+TSubclassOf<ASoldierTeam> ASoldierPlayer::GetTeam()
+{
+	if (auto SoldierPlayerState = Cast<ASoldierPlayerState>(GetPlayerState()); SoldierPlayerState)
+		return SoldierPlayerState->GetTeam();
+	return nullptr;
+}
+
+bool ASoldierPlayer::SetTeam(TSubclassOf<ASoldierTeam> _Team)
+{
+	if (auto SoldierPlayerState = Cast<ASoldierPlayerState>(GetPlayerState()); SoldierPlayerState)
+		return SoldierPlayerState->SetTeam(_Team);
+	return false;
+}
+
 void ASoldierPlayer::SetAbilitySystemComponent()
 {
 	check(IsValid(GetPlayerState()))

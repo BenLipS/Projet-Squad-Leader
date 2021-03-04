@@ -8,6 +8,7 @@
 #include "../Soldiers/AIs/SoldierAI.h"
 #include "Perception/AIPerceptiontypes.h"
 #include "Mission.h"
+#include "../Soldiers/Interface/TeamableContainer.h"
 #include "AIGeneralController.generated.h"
 
 
@@ -21,12 +22,19 @@ enum AIBehavior {
 };
 
 UCLASS()
-class SQUADLEADER_API AAIGeneralController : public AAIController
+class SQUADLEADER_API AAIGeneralController : public AAIController, public ITeamableContainer
 {
 	GENERATED_BODY()
 
 public:
 	AAIGeneralController(FObjectInitializer const& object_initializer = FObjectInitializer::Get());
+
+
+//////////////// Teamable
+public:
+	virtual TSubclassOf<ASoldierTeam> GetTeam() override;
+	virtual bool SetTeam(TSubclassOf<ASoldierTeam> _Team) override;
+
 
 	UFUNCTION()
 	void ontargetperception_update_sight(AActor* actor, FAIStimulus stimulus);

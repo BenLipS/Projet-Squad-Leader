@@ -8,13 +8,16 @@
 #include "../AbilitySystem/Soldiers/AttributeSetSoldier.h"
 #include "../AbilitySystem/Soldiers/AbilitySystemSoldier.h"
 #include "../Weapons/Weapon.h"
+#include "Interface/Teamable.h"
+//
 #include "SoldierTeam.h"
+//
 #include "Net/UnrealNetwork.h"
 #include "Soldier.generated.h"
 
 
 UCLASS()
-class SQUADLEADER_API ASoldier : public ACharacter, public IAbilitySystemInterface
+class SQUADLEADER_API ASoldier : public ACharacter, public IAbilitySystemInterface, public ITeamable
 {
 	GENERATED_BODY()
 
@@ -228,6 +231,7 @@ protected:
 
 public:
 	AWeapon* getCurrentWeapon() const noexcept { return currentWeapon; }
+	
 	////////////////  PlayerTeam
 	// Appel du c�t� serveur pour actualiser l'�tat du rep�re 
 	UFUNCTION(Reliable, Server, WithValidation)
@@ -240,6 +244,10 @@ public:
 	TSubclassOf<ASoldierTeam> PlayerTeam;
 	TSubclassOf<ASoldierTeam> OldPlayerTeam;  // Local buffer used for team change
 	
+	//////////////// Teamable
+	virtual TSubclassOf<ASoldierTeam> GetTeam() override { return nullptr; };  // function overide in SoldierPlayer and Soldier AI
+	virtual bool SetTeam(TSubclassOf<ASoldierTeam> _Team) override { return false; };  // function overide in SoldierPlayer and Soldier AI
+
 	UFUNCTION(Reliable, Server, WithValidation)
 		void ServerCycleBetweenTeam();
 

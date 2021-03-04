@@ -520,21 +520,21 @@ void ASoldier::cycleBetweenTeam()
 	if (GetLocalRole() == ROLE_Authority) {
 		FString message;
 		auto gameMode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
-		auto initialIndex = gameMode->SoldierTeamCollection.Find(PlayerTeam);
+		auto initialIndex = gameMode->SoldierTeamCollection.Find(GetTeam());
 		if (initialIndex != INDEX_NONE) {  // cycle between existant team
 			auto index = initialIndex + 1;
 			if (!(gameMode->SoldierTeamCollection.IsValidIndex(index))) {
 				index = 0;
 			}
-			PlayerTeam = gameMode->SoldierTeamCollection[index];
+			SetTeam(gameMode->SoldierTeamCollection[index]);
 
-			message = PlayerTeam.GetDefaultObject()->TeamName;  // Log
+			message = GetTeam().GetDefaultObject()->TeamName;  // Log
 		}
 		else {  // if the player have no team for now give the first one
 			if (gameMode->SoldierTeamCollection.Max() > 0) {
-				PlayerTeam = gameMode->SoldierTeamCollection[0];
+				SetTeam(gameMode->SoldierTeamCollection[0]);
 
-				message = PlayerTeam.GetDefaultObject()->TeamName;  // Log
+				message = GetTeam().GetDefaultObject()->TeamName;  // Log
 			}
 		}
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, message);

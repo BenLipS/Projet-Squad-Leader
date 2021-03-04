@@ -13,6 +13,16 @@ void ASoldierPlayerState::BeginPlay()
 	Super::BeginPlay();
 }
 
+TSubclassOf<ASoldierTeam> ASoldierPlayerState::GetTeam()
+{
+	return ITeamableContainer::GetTeam();
+}
+
+bool ASoldierPlayerState::SetTeam(TSubclassOf<ASoldierTeam> _Team)
+{
+	return ITeamableContainer::SetTeam(_Team);
+}
+
 UAbilitySystemSoldier* ASoldierPlayerState::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent;

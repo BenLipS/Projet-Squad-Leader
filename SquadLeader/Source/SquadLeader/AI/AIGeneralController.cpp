@@ -28,6 +28,16 @@ void AAIGeneralController::BeginPlay() {
 	blackboard = BrainComponent->GetBlackboardComponent();
 }
 
+TSubclassOf<ASoldierTeam> AAIGeneralController::GetTeam()
+{
+	return ITeamableContainer::GetTeam();
+}
+
+bool AAIGeneralController::SetTeam(TSubclassOf<ASoldierTeam> _Team)
+{
+	return ITeamableContainer::SetTeam(_Team);
+}
+
 void AAIGeneralController::ontargetperception_update_sight(AActor* actor, FAIStimulus stimulus) {
 	//if (GEngine)GEngine->AddOnScreenDebugMessage(5961, 1.f, FColor::Blue, TEXT("ontargetperception_update_sight"));
 };
