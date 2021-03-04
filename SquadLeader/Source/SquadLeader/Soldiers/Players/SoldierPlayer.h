@@ -27,6 +27,11 @@ protected:
 public:
 	UAISquadManager* GetSquadManager();
 
+//////////////// Camera
+public:
+	virtual void LookUp(const float _Val) override;
+
+//////////////// Ability System Component
 protected:
 	void SetAbilitySystemComponent();
 	void BindASCInput();
