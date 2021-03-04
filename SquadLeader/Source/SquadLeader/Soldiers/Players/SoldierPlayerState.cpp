@@ -1,6 +1,6 @@
 #include "SoldierPlayerState.h"
 #include "SoldierPlayerController.h"
-#include "SquadLeader/UI/HUDWidget.h"
+#include "../../UI/PlayerHUD.h"
 
 ASoldierPlayerState::ASoldierPlayerState()
 {
@@ -61,8 +61,11 @@ void ASoldierPlayerState::HealthChanged(const FOnAttributeChangeData& Data)
 {
 	if (ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(GetOwner()); PC)
 	{
-		if (UHUDWidget* HUD = PC->GetHUD(); HUD)
-			HUD->SetHealth(Data.NewValue);
+		if (auto HUD = PC->GetHUD())
+		{
+			if (auto PlayerHUD = Cast<APlayerHUD>(HUD))
+				PlayerHUD->OnHealthChanged(Data.NewValue);
+		}
 	}
 }
 
@@ -70,8 +73,11 @@ void ASoldierPlayerState::MaxHealthChanged(const FOnAttributeChangeData& Data)
 {
 	if (ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(GetOwner()); PC)
 	{
-		if (UHUDWidget* HUD = PC->GetHUD(); HUD)
-			HUD->SetMaxHealth(Data.NewValue);
+		if (auto HUD = PC->GetHUD())
+		{
+			if (auto PlayerHUD = Cast<APlayerHUD>(HUD))
+				PlayerHUD->OnMaxHealthChanged(Data.NewValue);
+		}
 	}
 }
 
@@ -79,8 +85,8 @@ void ASoldierPlayerState::ShieldChanged(const FOnAttributeChangeData& Data)
 {
 	if (ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(GetOwner()); PC)
 	{
-		if (UHUDWidget* HUD = PC->GetHUD(); HUD)
-			HUD->SetShield(Data.NewValue);
+		/*if (UHUDWidget* HUD = PC->GetHUD(); HUD)
+			HUD->SetShield(Data.NewValue);*/
 	}
 }
 
@@ -88,7 +94,7 @@ void ASoldierPlayerState::MaxShieldChanged(const FOnAttributeChangeData& Data)
 {
 	if (ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(GetOwner()); PC)
 	{
-		if (UHUDWidget* HUD = PC->GetHUD(); HUD)
-			HUD->SetMaxShield(Data.NewValue);
+		/*if (UHUDWidget* HUD = PC->GetHUD(); HUD)
+			HUD->SetMaxShield(Data.NewValue);*/
 	}
 }
