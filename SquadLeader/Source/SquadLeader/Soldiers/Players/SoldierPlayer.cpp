@@ -6,6 +6,9 @@
 #include "../../AbilitySystem/Soldiers/GameplayAbilitySoldier.h"
 #include "../../Spawn/SoldierSpawn.h"
 
+//TODO: rmove next include -> only use for the team init -> only use on temporary debug
+#include "../../SquadLeaderGameModeBase.h"
+
 ASoldierPlayer::ASoldierPlayer(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer), ASCInputBound{ false }
 {
 }
@@ -18,6 +21,9 @@ ASoldierPlayer::ASoldierPlayer(const FObjectInitializer& _ObjectInitializer) : S
 void ASoldierPlayer::BeginPlay()
 {
 	Super::BeginPlay();
+	//TODO: remove the team init -> only use on temporary debug
+	if (auto gameMode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode()); gameMode)
+		PlayerTeam = gameMode->SoldierTeamCollection[0];
 }
 
 // Server only 
