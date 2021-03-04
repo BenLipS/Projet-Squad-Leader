@@ -382,9 +382,8 @@ FVector ASoldier::lookingAtPosition()
 	FCollisionQueryParams collisionParams;
 	collisionParams.AddIgnoredActor(this);
 
-	if (GetWorld()->LineTraceSingleByChannel(outHit, startLocation, endLocation, ECollisionChannel::ECC_WorldStatic, collisionParams))
-		return outHit.bBlockingHit ? outHit.Location : endLocation;
-	return endLocation;
+	GetWorld()->LineTraceSingleByChannel(outHit, startLocation, endLocation, ECollisionChannel::ECC_WorldStatic, collisionParams);
+	return outHit.bBlockingHit ? outHit.Location : endLocation;
 }
 
 int32 ASoldier::GetCharacterLevel() const
