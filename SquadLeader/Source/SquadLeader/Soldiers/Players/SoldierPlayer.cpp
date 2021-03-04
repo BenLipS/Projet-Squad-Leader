@@ -38,7 +38,7 @@ void ASoldierPlayer::PossessedBy(AController* _newController)
 
 	/*Init Squad Manager for this Player*/
 	SquadManager = NewObject<UAISquadManager>(this, AISquadManagerClass);
-	SquadManager->Init(PlayerTeam,this,GetWorld());
+	SquadManager->Init(GetTeam(),this,GetWorld());
 	Cast<USquadLeaderGameInstance>(GetGameInstance())->GetSquadManagers().Add(SquadManager);
 
 	// TODO: Do we need to have the hud in server ?
@@ -60,6 +60,20 @@ void ASoldierPlayer::OnRep_PlayerState()
 UAISquadManager* ASoldierPlayer::GetSquadManager()
 {
 	return SquadManager;
+}
+
+TSubclassOf<ASoldierTeam> ASoldierPlayer::GetTeam()
+{
+	if (auto SoldierPlayerState = Cast<ASoldierPlayerState>(GetPlayerState()); SoldierPlayerState)
+		return SoldierPlayerState->GetTeam();
+	return nullptr;
+}
+
+bool ASoldierPlayer::SetTeam(TSubclassOf<ASoldierTeam> _Team)
+{
+	if (auto SoldierPlayerState = Cast<ASoldierPlayerState>(GetPlayerState()); SoldierPlayerState)
+		return SoldierPlayerState->SetTeam(_Team);
+	return false;
 }
 
 void ASoldierPlayer::SetAbilitySystemComponent()
@@ -103,8 +117,8 @@ void ASoldierPlayer::BindASCInput()
 
 FVector ASoldierPlayer::GetRespawnPoint()
 {
-	if (PlayerTeam) {
-		auto AvailableSpawnPoints = PlayerTeam.GetDefaultObject()->GetUsableSpawnPoints();
+	if (GetTeam()) {
+		auto AvailableSpawnPoints = GetTeam().GetDefaultObject()->GetUsableSpawnPoints();
 		if (AvailableSpawnPoints.Num() > 0) {
 
 			FVector OptimalPosition = AvailableSpawnPoints[0]->GetActorLocation();

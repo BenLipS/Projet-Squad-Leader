@@ -8,13 +8,16 @@
 #include "../AbilitySystem/Soldiers/AttributeSetSoldier.h"
 #include "../AbilitySystem/Soldiers/AbilitySystemSoldier.h"
 #include "../Weapons/Weapon.h"
+#include "Interface/Teamable.h"
+//
 #include "SoldierTeam.h"
+//
 #include "Net/UnrealNetwork.h"
 #include "Soldier.generated.h"
 
 
 UCLASS()
-class SQUADLEADER_API ASoldier : public ACharacter, public IAbilitySystemInterface
+class SQUADLEADER_API ASoldier : public ACharacter, public IAbilitySystemInterface, public ITeamable
 {
 	GENERATED_BODY()
 
@@ -232,23 +235,20 @@ protected:
 
 public:
 	AWeapon* getCurrentWeapon() const noexcept { return currentWeapon; }
-	////////////////  PlayerTeam
-	// Appel du c�t� serveur pour actualiser l'�tat du rep�re 
-	UFUNCTION(Reliable, Server, WithValidation)
-		void ServerChangeTeam(TSubclassOf<ASoldierTeam> _PlayerTeam);
 
-	UFUNCTION() // Doit toujours �tre UFUNCTION() quand il s'agit d'une fonction �OnRep notify�
-		void OnRep_ChangeTeam();
+	//////////////// Soldier team
+	UPROPERTY(EditAnywhere, Category = "PlayerTeam")
+		TSubclassOf<ASoldierTeam> initialTeam;  // for debug use
 
-	UPROPERTY(EditAnywhere, BluePrintReadWrite, ReplicatedUsing = OnRep_ChangeTeam, Category = "PlayerTeam")
-		TSubclassOf<ASoldierTeam> PlayerTeam;
-	TSubclassOf<ASoldierTeam> OldPlayerTeam;  // Local buffer used for team change
-	
 	UFUNCTION(Reliable, Server, WithValidation)
 		void ServerCycleBetweenTeam();
 
 	// Connected to the "L" key
 	void cycleBetweenTeam();
+	
+	//////////////// Teamable
+	virtual TSubclassOf<ASoldierTeam> GetTeam() override { return nullptr; };  // function overide in SoldierPlayer and Soldier AI
+	virtual bool SetTeam(TSubclassOf<ASoldierTeam> _Team) override { return false; };  // function overide in SoldierPlayer and Soldier AI
 
 
 public:

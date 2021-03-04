@@ -30,6 +30,23 @@ FVector ASoldierAI::lookingAtPosition()
 	return LookingAtPosition;
 }
 
+TSubclassOf<ASoldierTeam> ASoldierAI::GetTeam()
+{
+	if (auto AIController = Cast<AAIGeneralController>(GetController()); AIController) {
+		return AIController->GetTeam();
+	}
+	return nullptr; // else return default
+	return TSubclassOf<ASoldierTeam>();
+}
+
+bool ASoldierAI::SetTeam(TSubclassOf<ASoldierTeam> _Team)
+{
+	if (auto AIController = Cast<AAIGeneralController>(GetController()); AIController) {
+		return AIController->SetTeam(_Team);
+	}
+	return false; // else return default
+}
+
 void ASoldierAI::SetLookingAtPosition(FVector _lookingAtPosition) {
 	LookingAtPosition = _lookingAtPosition;
 };
