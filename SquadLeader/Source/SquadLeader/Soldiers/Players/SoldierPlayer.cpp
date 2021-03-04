@@ -22,8 +22,11 @@ void ASoldierPlayer::BeginPlay()
 {
 	Super::BeginPlay();
 	//TODO: remove the team init -> only use on temporary debug
-	if (auto gameMode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode()); gameMode)
+	if (auto gameMode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode()); gameMode) {
 		PlayerTeam = gameMode->SoldierTeamCollection[0];
+		if (SquadManager)
+			SquadManager->UpdateSquadTeam(PlayerTeam);
+	}
 }
 
 // Server only 

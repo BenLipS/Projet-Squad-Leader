@@ -2,6 +2,8 @@
 
 
 #include "AISquadManager.h"
+// temp include, need to be replace by more robust code
+#include "../Soldiers/Soldier.h"
 
 void UAISquadManager::Init(TSubclassOf<ASoldierTeam> _Team, ASoldierPlayer* _Player, UObject* WorldContextObject)
 {
@@ -51,5 +53,16 @@ void UAISquadManager::UpdateMission(const MissionType _MissionType, const FVecto
 	default:
 		GEngine->AddOnScreenDebugMessage(4563, 4.f, FColor::Red, FString::Printf(TEXT("Order Unknown on (%s,%s,%s) from %s"), *FString::SanitizeFloat(Mission->Location.X), *FString::SanitizeFloat(Mission->Location.Y), *FString::SanitizeFloat(Mission->Location.Z), *Leader->GetName()));
 		break;
+	}
+}
+
+// temp include, need to be replace by more robust code
+void UAISquadManager::UpdateSquadTeam(TSubclassOf<ASoldierTeam> _NewTeam)
+{
+	Team = _NewTeam;
+	for (auto SquadIA : AISquadList) {
+		if (ASoldier* soldier = Cast<ASoldier>(SquadIA->GetPawn()); soldier) {
+			soldier->ServerChangeTeam(_NewTeam);
+		}
 	}
 }
