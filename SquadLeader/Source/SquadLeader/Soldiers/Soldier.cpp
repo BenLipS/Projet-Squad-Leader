@@ -158,7 +158,7 @@ void ASoldier::initWeapons()
 	}
 
 	if (Inventory.Num() > 0)
-		currentWeapon = Inventory[0];
+		CurrentWeapon = Inventory[0];
 
 	bDefaultWeaponsInitialized = true;
 }
@@ -465,7 +465,7 @@ void ASoldier::SetWantsToFire(const bool _want)
 {
 	wantsToFire = _want;
 	if (wantsToFire) {
-		currentWeapon->TryFiring();
+		CurrentWeapon->TryFiring();
 	}
 }
 
@@ -473,14 +473,14 @@ void ASoldier::SetWantsToFire(const bool _want, const FGameplayEffectSpecHandle 
 {
 	wantsToFire = _want;
 	if (wantsToFire) {
-		currentWeapon->TryFiring(_damageEffectSpecHandle);
+		CurrentWeapon->TryFiring(_damageEffectSpecHandle);
 	}
 }
 
 void ASoldier::StartAiming()
 {
-	FirstPersonCameraComponent->SetFieldOfView(currentWeapon->GetFieldOfViewAim());
-	ThirdPersonCameraComponent->SetFieldOfView(currentWeapon->GetFieldOfViewAim());
+	FirstPersonCameraComponent->SetFieldOfView(CurrentWeapon->GetFieldOfViewAim());
+	ThirdPersonCameraComponent->SetFieldOfView(CurrentWeapon->GetFieldOfViewAim());
 }
 
 void ASoldier::StopAiming()
@@ -490,9 +490,14 @@ void ASoldier::StopAiming()
 	ThirdPersonCameraComponent->SetFieldOfView(90.f);
 }
 
+void ASoldier::ReloadWeapon()
+{
+	CurrentWeapon->Reload();
+}
+
 void ASoldier::OnRep_CurrentWeapon(AWeapon* _LastWeapon)
 {
-	SetCurrentWeapon(currentWeapon, _LastWeapon);
+	SetCurrentWeapon(CurrentWeapon, _LastWeapon);
 }
 
 FRotator ASoldier::GetSyncControlRotation() const noexcept
@@ -542,7 +547,7 @@ void ASoldier::AddToInventory(AWeapon* _Weapon)
 void ASoldier::SetCurrentWeapon(AWeapon* _NewWeapon, AWeapon* _PreviousWeapon)
 {
 	if (_PreviousWeapon && _NewWeapon !=_PreviousWeapon)
-		currentWeapon = _NewWeapon;
+		CurrentWeapon = _NewWeapon;
 }
 
 // network for debug team change

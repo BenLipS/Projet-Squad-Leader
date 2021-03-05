@@ -240,6 +240,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	void StopAiming();
 
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	void ReloadWeapon();
+
 protected:
 	bool bDefaultWeaponsInitialized;
 
@@ -252,7 +255,7 @@ protected:
 	TArray<class AWeapon*> Inventory;
 
 	UPROPERTY(Transient, ReplicatedUsing = OnRep_CurrentWeapon)
-	AWeapon* currentWeapon;
+	AWeapon* CurrentWeapon;
 
 	void AddToInventory(AWeapon* _Weapon);
 
@@ -262,7 +265,7 @@ protected:
 	void OnRep_CurrentWeapon(class AWeapon* _LastWeapon);
 
 public:
-	AWeapon* getCurrentWeapon() const noexcept { return currentWeapon; }
+	AWeapon* getCurrentWeapon() const noexcept { return CurrentWeapon; }
 
 ////////////////  PlayerTeam
 public:

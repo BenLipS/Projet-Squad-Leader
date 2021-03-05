@@ -84,6 +84,10 @@ public:
 	virtual void Fire();
 
 	virtual void BeginPlay() override;
+
+	virtual void Reload();
+
+protected:
 	virtual void OnReadyToShoot();
 	virtual void OnReloaded();
 };

@@ -55,10 +55,15 @@ void AWeapon::Fire()
 	IsNextFireReady = false;
 
 	if (CurrentAmmo == 0)
-		GetWorldTimerManager().SetTimer(TimerReloadAmmo, this, &AWeapon::OnReloaded, TimeToReloadAmmo, false);
+		Reload();
 	else
 		GetWorldTimerManager().SetTimer(TimerReloadNextShoot, this, &AWeapon::OnReadyToShoot, TimeToReloadNextShoot, false);
 
+}
+
+void AWeapon::Reload()
+{
+	GetWorldTimerManager().SetTimer(TimerReloadAmmo, this, &AWeapon::OnReloaded, TimeToReloadAmmo, false);
 }
 
 void AWeapon::OnReadyToShoot()
