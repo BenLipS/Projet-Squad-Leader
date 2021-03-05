@@ -168,38 +168,58 @@ void AGrdiSetUp::UpdateGridControlArea() {
 						possessTeam = -(static_cast<float>(controlValue_team) / static_cast<float>(m_controlArea->maxControlValue));
 				}
 			}
-
-			SetValue(_index_tile_origin, possessTeam);
-			SetRadiusValue(_index_tile_origin, possessTeam, 10);
+			if (possessTeam != 0.f) {
+				SetValue(_index_tile_origin, possessTeam);
+				SetRadiusValue(_index_tile_origin, possessTeam, 10);
+			}
+			
 		}
 	}
 }
 
 void AGrdiSetUp::SetValue(int _index, float _value) {
+	//cehck that we are in the grid and not on a invalid block
 	if (_index >= 0 && _index < size_array_X * size_array_Y && m_GridBases[_index] < 100.f) {
-		if (m_GridBases[_index] + _value <= 1.0f)
+		if (m_GridBases[_index] + _value <= 1.0f && m_GridBases[_index] + _value >= -1.0f)
 			m_GridBases[_index] += _value;
-		else if(m_GridBases[_index] + _value <= -1.0f)
-			m_GridBases[_index] += _value;
+		else if (m_GridBases[_index] + _value >= 1.0f)
+			m_GridBases[_index] = 1.f;
+		else
+			m_GridBases[_index] = -1.f;
 	}
 }
 
 void AGrdiSetUp::SetRadiusValue(int _index, float _value, int _radius) {
-	float _value_im_side = _value;
-	int _index_tile_left_up = _index - _radius + (_radius * size_array_Y);
-	int _index_tile_left_down = _index - _radius - (_radius * size_array_Y);
 
-	for (int _index_y = _index_tile_left_up; _index_y != _index_tile_left_down; _index_y -= size_array_Y) {
-		for (int _index_x = _index_y; _index_x != _index_y + ( 2*_radius ); ++_index_x) {
-			if (_value_im_side != 0.f && _value_im_side != 100.f) {
-				if (_value_im_side < 0.f) 
-					_value_im_side = 1.f / FMath::Square(1.f + FMath::Abs(_index - _index_x)) * -1.f;
-				else
-					_value_im_side = 1.f / FMath::Square(1.f + FMath::Abs(_index - _index_x));
-				
-				SetValue(_index_x, _value_im_side);
-			}
-		}
+	/*
+	* i represent the distance between the _index and the other
+	* we stop when the distance is equal to the radius of influence
+	*/
+	for (int i = 0; i != _radius; ++i) {
+		//calculate the value
+		float value_index = _value/ FMath::Square((FMath::Abs(1.f + (i + 1.f)))) *2.f;
+
+		/*
+		* Get the four corner of the influence
+		*/
+		int index_left_up = _index - (i + 1) + ((i + 1) * size_array_Y);
+		int index_left_down = _index - (i + 1) - ((i + 1) * size_array_Y);
+		int index_rigth_up = _index + (i + 1) + ((i + 1) * size_array_Y);
+		int index_rigth_down = _index + (i + 1) - ((i + 1) * size_array_Y);
+
+		/*
+		* for each side we set the value
+		*/
+		for (int x = index_left_up; x != index_rigth_up; ++x)
+			SetValue(x, value_index);
+		for (int x = index_left_down; x != index_rigth_down; ++x)
+			SetValue(x, value_index);
+		//here we go down because we already set the value in index_left_up
+		for (int x = index_left_up - size_array_Y; x != index_left_down; x -= size_array_Y)
+			SetValue(x, value_index);
+		//here we go down because we need to set the index_right_down
+		for (int x = index_rigth_up; x != index_rigth_down - size_array_Y; x -= size_array_Y)
+			SetValue(x, value_index);
 	}
 }
 

@@ -104,7 +104,7 @@ public:
 		uint8 InfluenceRadius = 2;
 
 	UPROPERTY(BluePrintReadWrite, Category = "Attributes")
-		float InfluenceWeight = 0.6f;
+		float InfluenceWeight = 0.5f;
 	
 	// Getters
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
