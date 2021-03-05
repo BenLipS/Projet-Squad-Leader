@@ -29,6 +29,33 @@ void AAIGeneralController::BeginPlay() {
 	blackboard = BrainComponent->GetBlackboardComponent();
 }
 
+void AAIGeneralController::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	// everyone
+	DOREPLIFETIME(AAIGeneralController, Team);
+}
+
+TSubclassOf<ASoldierTeam> AAIGeneralController::GetTeam()
+{
+	return Team;
+}
+
+bool AAIGeneralController::SetTeam(TSubclassOf<ASoldierTeam> _Team)
+{
+	if (GetLocalRole() == ROLE_Authority) {  // only server can change team
+		if (Team)
+			Team.GetDefaultObject()->RemoveSoldierList(Cast<ASoldier>(GetPawn()));
+		if (_Team)
+			_Team.GetDefaultObject()->AddSoldierList(Cast<ASoldier>(GetPawn()));
+
+		Team = _Team;
+		return true;
+	}
+	return false;
+}
+
 void AAIGeneralController::ontargetperception_update_sight(AActor* actor, FAIStimulus stimulus) {
 	//if (GEngine)GEngine->AddOnScreenDebugMessage(5961, 1.f, FColor::Blue, TEXT("ontargetperception_update_sight"));
 };
@@ -182,7 +209,7 @@ void AAIGeneralController::FocusEnemy() {
 		bool enemyDetected = false;
 		int i = 0;
 		while (!enemyDetected && i < SeenSoldier.Num()) {
-			if (Cast<ASoldier>(SeenSoldier[i])->PlayerTeam != Cast<ASoldier>(GetPawn())->PlayerTeam) {
+			if (Cast<ASoldier>(SeenSoldier[i])->GetTeam() != Cast<ASoldier>(GetPawn())->GetTeam()) {
 				this->SetFocus(SeenSoldier[i]);
 				blackboard->SetValueAsObject("FocusActor", SeenSoldier[i]);
 				enemyDetected = true;

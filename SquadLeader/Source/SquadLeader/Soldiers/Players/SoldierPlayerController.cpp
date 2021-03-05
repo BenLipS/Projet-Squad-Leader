@@ -74,6 +74,22 @@ void ASoldierPlayerController::SetupInputComponent()
 	InputComponent->BindAction("ChangeTeam", IE_Released, this, &ASoldierPlayerController::onChangeTeam);
 }
 
+TSubclassOf<ASoldierTeam> ASoldierPlayerController::GetTeam()
+{
+	if (auto SoldierState = Cast<ASoldierPlayerState>(PlayerState); SoldierState) {
+		return SoldierState->GetTeam();
+	}
+	return nullptr;
+}
+
+bool ASoldierPlayerController::SetTeam(TSubclassOf<ASoldierTeam> _Team)
+{
+	if (auto SoldierState = Cast<ASoldierPlayerState>(PlayerState); SoldierState) {
+		return SoldierState->SetTeam(_Team);
+	}
+	return false;
+}
+
 void ASoldierPlayerController::onSwitchCamera()
 {
 	if (ASoldier* soldier = Cast<ASoldier>(K2_GetPawn()); soldier)
