@@ -111,7 +111,12 @@ public:
 public:
 	virtual FVector GetRespawnPoint() override;
 
+	void SetObjectifLocation(FVector _objLocation) noexcept;
+
 public://Mission
 	UFUNCTION()
 	void UpdateMission();
+
+	virtual void Die() const override;
+
 };

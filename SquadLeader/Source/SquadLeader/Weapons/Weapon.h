@@ -26,10 +26,20 @@ public:
 
 //////////////// Fire
 protected:
+	// TODO: Use cooldown from ability system ?
+	FTimerHandle TimerReloadNextShoot;
+	FTimerHandle TimerReloadAmmo;
+
+	UPROPERTY(EditDefaultsOnly, BluePrintReadWrite, Category = "Stats")
+	uint8 MaxAmmo;
+
+	UPROPERTY(BluePrintReadOnly, Category = "Stats")
+	uint8 CurrentAmmo;
+
 	bool IsNextFireReady;
 
-	// TODO: Use cooldown from ability system
-	FTimerHandle TimerReloadNextShoot;
+	UPROPERTY(EditDefaultsOnly, BluePrintReadWrite, Category = "Stats")
+	float TimeToReloadAmmo;
 
 	UPROPERTY(EditDefaultsOnly, BluePrintReadWrite, Category = "Stats")
 	float TimeToReloadNextShoot;
@@ -75,4 +85,5 @@ public:
 
 	virtual void BeginPlay() override;
 	virtual void OnReadyToShoot();
+	virtual void OnReloaded();
 };

@@ -5,6 +5,7 @@
 #include "AI/AIBasicManager.h"
 #include "AI/AISquadManager.h"
 #include "AI/AIBasicController.h"
+#include "AI/InfluenceMap/GrdiSetUp.h"
 #include "SquadLeaderGameInstance.generated.h"
 
 /**
@@ -15,25 +16,41 @@ class SQUADLEADER_API USquadLeaderGameInstance : public UGameInstance
 {
 	GENERATED_BODY()
 
-	UPROPERTY()
-	class UAIBasicManager* AIBasicManagerTeam1;
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<AAIBasicManager> AIBasicManagerClass;
 
-	UPROPERTY()
-	class UAIBasicManager* AIBasicManagerTeam2;
-
-	UPROPERTY()
-	TArray<UAISquadManager*> ListAISquadManagers;
-
+	UPROPERTY(EditDefaultsOnly)
+		TSubclassOf<AGrdiSetUp> InfluenceMapClass;
 
 public:
+
+	UPROPERTY()
+	AAIBasicManager* AIBasicManagerTeam1;
+
+	UPROPERTY()
+	AAIBasicManager* AIBasicManagerTeam2;
+
+	UPROPERTY()
+	AGrdiSetUp* InfluenceMap;
+
+	UPROPERTY()
+	TArray<AAISquadManager*> ListAISquadManagers;
+
 	USquadLeaderGameInstance();
 
 	UFUNCTION()
 	void InitAIManagers();
 
 	UFUNCTION()
+	void InitInfluenceMap();
+	
+	/*
+	* For AI placed via drag and drop
+	*/
+	UFUNCTION()
 	void AddAIBasicToManager(AAIBasicController* AIBasic);
 
 	UFUNCTION()
-	TArray<UAISquadManager*> GetSquadManagers() { return ListAISquadManagers; }
+	TArray<AAISquadManager*> GetSquadManagers() { return ListAISquadManagers; }
+
 };

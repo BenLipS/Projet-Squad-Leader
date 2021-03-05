@@ -36,7 +36,6 @@ TSubclassOf<ASoldierTeam> ASoldierAI::GetTeam()
 		return AIController->GetTeam();
 	}
 	return nullptr; // else return default
-	return TSubclassOf<ASoldierTeam>();
 }
 
 bool ASoldierAI::SetTeam(TSubclassOf<ASoldierTeam> _Team)
@@ -101,4 +100,11 @@ FVector ASoldierAI::GetRespawnPoint()
 		return AIController->GetRespawnPoint();
 	}
 	return FVector(0.f, 0.f, 1500.f); // else return default
+}
+
+void ASoldierAI::Die() {
+	Super::Die();
+	auto AIController = Cast<AAIGeneralController>(GetController());
+	if(AIController)
+		AIController->Die();
 }

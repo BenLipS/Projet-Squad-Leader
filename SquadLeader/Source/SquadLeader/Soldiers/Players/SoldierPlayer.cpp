@@ -3,11 +3,10 @@
 #include "SoldierPlayerController.h"
 #include "../../SquadLeaderGameInstance.h"
 #include "../../AI/AISquadController.h"
+#include "../../AI/AISquadManager.h"
 #include "../../AbilitySystem/Soldiers/GameplayAbilitySoldier.h"
 #include "../../Spawn/SoldierSpawn.h"
 
-//TODO: rmove next include -> only use for the team init -> only use on temporary debug
-#include "../../SquadLeaderGameModeBase.h"
 
 ASoldierPlayer::ASoldierPlayer(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer), ASCInputBound{ false }
 {
@@ -21,12 +20,6 @@ ASoldierPlayer::ASoldierPlayer(const FObjectInitializer& _ObjectInitializer) : S
 void ASoldierPlayer::BeginPlay()
 {
 	Super::BeginPlay();
-	//TODO: remove the team init -> only use on temporary debug
-	if (auto gameMode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode()); gameMode) {
-		PlayerTeam = gameMode->SoldierTeamCollection[0];
-		if (SquadManager)
-			SquadManager->UpdateSquadTeam(PlayerTeam);
-	}
 }
 
 // Server only 
@@ -37,9 +30,17 @@ void ASoldierPlayer::PossessedBy(AController* _newController)
 	initWeapons();
 
 	/*Init Squad Manager for this Player*/
-	SquadManager = NewObject<UAISquadManager>(this, AISquadManagerClass);
-	SquadManager->Init(GetTeam(),this,GetWorld());
-	Cast<USquadLeaderGameInstance>(GetGameInstance())->GetSquadManagers().Add(SquadManager);
+
+	FActorSpawnParameters SpawnInfo;
+	SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn; // La maniere de faire le respawn
+	FTransform LocationTemp{ {0.f, -1000.f, 0.f}, {0.f,0.f,0.f} };
+	AAISquadManager* PlayerSquadManager = GetWorld()->SpawnActorDeferred<AAISquadManager>(AISquadManagerClass, LocationTemp, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+	if (PlayerSquadManager) {
+		PlayerSquadManager->FinishSpawning(LocationTemp);
+		PlayerSquadManager->Init(GetTeam(), this);
+		SquadManager = PlayerSquadManager;
+		Cast<USquadLeaderGameInstance>(GetGameInstance())->ListAISquadManagers.Add(PlayerSquadManager);
+	}
 
 	// TODO: Do we need to have the hud in server ?
 	if (ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(GetController()); PC)
@@ -57,9 +58,35 @@ void ASoldierPlayer::OnRep_PlayerState()
 		PC->createHUD();
 }
 
-UAISquadManager* ASoldierPlayer::GetSquadManager()
+AAISquadManager* ASoldierPlayer::GetSquadManager()
 {
 	return SquadManager;
+}
+
+void ASoldierPlayer::LookUp(const float _Val)
+{
+	Super::LookUp(_Val);
+
+	if (IsLocallyControlled())
+	{
+		if (HasAuthority())
+			MulticastSyncControlRotation(SyncControlRotation);
+		else
+			ServerSyncControlRotation(SyncControlRotation);
+	}
+}
+
+void ASoldierPlayer::Turn(const float _Val)
+{
+	Super::Turn(_Val);
+
+	if (IsLocallyControlled())
+	{
+		if (HasAuthority())
+			MulticastSyncControlRotation(SyncControlRotation);
+		else
+			ServerSyncControlRotation(SyncControlRotation);
+	}
 }
 
 TSubclassOf<ASoldierTeam> ASoldierPlayer::GetTeam()
