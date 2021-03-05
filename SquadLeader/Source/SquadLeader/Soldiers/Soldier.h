@@ -161,6 +161,25 @@ public:
 	USpringArmComponent* SpringArmComponent;
 
 protected:
+	UPROPERTY(VisibleAnywhere)
+	FRotator SyncControlRotation;
+
+public:
+	UFUNCTION(BlueprintCallable, Category = "Camera")
+	FRotator GetSyncControlRotation() const noexcept;
+
+protected:
+	UFUNCTION(Reliable, Server, WithValidation)
+	void ServerSyncControlRotation(const FRotator& _Rotation);
+	void ServerSyncControlRotation_Implementation(const FRotator& _Rotation);
+	bool ServerSyncControlRotation_Validate(const FRotator& _Rotation);
+
+	UFUNCTION(Reliable, NetMulticast, WithValidation)
+	void MulticastSyncControlRotation(const FRotator& _Rotation);
+	void MulticastSyncControlRotation_Implementation(const FRotator& _Rotation);
+	bool MulticastSyncControlRotation_Validate(const FRotator& _Rotation);
+
+protected:
 	UPROPERTY(VisibleAnywhere, BluePrintReadWrite, Category = "Camera")
 	bool bIsFirstPerson;
 
@@ -183,10 +202,10 @@ public:
 
 	// Looking direction
 	UFUNCTION()
-	void LookUp(const float _Val);
+	virtual void LookUp(const float _Val);
 
 	UFUNCTION()
-	void Turn(const float _Val);
+	virtual void Turn(const float _Val);
 
 	UFUNCTION(BlueprintCallable, Category = "Movement")
 	virtual FVector lookingAtPosition();
@@ -235,17 +254,19 @@ protected:
 	UPROPERTY(Transient, ReplicatedUsing = OnRep_CurrentWeapon)
 	AWeapon* currentWeapon;
 
-	void addToInventory(AWeapon* _weapon);
+	void AddToInventory(AWeapon* _Weapon);
 
-	void SetCurrentWeapon(class AWeapon* _newWeapon, class AWeapon* _previousWeapon = nullptr);
+	void SetCurrentWeapon(class AWeapon* _NewWeapon, class AWeapon* _PreviousWeapon = nullptr);
 
 	UFUNCTION()
-	void OnRep_CurrentWeapon(class AWeapon* _lastWeapon);
+	void OnRep_CurrentWeapon(class AWeapon* _LastWeapon);
 
 public:
 	AWeapon* getCurrentWeapon() const noexcept { return currentWeapon; }
-	////////////////  PlayerTeam
-	// Appel du c�t� serveur pour actualiser l'�tat du rep�re 
+
+////////////////  PlayerTeam
+public:
+	// Appel du cote serveur pour actualiser l'etat du repere 
 	UFUNCTION(Reliable, Server, WithValidation)
 		void ServerChangeTeam(TSubclassOf<ASoldierTeam> _PlayerTeam);
 

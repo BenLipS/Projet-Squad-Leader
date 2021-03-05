@@ -60,6 +60,32 @@ AAISquadManager* ASoldierPlayer::GetSquadManager()
 	return SquadManager;
 }
 
+void ASoldierPlayer::LookUp(const float _Val)
+{
+	Super::LookUp(_Val);
+
+	if (IsLocallyControlled())
+	{
+		if (HasAuthority())
+			MulticastSyncControlRotation(SyncControlRotation);
+		else
+			ServerSyncControlRotation(SyncControlRotation);
+	}
+}
+
+void ASoldierPlayer::Turn(const float _Val)
+{
+	Super::Turn(_Val);
+
+	if (IsLocallyControlled())
+	{
+		if (HasAuthority())
+			MulticastSyncControlRotation(SyncControlRotation);
+		else
+			ServerSyncControlRotation(SyncControlRotation);
+	}
+}
+
 void ASoldierPlayer::SetAbilitySystemComponent()
 {
 	check(IsValid(GetPlayerState()))
