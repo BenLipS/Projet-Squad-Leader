@@ -2,8 +2,9 @@
 #include "DrawDebugHelpers.h"
 #include "Kismet/GamePlayStatics.h"
 #include "../Soldiers/Soldier.h"
+#include "SquadLeader/SquadLeader.h"
 
-AWeaponLaser::AWeaponLaser() : AWeapon()
+AWeaponLaser::AWeaponLaser() : CollisionChannelImpact{ ECC_Player },  AWeapon()
 {
 }
 
