@@ -63,7 +63,7 @@ void AAIGeneralController::ontargetperception_update_sight(AActor* actor, FAISti
 void AAIGeneralController::ActorsPerceptionUpdated(const TArray < AActor* >& UpdatedActors) {
 
 	for (auto& Elem : UpdatedActors) {
-		if(ASoldier* soldier = Cast<ASoldier>(Elem); soldier){
+		if(ASoldier* soldier = Cast<ASoldier>(Elem); soldier && soldier->IsAlive()){
 			if (SeenSoldier.Contains(soldier));
 			else SeenSoldier.Add(soldier);
 		}
