@@ -5,10 +5,11 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "camera/cameracomponent.h"
 #include "../../UI/HUDWidget.h"
+#include "../Interface/Teamable.h"
 #include "SoldierPlayerController.generated.h"
 
 UCLASS()
-class SQUADLEADER_API ASoldierPlayerController : public APlayerController
+class SQUADLEADER_API ASoldierPlayerController : public APlayerController, public ITeamable
 {
 	GENERATED_BODY()
 
@@ -23,6 +24,11 @@ protected:
 public:
 	virtual void Tick(float _deltaTime) override;
 	virtual void SetupInputComponent() override;
+
+//////////////// Teamable
+public:
+	virtual TSubclassOf<ASoldierTeam> GetTeam() override;
+	virtual bool SetTeam(TSubclassOf<ASoldierTeam> _Team) override;
 
 // TODO: are the cameras necessary in controllers ?
 //////////////// Cameras

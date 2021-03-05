@@ -130,7 +130,7 @@ void ASL_Projectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor*
 		{
 			if (soldierOwner)
 			{
-				if (soldierOwner->PlayerTeam != soldier->PlayerTeam)
+				if (soldierOwner->GetTeam() != soldier->GetTeam())
 				{
 					OnExplode();
 				}

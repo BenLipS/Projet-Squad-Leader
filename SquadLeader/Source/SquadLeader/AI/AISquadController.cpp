@@ -19,8 +19,8 @@ void AAISquadController::setup_BehaviorTree() {
 FVector AAISquadController::GetRespawnPoint()  // TODO : Change this function to adapt the squad AI respawn
 {
 	if (ASoldier* soldier = Cast<ASoldier>(GetPawn()); soldier) {
-		if (soldier->PlayerTeam) {
-			auto AvailableSpawnPoints = soldier->PlayerTeam.GetDefaultObject()->GetUsableSpawnPoints();
+		if (soldier->GetTeam()) {
+			auto AvailableSpawnPoints = soldier->GetTeam().GetDefaultObject()->GetUsableSpawnPoints();
 			if (AvailableSpawnPoints.Num() > 0) {
 
 				FVector OptimalPosition = AvailableSpawnPoints[0]->GetActorLocation();

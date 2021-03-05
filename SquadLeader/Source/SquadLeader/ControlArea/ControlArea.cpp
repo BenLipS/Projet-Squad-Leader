@@ -58,8 +58,8 @@ void AControlArea::NotifyActorBeginOverlap(AActor* OtherActor)
 	if (GetLocalRole() == ROLE_Authority) 
 	{  // server only
 		if (ASoldier* soldier = Cast<ASoldier>(OtherActor); soldier) {
-			if (TeamData.Contains(soldier->PlayerTeam)) {
-				TeamData[soldier->PlayerTeam]->presenceTeam++;
+			if (TeamData.Contains(soldier->GetTeam())) {
+				TeamData[soldier->GetTeam()]->presenceTeam++;
 
 				// initiate the calculation of the control zone value if needed
 				if (!timerCalculationControlValue.IsValid())
@@ -76,13 +76,13 @@ void AControlArea::NotifyActorEndOverlap(AActor* OtherActor)
 	Super::NotifyActorEndOverlap(OtherActor);
 	if (GetLocalRole() == ROLE_Authority) {  // server only
 		if (ASoldier* soldier = Cast<ASoldier>(OtherActor); soldier) {
-			if (TeamData.Contains(soldier->PlayerTeam)) {
-				if (TeamData[soldier->PlayerTeam]->presenceTeam > 0) {
-					TeamData[soldier->PlayerTeam]->presenceTeam--;
+			if (TeamData.Contains(soldier->GetTeam())) {
+				if (TeamData[soldier->GetTeam()]->presenceTeam > 0) {
+					TeamData[soldier->GetTeam()]->presenceTeam--;
 				}
 
 				// begin the calculation if everybody of this team left and the calculation is not already working
-				if (TeamData[soldier->PlayerTeam]->presenceTeam == 0) {
+				if (TeamData[soldier->GetTeam()]->presenceTeam == 0) {
 					if (!timerCalculationControlValue.IsValid())
 						GetWorldTimerManager().SetTimer(timerCalculationControlValue, this,
 							&AControlArea::calculateControlValue, timeBetweenCalcuation, true, timeBetweenCalcuation);

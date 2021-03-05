@@ -19,6 +19,11 @@ protected:
 
 	FVector LookingAtPosition;
 
+//////////////// Teamable
+public:
+	virtual TSubclassOf<ASoldierTeam> GetTeam() override;
+	virtual bool SetTeam(TSubclassOf<ASoldierTeam> _Team) override;
+
 //////////////// Abilities
 public:
 	// Generic
