@@ -13,6 +13,7 @@ AAIBasicManager::AAIBasicManager() {
 }
 
 void AAIBasicManager::BeginPlay() {
+	Super::BeginPlay();
 	InitValue();
 	if(nbr_controlArea > 0)
 		ChooseCOntrolArea();
