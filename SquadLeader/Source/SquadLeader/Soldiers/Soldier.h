@@ -107,7 +107,7 @@ public:
 		uint8 InfluenceRadius = 2;
 
 	UPROPERTY(BluePrintReadWrite, Category = "Attributes")
-		float InfluenceWeight = 0.6f;
+		float InfluenceWeight = 0.5f;
 	
 	// Getters
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
@@ -275,7 +275,7 @@ public:
 		void ServerCycleBetweenTeam();
 
 	// Connected to the "L" key
-	void cycleBetweenTeam();
+	virtual void cycleBetweenTeam();
 	
 	//////////////// Teamable
 	virtual TSubclassOf<ASoldierTeam> GetTeam() override { return nullptr; };  // function overide in SoldierPlayer and Soldier AI

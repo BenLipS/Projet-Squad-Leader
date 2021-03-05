@@ -3,6 +3,11 @@
 #include "../Soldier.h"
 #include "AbilitySystemComponent.h"
 
+//TODO: rmove next include -> only use for the team init -> only use on temporary debug
+#include "../../SquadLeaderGameModeBase.h"
+#include "../Players/SoldierPlayer.h"
+#include "../../AI/AISquadManager.h"
+
 ASoldierPlayerController::ASoldierPlayerController()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -41,6 +46,14 @@ void ASoldierPlayerController::OnPossess(APawn* InPawn)
 
 	if (ASoldierPlayerState* PS = GetPlayerState<ASoldierPlayerState>(); PS)
 		PS->GetAbilitySystemComponent()->InitAbilityActorInfo(PS, InPawn);
+
+	//TODO: remove the team init -> only use on temporary debug
+	if (auto gameMode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode()); gameMode) {
+		SetTeam(gameMode->SoldierTeamCollection[0]);
+		if (auto soldier = Cast<ASoldierPlayer>(InPawn); soldier->GetSquadManager()) {
+			soldier->GetSquadManager()->UpdateSquadTeam(GetTeam());
+		}
+	}
 }
 
 void ASoldierPlayerController::OnRep_PlayerState()

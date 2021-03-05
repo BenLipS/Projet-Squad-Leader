@@ -3,8 +3,10 @@
 #include "SoldierPlayerController.h"
 #include "../../SquadLeaderGameInstance.h"
 #include "../../AI/AISquadController.h"
+#include "../../AI/AISquadManager.h"
 #include "../../AbilitySystem/Soldiers/GameplayAbilitySoldier.h"
 #include "../../Spawn/SoldierSpawn.h"
+
 
 ASoldierPlayer::ASoldierPlayer(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer), ASCInputBound{ false }
 {
@@ -32,11 +34,11 @@ void ASoldierPlayer::PossessedBy(AController* _newController)
 	FActorSpawnParameters SpawnInfo;
 	SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn; // La maniere de faire le respawn
 	FTransform LocationTemp{ {0.f, -1000.f, 0.f}, {0.f,0.f,0.f} };
-	AAISquadManager* PlayerSquadManager = GetWorld()->SpawnActorDeferred<AAISquadManager>(AISquadManagerClass, LocationTemp, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
-	if (PlayerSquadManager) {
-		PlayerSquadManager->FinishSpawning(LocationTemp);
-		PlayerSquadManager->Init(GetTeam(), this);
-		Cast<USquadLeaderGameInstance>(GetGameInstance())->ListAISquadManagers.Add(PlayerSquadManager);
+	SquadManager = GetWorld()->SpawnActorDeferred<AAISquadManager>(AISquadManagerClass, LocationTemp, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+	if (SquadManager) {
+		SquadManager->FinishSpawning(LocationTemp);
+		SquadManager->Init(GetTeam(), this);
+		Cast<USquadLeaderGameInstance>(GetGameInstance())->ListAISquadManagers.Add(SquadManager);
 	}
 
 	// TODO: Do we need to have the hud in server ?
@@ -137,6 +139,16 @@ void ASoldierPlayer::BindASCInput()
 
 		ASCInputBound = true;
 	}
+}
+
+
+void ASoldierPlayer::cycleBetweenTeam()
+{
+	if (GetLocalRole() == ROLE_Authority) {
+		Super::cycleBetweenTeam();
+		SquadManager->UpdateSquadTeam(GetTeam());
+	}
+	else ServerCycleBetweenTeam();
 }
 
 FVector ASoldierPlayer::GetRespawnPoint()

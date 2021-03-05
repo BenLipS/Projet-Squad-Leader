@@ -27,6 +27,7 @@ void AAIGeneralController::BeginPlay() {
 	Super::BeginPlay();
 	RunBehaviorTree(m_behaviorTree);
 	blackboard = BrainComponent->GetBlackboardComponent();
+	blackboard->SetValueAsBool("IsHit", false);
 }
 
 void AAIGeneralController::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
@@ -63,7 +64,7 @@ void AAIGeneralController::ontargetperception_update_sight(AActor* actor, FAISti
 void AAIGeneralController::ActorsPerceptionUpdated(const TArray < AActor* >& UpdatedActors) {
 
 	for (auto& Elem : UpdatedActors) {
-		if(ASoldier* soldier = Cast<ASoldier>(Elem); soldier){
+		if(ASoldier* soldier = Cast<ASoldier>(Elem); soldier && soldier->IsAlive()){
 			if (SeenSoldier.Contains(soldier));
 			else SeenSoldier.Add(soldier);
 		}
@@ -123,6 +124,13 @@ EPathFollowingRequestResult::Type AAIGeneralController::MoveToVectorLocation() {
 		blackboard->ClearValue("need_GoBackward");
 	}
 	
+	return _movetoResult;
+}
+
+EPathFollowingRequestResult::Type AAIGeneralController::RunToVectorLocation(FVector Goal, float AcceptanceRadius) {
+
+	EPathFollowingRequestResult::Type _movetoResult = MoveToLocation(Goal, AcceptanceRadius);
+
 	return _movetoResult;
 }
 
@@ -311,6 +319,15 @@ void AAIGeneralController::DefenseBehavior() {
 void AAIGeneralController::SetMission(UMission* _Mission)
 {
 	Mission = _Mission;
+	if (blackboard) {
+		blackboard->SetValueAsVector("MissionLocation", Mission->Location);
+	}
+}
+	
+
+UMission* AAIGeneralController::GetMission()
+{
+	return Mission;
 }
 
 void AAIGeneralController::Die() const {
