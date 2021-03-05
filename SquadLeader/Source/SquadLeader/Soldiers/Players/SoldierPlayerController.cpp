@@ -34,8 +34,8 @@ void ASoldierPlayerController::CreateHUD()
 	// Player stats
 	PlayerHUD->OnMaxHealthChanged(PS->GetMaxHealth());
 	PlayerHUD->OnHealthChanged(PS->GetHealth());
-	/*PlayerHUD->SetMaxShield(PS->GetMaxShield());
-	PlayerHUD->SetShield(PS->GetShield());*/
+	PlayerHUD->OnMaxShieldChanged(PS->GetMaxShield());
+	PlayerHUD->OnShieldChanged(PS->GetShield());
 }
 
 /*UHUDWidget* ASoldierPlayerController::GetHUD() const

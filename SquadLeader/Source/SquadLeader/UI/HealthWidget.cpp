@@ -13,6 +13,7 @@ void UHealthWidget::OnHealthChanged(float newValue)
 		newValue = MaxHealth;
 	Health = newValue;
 	ProgressBarHP->SetPercent(Health / MaxHealth);
+	TextHP->SetText(FText::FromString(FString::SanitizeFloat(Health,0) + "/" + FString::SanitizeFloat(MaxHealth,0) + "HP"));
 }
 
 void UHealthWidget::OnMaxHealthChanged(float newValue)
@@ -21,4 +22,5 @@ void UHealthWidget::OnMaxHealthChanged(float newValue)
 		Health = newValue;
 	MaxHealth = newValue;
 	ProgressBarHP->SetPercent(Health / MaxHealth);
+	TextHP->SetText(FText::FromString(FString::SanitizeFloat(Health, 0) + "/" + FString::SanitizeFloat(MaxHealth, 0) + "HP"));
 }

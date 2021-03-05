@@ -23,7 +23,7 @@ void ASoldierPlayerState::InitializeAttributeChangeCallbacks()
 		HealthChangedDelegateHandle = AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetHealthAttribute()).AddUObject(this, &ASoldierPlayerState::HealthChanged);
 		MaxHealthChangedDelegateHandle = AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetMaxHealthAttribute()).AddUObject(this, &ASoldierPlayerState::MaxHealthChanged);
 		ShieldChangedDelegateHandle = AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetShieldAttribute()).AddUObject(this, &ASoldierPlayerState::ShieldChanged);
-		MaxShieldChangedDelegateHandle = AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetShieldAttribute()).AddUObject(this, &ASoldierPlayerState::MaxShieldChanged);
+		MaxShieldChangedDelegateHandle = AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetMaxShieldAttribute()).AddUObject(this, &ASoldierPlayerState::MaxShieldChanged);
 	}
 }
 
@@ -85,8 +85,11 @@ void ASoldierPlayerState::ShieldChanged(const FOnAttributeChangeData& Data)
 {
 	if (ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(GetOwner()); PC)
 	{
-		/*if (UHUDWidget* HUD = PC->GetHUD(); HUD)
-			HUD->SetShield(Data.NewValue);*/
+		if (auto HUD = PC->GetHUD())
+		{
+			if (auto PlayerHUD = Cast<APlayerHUD>(HUD))
+				PlayerHUD->OnShieldChanged(Data.NewValue);
+		}
 	}
 }
 
@@ -94,7 +97,10 @@ void ASoldierPlayerState::MaxShieldChanged(const FOnAttributeChangeData& Data)
 {
 	if (ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(GetOwner()); PC)
 	{
-		/*if (UHUDWidget* HUD = PC->GetHUD(); HUD)
-			HUD->SetMaxShield(Data.NewValue);*/
+		if (auto HUD = PC->GetHUD())
+		{
+			if (auto PlayerHUD = Cast<APlayerHUD>(HUD))
+				PlayerHUD->OnMaxShieldChanged(Data.NewValue);
+		}
 	}
 }

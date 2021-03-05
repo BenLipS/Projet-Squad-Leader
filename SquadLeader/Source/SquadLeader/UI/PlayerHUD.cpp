@@ -4,6 +4,7 @@
 #include "PlayerHUD.h"
 #include "SL_UserWidget.h"
 #include "HealthWidget.h"
+#include "ShieldWidget.h"
 #include "Blueprint/UserWidget.h"
 
 APlayerHUD::APlayerHUD()
@@ -22,27 +23,53 @@ void APlayerHUD::BeginPlay()
 	Super::BeginPlay();
 
 	//Creating widget
-	if (WidgetHealthClass != nullptr)
+
+	//-----Health-----
+	if (HealthWidgetClass != nullptr)
 	{
-		WidgetHealth = CreateWidget<UHealthWidget>(GetWorld(), WidgetHealthClass);
-		if (WidgetHealth) {
-			WidgetHealth->AddToViewport();
+		HealthWidget = CreateWidget<UHealthWidget>(GetWorld(), HealthWidgetClass);
+		if (HealthWidget) {
+			HealthWidget->AddToViewport();
+		}
+	}
+	//-----Shield-----
+	if (ShieldWidgetClass != nullptr)
+	{
+		ShieldWidget = CreateWidget<UShieldWidget>(GetWorld(), ShieldWidgetClass);
+		if (ShieldWidget) {
+			ShieldWidget->AddToViewport();
 		}
 	}
 }
 
 void APlayerHUD::OnHealthChanged(float newValue)
 {
-	if (WidgetHealth)
+	if (HealthWidget)
 	{
-		WidgetHealth->OnHealthChanged(newValue);
+		HealthWidget->OnHealthChanged(newValue);
 	}
 }
 
 void APlayerHUD::OnMaxHealthChanged(float newValue)
 {
-	if (WidgetHealth)
+	if (HealthWidget)
 	{
-		WidgetHealth->OnMaxHealthChanged(newValue);
+		HealthWidget->OnMaxHealthChanged(newValue);
+	}
+}
+
+void APlayerHUD::OnShieldChanged(float newValue)
+{
+	if (ShieldWidget)
+	{
+		ShieldWidget->OnShieldChanged(newValue);
+	}
+}
+
+void APlayerHUD::OnMaxShieldChanged(float newValue)
+{
+	if (ShieldWidget)
+	{
+		ShieldWidget->OnMaxShieldChanged(newValue);
 	}
 }
