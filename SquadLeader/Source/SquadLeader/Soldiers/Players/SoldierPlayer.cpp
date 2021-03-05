@@ -28,9 +28,6 @@ void ASoldierPlayer::PossessedBy(AController* _newController)
 	initWeapons();
 
 	/*Init Squad Manager for this Player*/
-	SquadManager = NewObject<UAISquadManager>(this, AISquadManagerClass);
-	SquadManager->Init(GetTeam(),this,GetWorld());
-	Cast<USquadLeaderGameInstance>(GetGameInstance())->GetSquadManagers().Add(SquadManager);
 
 	FActorSpawnParameters SpawnInfo;
 	SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn; // La maniere de faire le respawn
@@ -38,7 +35,7 @@ void ASoldierPlayer::PossessedBy(AController* _newController)
 	AAISquadManager* PlayerSquadManager = GetWorld()->SpawnActorDeferred<AAISquadManager>(AISquadManagerClass, LocationTemp, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 	if (PlayerSquadManager) {
 		PlayerSquadManager->FinishSpawning(LocationTemp);
-		PlayerSquadManager->Init(PlayerTeam, this);
+		PlayerSquadManager->Init(GetTeam(), this);
 		Cast<USquadLeaderGameInstance>(GetGameInstance())->ListAISquadManagers.Add(PlayerSquadManager);
 	}
 

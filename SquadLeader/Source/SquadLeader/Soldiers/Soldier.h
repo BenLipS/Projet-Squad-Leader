@@ -266,10 +266,6 @@ protected:
 
 public:
 	AWeapon* getCurrentWeapon() const noexcept { return currentWeapon; }
-	////////////////  PlayerTeam
-	// Appel du c�t� serveur pour actualiser l'�tat du rep�re 
-	UFUNCTION(Reliable, Server, WithValidation)
-		void ServerChangeTeam(TSubclassOf<ASoldierTeam> _PlayerTeam);
 
 	//////////////// Soldier team
 	UPROPERTY(EditAnywhere, Category = "PlayerTeam")
