@@ -27,6 +27,7 @@ void AAIGeneralController::BeginPlay() {
 	Super::BeginPlay();
 	RunBehaviorTree(m_behaviorTree);
 	blackboard = BrainComponent->GetBlackboardComponent();
+	blackboard->SetValueAsBool("IsHit", false);
 }
 
 void AAIGeneralController::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
@@ -123,6 +124,13 @@ EPathFollowingRequestResult::Type AAIGeneralController::MoveToVectorLocation() {
 		blackboard->ClearValue("need_GoBackward");
 	}
 	
+	return _movetoResult;
+}
+
+EPathFollowingRequestResult::Type AAIGeneralController::RunToVectorLocation(FVector Goal, float AcceptanceRadius) {
+
+	EPathFollowingRequestResult::Type _movetoResult = MoveToLocation(Goal, AcceptanceRadius);
+
 	return _movetoResult;
 }
 

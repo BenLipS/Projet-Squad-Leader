@@ -116,7 +116,8 @@ void AAISquadManager::UpdateMission(const MissionType _MissionType, const FVecto
 		if(Mission->Type == MissionType::Formation){
 			AISquad->get_blackboard()->SetValueAsBool("IsInFormation", true);
 			AISquad->get_blackboard()->SetValueAsBool("HasOrder", false);
-		}else {
+		}
+		else if (Mission->Type != MissionType::None) {
 			AISquad->get_blackboard()->SetValueAsBool("IsInFormation", false);
 			AISquad->get_blackboard()->SetValueAsBool("HasOrder", true);
 		}
