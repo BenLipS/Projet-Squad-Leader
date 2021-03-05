@@ -3,8 +3,10 @@
 #include "SoldierPlayerController.h"
 #include "../../SquadLeaderGameInstance.h"
 #include "../../AI/AISquadController.h"
+#include "../../AI/AISquadManager.h"
 #include "../../AbilitySystem/Soldiers/GameplayAbilitySoldier.h"
 #include "../../Spawn/SoldierSpawn.h"
+
 
 ASoldierPlayer::ASoldierPlayer(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer), ASCInputBound{ false }
 {
@@ -137,6 +139,16 @@ void ASoldierPlayer::BindASCInput()
 
 		ASCInputBound = true;
 	}
+}
+
+
+void ASoldierPlayer::cycleBetweenTeam()
+{
+	if (GetLocalRole() == ROLE_Authority) {
+		Super::cycleBetweenTeam();
+		SquadManager->UpdateSquadTeam(GetTeam());
+	}
+	else ServerCycleBetweenTeam();
 }
 
 FVector ASoldierPlayer::GetRespawnPoint()
