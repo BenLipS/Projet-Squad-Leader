@@ -168,9 +168,11 @@ void AGrdiSetUp::UpdateGridControlArea() {
 						possessTeam = -(static_cast<float>(controlValue_team) / static_cast<float>(m_controlArea->maxControlValue));
 				}
 			}
-
-			SetValue(_index_tile_origin, possessTeam);
-			SetRadiusValue(_index_tile_origin, possessTeam, 10);
+			if (possessTeam != 0.f) {
+				SetValue(_index_tile_origin, possessTeam);
+				SetRadiusValue(_index_tile_origin, possessTeam, 10);
+			}
+			
 		}
 	}
 }
@@ -186,20 +188,53 @@ void AGrdiSetUp::SetValue(int _index, float _value) {
 
 void AGrdiSetUp::SetRadiusValue(int _index, float _value, int _radius) {
 	float _value_im_side = _value;
-	int _index_tile_left_up = _index - _radius + (_radius * size_array_Y);
+	/*int _index_tile_left_up = _index - _radius + (_radius * size_array_Y);
 	int _index_tile_left_down = _index - _radius - (_radius * size_array_Y);
 
 	for (int _index_y = _index_tile_left_up; _index_y != _index_tile_left_down; _index_y -= size_array_Y) {
 		for (int _index_x = _index_y; _index_x != _index_y + ( 2*_radius ); ++_index_x) {
 			if (_value_im_side != 0.f && _value_im_side != 100.f) {
-				if (_value_im_side < 0.f) 
-					_value_im_side = 1.f / FMath::Square(1.f + FMath::Abs(_index - _index_x)) * -1.f;
-				else
-					_value_im_side = 1.f / FMath::Square(1.f + FMath::Abs(_index - _index_x));
-				
+				float value = 0.f;
+				if (_value_im_side < 0.f) {
+					int distance = FMath::Abs(_index - _index_x);
+					if (FMath::Abs(distance - size_array_X))
+						value = FMath::Abs(_index - _index_x) / size_array_X;
+					else
+						value = FMath::Abs(_index - _index_x); 
+					_value_im_side = 1.f / FMath::Square(1.f + value) * -1.f;
+				}
+				else {
+					int distance = FMath::Abs(_index - _index_x);
+					if (FMath::Abs(distance - size_array_X))
+						value = FMath::Abs(_index - _index_x) / size_array_X;
+					else
+						value = FMath::Abs(_index - _index_x);
+					_value_im_side = 1.f / FMath::Square(1.f + value);
+				}
 				SetValue(_index_x, _value_im_side);
 			}
 		}
+	}*/
+
+	for (int i = 0; i != _radius; ++i) {
+		if(_value < 0.f)
+			_value_im_side = 1.f / FMath::Square((FMath::Abs(1.f - (i + 1.f)))) * -1.f;
+		else
+			_value_im_side = 1.f / FMath::Square((FMath::Abs(1.f - (i + 1.f))));
+
+		int index_left_up = _index - (i + 1) + ((i + 1) * size_array_Y);
+		int index_left_down = _index - (i + 1) - ((i + 1) * size_array_Y);
+		int index_rigth_up = _index + (i + 1) + ((i + 1) * size_array_Y);
+		int index_rigth_down = _index + (i + 1) - ((i + 1) * size_array_Y);
+
+		for (int x = index_left_up; x != index_rigth_up; ++x)
+			SetValue(x, _value_im_side * 2.f);
+		for (int x = index_left_down; x != index_rigth_down; ++x)
+			SetValue(x, _value_im_side * 2.f);
+		for (int x = index_left_up - size_array_Y; x != index_left_down; x -= size_array_Y)
+			SetValue(x, _value_im_side * 2.f);
+		for (int x = index_rigth_up; x != index_rigth_down - size_array_Y; x-= size_array_Y)
+			SetValue(x, _value_im_side *2.f);
 	}
 }
 
