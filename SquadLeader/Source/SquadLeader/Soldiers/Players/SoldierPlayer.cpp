@@ -32,6 +32,16 @@ void ASoldierPlayer::PossessedBy(AController* _newController)
 	SquadManager->Init(GetTeam(),this,GetWorld());
 	Cast<USquadLeaderGameInstance>(GetGameInstance())->GetSquadManagers().Add(SquadManager);
 
+	FActorSpawnParameters SpawnInfo;
+	SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn; // La maniere de faire le respawn
+	FTransform LocationTemp{ {0.f, -1000.f, 0.f}, {0.f,0.f,0.f} };
+	AAISquadManager* PlayerSquadManager = GetWorld()->SpawnActorDeferred<AAISquadManager>(AISquadManagerClass, LocationTemp, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+	if (PlayerSquadManager) {
+		PlayerSquadManager->FinishSpawning(LocationTemp);
+		PlayerSquadManager->Init(PlayerTeam, this);
+		Cast<USquadLeaderGameInstance>(GetGameInstance())->ListAISquadManagers.Add(PlayerSquadManager);
+	}
+
 	// TODO: Do we need to have the hud in server ?
 	if (ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(GetController()); PC)
 		PC->createHUD();
@@ -48,9 +58,35 @@ void ASoldierPlayer::OnRep_PlayerState()
 		PC->createHUD();
 }
 
-UAISquadManager* ASoldierPlayer::GetSquadManager()
+AAISquadManager* ASoldierPlayer::GetSquadManager()
 {
 	return SquadManager;
+}
+
+void ASoldierPlayer::LookUp(const float _Val)
+{
+	Super::LookUp(_Val);
+
+	if (IsLocallyControlled())
+	{
+		if (HasAuthority())
+			MulticastSyncControlRotation(SyncControlRotation);
+		else
+			ServerSyncControlRotation(SyncControlRotation);
+	}
+}
+
+void ASoldierPlayer::Turn(const float _Val)
+{
+	Super::Turn(_Val);
+
+	if (IsLocallyControlled())
+	{
+		if (HasAuthority())
+			MulticastSyncControlRotation(SyncControlRotation);
+		else
+			ServerSyncControlRotation(SyncControlRotation);
+	}
 }
 
 TSubclassOf<ASoldierTeam> ASoldierPlayer::GetTeam()

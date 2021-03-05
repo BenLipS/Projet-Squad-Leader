@@ -37,7 +37,7 @@ ASoldier::ASoldier(const FObjectInitializer& _ObjectInitializer) : Super(_Object
 	initMovements();
 	initMeshes();
 	setup_stimulus();
-	GetCapsuleComponent()->BodyInstance.SetObjectType(ECollisionChannel::ECC_EngineTraceChannel1);
+	GetCapsuleComponent()->BodyInstance.SetObjectType(ECC_Player);
 }
 
 /*
@@ -87,6 +87,8 @@ void ASoldier::Tick(float DeltaTime)
 
 void ASoldier::initCameras()
 {
+	SyncControlRotation = FRotator{0.f, 0.f, 0.f};
+
 	// 1st person camera
 	FirstPersonCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("FirstPersonCamera"));
 	FirstPersonCameraComponent->SetupAttachment(GetCapsuleComponent());
@@ -150,7 +152,7 @@ void ASoldier::initWeapons()
 
 			if (weapon)
 			{
-				addToInventory(weapon);
+				AddToInventory(weapon);
 				weapon->InitializeAbilitySystemComponent(AbilitySystemComponent);
 			}
 		}
@@ -335,13 +337,25 @@ void ASoldier::MoveRight(const float _Val)
 void ASoldier::LookUp(const float _Val)
 {
 	if (IsAlive())
+	{
 		AddControllerPitchInput(_Val);
+		if (APlayerController* PlayerController = Cast<APlayerController>(Controller); PlayerController)
+		{
+			SyncControlRotation = PlayerController->GetControlRotation();
+		}
+	}
 }
 
 void ASoldier::Turn(const float _Val)
 {
 	if (IsAlive())
+	{
 		AddControllerYawInput(_Val);
+		if (APlayerController* PlayerController = Cast<APlayerController>(Controller); PlayerController)
+		{
+			SyncControlRotation = PlayerController->GetControlRotation();
+		}
+	}
 }
 
 // TODO: For now, we directly change the move speed multiplier with a setter. This is should be changed 
@@ -368,16 +382,15 @@ FVector ASoldier::lookingAtPosition()
 {
 	FHitResult outHit;
 
-	FVector startLocation = CurrentCameraComponent->GetComponentTransform().GetLocation();
-	FVector forwardVector = CurrentCameraComponent->GetForwardVector();
+	FVector startLocation = ThirdPersonCameraComponent->GetComponentTransform().GetLocation();
+	FVector forwardVector = ThirdPersonCameraComponent->GetForwardVector();
 	FVector endLocation = startLocation + forwardVector * 10000.f;
 
 	FCollisionQueryParams collisionParams;
 	collisionParams.AddIgnoredActor(this);
 
-	if (GetWorld()->LineTraceSingleByChannel(outHit, startLocation, endLocation, ECollisionChannel::ECC_WorldStatic, collisionParams))
-		return outHit.bBlockingHit ? outHit.Location : endLocation;
-	return endLocation;
+	GetWorld()->LineTraceSingleByChannel(outHit, startLocation, endLocation, ECollisionChannel::ECC_WorldStatic, collisionParams);
+	return outHit.bBlockingHit ? outHit.Location : endLocation;
 }
 
 int32 ASoldier::GetCharacterLevel() const
@@ -400,6 +413,10 @@ float ASoldier::GetMaxHealth() const
 bool ASoldier::IsAlive() const
 {
 	return GetHealth() > 0.0f;
+}
+
+FVector ASoldier::GetLocation() const noexcept {
+	return GetActorLocation();
 }
 
 float ASoldier::GetMoveSpeedWalk() const
@@ -474,23 +491,60 @@ void ASoldier::StopAiming()
 	ThirdPersonCameraComponent->SetFieldOfView(90.f);
 }
 
-void ASoldier::OnRep_CurrentWeapon(AWeapon* _lastWeapon)
+void ASoldier::OnRep_CurrentWeapon(AWeapon* _LastWeapon)
 {
-	SetCurrentWeapon(currentWeapon, _lastWeapon);
+	SetCurrentWeapon(currentWeapon, _LastWeapon);
 }
 
-void ASoldier::addToInventory(AWeapon* _weapon)
+FRotator ASoldier::GetSyncControlRotation() const noexcept
 {
-	Inventory.Add(_weapon);
+	return SyncControlRotation;
 }
 
-void ASoldier::SetCurrentWeapon(AWeapon* _newWeapon, AWeapon* _previousWeapon)
+void ASoldier::ServerSyncControlRotation_Implementation(const FRotator& _Rotation)
 {
-	if (_previousWeapon && _newWeapon !=_previousWeapon)
-		currentWeapon = _newWeapon;
+	SyncControlRotation = _Rotation;
 
+	if (!IsLocallyControlled())
+	{
+		FirstPersonCameraComponent->SetWorldRotation(SyncControlRotation);
+		ThirdPersonCameraComponent->SetWorldRotation(SyncControlRotation);
+	}
+	GEngine->AddOnScreenDebugMessage(474, 100.f, FColor::Green, FString::Printf(TEXT("%s %s"), *FString::SanitizeFloat(SyncControlRotation.Pitch), *FString::SanitizeFloat(SyncControlRotation.Yaw)));
 }
 
+bool ASoldier::ServerSyncControlRotation_Validate(const FRotator& _Rotation)
+{
+	return true;
+}
+
+void ASoldier::MulticastSyncControlRotation_Implementation(const FRotator& _Rotation)
+{
+	SyncControlRotation = _Rotation;
+
+	if (!IsLocallyControlled())
+	{
+		FirstPersonCameraComponent->SetWorldRotation(SyncControlRotation);
+		ThirdPersonCameraComponent->SetWorldRotation(SyncControlRotation);
+	}
+	GEngine->AddOnScreenDebugMessage(471, 100.f, FColor::Green, FString::Printf(TEXT("%s %s"), *FString::SanitizeFloat(SyncControlRotation.Pitch), *FString::SanitizeFloat(SyncControlRotation.Yaw)));
+}
+
+bool ASoldier::MulticastSyncControlRotation_Validate(const FRotator& _Rotation)
+{
+	return true;
+}
+
+void ASoldier::AddToInventory(AWeapon* _Weapon)
+{
+	Inventory.Add(_Weapon);
+}
+
+void ASoldier::SetCurrentWeapon(AWeapon* _NewWeapon, AWeapon* _PreviousWeapon)
+{
+	if (_PreviousWeapon && _NewWeapon !=_PreviousWeapon)
+		currentWeapon = _NewWeapon;
+}
 
 // network for debug team change
 void ASoldier::ServerCycleBetweenTeam_Implementation() {
@@ -533,3 +587,7 @@ void ASoldier::setup_stimulus() {
 	stimulus->RegisterForSense(TSubclassOf <UAISense_Sight>());
 	stimulus->RegisterWithPerceptionSystem();
 };
+
+uint8 ASoldier::GetInfluenceRadius() const noexcept{
+	return InfluenceRadius;
+}

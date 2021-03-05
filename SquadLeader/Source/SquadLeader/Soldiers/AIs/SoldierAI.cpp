@@ -102,3 +102,10 @@ FVector ASoldierAI::GetRespawnPoint()
 	}
 	return FVector(0.f, 0.f, 1500.f); // else return default
 }
+
+void ASoldierAI::Die() {
+	Super::Die();
+	auto AIController = Cast<AAIGeneralController>(GetController());
+	if(AIController)
+		AIController->Die();
+}

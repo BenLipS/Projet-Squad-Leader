@@ -1,7 +1,7 @@
 #include "Weapon.h"
 #include "../Soldiers/Soldier.h"
 
-AWeapon::AWeapon() : IsNextFireReady{ true }, TimeToReloadNextShoot{0.2f}, IsAutomatic{true}, Penetration{1}, FieldOfViewAim{ 50.f }
+AWeapon::AWeapon() : MaxAmmo{ 50 }, IsNextFireReady{ true }, TimeToReloadNextShoot{ 0.2f }, TimeToReloadAmmo{ 2.f }, IsAutomatic{ true }, Penetration{ 1 }, FieldOfViewAim{ 50.f }
 {
 	PrimaryActorTick.bCanEverTick = false;
 }
@@ -9,6 +9,7 @@ AWeapon::AWeapon() : IsNextFireReady{ true }, TimeToReloadNextShoot{0.2f}, IsAut
 void AWeapon::BeginPlay()
 {
 	Super::BeginPlay();
+	CurrentAmmo = MaxAmmo;
 }
 
 void AWeapon::InitializeAbilitySystemComponent(UAbilitySystemSoldier* _abilitySystemComponent)
@@ -50,12 +51,26 @@ void AWeapon::TryFiring(const FGameplayEffectSpecHandle _damageEffectSpecHandle)
 
 void AWeapon::Fire()
 {
+	--CurrentAmmo;
 	IsNextFireReady = false;
-	GetWorldTimerManager().SetTimer(TimerReloadNextShoot, this, &AWeapon::OnReadyToShoot, TimeToReloadNextShoot, false);
+
+	if (CurrentAmmo == 0)
+		GetWorldTimerManager().SetTimer(TimerReloadAmmo, this, &AWeapon::OnReloaded, TimeToReloadAmmo, false);
+	else
+		GetWorldTimerManager().SetTimer(TimerReloadNextShoot, this, &AWeapon::OnReadyToShoot, TimeToReloadNextShoot, false);
+
 }
 
 void AWeapon::OnReadyToShoot()
 {
+	IsNextFireReady = true;
+	if (IsAutomatic)
+		TryFiring();
+}
+
+void AWeapon::OnReloaded()
+{
+	CurrentAmmo = MaxAmmo;
 	IsNextFireReady = true;
 	if (IsAutomatic)
 		TryFiring();

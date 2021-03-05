@@ -68,9 +68,19 @@ protected:  // time value for calculation frequency
 	UFUNCTION(BlueprintCallable, Category = "ControlValue")
 		void calculateControlValue();
 
-protected:
+public:
 	UPROPERTY(EditInstanceOnly, Category = "ControlData")
 		TMap<TSubclassOf<ASoldierTeam>, AControlAreaTeamStat*> TeamData;
+
+protected:
 	UFUNCTION(Category = "ControlData")
 		void UpdateTeamData();
+
+protected:
+	UPROPERTY(EditInstanceOnly, Category = "InfluenceMap")
+		int InfluenceRadius = 10;
+public:
+
+	UFUNCTION(Category = "InfluenceMap")
+		int GetInfluenceRadius() const noexcept { return InfluenceRadius; }
 };
