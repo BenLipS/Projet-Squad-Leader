@@ -161,7 +161,7 @@ public:
 	USpringArmComponent* SpringArmComponent;
 
 protected:
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly, Replicated)
 	FRotator SyncControlRotation;
 
 public:

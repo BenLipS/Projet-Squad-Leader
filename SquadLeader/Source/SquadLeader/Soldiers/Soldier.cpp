@@ -76,6 +76,7 @@ void ASoldier::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifeti
 
 	// everyone
 	DOREPLIFETIME(ASoldier, PlayerTeam);
+	DOREPLIFETIME(ASoldier, SyncControlRotation);
 	//DOREPLIFETIME(AShooterCharacter, CurrentWeapon);
 }
 
@@ -514,7 +515,6 @@ void ASoldier::ServerSyncControlRotation_Implementation(const FRotator& _Rotatio
 		FirstPersonCameraComponent->SetWorldRotation(SyncControlRotation);
 		ThirdPersonCameraComponent->SetWorldRotation(SyncControlRotation);
 	}
-	GEngine->AddOnScreenDebugMessage(474, 100.f, FColor::Green, FString::Printf(TEXT("%s %s"), *FString::SanitizeFloat(SyncControlRotation.Pitch), *FString::SanitizeFloat(SyncControlRotation.Yaw)));
 }
 
 bool ASoldier::ServerSyncControlRotation_Validate(const FRotator& _Rotation)
@@ -531,7 +531,6 @@ void ASoldier::MulticastSyncControlRotation_Implementation(const FRotator& _Rota
 		FirstPersonCameraComponent->SetWorldRotation(SyncControlRotation);
 		ThirdPersonCameraComponent->SetWorldRotation(SyncControlRotation);
 	}
-	GEngine->AddOnScreenDebugMessage(471, 100.f, FColor::Green, FString::Printf(TEXT("%s %s"), *FString::SanitizeFloat(SyncControlRotation.Pitch), *FString::SanitizeFloat(SyncControlRotation.Yaw)));
 }
 
 bool ASoldier::MulticastSyncControlRotation_Validate(const FRotator& _Rotation)
