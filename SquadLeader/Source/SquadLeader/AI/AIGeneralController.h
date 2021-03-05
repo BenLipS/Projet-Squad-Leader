@@ -66,6 +66,10 @@ public:
 	UFUNCTION()
 	void ActorsPerceptionUpdated(const TArray < AActor* >& UpdatedActors);
 
+	/*Run to a location, the location muste be a FVector*/
+	UFUNCTION(BlueprintCallable, Category = "SquadLeader")
+		EPathFollowingRequestResult::Type RunToVectorLocation(FVector Goal, float AcceptanceRadius);
+
 	UFUNCTION()
 	virtual void BeginPlay();
 	
@@ -264,6 +268,7 @@ public:
 
 public:	//Mission
 	void SetMission(UMission* _Mission);
+	UMission* GetMission();
 
 protected:
 	UPROPERTY()
