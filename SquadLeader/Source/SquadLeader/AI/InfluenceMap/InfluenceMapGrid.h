@@ -16,12 +16,12 @@ struct SQUADLEADER_API FTileBase {
 
 	GENERATED_USTRUCT_BODY()
 
-		FTileBase() {
+	FTileBase() {
 	}
 
 	float m_value = 0.f;
 	FVector m_location;
-	int m_team;
+	int m_team = -1;
 
 };
 
@@ -53,6 +53,8 @@ private:
 	* we do that with the help of the nav-mesh
 	*/
 	bool IsValid(FVector _location) const;
+
+	void DrawGrid() const;
 
 public:
 

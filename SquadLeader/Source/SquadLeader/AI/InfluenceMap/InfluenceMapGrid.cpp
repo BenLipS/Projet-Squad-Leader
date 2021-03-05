@@ -19,27 +19,36 @@ void AInfluenceMapGrid::Tick(float DeltaSeconds) {
 	Super::Tick(DeltaSeconds);
 	/*if (GEngine)
 		GEngine->AddOnScreenDebugMessage(100, 1.f, FColor::Black, TEXT("HELLO, i'm the new InfluenceMap :)"));*/
-	
+	DrawGrid();
 }
 
 void AInfluenceMapGrid::InitGrid() noexcept {
-	float _location_tile_x = m_tile_width / 2.f;
-	float _location_tile_y = m_tile_height / 2.f;
 
-	for (int y = 0; y != m_grid_height; y += m_grid_width) {
-		for (int x = 0; x != m_grid_width; ++x) {
+	for (int y = m_tile_height / 2.f; y <= m_grid_height; y += m_tile_height) {
+		for (int x = m_tile_width / 2.f; x <= m_grid_width; x += m_tile_width) {
 			FTileBase m_tile;
-			m_tile.m_location = FVector(_location_tile_x, _location_tile_y, 10.f);
-			m_influencemap.Add(m_tile);
-			_location_tile_x += m_tile_width;
+			if (auto _location = FVector(x, y, 20.f); IsValid(_location)) {
+				m_tile.m_location = _location;
+				m_influencemap.Add(m_tile);
+			}
 		}
-		_location_tile_x = m_tile_width / 2.f;
-		_location_tile_y += m_grid_width;
 	}
+	nbr_tile = m_influencemap.Num();
 }
 
 bool AInfluenceMapGrid::IsValid(FVector _location) const {
 	UNavigationSystemV1* navSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
 	UNavigationPath* path = navSys->FindPathToLocationSynchronously(GetWorld(), FVector(11740.f, 7030.f, 20.f), _location);
 	return path->IsValid() && (!path->IsPartial());
+}
+
+void AInfluenceMapGrid::DrawGrid() const {
+	for (FTileBase _tile : m_influencemap) {
+		if(_tile.m_team == 1)
+			DrawDebugSolidBox(GetWorld(),_tile.m_location, FVector(95.f, 95.f, 10.f), FColor(0, 0, 255));
+		else if (_tile.m_team == 2)
+			DrawDebugSolidBox(GetWorld(), _tile.m_location, FVector(95.f, 95.f, 10.f), FColor(255, 0, 0));
+		else
+			DrawDebugSolidBox(GetWorld(), _tile.m_location, FVector(95.f, 95.f, 10.f), FColor(0, 255, 0));
+	}
 }
