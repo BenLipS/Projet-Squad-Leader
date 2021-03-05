@@ -28,10 +28,10 @@ void UFollowFormationBTTaskNode::TickTask(class UBehaviorTreeComponent& OwnerCom
 
 	EPathFollowingRequestResult::Type MoveToActorResult = AISquadController->FollowFormation();
 
-	/*if (MoveToActorResult == EPathFollowingRequestResult::AlreadyAtGoal)
+	if (MoveToActorResult == EPathFollowingRequestResult::AlreadyAtGoal)
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	if (MoveToActorResult == EPathFollowingRequestResult::Failed)
-		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);*/
+		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
 
 }
 
