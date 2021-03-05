@@ -27,13 +27,12 @@ EBTNodeResult::Type URunToVectorLocationBTTaskNode::ExecuteTask(UBehaviorTreeCom
 void URunToVectorLocationBTTaskNode::TickTask(class UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) {
 	AAIGeneralController* _controller = Cast<AAIGeneralController>(OwnerComp.GetOwner());
 
-	const FVector Goal = _controller->get_blackboard()->GetValue<UBlackboardKeyType_Vector>(BlackboardKey.GetSelectedKeyID());
+	EPathFollowingRequestResult::Type MoveToActorResult = _controller->RunToVectorLocation(_controller->GetMission()->Location, AcceptableRadius);
 
-	EPathFollowingRequestResult::Type MoveToActorResult = _controller->RunToVectorLocation(Goal, AcceptableRadius);
-
-	if (MoveToActorResult == EPathFollowingRequestResult::AlreadyAtGoal)
+	if (MoveToActorResult == EPathFollowingRequestResult::AlreadyAtGoal) {
 		Cast<ASoldierAI>(_controller->GetPawn())->CancelAbilityRun();
-	FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+	}
 	if (MoveToActorResult == EPathFollowingRequestResult::Failed)
 		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
 }

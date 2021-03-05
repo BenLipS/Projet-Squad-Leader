@@ -268,6 +268,7 @@ public:
 
 public:	//Mission
 	void SetMission(UMission* _Mission);
+	UMission* GetMission();
 
 protected:
 	UPROPERTY()

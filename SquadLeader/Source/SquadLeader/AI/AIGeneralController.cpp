@@ -319,6 +319,12 @@ void AAIGeneralController::DefenseBehavior() {
 void AAIGeneralController::SetMission(UMission* _Mission)
 {
 	Mission = _Mission;
+	blackboard->SetValueAsVector("MissionLocation", Mission->Location);
+}
+
+UMission* AAIGeneralController::GetMission()
+{
+	return Mission;
 }
 
 void AAIGeneralController::Die() const {
