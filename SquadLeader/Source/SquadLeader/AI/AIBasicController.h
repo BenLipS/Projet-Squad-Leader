@@ -119,4 +119,6 @@ public://Mission
 
 	virtual void Die() const override;
 
+	virtual void ResetBlackBoard() const override;
+
 };

@@ -35,4 +35,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Formation Behaviour")
 	EPathFollowingRequestResult::Type FollowFormation();
 
+	virtual void Die() const override;
+
+	virtual void ResetBlackBoard() const override;
 };
