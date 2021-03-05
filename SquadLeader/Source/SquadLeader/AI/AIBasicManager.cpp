@@ -43,8 +43,8 @@ void AAIBasicManager::Init(TSubclassOf<ASoldierTeam> _Team)
 	SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn; // La maniere de faire le respawn
 	ASoldierAI* BasicAI = GetWorld()->SpawnActorDeferred<ASoldierAI>(ClassAI, LocationAI, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 	if (BasicAI) {
-		BasicAI->SetTeam(Team);
 		BasicAI->SpawnDefaultController();
+		BasicAI->SetTeam(Team);
 		BasicAI->FinishSpawning(LocationAI);
 		AIBasicList.Add(Cast<AAIBasicController>(BasicAI->GetController()));
 	}
@@ -53,8 +53,8 @@ void AAIBasicManager::Init(TSubclassOf<ASoldierTeam> _Team)
 	LocationAI1.SetLocation(LocationAI.GetLocation() + OffSet);
 	ASoldierAI* BasicAI1 = GetWorld()->SpawnActorDeferred<ASoldierAI>(ClassAI, LocationAI, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 	if (BasicAI1) {
-		BasicAI1->SetTeam(Team);
 		BasicAI1->SpawnDefaultController();
+		BasicAI1->SetTeam(Team);
 		BasicAI1->FinishSpawning(LocationAI1);
 		AIBasicList.Add(Cast<AAIBasicController>(BasicAI1->GetController()));
 	}
@@ -63,8 +63,8 @@ void AAIBasicManager::Init(TSubclassOf<ASoldierTeam> _Team)
 	LocationAI2.SetLocation(LocationAI1.GetLocation() + OffSet);
 	ASoldierAI* BasicAI2 = GetWorld()->SpawnActorDeferred<ASoldierAI>(ClassAI, LocationAI, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 	if (BasicAI2) {
-		BasicAI2->SetTeam(Team);
 		BasicAI2->SpawnDefaultController();
+		BasicAI2->SetTeam(Team);
 		BasicAI2->FinishSpawning(LocationAI2);
 		AIBasicList.Add(Cast<AAIBasicController>(BasicAI2->GetController()));
 	}
@@ -73,8 +73,8 @@ void AAIBasicManager::Init(TSubclassOf<ASoldierTeam> _Team)
 	LocationAI3.SetLocation(LocationAI2.GetLocation() + OffSet);
 	ASoldierAI* BasicAI3 = GetWorld()->SpawnActorDeferred<ASoldierAI>(ClassAI, LocationAI, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 	if (BasicAI3) {
-		BasicAI3->SetTeam(Team);
 		BasicAI3->SpawnDefaultController();
+		BasicAI3->SetTeam(Team);
 		BasicAI3->FinishSpawning(LocationAI3);
 		AIBasicList.Add(Cast<AAIBasicController>(BasicAI3->GetController()));
 	}
