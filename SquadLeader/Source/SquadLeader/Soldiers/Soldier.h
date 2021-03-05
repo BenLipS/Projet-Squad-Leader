@@ -275,7 +275,7 @@ public:
 		void ServerCycleBetweenTeam();
 
 	// Connected to the "L" key
-	void cycleBetweenTeam();
+	virtual void cycleBetweenTeam();
 	
 	//////////////// Teamable
 	virtual TSubclassOf<ASoldierTeam> GetTeam() override { return nullptr; };  // function overide in SoldierPlayer and Soldier AI

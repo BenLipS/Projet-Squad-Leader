@@ -142,6 +142,16 @@ void ASoldierPlayer::BindASCInput()
 	}
 }
 
+
+void ASoldierPlayer::cycleBetweenTeam()
+{
+	if (GetLocalRole() == ROLE_Authority) {
+		Super::cycleBetweenTeam();
+		SquadManager->UpdateSquadTeam(GetTeam());
+	}
+	else ServerCycleBetweenTeam();
+}
+
 FVector ASoldierPlayer::GetRespawnPoint()
 {
 	if (GetTeam()) {
