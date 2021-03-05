@@ -269,7 +269,7 @@ public:
 
 	//////////////// Soldier team
 	UPROPERTY(EditAnywhere, Category = "PlayerTeam")
-		TSubclassOf<ASoldierTeam> initialTeam;  // for debug use
+		TSubclassOf<ASoldierTeam> InitialTeam;  // for debug use
 
 	UFUNCTION(Reliable, Server, WithValidation)
 		void ServerCycleBetweenTeam();

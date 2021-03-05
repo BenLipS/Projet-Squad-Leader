@@ -36,7 +36,6 @@ TSubclassOf<ASoldierTeam> ASoldierAI::GetTeam()
 		return AIController->GetTeam();
 	}
 	return nullptr; // else return default
-	return TSubclassOf<ASoldierTeam>();
 }
 
 bool ASoldierAI::SetTeam(TSubclassOf<ASoldierTeam> _Team)

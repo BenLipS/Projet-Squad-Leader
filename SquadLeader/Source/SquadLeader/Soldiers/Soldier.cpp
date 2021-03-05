@@ -56,8 +56,8 @@ void ASoldier::BeginPlay()
 
 	if (GetLocalRole() == ROLE_Authority) {
 		// init team:
-		if (initialTeam && !(GetTeam()))
-			SetTeam(initialTeam);
+		if (InitialTeam && !(GetTeam()))
+			SetTeam(InitialTeam);
 
 		// add this to the team data
 		if (GetTeam()) {
