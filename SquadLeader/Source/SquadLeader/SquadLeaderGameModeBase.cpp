@@ -30,7 +30,7 @@ void ASquadLeaderGameModeBase::StartPlay() {
 	ControlAreaManager.GetDefaultObject()->CleanControlAreaList();  // clean the list of all control area
 
 	//Init for AI
-	Cast<USquadLeaderGameInstance>(GetGameInstance())->InitInfluenceMap();
+	//Cast<USquadLeaderGameInstance>(GetGameInstance())->InitInfluenceMap();
 	Cast<USquadLeaderGameInstance>(GetGameInstance())->InitAIManagers();
 
 	Super::StartPlay();

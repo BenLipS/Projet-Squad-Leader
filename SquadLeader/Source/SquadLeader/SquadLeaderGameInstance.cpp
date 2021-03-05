@@ -61,13 +61,4 @@ void USquadLeaderGameInstance::AddAIBasicToManager(AAIBasicController* AIBasic)
 }
 
 void USquadLeaderGameInstance::InitInfluenceMap() {
-	FTransform LocationTemp{ {0.f, -1000.f, 0.f}, {0.f,0.f,0.f} };
-	AGrdiSetUp* _influenceMap = GetWorld()->SpawnActorDeferred<AGrdiSetUp>(InfluenceMapClass, LocationTemp, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
-	if (_influenceMap) {
-		_influenceMap->FinishSpawning(LocationTemp);
-		InfluenceMap = _influenceMap;
-	}
-		
-
-
 }

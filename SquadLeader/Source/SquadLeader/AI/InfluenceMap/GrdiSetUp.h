@@ -10,6 +10,9 @@
 #include "../../SquadLeaderGameModeBase.h"
 #include "GrdiSetUp.generated.h"
 
+
+
+
 UCLASS()
 class SQUADLEADER_API AGrdiSetUp : public AActor
 {
