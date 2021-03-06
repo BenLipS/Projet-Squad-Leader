@@ -72,8 +72,4 @@ protected:
 //////////////// Teams
 	UFUNCTION()
 	void OnChangeTeam();
-
-//////////////// Weapon
-	UFUNCTION()
-	void ReloadWeapon();
 };

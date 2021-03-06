@@ -70,9 +70,6 @@ void ASoldierPlayerController::SetupInputComponent()
 	InputComponent->BindAxis("Turn", this, &ASoldierPlayerController::OnTurn);
 	InputComponent->BindAxis("LookUp", this, &ASoldierPlayerController::OnLookUp);
 
-	// Weapon
-	InputComponent->BindAction("ReloadWeapon", IE_Pressed, this, &ASoldierPlayerController::ReloadWeapon);
-
 	//TODO : change debug bindAction when not need anymore
 	InputComponent->BindAction("ChangeTeam", IE_Released, this, &ASoldierPlayerController::OnChangeTeam);
 }
@@ -111,10 +108,4 @@ void ASoldierPlayerController::OnChangeTeam()
 {
 	if (ASoldier* Soldier = Cast<ASoldier>(K2_GetPawn()); Soldier)
 		Soldier->cycleBetweenTeam();
-}
-
-void ASoldierPlayerController::ReloadWeapon()
-{
-	if (ASoldier* Soldier = Cast<ASoldier>(K2_GetPawn()); Soldier)
-		Soldier->ReloadWeapon();
 }

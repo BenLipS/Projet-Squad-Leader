@@ -1,7 +1,7 @@
 #include "Weapon.h"
 #include "../Soldiers/Soldier.h"
 
-AWeapon::AWeapon() : MaxAmmo{ 50 }, IsNextFireReady{ true }, TimeToReloadNextShoot{ 0.2f }, TimeToReloadAmmo{ 2.f }, IsAutomatic{ true }, Penetration{ 1 }, FieldOfViewAim{ 50.f }
+AWeapon::AWeapon() : MaxAmmo{ 50 }, IsNextFireReady{ true }, TimeToReloadAmmo{ 2.f }, TimeToReloadNextShoot{ 0.2f }, IsAutomatic{ true }, Penetration{ 1 }, FieldOfViewAim{ 50.f }
 {
 	PrimaryActorTick.bCanEverTick = false;
 }
@@ -12,9 +12,9 @@ void AWeapon::BeginPlay()
 	CurrentAmmo = MaxAmmo;
 }
 
-void AWeapon::InitializeAbilitySystemComponent(UAbilitySystemSoldier* _abilitySystemComponent)
+void AWeapon::InitializeAbilitySystemComponent(UAbilitySystemSoldier* _AbilitySystemComponent)
 {
-	AbilitySystemComponent = _abilitySystemComponent;
+	AbilitySystemComponent = _AbilitySystemComponent;
 }
 
 UAbilitySystemSoldier* AWeapon::GetAbilitySystemComponent() const
@@ -27,24 +27,24 @@ float AWeapon::GetFieldOfViewAim() const
 	return FieldOfViewAim;
 }
 
-void AWeapon::ApplyImpactDamage(UAbilitySystemComponent* _targetASC)
+void AWeapon::ApplyImpactDamage(UAbilitySystemComponent* _TargetASC)
 {
 }
 
-void AWeapon::ApplyImpactEffects(UAbilitySystemComponent* _targetASC)
+void AWeapon::ApplyImpactEffects(UAbilitySystemComponent* _TargetASC)
 {
 }
 
 void AWeapon::TryFiring()
 {
-	ASoldier* soldier = Cast<ASoldier>(GetOwner());
-	if (soldier && soldier->GetWantsToFire() && IsNextFireReady)
+	ASoldier* Soldier = Cast<ASoldier>(GetOwner());
+	if (Soldier && Soldier->GetWantsToFire() && IsNextFireReady)
 		Fire();
 }
 
-void AWeapon::TryFiring(const FGameplayEffectSpecHandle _damageEffectSpecHandle)
+void AWeapon::TryFiring(const FGameplayEffectSpecHandle _DamageEffectSpecHandle)
 {
-	DamageEffectSpecHandle = _damageEffectSpecHandle;
+	DamageEffectSpecHandle = _DamageEffectSpecHandle;
 	DamageEffectSpecHandle.Data.Get()->SetSetByCallerMagnitude(FGameplayTag::RequestGameplayTag(FName("Data.Damage")), Damage);
 	TryFiring();
 }
@@ -55,7 +55,12 @@ void AWeapon::Fire()
 	IsNextFireReady = false;
 
 	if (CurrentAmmo == 0)
-		Reload();
+	{
+		if (ASoldier* Soldier = Cast<ASoldier>(GetOwner()); Soldier)
+			Soldier->ActivateAbility(ASoldier::SkillReloadWeaponTag);
+		else
+			Reload();
+	}
 	else
 		GetWorldTimerManager().SetTimer(TimerReloadNextShoot, this, &AWeapon::OnReadyToShoot, TimeToReloadNextShoot, false);
 
@@ -75,6 +80,9 @@ void AWeapon::OnReadyToShoot()
 
 void AWeapon::OnReloaded()
 {
+	if (ASoldier* Soldier = Cast<ASoldier>(GetOwner()); Soldier)
+		Soldier->CancelAbility(ASoldier::SkillReloadWeaponTag);
+
 	CurrentAmmo = MaxAmmo;
 	IsNextFireReady = true;
 	if (IsAutomatic)

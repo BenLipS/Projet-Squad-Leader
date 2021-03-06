@@ -19,6 +19,7 @@ FGameplayTag ASoldier::StateCrouchingTag = FGameplayTag::RequestGameplayTag(FNam
 FGameplayTag ASoldier::StateFightingTag = FGameplayTag::RequestGameplayTag(FName("State.Fighting"));
 FGameplayTag ASoldier::StateAimingTag = FGameplayTag::RequestGameplayTag(FName("State.Aiming"));
 FGameplayTag ASoldier::StateGivingOrderTag = FGameplayTag::RequestGameplayTag(FName("State.GivingOrder"));
+FGameplayTag ASoldier::StateReloadingWeaponTag = FGameplayTag::RequestGameplayTag(FName("State.ReloadingWeapon"));
 
 // Abilities
 FGameplayTag ASoldier::SkillRunTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Run"));
@@ -29,6 +30,7 @@ FGameplayTag ASoldier::SkillGrenadeTag = FGameplayTag::RequestGameplayTag(FName(
 FGameplayTag ASoldier::SkillAimTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Aim"));
 FGameplayTag ASoldier::SkillAreaEffectFromSelfTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.AreaEffectFromSelf"));
 FGameplayTag ASoldier::SkillGiveOrderTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.GiveOrder"));
+FGameplayTag ASoldier::SkillReloadWeaponTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.ReloadWeapon"));
 
 ASoldier::ASoldier(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer.SetDefaultSubobjectClass<USoldierMovementComponent>(ACharacter::CharacterMovementComponentName)), bAbilitiesInitialized{ false }, bDefaultWeaponsInitialized{ false }
 {
@@ -63,7 +65,6 @@ void ASoldier::BeginPlay()
 		}
 	}
 }
-
 
 void ASoldier::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
 {
@@ -236,6 +237,7 @@ void ASoldier::InitializeTagChangeCallbacks()
 	AbilitySystemComponent->RegisterGameplayTagEvent(ASoldier::StateFightingTag, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ASoldier::FightingTagChanged);
 	AbilitySystemComponent->RegisterGameplayTagEvent(ASoldier::StateAimingTag, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ASoldier::AimingTagChanged);
 	AbilitySystemComponent->RegisterGameplayTagEvent(ASoldier::StateGivingOrderTag, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ASoldier::GivingOrderTagChanged);
+	AbilitySystemComponent->RegisterGameplayTagEvent(ASoldier::StateReloadingWeaponTag, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ASoldier::ReloadingWeaponTagChanged);
 }
 
 void ASoldier::InitializeAttributeChangeCallbacks()
@@ -293,6 +295,35 @@ void ASoldier::AimingTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
 void ASoldier::GivingOrderTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
 {
 }
+
+void ASoldier::ReloadingWeaponTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
+{
+}
+
+bool ASoldier::ActivateAbilities(const FGameplayTagContainer& _TagContainer)
+{
+	return AbilitySystemComponent->TryActivateAbilitiesByTag(_TagContainer);
+}
+
+bool ASoldier::ActivateAbility(const FGameplayTag& _Tag)
+{
+	FGameplayTagContainer TagContainer;
+	TagContainer.AddTag(_Tag);
+	return AbilitySystemComponent->TryActivateAbilitiesByTag(TagContainer);
+}
+
+void ASoldier::CancelAbilities(const FGameplayTagContainer& _TagContainer)
+{
+	AbilitySystemComponent->CancelAbilities(&_TagContainer);
+}
+
+void ASoldier::CancelAbility(const FGameplayTag& _Tag)
+{
+	FGameplayTagContainer TagContainer;
+	TagContainer.AddTag(_Tag);
+	AbilitySystemComponent->CancelAbilities(&TagContainer);
+}
+
 
 void ASoldier::onSwitchCamera()
 {

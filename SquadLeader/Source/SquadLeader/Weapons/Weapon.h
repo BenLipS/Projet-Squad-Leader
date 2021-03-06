@@ -21,7 +21,7 @@ protected:
 	UAbilitySystemSoldier* AbilitySystemComponent;
 
 public:
-	void InitializeAbilitySystemComponent(UAbilitySystemSoldier* _abilitySystemComponent);
+	void InitializeAbilitySystemComponent(UAbilitySystemSoldier* _AbilitySystemComponent);
 	UAbilitySystemSoldier* GetAbilitySystemComponent() const;
 
 //////////////// Fire
@@ -66,19 +66,19 @@ protected:
 	FGameplayEffectSpecHandle DamageEffectSpecHandle;
 
 	UFUNCTION(BlueprintCallable, Category = "Fire | Impact")
-	virtual void ApplyImpactDamage(UAbilitySystemComponent* _targetASC);
+	virtual void ApplyImpactDamage(UAbilitySystemComponent* _TargetASC);
 
 	// Additional impact effects
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Fire | Impact")
 	TArray<TSubclassOf<class UGameplayEffect>> ImpactEffects;
 
 	UFUNCTION(BlueprintCallable, Category = "Fire | Impact")
-	virtual void ApplyImpactEffects(UAbilitySystemComponent* _targetASC);
+	virtual void ApplyImpactEffects(UAbilitySystemComponent* _TargetASC);
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Fire")
 	virtual void TryFiring();
-	void TryFiring(const FGameplayEffectSpecHandle _damageEffectSpecHandle);
+	void TryFiring(const FGameplayEffectSpecHandle _DamageEffectSpecHandle);
 
 	UFUNCTION(BlueprintCallable, Category = "Fire")
 	virtual void Fire();

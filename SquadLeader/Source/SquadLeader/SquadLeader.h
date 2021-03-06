@@ -33,4 +33,6 @@ enum class ESoldierAbilityInputID : uint8
 	Ability2		UMETA(DisplayName = "Ability2"),
 	// T
 	GiveOrder		UMETA(DisplayName = "GiveOrder"),
+	// R
+	ReloadWeapon	UMETA(DisplayName = "ReloadWeapon"),
 };
