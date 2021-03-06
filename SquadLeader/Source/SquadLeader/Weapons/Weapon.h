@@ -5,6 +5,7 @@
 #include "GameplayEffect.h"
 #include "AbilitySystemInterface.h"
 #include "../AbilitySystem/Soldiers/AbilitySystemSoldier.h"
+#include "Components/SkeletalMeshComponent.h"
 #include "Weapon.generated.h"
 
 UCLASS(Abstract)
@@ -14,6 +15,12 @@ class SQUADLEADER_API AWeapon : public AActor, public IAbilitySystemInterface
 
 protected:
 	AWeapon();
+
+protected:
+	virtual void BeginPlay() override;
+
+public:
+	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 
 //////////////// Ability System
 protected:
@@ -87,11 +94,42 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Fire")
 	virtual void Fire();
 
-	virtual void BeginPlay() override;
-
 	virtual void Reload();
 
 protected:
 	virtual void OnReadyToShoot();
 	virtual void OnReloaded();
+
+public:
+	UFUNCTION()
+	FVector GetMuzzleLocation() const;
+
+	UFUNCTION()
+	FRotator GetMuzzleRotation() const;
+
+//////////////// Animations
+	UPROPERTY(EditDefaultsOnly, Category = Mesh)
+	USkeletalMeshComponent* Mesh;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Animation")
+	UParticleSystem* FireMuzzleFX;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Animation")
+	FName FireMuzzleAttachPoint;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Animation")
+	FVector FireMuzzleFXScale;
+
+	UFUNCTION()
+	virtual void FireAnimation();
+
+	UFUNCTION(BlueprintCallable, Reliable, NetMulticast, WithValidation, Category = "Animation")
+	void MulticastFireAnimation();
+	void MulticastFireAnimation_Implementation();
+	bool MulticastFireAnimation_Validate();
+
+	UFUNCTION(BlueprintCallable, Reliable, Server, WithValidation, Category = "Animation")
+	void ServerFireAnimation();
+	void ServerFireAnimation_Implementation();
+	bool ServerFireAnimation_Validate();
 };

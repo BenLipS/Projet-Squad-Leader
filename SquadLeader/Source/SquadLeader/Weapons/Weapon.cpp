@@ -1,15 +1,27 @@
 #include "Weapon.h"
 #include "../Soldiers/Soldier.h"
+#include "Kismet/GameplayStatics.h"
+#include "Particles/ParticleSystemComponent.h"
 
-AWeapon::AWeapon() : MaxAmmo{ 50 }, IsNextFireReady{ true }, TimeToReloadAmmo{ 2.f }, TimeToReloadNextShoot{ 0.2f }, IsAutomatic{ true }, Penetration{ 1 }, FieldOfViewAim{ 50.f }
+AWeapon::AWeapon() : MaxAmmo{ 50 }, IsNextFireReady{ true }, TimeToReloadAmmo{ 2.f }, TimeToReloadNextShoot{ 0.2f }, IsAutomatic{ true }, Penetration{ 1 }, FieldOfViewAim{ 50.f }, FireMuzzleFXScale{ FVector{1.f} }
 {
 	PrimaryActorTick.bCanEverTick = false;
+	bReplicates = true;
+	bNetUseOwnerRelevancy = true;
 }
 
 void AWeapon::BeginPlay()
 {
 	Super::BeginPlay();
 	CurrentAmmo = MaxAmmo;
+
+	if (ASoldier* Soldier = Cast<ASoldier>(GetOwner()); Soldier && !Mesh)
+		Mesh = Soldier->GetMesh();
+}
+
+void AWeapon::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 }
 
 void AWeapon::InitializeAbilitySystemComponent(UAbilitySystemSoldier* _AbilitySystemComponent)
@@ -56,19 +68,54 @@ void AWeapon::TryFiring(const FGameplayEffectSpecHandle _DamageEffectSpecHandle)
 
 void AWeapon::Fire()
 {
+	ASoldier* Soldier = Cast<ASoldier>(GetOwner());
+	if (!Soldier)
+		return;
+
+	if (HasAuthority())
+		MulticastFireAnimation();
+	else
+		ServerFireAnimation();
+
 	--CurrentAmmo;
 	IsNextFireReady = false;
 
 	if (CurrentAmmo == 0)
-	{
-		if (ASoldier* Soldier = Cast<ASoldier>(GetOwner()); Soldier)
-			Soldier->ActivateAbility(ASoldier::SkillReloadWeaponTag);
-		else
-			Reload();
-	}
+		Soldier->ActivateAbility(ASoldier::SkillReloadWeaponTag);
 	else
 		GetWorldTimerManager().SetTimer(TimerReloadNextShoot, this, &AWeapon::OnReadyToShoot, TimeToReloadNextShoot, false);
 
+}
+
+void AWeapon::FireAnimation()
+{
+	if (ASoldier* Soldier = Cast<ASoldier>(GetOwner()); Soldier)
+	{
+		UParticleSystemComponent* FireFX = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), FireMuzzleFX, GetMuzzleLocation(), Soldier->GetSyncControlRotation() /*GetMuzzleRotation()*/);
+
+		if (FireFX)
+			FireFX->SetRelativeScale3D(FireMuzzleFXScale);
+	}
+}
+
+void AWeapon::MulticastFireAnimation_Implementation()
+{
+	FireAnimation();
+}
+
+bool AWeapon::MulticastFireAnimation_Validate()
+{
+	return true;
+}
+
+void AWeapon::ServerFireAnimation_Implementation()
+{
+	FireAnimation();
+}
+
+bool AWeapon::ServerFireAnimation_Validate()
+{
+	return true;
 }
 
 void AWeapon::Reload()
@@ -92,4 +139,13 @@ void AWeapon::OnReloaded()
 	IsNextFireReady = true;
 	if (IsAutomatic)
 		TryFiring();
+}
+
+FVector AWeapon::GetMuzzleLocation() const
+{
+	return Mesh->GetSocketLocation(FireMuzzleAttachPoint);
+}
+FRotator AWeapon::GetMuzzleRotation() const
+{
+	return Mesh->GetSocketRotation(FireMuzzleAttachPoint);
 }

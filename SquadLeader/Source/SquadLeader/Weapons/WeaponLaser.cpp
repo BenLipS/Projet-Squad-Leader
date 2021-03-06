@@ -4,7 +4,7 @@
 #include "../Soldiers/Soldier.h"
 #include "SquadLeader/SquadLeader.h"
 
-AWeaponLaser::AWeaponLaser() : CollisionChannelImpact{ ECC_Player },  AWeapon()
+AWeaponLaser::AWeaponLaser() : AWeapon(), CollisionChannelImpact{ ECC_Player }
 {
 }
 
