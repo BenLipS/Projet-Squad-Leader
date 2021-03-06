@@ -20,6 +20,7 @@ void AInfluenceMapGrid::Tick(float DeltaSeconds) {
 	/*if (GEngine)
 		GEngine->AddOnScreenDebugMessage(100, 1.f, FColor::Black, TEXT("HELLO, i'm the new InfluenceMap :)"));*/
 	DrawGrid();
+	ResetGrid();
 }
 
 void AInfluenceMapGrid::InitGrid() noexcept {
@@ -50,5 +51,12 @@ void AInfluenceMapGrid::DrawGrid() const {
 			DrawDebugSolidBox(GetWorld(), _tile.m_location, FVector(95.f, 95.f, 10.f), FColor(255, 0, 0));
 		else
 			DrawDebugSolidBox(GetWorld(), _tile.m_location, FVector(95.f, 95.f, 10.f), FColor(0, 255, 0));
+	}
+}
+
+void AInfluenceMapGrid::ResetGrid() noexcept {
+	for (FTileBase& _tile : m_influencemap) {
+		_tile.m_value = 0.f;
+		_tile.m_team = -1;
 	}
 }

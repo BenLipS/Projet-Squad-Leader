@@ -54,7 +54,13 @@ private:
 	*/
 	bool IsValid(FVector _location) const;
 
+	/*
+	* Draw the grid
+	* only use this for debug
+	*/
 	void DrawGrid() const;
+
+	void ResetGrid() noexcept;
 
 public:
 
