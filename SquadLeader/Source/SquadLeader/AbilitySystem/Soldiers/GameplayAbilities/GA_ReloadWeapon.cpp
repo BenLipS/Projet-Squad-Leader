@@ -31,8 +31,13 @@ bool UGA_ReloadWeapon::CanActivateAbility(const FGameplayAbilitySpecHandle Handl
 	if (!Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags))
 		return false;
 
-	ASoldier *Soldier = Cast<ASoldier>(ActorInfo->AvatarActor.Get());
-	return !!Soldier;
+	if (ASoldier* Soldier = Cast<ASoldier>(ActorInfo->AvatarActor.Get()); Soldier)
+	{
+		if (AWeapon* Weapon = Soldier->getCurrentWeapon(); Weapon)
+			return !Weapon->IsFullAmmo();
+	}
+
+	return false;
 }
 
 void UGA_ReloadWeapon::CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateCancelAbility)

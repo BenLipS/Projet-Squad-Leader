@@ -22,7 +22,12 @@ UAbilitySystemSoldier* AWeapon::GetAbilitySystemComponent() const
 	return AbilitySystemComponent;
 }
 
-float AWeapon::GetFieldOfViewAim() const
+bool AWeapon::IsFullAmmo() const noexcept
+{
+	return CurrentAmmo == MaxAmmo;
+}
+
+float AWeapon::GetFieldOfViewAim() const noexcept
 {
 	return FieldOfViewAim;
 }

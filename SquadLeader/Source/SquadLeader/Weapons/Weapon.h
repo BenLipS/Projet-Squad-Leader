@@ -36,6 +36,10 @@ protected:
 	UPROPERTY(BluePrintReadOnly, Category = "Stats")
 	uint8 CurrentAmmo;
 
+public:
+	bool IsFullAmmo() const noexcept;
+
+protected:
 	bool IsNextFireReady;
 
 	UPROPERTY(EditDefaultsOnly, BluePrintReadWrite, Category = "Stats")
@@ -55,7 +59,7 @@ protected:
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Stats")
-	float GetFieldOfViewAim() const;
+	float GetFieldOfViewAim() const noexcept;
 
 protected:
 	UPROPERTY(BluePrintReadWrite, EditAnywhere, Category = "Stats")
