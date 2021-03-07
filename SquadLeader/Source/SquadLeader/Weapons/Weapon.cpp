@@ -19,6 +19,12 @@ void AWeapon::BeginPlay()
 		Mesh = Soldier->GetMesh();
 }
 
+void AWeapon::OnRep_Owner()
+{
+	if (ASoldier* Soldier = Cast<ASoldier>(GetOwner()); Soldier && !Mesh)
+		Mesh = Soldier->GetMesh();
+}
+
 void AWeapon::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
