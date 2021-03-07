@@ -25,6 +25,18 @@ struct SQUADLEADER_API FTileBase {
 
 };
 
+USTRUCT()
+struct SQUADLEADER_API FNeighboor {
+
+	GENERATED_USTRUCT_BODY()
+
+	FNeighboor() {
+	}
+
+	TArray<int> m_neighboor;
+
+};
+
 
 /**
  * This class will create a Grid for the influence Map
@@ -60,8 +72,44 @@ private:
 	*/
 	void DrawGrid() const;
 
+	/*
+	* Reset all the grid
+	* the value of a tile is reset to 0
+	* the team of a tile is reset to none
+	*/
 	void ResetGrid() noexcept;
 
+	/*
+	* Update the grid with world information
+	*/
+	void UpdateGrid() noexcept;
+
+	/*
+	* Return the Index in the grid of a certain _location
+	*/
+	int FindTileIndex(FVector _location) const noexcept;
+
+	/*
+	* Check if _location is on the tile who's in tile_location
+	*/
+	bool IsOnTile(FVector _location, FVector tile_location) const noexcept;
+
+	/*
+	* Find the neighboor for all tile
+	*/
+	void FindNeighboor() noexcept;
+
+	/*
+	* Find the neighboor for a specific tile
+	*/
+	void Neighboors(int index) noexcept;
+
+	/*
+	* Check if two tile are neighboor
+	*/
+	void IsNeighboor(int index_1, int index_2) noexcept;
+
+	void Influence(int index, int start_index, int distance) noexcept;
 public:
 
 	//Dimension of the grid
@@ -89,4 +137,9 @@ private:
 	//The number of tile in the end
 	int nbr_tile = 0;
 	
+	/*
+	* List the neighboors of a tile
+	*/
+	UPROPERTY()
+		TArray<FNeighboor> m_neighboors;
 };

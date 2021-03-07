@@ -2,7 +2,7 @@
 
 
 #include "GrdiSetUp.h"
-#include "../../Soldiers/Soldier.h"
+#include "../../soldiers/soldier.h"
 #include "DrawDebugHelpers.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "../../ControlArea/ControlAreaManager.h"
