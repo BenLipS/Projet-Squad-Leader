@@ -7,6 +7,7 @@
 #include "ShieldWidget.h"
 #include "AIInfoListWidget.h"
 #include "Blueprint/UserWidget.h"
+#include "../AI/AISquadController.h"
 
 APlayerHUD::APlayerHUD()
 {
@@ -46,9 +47,6 @@ void APlayerHUD::BeginPlay()
 	{
 		AIInfoWidget = CreateWidget<UAIInfoListWidget>(GetWorld(), AIInfoWidgetClass);
 		if (AIInfoWidget) {
-			AIInfoWidget->AddItem(100.f, 100.f);
-			AIInfoWidget->AddItem(100.f, 100.f);
-			AIInfoWidget->AddItem(100.f, 100.f);
 			AIInfoWidget->AddToViewport();
 		}
 	}
@@ -83,5 +81,19 @@ void APlayerHUD::OnMaxShieldChanged(float newValue)
 	if (ShieldWidget)
 	{
 		ShieldWidget->OnMaxShieldChanged(newValue);
+	}
+}
+
+void APlayerHUD::OnSquadChanged(TArray<AAISquadController*> newValue)
+{
+	AIInfoWidget->RemoveFromViewport();
+
+	AIInfoWidget = CreateWidget<UAIInfoListWidget>(GetWorld(), AIInfoWidgetClass);
+	if (AIInfoWidget) {
+		AIInfoWidget->AddToViewport();
+		for (auto AI : newValue)
+		{
+			AIInfoWidget->AddItem(100.f, 100.f);
+		}
 	}
 }

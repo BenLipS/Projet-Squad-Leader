@@ -52,4 +52,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void OnMaxShieldChanged(float newValue);
+
+	//-----SquadInfo-----
+	UFUNCTION(BlueprintCallable)
+	void OnSquadChanged(TArray<class AAISquadController*> newValue);
 };

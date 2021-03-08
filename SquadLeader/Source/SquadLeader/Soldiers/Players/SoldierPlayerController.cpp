@@ -41,7 +41,18 @@ void ASoldierPlayerController::CreateHUD()
 	PlayerHUD->OnHealthChanged(PS->GetHealth());
 	PlayerHUD->OnMaxShieldChanged(PS->GetMaxShield());
 	PlayerHUD->OnShieldChanged(PS->GetShield());
+
+	auto player = Cast<ASoldierPlayer>(GetPawn());
+	if (player)
+	{
+		auto manager = player->GetSquadManager();
+		if (manager)
+		{
+			manager->OnSquadChanged.AddDynamic(PlayerHUD, &APlayerHUD::OnSquadChanged);
+		}
+	}
 }
+
 
 /*UHUDWidget* ASoldierPlayerController::GetHUD() const
 {
