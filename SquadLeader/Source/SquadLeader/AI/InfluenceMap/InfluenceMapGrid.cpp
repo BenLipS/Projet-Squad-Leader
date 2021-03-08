@@ -140,13 +140,17 @@ void AInfluenceMapGrid::FindNeighboor()noexcept {
 }
 
 void AInfluenceMapGrid::Influence(int index, int start_index, int distance) noexcept {
-	float value = m_influencemap[index].m_value / FMath::Square(1.f + distance);
+	float value = m_influencemap[index].m_value / FMath::Sqrt(1.f + distance);
 
-	if (value < 0.0005f)
+	if (value < 0.1f)
 		return;
 
 	for (int neighboor : m_neighboors[index].m_neighboor) {
-		if (neighboor != start_index) {
+		if (neighboor != start_index && m_influencemap[neighboor].m_value <= value) {
+			/*if(m_influencemap[neighboor].m_value + value > 0.7f)
+				m_influencemap[neighboor].m_value = 0.7f;
+			else
+				m_influencemap[neighboor].m_value += value;*/
 			m_influencemap[neighboor].m_value = value;
 			m_influencemap[neighboor].m_team = m_influencemap[index].m_team;
 			Influence(neighboor, index, distance + 1);
