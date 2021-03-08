@@ -22,7 +22,6 @@ void AAIBasicManager::BeginPlay() {
 void AAIBasicManager::Init(TSubclassOf<ASoldierTeam> _Team)
 {
 	Team = _Team;
-	InitInfluenceMap();
 
 	/*For now Each AIBasicManager Spawn with 4 AIs*/
 	/*TEMPORARY*/
@@ -87,10 +86,6 @@ void AAIBasicManager::Tick(float DeltaSeconds) {
 	/*if (GEngine)
 		GEngine->AddOnScreenDebugMessage(80, 2.f, FColor::Black, TEXT("I'm the AIBasicManager"));*/
 	
-}
-
-void AAIBasicManager::InitInfluenceMap() {
-	m_influenceMap = Cast<AGrdiSetUp>(Cast<USquadLeaderGameInstance>(GetGameInstance())->InfluenceMap);
 }
 
 void AAIBasicManager::InitValue() {
