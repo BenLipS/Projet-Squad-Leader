@@ -99,6 +99,8 @@ public:
 
 	virtual void Die() const;
 
+	virtual void ResetBlackBoard() const;
+
 	UFUNCTION()
 		void SetState(AIBasicState _state) noexcept;
 protected:

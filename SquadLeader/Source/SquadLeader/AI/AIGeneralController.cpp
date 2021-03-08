@@ -331,11 +331,20 @@ UMission* AAIGeneralController::GetMission()
 }
 
 void AAIGeneralController::Die() const {
+	ResetBlackBoard();
+}
+
+void AAIGeneralController::ResetBlackBoard() const
+{
 	blackboard->SetValueAsBool("is_attacking", false);
 	blackboard->SetValueAsBool("need_GoBackward", false);
 	blackboard->SetValueAsBool("need_GoForward", false);
+	blackboard->SetValueAsBool("IsSearching", false);
+	blackboard->SetValueAsBool("IsHit", false);
 	blackboard->SetValueAsObject("FocusActor", NULL);
 	blackboard->SetValueAsVector("EnemyLocation", FVector());
+	blackboard->SetValueAsVector("VectorLocation", FVector());
+	blackboard->SetValueAsVector("MissionLocation", FVector());
 }
 
 void AAIGeneralController::SetState(AIBasicState _state) noexcept {

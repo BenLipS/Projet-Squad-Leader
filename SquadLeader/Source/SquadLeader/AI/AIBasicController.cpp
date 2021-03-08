@@ -235,5 +235,10 @@ FVector AAIBasicController::GetRespawnPoint()  // TODO : Change this function to
 
 void AAIBasicController::Die() const {
 	Super::Die();
-	blackboard->SetValueAsBool("DoFlocking", false);
+}
+
+void AAIBasicController::ResetBlackBoard() const {
+	Super::ResetBlackBoard();
+	blackboard->SetValueAsBool("DoFlocking", true);
+	blackboard->SetValueAsVector("FlockingLocation", Cast<ASoldierAI>(GetPawn())->GetLocation());
 }
