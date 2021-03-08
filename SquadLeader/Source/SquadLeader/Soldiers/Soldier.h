@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Core.h"
 #include "GameFramework/Character.h"
@@ -8,13 +8,16 @@
 #include "../AbilitySystem/Soldiers/AttributeSetSoldier.h"
 #include "../AbilitySystem/Soldiers/AbilitySystemSoldier.h"
 #include "../Weapons/Weapon.h"
+#include "Interface/Teamable.h"
+//
 #include "SoldierTeam.h"
+//
 #include "Net/UnrealNetwork.h"
 #include "Soldier.generated.h"
 
 
 UCLASS()
-class SQUADLEADER_API ASoldier : public ACharacter, public IAbilitySystemInterface
+class SQUADLEADER_API ASoldier : public ACharacter, public IAbilitySystemInterface, public ITeamable
 {
 	GENERATED_BODY()
 
@@ -161,6 +164,25 @@ public:
 	USpringArmComponent* SpringArmComponent;
 
 protected:
+	UPROPERTY(VisibleAnywhere)
+	FRotator SyncControlRotation;
+
+public:
+	UFUNCTION(BlueprintCallable, Category = "Camera")
+	FRotator GetSyncControlRotation() const noexcept;
+
+protected:
+	UFUNCTION(Reliable, Server, WithValidation)
+	void ServerSyncControlRotation(const FRotator& _Rotation);
+	void ServerSyncControlRotation_Implementation(const FRotator& _Rotation);
+	bool ServerSyncControlRotation_Validate(const FRotator& _Rotation);
+
+	UFUNCTION(Reliable, NetMulticast, WithValidation)
+	void MulticastSyncControlRotation(const FRotator& _Rotation);
+	void MulticastSyncControlRotation_Implementation(const FRotator& _Rotation);
+	bool MulticastSyncControlRotation_Validate(const FRotator& _Rotation);
+
+protected:
 	UPROPERTY(VisibleAnywhere, BluePrintReadWrite, Category = "Camera")
 	bool bIsFirstPerson;
 
@@ -183,10 +205,10 @@ public:
 
 	// Looking direction
 	UFUNCTION()
-	void LookUp(const float _Val);
+	virtual void LookUp(const float _Val);
 
 	UFUNCTION()
-	void Turn(const float _Val);
+	virtual void Turn(const float _Val);
 
 	UFUNCTION(BlueprintCallable, Category = "Movement")
 	virtual FVector lookingAtPosition();
@@ -235,32 +257,29 @@ protected:
 	UPROPERTY(Transient, ReplicatedUsing = OnRep_CurrentWeapon)
 	AWeapon* currentWeapon;
 
-	void addToInventory(AWeapon* _weapon);
+	void AddToInventory(AWeapon* _Weapon);
 
-	void SetCurrentWeapon(class AWeapon* _newWeapon, class AWeapon* _previousWeapon = nullptr);
+	void SetCurrentWeapon(class AWeapon* _NewWeapon, class AWeapon* _PreviousWeapon = nullptr);
 
 	UFUNCTION()
-	void OnRep_CurrentWeapon(class AWeapon* _lastWeapon);
+	void OnRep_CurrentWeapon(class AWeapon* _LastWeapon);
 
 public:
 	AWeapon* getCurrentWeapon() const noexcept { return currentWeapon; }
-	////////////////  PlayerTeam
-	// Appel du c�t� serveur pour actualiser l'�tat du rep�re 
-	UFUNCTION(Reliable, Server, WithValidation)
-		void ServerChangeTeam(TSubclassOf<ASoldierTeam> _PlayerTeam);
 
-	UFUNCTION() // Doit toujours �tre UFUNCTION() quand il s'agit d'une fonction �OnRep notify�
-		void OnRep_ChangeTeam();
+	//////////////// Soldier team
+	UPROPERTY(EditAnywhere, Category = "PlayerTeam")
+		TSubclassOf<ASoldierTeam> InitialTeam;  // for debug use
 
-	UPROPERTY(EditAnywhere, BluePrintReadWrite, ReplicatedUsing = OnRep_ChangeTeam, Category = "PlayerTeam")
-		TSubclassOf<ASoldierTeam> PlayerTeam;
-	TSubclassOf<ASoldierTeam> OldPlayerTeam;  // Local buffer used for team change
-	
 	UFUNCTION(Reliable, Server, WithValidation)
 		void ServerCycleBetweenTeam();
 
 	// Connected to the "L" key
-	void cycleBetweenTeam();
+	virtual void cycleBetweenTeam();
+	
+	//////////////// Teamable
+	virtual TSubclassOf<ASoldierTeam> GetTeam() override { return nullptr; };  // function overide in SoldierPlayer and Soldier AI
+	virtual bool SetTeam(TSubclassOf<ASoldierTeam> _Team) override { return false; };  // function overide in SoldierPlayer and Soldier AI
 
 
 public:

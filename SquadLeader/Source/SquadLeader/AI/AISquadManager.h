@@ -61,4 +61,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void UpdateMission(const MissionType _MissionType, const FVector& _Location);
+
+	// temp function, need to be replace by more robust code
+	void UpdateSquadTeam(TSubclassOf<ASoldierTeam> _NewTeam);
 };

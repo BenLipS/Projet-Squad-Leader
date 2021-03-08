@@ -5,6 +5,8 @@
 #include "DrawDebugHelpers.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include<algorithm>
+// temp include, need to be replace by more robust code
+#include "../Soldiers/Soldier.h"
 
 AAISquadManager::AAISquadManager() {
 	PrimaryActorTick.bStartWithTickEnabled = true;
@@ -114,7 +116,8 @@ void AAISquadManager::UpdateMission(const MissionType _MissionType, const FVecto
 		if(Mission->Type == MissionType::Formation){
 			AISquad->get_blackboard()->SetValueAsBool("IsInFormation", true);
 			AISquad->get_blackboard()->SetValueAsBool("HasOrder", false);
-		}else {
+		}
+		else if (Mission->Type != MissionType::None) {
 			AISquad->get_blackboard()->SetValueAsBool("IsInFormation", false);
 			AISquad->get_blackboard()->SetValueAsBool("HasOrder", true);
 		}
@@ -135,5 +138,16 @@ void AAISquadManager::UpdateMission(const MissionType _MissionType, const FVecto
 	default:
 		GEngine->AddOnScreenDebugMessage(4563, 4.f, FColor::Red, FString::Printf(TEXT("Order Unknown on (%s,%s,%s) from %s"), *FString::SanitizeFloat(Mission->Location.X), *FString::SanitizeFloat(Mission->Location.Y), *FString::SanitizeFloat(Mission->Location.Z), *Leader->GetName()));
 		break;
+	}
+}
+
+// temp include, need to be replace by more robust code
+void AAISquadManager::UpdateSquadTeam(TSubclassOf<ASoldierTeam> _NewTeam)
+{
+	Team = _NewTeam;
+	for (auto SquadIA : AISquadList) {
+		if (ASoldier* soldier = Cast<ASoldier>(SquadIA->GetPawn()); soldier) {
+			soldier->SetTeam(_NewTeam);
+		}
 	}
 }

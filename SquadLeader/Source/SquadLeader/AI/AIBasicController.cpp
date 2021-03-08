@@ -54,7 +54,7 @@ void AAIBasicController::UpdateNeighbourhood()
 {
 	for (ASoldier* soldier : SeenSoldier)
 	{
-		if (AAIBasicController* AIBasic = Cast<AAIBasicController>(soldier->Controller); AIBasic && soldier->PlayerTeam == Cast<ASoldier>(GetPawn())->PlayerTeam && this->ObjectifLocation == AIBasic->ObjectifLocation)
+		if (AAIBasicController* AIBasic = Cast<AAIBasicController>(soldier->Controller); AIBasic && soldier->GetTeam() == Cast<ASoldier>(GetPawn())->GetTeam() && this->ObjectifLocation == AIBasic->ObjectifLocation)
 			SeenBoids.Add(AIBasic);
 	};
 }
@@ -172,7 +172,7 @@ void AAIBasicController::UpdateFlockingPosition(float DeltaSeconds)
 	UpdateMission();
 
 	float MaxSpeed = GetPawn()->GetMovementComponent()->GetMaxSpeed();
-	MovementVector = MovementVector * MaxSpeed/2;
+	MovementVector = MovementVector * MaxSpeed;
 	blackboard->SetValueAsVector("FlockingLocation", GetPawn()->GetActorLocation() + MovementVector);
 
 	DrawDebug();
@@ -209,8 +209,8 @@ void AAIBasicController::Tick(float DeltaSeconds) {
 FVector AAIBasicController::GetRespawnPoint()  // TODO : Change this function to adapt the squad AI respawn
 {
 	if (ASoldier* soldier = Cast<ASoldier>(GetPawn()); soldier) {
-		if (soldier->PlayerTeam) {
-			auto AvailableSpawnPoints = soldier->PlayerTeam.GetDefaultObject()->GetUsableSpawnPoints();
+		if (soldier->GetTeam()) {
+			auto AvailableSpawnPoints = soldier->GetTeam().GetDefaultObject()->GetUsableSpawnPoints();
 			if (AvailableSpawnPoints.Num() > 0) {
 
 				FVector OptimalPosition = AvailableSpawnPoints[0]->GetActorLocation();

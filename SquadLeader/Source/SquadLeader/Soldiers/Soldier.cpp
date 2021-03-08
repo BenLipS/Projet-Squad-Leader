@@ -7,7 +7,6 @@
 #include "../AbilitySystem/Soldiers/GameplayEffects/States/GE_StateDead.h"
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "Perception/AISense_Sight.h"
-#include "../SquadLeaderGameModeBase.h"
 #include "Kismet/KismetMathLibrary.h"
 //#include "DrawDebugHelpers.h"
 
@@ -38,7 +37,7 @@ ASoldier::ASoldier(const FObjectInitializer& _ObjectInitializer) : Super(_Object
 	initMovements();
 	initMeshes();
 	setup_stimulus();
-	GetCapsuleComponent()->BodyInstance.SetObjectType(ECollisionChannel::ECC_EngineTraceChannel1);
+	GetCapsuleComponent()->BodyInstance.SetObjectType(ECC_Player);
 }
 
 /*
@@ -56,10 +55,13 @@ void ASoldier::BeginPlay()
 		setToThirdCameraPerson();
 
 	if (GetLocalRole() == ROLE_Authority) {
+		// init team:
+		if (InitialTeam && !(GetTeam()))
+			SetTeam(InitialTeam);
+
 		// add this to the team data
-		if (PlayerTeam) {
-			OldPlayerTeam = PlayerTeam;
-			PlayerTeam.GetDefaultObject()->AddSoldierList(this);
+		if (GetTeam()) {
+			GetTeam().GetDefaultObject()->AddSoldierList(this);
 		}
 	}
 }
@@ -75,7 +77,6 @@ void ASoldier::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifeti
 	// everyone except local owner: flag change is locally instigated
 
 	// everyone
-	DOREPLIFETIME(ASoldier, PlayerTeam);
 	//DOREPLIFETIME(AShooterCharacter, CurrentWeapon);
 }
 
@@ -86,6 +87,8 @@ void ASoldier::Tick(float DeltaTime)
 
 void ASoldier::initCameras()
 {
+	SyncControlRotation = FRotator{0.f, 0.f, 0.f};
+
 	// 1st person camera
 	FirstPersonCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("FirstPersonCamera"));
 	FirstPersonCameraComponent->SetupAttachment(GetCapsuleComponent());
@@ -149,7 +152,7 @@ void ASoldier::initWeapons()
 
 			if (weapon)
 			{
-				addToInventory(weapon);
+				AddToInventory(weapon);
 				weapon->InitializeAbilitySystemComponent(AbilitySystemComponent);
 			}
 		}
@@ -245,8 +248,8 @@ void ASoldier::DeadTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
 	if (NewCount > 0) // If dead tag is added - Handle death
 	{
 		// remove ticket from team (only on server)
-		if (PlayerTeam && GetLocalRole() == ROLE_Authority)
-			PlayerTeam.GetDefaultObject()->RemoveOneTicket();
+		if (GetTeam() && GetLocalRole() == ROLE_Authority)
+			GetTeam().GetDefaultObject()->RemoveOneTicket();
 
 		// Stop the soldier and remove any interaction with the world
 		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -334,13 +337,25 @@ void ASoldier::MoveRight(const float _Val)
 void ASoldier::LookUp(const float _Val)
 {
 	if (IsAlive())
+	{
 		AddControllerPitchInput(_Val);
+		if (APlayerController* PlayerController = Cast<APlayerController>(Controller); PlayerController)
+		{
+			SyncControlRotation = PlayerController->GetControlRotation();
+		}
+	}
 }
 
 void ASoldier::Turn(const float _Val)
 {
 	if (IsAlive())
+	{
 		AddControllerYawInput(_Val);
+		if (APlayerController* PlayerController = Cast<APlayerController>(Controller); PlayerController)
+		{
+			SyncControlRotation = PlayerController->GetControlRotation();
+		}
+	}
 }
 
 // TODO: For now, we directly change the move speed multiplier with a setter. This is should be changed 
@@ -367,16 +382,15 @@ FVector ASoldier::lookingAtPosition()
 {
 	FHitResult outHit;
 
-	FVector startLocation = CurrentCameraComponent->GetComponentTransform().GetLocation();
-	FVector forwardVector = CurrentCameraComponent->GetForwardVector();
+	FVector startLocation = ThirdPersonCameraComponent->GetComponentTransform().GetLocation();
+	FVector forwardVector = ThirdPersonCameraComponent->GetForwardVector();
 	FVector endLocation = startLocation + forwardVector * 10000.f;
 
 	FCollisionQueryParams collisionParams;
 	collisionParams.AddIgnoredActor(this);
 
-	if (GetWorld()->LineTraceSingleByChannel(outHit, startLocation, endLocation, ECollisionChannel::ECC_WorldStatic, collisionParams))
-		return outHit.bBlockingHit ? outHit.Location : endLocation;
-	return endLocation;
+	GetWorld()->LineTraceSingleByChannel(outHit, startLocation, endLocation, ECollisionChannel::ECC_WorldStatic, collisionParams);
+	return outHit.bBlockingHit ? outHit.Location : endLocation;
 }
 
 int32 ASoldier::GetCharacterLevel() const
@@ -477,50 +491,62 @@ void ASoldier::StopAiming()
 	ThirdPersonCameraComponent->SetFieldOfView(90.f);
 }
 
-void ASoldier::OnRep_CurrentWeapon(AWeapon* _lastWeapon)
+void ASoldier::OnRep_CurrentWeapon(AWeapon* _LastWeapon)
 {
-	SetCurrentWeapon(currentWeapon, _lastWeapon);
+	SetCurrentWeapon(currentWeapon, _LastWeapon);
 }
 
-void ASoldier::addToInventory(AWeapon* _weapon)
+FRotator ASoldier::GetSyncControlRotation() const noexcept
 {
-	Inventory.Add(_weapon);
+	return SyncControlRotation;
 }
 
-void ASoldier::SetCurrentWeapon(AWeapon* _newWeapon, AWeapon* _previousWeapon)
+void ASoldier::ServerSyncControlRotation_Implementation(const FRotator& _Rotation)
 {
-	if (_previousWeapon && _newWeapon !=_previousWeapon)
-		currentWeapon = _newWeapon;
+	SyncControlRotation = _Rotation;
 
+	if (!IsLocallyControlled())
+	{
+		FirstPersonCameraComponent->SetWorldRotation(SyncControlRotation);
+		ThirdPersonCameraComponent->SetWorldRotation(SyncControlRotation);
+	}
+	GEngine->AddOnScreenDebugMessage(474, 100.f, FColor::Green, FString::Printf(TEXT("%s %s"), *FString::SanitizeFloat(SyncControlRotation.Pitch), *FString::SanitizeFloat(SyncControlRotation.Yaw)));
 }
 
-
-// network for debug team change
-
-void ASoldier::ServerChangeTeam_Implementation(TSubclassOf<ASoldierTeam> _PlayerTeam)
-{
-	PlayerTeam = _PlayerTeam;
-	
-	if(OldPlayerTeam)
-		OldPlayerTeam.GetDefaultObject()->RemoveSoldierList(this);
-	if(PlayerTeam)
-		PlayerTeam.GetDefaultObject()->AddSoldierList(this);
-	
-	OldPlayerTeam = PlayerTeam;
-}
-
-bool ASoldier::ServerChangeTeam_Validate(TSubclassOf<ASoldierTeam> _PlayerTeam)
+bool ASoldier::ServerSyncControlRotation_Validate(const FRotator& _Rotation)
 {
 	return true;
 }
 
-void ASoldier::OnRep_ChangeTeam()
+void ASoldier::MulticastSyncControlRotation_Implementation(const FRotator& _Rotation)
 {
-	if (GetLocalRole() < ROLE_Authority) {
-		ServerChangeTeam(PlayerTeam);
+	SyncControlRotation = _Rotation;
+
+	if (!IsLocallyControlled())
+	{
+		FirstPersonCameraComponent->SetWorldRotation(SyncControlRotation);
+		ThirdPersonCameraComponent->SetWorldRotation(SyncControlRotation);
 	}
+	GEngine->AddOnScreenDebugMessage(471, 100.f, FColor::Green, FString::Printf(TEXT("%s %s"), *FString::SanitizeFloat(SyncControlRotation.Pitch), *FString::SanitizeFloat(SyncControlRotation.Yaw)));
 }
 
+bool ASoldier::MulticastSyncControlRotation_Validate(const FRotator& _Rotation)
+{
+	return true;
+}
+
+void ASoldier::AddToInventory(AWeapon* _Weapon)
+{
+	Inventory.Add(_Weapon);
+}
+
+void ASoldier::SetCurrentWeapon(AWeapon* _NewWeapon, AWeapon* _PreviousWeapon)
+{
+	if (_PreviousWeapon && _NewWeapon !=_PreviousWeapon)
+		currentWeapon = _NewWeapon;
+}
+
+// network for debug team change
 void ASoldier::ServerCycleBetweenTeam_Implementation() {
 	cycleBetweenTeam();
 }
@@ -534,21 +560,21 @@ void ASoldier::cycleBetweenTeam()
 	if (GetLocalRole() == ROLE_Authority) {
 		FString message;
 		auto gameMode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
-		auto initialIndex = gameMode->SoldierTeamCollection.Find(PlayerTeam);
+		auto initialIndex = gameMode->SoldierTeamCollection.Find(GetTeam());
 		if (initialIndex != INDEX_NONE) {  // cycle between existant team
 			auto index = initialIndex + 1;
 			if (!(gameMode->SoldierTeamCollection.IsValidIndex(index))) {
 				index = 0;
 			}
-			PlayerTeam = gameMode->SoldierTeamCollection[index];
+			SetTeam(gameMode->SoldierTeamCollection[index]);
 
-			message = PlayerTeam.GetDefaultObject()->TeamName;  // Log
+			message = GetTeam().GetDefaultObject()->TeamName;  // Log
 		}
 		else {  // if the player have no team for now give the first one
 			if (gameMode->SoldierTeamCollection.Max() > 0) {
-				PlayerTeam = gameMode->SoldierTeamCollection[0];
+				SetTeam(gameMode->SoldierTeamCollection[0]);
 
-				message = PlayerTeam.GetDefaultObject()->TeamName;  // Log
+				message = GetTeam().GetDefaultObject()->TeamName;  // Log
 			}
 		}
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, message);

@@ -3,6 +3,9 @@
 #include "CoreMinimal.h"
 #include "UObject/ObjectMacros.h"
 
+#define ECC_Player ECollisionChannel::ECC_GameTraceChannel1
+#define ECC_Projectile ECollisionChannel::ECC_GameTraceChannel2
+
 UENUM(BlueprintType)
 enum class ESoldierAbilityInputID : uint8
 {

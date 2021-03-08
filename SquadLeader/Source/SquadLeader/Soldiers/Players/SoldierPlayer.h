@@ -28,6 +28,20 @@ public:
 	UFUNCTION()
 	AAISquadManager* GetSquadManager();
 
+//////////////// Camera
+public:
+	virtual void LookUp(const float _Val) override;
+	virtual void Turn(const float _Val) override;
+
+//////////////// Teamable
+public:
+	virtual TSubclassOf<ASoldierTeam> GetTeam() override;
+	virtual bool SetTeam(TSubclassOf<ASoldierTeam> _Team) override;
+
+	virtual void cycleBetweenTeam() override;
+
+
+//////////////// Ability System Component
 protected:
 	void SetAbilitySystemComponent();
 	void BindASCInput();
