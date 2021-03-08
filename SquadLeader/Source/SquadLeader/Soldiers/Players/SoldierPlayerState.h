@@ -20,6 +20,7 @@ public:
 
 private:
 	void BeginPlay() override;
+	void InitializeAttributeChangeCallbacks();
 
 //////////////// Teamable
 protected:
@@ -40,4 +41,29 @@ protected:
 public:
 	UAbilitySystemSoldier* GetAbilitySystemComponent() const override;
 	UAttributeSetSoldier* GetAttributeSet() const;
+
+//////////////// Attributes
+public:
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
+	float GetHealth() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
+	float GetMaxHealth() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
+	float GetShield() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
+	float GetMaxShield() const;
+
+protected:
+	FDelegateHandle HealthChangedDelegateHandle;
+	FDelegateHandle MaxHealthChangedDelegateHandle;
+	FDelegateHandle ShieldChangedDelegateHandle;
+	FDelegateHandle MaxShieldChangedDelegateHandle;
+
+	virtual void HealthChanged(const FOnAttributeChangeData& Data);
+	virtual void MaxHealthChanged(const FOnAttributeChangeData& Data);
+	virtual void ShieldChanged(const FOnAttributeChangeData& Data);
+	virtual void MaxShieldChanged(const FOnAttributeChangeData& Data);
 };

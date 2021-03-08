@@ -49,17 +49,17 @@ protected:
 	void onSwitchCamera();
 
 //////////////// UI
-protected:
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "UI")
-	TSubclassOf<class UHUDWidget> HUDWidgetClass;
 
-	UPROPERTY(BlueprintReadWrite, Category = "UI")
-	class UHUDWidget* HUDWidget;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "UI")
+	TSubclassOf<class AHUD> HUDClass;
 
 public:
-	void createHUD();
-	UUserWidget* getHUD() const;
+	void CreateHUD();
 
+	/*UFUNCTION(Reliable, Client, WithValidation)
+	void SetRespawnCountdown(const float _RespawnTimeRemaining);
+	void SetRespawnCountdown_Implementation(const float _RespawnTimeRemaining);
+	bool SetRespawnCountdown_Validate(const float _RespawnTimeRemaining);*/
 //////////////// Movements
 protected:
 	// Move direction
