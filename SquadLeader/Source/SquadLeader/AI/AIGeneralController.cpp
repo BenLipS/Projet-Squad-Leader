@@ -330,8 +330,9 @@ UMission* AAIGeneralController::GetMission()
 	return Mission;
 }
 
-void AAIGeneralController::Die() const {
+void AAIGeneralController::Die(){
 	ResetBlackBoard();
+	SeenSoldier.Empty();
 }
 
 void AAIGeneralController::ResetBlackBoard() const

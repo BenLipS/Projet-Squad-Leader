@@ -232,7 +232,7 @@ FVector AAIBasicController::GetRespawnPoint()  // TODO : Change this function to
 	return FVector(0.f, 0.f, 1500.f); // else return default
 }
 
-void AAIBasicController::Die() const {
+void AAIBasicController::Die() {
 	Super::Die();
 }
 

@@ -66,7 +66,7 @@ EPathFollowingRequestResult::Type AAISquadController::FollowFormation() {
 	return _movetoResult;
 }
 
-void AAISquadController::Die() const {
+void AAISquadController::Die() {
 	Super::Die();
 }
 

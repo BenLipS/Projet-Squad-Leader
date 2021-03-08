@@ -97,7 +97,7 @@ public:
 	UFUNCTION(BluePrintCallable, Category = "Comportement")
 		virtual void Tick(float DeltaSeconds) override;
 
-	virtual void Die() const;
+	virtual void Die();
 
 	virtual void ResetBlackBoard() const;
 
