@@ -33,6 +33,9 @@ void UFollowFlockingBTTaskNode::TickTask(class UBehaviorTreeComponent& OwnerComp
 		AIBasicController->SetState(AIBasicState::Patroling);
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	}
+	else if (AIBasicController->get_blackboard()->GetValueAsBool("is_attacking")) {
+		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+	}
 	/*if (MoveToActorResult == EPathFollowingRequestResult::Failed)
 		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);*/
 

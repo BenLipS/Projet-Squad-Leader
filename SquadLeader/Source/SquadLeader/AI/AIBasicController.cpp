@@ -188,8 +188,6 @@ void AAIBasicController::UpdateMission()
 }
 
 EPathFollowingRequestResult::Type AAIBasicController::FollowFlocking() {
-	if (!blackboard->GetValueAsBool("DoFlocking"))
-		return EPathFollowingRequestResult::Failed;
 	EPathFollowingRequestResult::Type _movetoResult = MoveToLocation(blackboard->GetValueAsVector("FlockingLocation"), 5.f);
 	return _movetoResult;
 }

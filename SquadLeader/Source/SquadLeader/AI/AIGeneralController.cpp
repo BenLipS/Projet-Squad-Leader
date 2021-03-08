@@ -64,7 +64,7 @@ void AAIGeneralController::ontargetperception_update_sight(AActor* actor, FAISti
 void AAIGeneralController::ActorsPerceptionUpdated(const TArray < AActor* >& UpdatedActors) {
 
 	for (auto& Elem : UpdatedActors) {
-		if(ASoldier* soldier = Cast<ASoldier>(Elem); soldier && soldier->IsAlive()){
+		if(ASoldier* soldier = Cast<ASoldier>(Elem); soldier && soldier->IsAlive() && soldier->GetTeam().GetDefaultObject()->TeamName != "Spectator"){//TO DO : If team == spectateur then AI don't see you Cool to test
 			if (SeenSoldier.Contains(soldier));
 			else SeenSoldier.Add(soldier);
 		}
