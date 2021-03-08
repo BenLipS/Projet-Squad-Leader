@@ -115,11 +115,15 @@ private:
 	*/
 	void Influence(int index, int start_index, int source_index, int distance) noexcept;
 
+
 	/*
 	* Update all the players for the grid
 	*/
 	void UpdatePlayers() noexcept;
 
+	/*
+	* Update the information of control area in the influence map
+	*/
 	void UpdateControlArea() noexcept;
 public:
 

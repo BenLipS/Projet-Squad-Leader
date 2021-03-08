@@ -72,6 +72,7 @@ void AInfluenceMapGrid::ResetGrid() noexcept {
 
 void AInfluenceMapGrid::UpdateGrid() noexcept {
 	UpdatePlayers();
+	UpdateControlArea();
 }
 
 int AInfluenceMapGrid::FindTileIndex(FVector _location) const noexcept {
@@ -152,7 +153,7 @@ void AInfluenceMapGrid::UpdatePlayers() noexcept {
 
 			int index_tile = FindTileIndex(_soldier->GetLocation());
 			if (index_tile != -1) {
-				m_influencemap[index_tile].m_value = 1.f;
+				m_influencemap[index_tile].m_value = 0.7f;
 				m_influencemap[index_tile].m_team = team;
 				Influence(index_tile, index_tile, index_tile, 1);
 			}
@@ -165,11 +166,20 @@ void AInfluenceMapGrid::UpdatePlayers() noexcept {
 void AInfluenceMapGrid::UpdateControlArea() noexcept {
 	auto gamemode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
 	AControlAreaManager* controlareamanager = Cast<AControlAreaManager>(gamemode->ControlAreaManager->GetDefaultObject());
-	for (AControlArea* _controlArea : controlareamanager->GetControlArea()) {
-		int index_tile = FindTileIndex(_controlArea->GetActorLocation());
-		if (index_tile != -1) {
-			m_influencemap[index_tile].m_value = 1.f;
-			
+
+	for (int i = 0; i != controlareamanager->GetControlArea().Num(); ++i) {
+		AControlArea* _controlArea = Cast<AControlArea>(controlareamanager->GetControlArea()[i]);
+		if (_controlArea->isTakenBy) {
+			int index_tile = FindTileIndex(controlareamanager->GetControlArea()[i]->GetActorLocation());
+			if (index_tile != -1) {
+				m_influencemap[index_tile].m_value = 1.f;
+				ASoldierTeam* _soldierTeam = Cast<ASoldierTeam>(_controlArea->isTakenBy->GetDefaultObject());
+				if (_soldierTeam->TeamName == "Team1")
+					m_influencemap[index_tile].m_team = 1;
+				else 
+					m_influencemap[index_tile].m_team = 2;
+				Influence(index_tile, index_tile, index_tile, 1);
+			}
 		}
 	}
 }
