@@ -26,7 +26,7 @@ void AInfluenceMapGrid::Tick(float DeltaSeconds) {
 	/*if (GEngine)
 		GEngine->AddOnScreenDebugMessage(100, 1.f, FColor::Black, TEXT("HELLO, i'm the new InfluenceMap :)"));*/
 	if (GetLocalRole() == ROLE_Authority) {
-		DrawGrid();
+		//DrawGrid();
 		ResetGrid();
 		UpdateGrid();
 	}
