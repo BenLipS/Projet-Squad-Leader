@@ -109,7 +109,7 @@ private:
 	*/
 	void IsNeighboor(int index_1, int index_2) noexcept;
 
-	void Influence(int index, int start_index, int distance) noexcept;
+	void Influence(int index, int start_index, int source_index, int distance) noexcept;
 public:
 
 	//Dimension of the grid

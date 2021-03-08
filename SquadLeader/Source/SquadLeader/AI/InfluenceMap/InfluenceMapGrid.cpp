@@ -83,7 +83,7 @@ void AInfluenceMapGrid::UpdateGrid() noexcept {
 			if (index_tile != -1) {
 				m_influencemap[index_tile].m_value = 1.f;
 				m_influencemap[index_tile].m_team = team;
-				Influence(index_tile, index_tile, 1);
+				Influence(index_tile, index_tile, index_tile, 1);
 			}
 		}
 
@@ -139,10 +139,10 @@ void AInfluenceMapGrid::FindNeighboor()noexcept {
 		Neighboors(i);
 }
 
-void AInfluenceMapGrid::Influence(int index, int start_index, int distance) noexcept {
-	float value = m_influencemap[index].m_value / FMath::Sqrt(1.f + distance);
+void AInfluenceMapGrid::Influence(int index, int start_index, int source_index, int distance) noexcept {
+	float value = m_influencemap[source_index].m_value / FMath::Sqrt(1.f + distance);
 
-	if (value < 0.1f)
+	if (distance > 5)
 		return;
 
 	for (int neighboor : m_neighboors[index].m_neighboor) {
@@ -153,7 +153,7 @@ void AInfluenceMapGrid::Influence(int index, int start_index, int distance) noex
 				m_influencemap[neighboor].m_value += value;*/
 			m_influencemap[neighboor].m_value = value;
 			m_influencemap[neighboor].m_team = m_influencemap[index].m_team;
-			Influence(neighboor, index, distance + 1);
+			Influence(neighboor, index, source_index, distance + 1);
 		}
 	}
 }
