@@ -6,13 +6,14 @@
 #include "SL_UserWidget.h"
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
+#include "Blueprint/IUserObjectListEntry.h"
 #include "AIInfoWidget.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class SQUADLEADER_API UAIInfoWidget : public USL_UserWidget
+class SQUADLEADER_API UAIInfoWidget : public USL_UserWidget, public IUserObjectListEntry
 {
 	GENERATED_BODY()
 
@@ -37,4 +38,6 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void OnTextChanged(FText newText);
+
+	UObject* GetListItemObject();
 };

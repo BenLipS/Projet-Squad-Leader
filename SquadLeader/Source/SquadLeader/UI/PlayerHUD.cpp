@@ -5,6 +5,7 @@
 #include "SL_UserWidget.h"
 #include "HealthWidget.h"
 #include "ShieldWidget.h"
+#include "AIInfoListWidget.h"
 #include "Blueprint/UserWidget.h"
 
 APlayerHUD::APlayerHUD()
@@ -38,6 +39,17 @@ void APlayerHUD::BeginPlay()
 		ShieldWidget = CreateWidget<UShieldWidget>(GetWorld(), ShieldWidgetClass);
 		if (ShieldWidget) {
 			ShieldWidget->AddToViewport();
+		}
+	}
+	//-----AIInfo-----
+	if (AIInfoWidgetClass != nullptr)
+	{
+		AIInfoWidget = CreateWidget<UAIInfoListWidget>(GetWorld(), AIInfoWidgetClass);
+		if (AIInfoWidget) {
+			AIInfoWidget->AddItem(100.f, 100.f);
+			AIInfoWidget->AddItem(100.f, 100.f);
+			AIInfoWidget->AddItem(100.f, 100.f);
+			AIInfoWidget->AddToViewport();
 		}
 	}
 }

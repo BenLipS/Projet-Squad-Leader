@@ -20,10 +20,15 @@ protected:
 
 	class UHealthWidget* HealthWidget;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Widget | Health")
+	UPROPERTY(EditDefaultsOnly, Category = "Widget | Shield")
 	TSubclassOf<class UShieldWidget> ShieldWidgetClass;
 
 	class UShieldWidget* ShieldWidget;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Widget | AIInfo")
+	TSubclassOf<class UAIInfoListWidget> AIInfoWidgetClass;
+
+	class UAIInfoListWidget* AIInfoWidget;
 	
 public:
 	APlayerHUD();
