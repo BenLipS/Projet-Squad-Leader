@@ -55,7 +55,7 @@ TArray<FHitResult> AWeaponLaser::GetActorsFromLineTrace(const FVector& _StartLoc
 	collisionParams.AddIgnoredActor(Cast<ASoldier>(GetOwner()));
 
 	GetWorld()->LineTraceMultiByObjectType(outHits, _StartLocation, _EndLocation, objectTypes, collisionParams);
-	//DrawDebugLine(GetWorld(), _StartLocation, _EndLocation, FColor::Red, false, 6.f);
+	DrawDebugLine(GetWorld(), _StartLocation, _EndLocation, FColor::Red, false, 6.f);
 
 	return outHits;
 }
