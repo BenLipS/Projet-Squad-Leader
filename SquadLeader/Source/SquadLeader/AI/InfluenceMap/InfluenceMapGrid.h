@@ -109,7 +109,18 @@ private:
 	*/
 	void IsNeighboor(int index_1, int index_2) noexcept;
 
+	/*
+	* Algorithm recursif
+	* calculate the influence of player on the grid
+	*/
 	void Influence(int index, int start_index, int source_index, int distance) noexcept;
+
+	/*
+	* Update all the players for the grid
+	*/
+	void UpdatePlayers() noexcept;
+
+	void UpdateControlArea() noexcept;
 public:
 
 	//Dimension of the grid

@@ -48,14 +48,14 @@ void AInfluenceMapGrid::InitGrid() noexcept {
 
 bool AInfluenceMapGrid::IsValid(FVector _location) const {
 	UNavigationSystemV1* navSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
-	UNavigationPath* path = navSys->FindPathToLocationSynchronously(GetWorld(), FVector(11740.f, 7030.f, 20.f), _location);
+	UNavigationPath* path = navSys->FindPathToLocationSynchronously(GetWorld(), FVector(5000.f, 5000.f, 80.f), _location);
 	return path->IsValid() && (!path->IsPartial());
 }
 
 void AInfluenceMapGrid::DrawGrid() const {
 	for (FTileBase _tile : m_influencemap) {
 		if(_tile.m_team == 1)
-			DrawDebugSolidBox(GetWorld(),_tile.m_location, FVector(95.f, 95.f, 10.f), FColor(0, 0, 255 * _tile.m_value));
+			DrawDebugSolidBox(GetWorld(),_tile.m_location, FVector(95.f, 95.f,10.f), FColor(0, 0, 255 * _tile.m_value));
 		else if (_tile.m_team == 2)
 			DrawDebugSolidBox(GetWorld(), _tile.m_location, FVector(95.f, 95.f, 10.f), FColor(255 * _tile.m_value, 0, 0));
 		/*else
@@ -71,24 +71,7 @@ void AInfluenceMapGrid::ResetGrid() noexcept {
 }
 
 void AInfluenceMapGrid::UpdateGrid() noexcept {
-	int team = 1;
-	auto gamemode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
-	for (TSubclassOf<ASoldierTeam> _team : gamemode->SoldierTeamCollection) {
-
-		ASoldierTeam* _teamclass = Cast<ASoldierTeam>(_team->GetDefaultObject());
-
-		for (ASoldier* _soldier : _teamclass->soldierList) {
-
-			int index_tile = FindTileIndex(_soldier->GetLocation());
-			if (index_tile != -1) {
-				m_influencemap[index_tile].m_value = 1.f;
-				m_influencemap[index_tile].m_team = team;
-				Influence(index_tile, index_tile, index_tile, 1);
-			}
-		}
-
-		team = 2;
-	}
+	UpdatePlayers();
 }
 
 int AInfluenceMapGrid::FindTileIndex(FVector _location) const noexcept {
@@ -154,6 +137,39 @@ void AInfluenceMapGrid::Influence(int index, int start_index, int source_index, 
 			m_influencemap[neighboor].m_value = value;
 			m_influencemap[neighboor].m_team = m_influencemap[index].m_team;
 			Influence(neighboor, index, source_index, distance + 1);
+		}
+	}
+}
+
+void AInfluenceMapGrid::UpdatePlayers() noexcept {
+	int team = 1;
+	auto gamemode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
+	for (TSubclassOf<ASoldierTeam> _team : gamemode->SoldierTeamCollection) {
+
+		ASoldierTeam* _teamclass = Cast<ASoldierTeam>(_team->GetDefaultObject());
+
+		for (ASoldier* _soldier : _teamclass->soldierList) {
+
+			int index_tile = FindTileIndex(_soldier->GetLocation());
+			if (index_tile != -1) {
+				m_influencemap[index_tile].m_value = 1.f;
+				m_influencemap[index_tile].m_team = team;
+				Influence(index_tile, index_tile, index_tile, 1);
+			}
+		}
+
+		team = 2;
+	}
+}
+
+void AInfluenceMapGrid::UpdateControlArea() noexcept {
+	auto gamemode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
+	AControlAreaManager* controlareamanager = Cast<AControlAreaManager>(gamemode->ControlAreaManager->GetDefaultObject());
+	for (AControlArea* _controlArea : controlareamanager->GetControlArea()) {
+		int index_tile = FindTileIndex(_controlArea->GetActorLocation());
+		if (index_tile != -1) {
+			m_influencemap[index_tile].m_value = 1.f;
+			
 		}
 	}
 }
