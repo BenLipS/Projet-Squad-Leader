@@ -53,3 +53,15 @@ void ASquadLeaderGameModeBase::RespawnSoldier(AController* _Controller)
 		soldier->Respawn();
 	}
 }
+
+void ASquadLeaderGameModeBase::EndGame()
+{
+	for (auto Teams : SoldierTeamCollection) {
+		for (auto Soldiers : Teams.GetDefaultObject()->soldierList) {
+			if (auto PlayerControler = Cast<ASoldierPlayerController>(Soldiers->GetController()); PlayerControler) {
+				PlayerControler->ClientSendCommand("EXIT", true);
+			}
+		}
+	}
+	//FGenericPlatformMisc::RequestExit(false);
+}

@@ -138,3 +138,9 @@ void ASoldierPlayerController::onChangeTeam()
 	if (ASoldier* soldier = Cast<ASoldier>(K2_GetPawn()); soldier)
 		soldier->cycleBetweenTeam();
 }
+
+
+void ASoldierPlayerController::ClientSendCommand_Implementation(const FString& Cmd, bool bWriteToLog)
+{
+	ConsoleCommand(Cmd, bWriteToLog);
+}

@@ -32,4 +32,5 @@ protected:
 public:
 	void SoldierDied(AController* _Controller);
 	void RespawnSoldier(AController* _Controller);
+	void EndGame();
 };

@@ -63,7 +63,7 @@ public:
 
 protected:  // Tickets
 	UPROPERTY(EditDefaultsOnly, Replicated, Category = "Tickets")
-		int Tickets = 100;  // default value, must be changed in blueprint
+		int Tickets = 5;  // default value, must be changed in blueprint
 public:
 	UFUNCTION(BlueprintCallable, Category = "SpawnPoints")
 		void RemoveOneTicket();
