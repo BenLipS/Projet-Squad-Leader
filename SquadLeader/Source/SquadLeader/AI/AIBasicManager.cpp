@@ -29,10 +29,10 @@ void AAIBasicManager::Init(TSubclassOf<ASoldierTeam> _Team)
 	auto gameMode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
 	FVector Start{};
 	if (Team == gameMode->SoldierTeamCollection[0]) {
-		Start = { 5490.f, 1200.f, 87.999985f }; //Start = { 8760.f, 15590.f, 87.999985f };
+		Start = { 17615.f, 16700.f, 100.f }; //Start = { 8760.f, 15590.f, 87.999985f };
 	}
 	else if (Team == gameMode->SoldierTeamCollection[1]){
-		Start = { 2830.f, 4590.f, 87.999985f }; //Start = { 16350.f, 15590.f, 87.999985f };
+		Start = { 2525.f, 4425.f, 100.f }; //Start = { 16350.f, 15590.f, 87.999985f };
 	}
 	
 	FVector OffSet{ 0.f, 500.f, 0.f };
