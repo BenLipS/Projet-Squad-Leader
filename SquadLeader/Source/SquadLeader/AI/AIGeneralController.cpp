@@ -27,6 +27,34 @@ void AAIGeneralController::BeginPlay() {
 	Super::BeginPlay();
 	RunBehaviorTree(m_behaviorTree);
 	blackboard = BrainComponent->GetBlackboardComponent();
+	blackboard->SetValueAsBool("IsHit", false);
+}
+
+void AAIGeneralController::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	// everyone
+	DOREPLIFETIME(AAIGeneralController, Team);
+}
+
+TSubclassOf<ASoldierTeam> AAIGeneralController::GetTeam()
+{
+	return Team;
+}
+
+bool AAIGeneralController::SetTeam(TSubclassOf<ASoldierTeam> _Team)
+{
+	if (GetLocalRole() == ROLE_Authority) {  // only server can change team
+		if (Team)
+			Team.GetDefaultObject()->RemoveSoldierList(Cast<ASoldier>(GetPawn()));
+		if (_Team)
+			_Team.GetDefaultObject()->AddSoldierList(Cast<ASoldier>(GetPawn()));
+
+		Team = _Team;
+		return true;
+	}
+	return false;
 }
 
 void AAIGeneralController::ontargetperception_update_sight(AActor* actor, FAIStimulus stimulus) {
@@ -36,7 +64,7 @@ void AAIGeneralController::ontargetperception_update_sight(AActor* actor, FAISti
 void AAIGeneralController::ActorsPerceptionUpdated(const TArray < AActor* >& UpdatedActors) {
 
 	for (auto& Elem : UpdatedActors) {
-		if(ASoldier* soldier = Cast<ASoldier>(Elem); soldier){
+		if(ASoldier* soldier = Cast<ASoldier>(Elem); soldier && soldier->IsAlive() && soldier->GetTeam().GetDefaultObject()->TeamName != "Spectator"){//TO DO : If team == spectateur then AI don't see you Cool to test
 			if (SeenSoldier.Contains(soldier));
 			else SeenSoldier.Add(soldier);
 		}
@@ -96,6 +124,13 @@ EPathFollowingRequestResult::Type AAIGeneralController::MoveToVectorLocation() {
 		blackboard->ClearValue("need_GoBackward");
 	}
 	
+	return _movetoResult;
+}
+
+EPathFollowingRequestResult::Type AAIGeneralController::RunToVectorLocation(FVector Goal, float AcceptanceRadius) {
+
+	EPathFollowingRequestResult::Type _movetoResult = MoveToLocation(Goal, AcceptanceRadius);
+
 	return _movetoResult;
 }
 
@@ -182,7 +217,7 @@ void AAIGeneralController::FocusEnemy() {
 		bool enemyDetected = false;
 		int i = 0;
 		while (!enemyDetected && i < SeenSoldier.Num()) {
-			if (Cast<ASoldier>(SeenSoldier[i])->PlayerTeam != Cast<ASoldier>(GetPawn())->PlayerTeam) {
+			if (Cast<ASoldier>(SeenSoldier[i])->GetTeam() != Cast<ASoldier>(GetPawn())->GetTeam()) {
 				this->SetFocus(SeenSoldier[i]);
 				blackboard->SetValueAsObject("FocusActor", SeenSoldier[i]);
 				enemyDetected = true;
@@ -284,14 +319,33 @@ void AAIGeneralController::DefenseBehavior() {
 void AAIGeneralController::SetMission(UMission* _Mission)
 {
 	Mission = _Mission;
+	if (blackboard) {
+		blackboard->SetValueAsVector("MissionLocation", Mission->Location);
+	}
+}
+	
+
+UMission* AAIGeneralController::GetMission()
+{
+	return Mission;
 }
 
-void AAIGeneralController::Die() const {
+void AAIGeneralController::Die(){
+	ResetBlackBoard();
+	SeenSoldier.Empty();
+}
+
+void AAIGeneralController::ResetBlackBoard() const
+{
 	blackboard->SetValueAsBool("is_attacking", false);
 	blackboard->SetValueAsBool("need_GoBackward", false);
 	blackboard->SetValueAsBool("need_GoForward", false);
+	blackboard->SetValueAsBool("IsSearching", false);
+	blackboard->SetValueAsBool("IsHit", false);
 	blackboard->SetValueAsObject("FocusActor", NULL);
 	blackboard->SetValueAsVector("EnemyLocation", FVector());
+	blackboard->SetValueAsVector("VectorLocation", FVector());
+	blackboard->SetValueAsVector("MissionLocation", FVector());
 }
 
 void AAIGeneralController::SetState(AIBasicState _state) noexcept {

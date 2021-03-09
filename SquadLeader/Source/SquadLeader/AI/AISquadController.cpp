@@ -19,8 +19,8 @@ void AAISquadController::setup_BehaviorTree() {
 FVector AAISquadController::GetRespawnPoint()  // TODO : Change this function to adapt the squad AI respawn
 {
 	if (ASoldier* soldier = Cast<ASoldier>(GetPawn()); soldier) {
-		if (soldier->PlayerTeam) {
-			auto AvailableSpawnPoints = soldier->PlayerTeam.GetDefaultObject()->GetUsableSpawnPoints();
+		if (soldier->GetTeam()) {
+			auto AvailableSpawnPoints = soldier->GetTeam().GetDefaultObject()->GetUsableSpawnPoints();
 			if (AvailableSpawnPoints.Num() > 0) {
 
 				FVector OptimalPosition = AvailableSpawnPoints[0]->GetActorLocation();
@@ -64,4 +64,15 @@ EPathFollowingRequestResult::Type AAISquadController::FollowFormation() {
 		Cast<ASoldierAI>(GetPawn())->CancelAbilityRun();
 
 	return _movetoResult;
+}
+
+void AAISquadController::Die() {
+	Super::Die();
+}
+
+void AAISquadController::ResetBlackBoard() const {
+	Super::ResetBlackBoard();
+	blackboard->SetValueAsVector("FormationLocation", Cast<ASoldier>(GetPawn())->GetLocation());
+	blackboard->SetValueAsBool("HasOrder", false);
+	blackboard->SetValueAsBool("IsInFormation", true);
 }

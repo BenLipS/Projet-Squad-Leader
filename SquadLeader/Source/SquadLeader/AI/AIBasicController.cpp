@@ -54,7 +54,7 @@ void AAIBasicController::UpdateNeighbourhood()
 {
 	for (ASoldier* soldier : SeenSoldier)
 	{
-		if (AAIBasicController* AIBasic = Cast<AAIBasicController>(soldier->Controller); AIBasic && soldier->PlayerTeam == Cast<ASoldier>(GetPawn())->PlayerTeam && this->ObjectifLocation == AIBasic->ObjectifLocation)
+		if (AAIBasicController* AIBasic = Cast<AAIBasicController>(soldier->Controller); AIBasic && soldier->GetTeam() == Cast<ASoldier>(GetPawn())->GetTeam() && this->ObjectifLocation == AIBasic->ObjectifLocation)
 			SeenBoids.Add(AIBasic);
 	};
 }
@@ -172,7 +172,7 @@ void AAIBasicController::UpdateFlockingPosition(float DeltaSeconds)
 	UpdateMission();
 
 	float MaxSpeed = GetPawn()->GetMovementComponent()->GetMaxSpeed();
-	MovementVector = MovementVector * MaxSpeed/2;
+	MovementVector = MovementVector * MaxSpeed;
 	blackboard->SetValueAsVector("FlockingLocation", GetPawn()->GetActorLocation() + MovementVector);
 
 	DrawDebug();
@@ -187,8 +187,6 @@ void AAIBasicController::UpdateMission()
 }
 
 EPathFollowingRequestResult::Type AAIBasicController::FollowFlocking() {
-	if (!blackboard->GetValueAsBool("DoFlocking"))
-		return EPathFollowingRequestResult::Failed;
 	EPathFollowingRequestResult::Type _movetoResult = MoveToLocation(blackboard->GetValueAsVector("FlockingLocation"), 5.f);
 	return _movetoResult;
 }
@@ -209,8 +207,8 @@ void AAIBasicController::Tick(float DeltaSeconds) {
 FVector AAIBasicController::GetRespawnPoint()  // TODO : Change this function to adapt the squad AI respawn
 {
 	if (ASoldier* soldier = Cast<ASoldier>(GetPawn()); soldier) {
-		if (soldier->PlayerTeam) {
-			auto AvailableSpawnPoints = soldier->PlayerTeam.GetDefaultObject()->GetUsableSpawnPoints();
+		if (soldier->GetTeam()) {
+			auto AvailableSpawnPoints = soldier->GetTeam().GetDefaultObject()->GetUsableSpawnPoints();
 			if (AvailableSpawnPoints.Num() > 0) {
 
 				FVector OptimalPosition = AvailableSpawnPoints[0]->GetActorLocation();
@@ -233,7 +231,12 @@ FVector AAIBasicController::GetRespawnPoint()  // TODO : Change this function to
 	return FVector(0.f, 0.f, 1500.f); // else return default
 }
 
-void AAIBasicController::Die() const {
+void AAIBasicController::Die() {
 	Super::Die();
-	blackboard->SetValueAsBool("DoFlocking", false);
+}
+
+void AAIBasicController::ResetBlackBoard() const {
+	Super::ResetBlackBoard();
+	blackboard->SetValueAsBool("DoFlocking", true);
+	blackboard->SetValueAsVector("FlockingLocation", Cast<ASoldierAI>(GetPawn())->GetLocation());
 }

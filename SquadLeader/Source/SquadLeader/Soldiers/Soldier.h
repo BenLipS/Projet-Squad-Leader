@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Core.h"
 #include "GameFramework/Character.h"
@@ -8,13 +8,16 @@
 #include "../AbilitySystem/Soldiers/AttributeSetSoldier.h"
 #include "../AbilitySystem/Soldiers/AbilitySystemSoldier.h"
 #include "../Weapons/Weapon.h"
+#include "Interface/Teamable.h"
+//
 #include "SoldierTeam.h"
+//
 #include "Net/UnrealNetwork.h"
 #include "Soldier.generated.h"
 
 
 UCLASS()
-class SQUADLEADER_API ASoldier : public ACharacter, public IAbilitySystemInterface
+class SQUADLEADER_API ASoldier : public ACharacter, public IAbilitySystemInterface, public ITeamable
 {
 	GENERATED_BODY()
 
@@ -120,8 +123,8 @@ public:
 	uint8 InfluenceRadius = 2;
 
 	UPROPERTY(BluePrintReadWrite, Category = "Attributes")
-	float InfluenceWeight = 0.6f;
-	
+	float InfluenceWeight = 0.5f;
+
 	// Getters
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
 	int32 GetCharacterLevel() const;
@@ -283,24 +286,19 @@ protected:
 public:
 	AWeapon* getCurrentWeapon() const noexcept { return CurrentWeapon; }
 
-////////////////  PlayerTeam
-public:
-	// Appel du cote serveur pour actualiser l'etat du repere 
-	UFUNCTION(Reliable, Server, WithValidation)
-		void ServerChangeTeam(TSubclassOf<ASoldierTeam> _PlayerTeam);
+	//////////////// Soldier team
+	UPROPERTY(EditAnywhere, Category = "PlayerTeam")
+		TSubclassOf<ASoldierTeam> InitialTeam;  // for debug use
 
-	UFUNCTION() // Doit toujours �tre UFUNCTION() quand il s'agit d'une fonction �OnRep notify�
-		void OnRep_ChangeTeam();
-
-	UPROPERTY(EditAnywhere, BluePrintReadWrite, ReplicatedUsing = OnRep_ChangeTeam, Category = "PlayerTeam")
-		TSubclassOf<ASoldierTeam> PlayerTeam;
-	TSubclassOf<ASoldierTeam> OldPlayerTeam;  // Local buffer used for team change
-	
 	UFUNCTION(Reliable, Server, WithValidation)
 		void ServerCycleBetweenTeam();
 
 	// Connected to the "L" key
-	void cycleBetweenTeam();
+	virtual void cycleBetweenTeam();
+	
+	//////////////// Teamable
+	virtual TSubclassOf<ASoldierTeam> GetTeam() override { return nullptr; };  // function overide in SoldierPlayer and Soldier AI
+	virtual bool SetTeam(TSubclassOf<ASoldierTeam> _Team) override { return false; };  // function overide in SoldierPlayer and Soldier AI
 
 /////////////// Respawn
 public:
