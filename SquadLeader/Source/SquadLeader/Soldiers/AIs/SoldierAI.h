@@ -58,6 +58,8 @@ public:
 
 	virtual void Die() override;
 
+	virtual void Respawn() override;
+
 /////////// Respawn
 public:
 	virtual FVector GetRespawnPoint() override;

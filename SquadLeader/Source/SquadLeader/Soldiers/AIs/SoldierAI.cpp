@@ -108,3 +108,10 @@ void ASoldierAI::Die() {
 	if(AIController)
 		AIController->Die();
 }
+
+void ASoldierAI::Respawn() {
+	Super::Respawn();
+	auto AIController = Cast<AAIGeneralController>(GetController());
+	if (AIController)
+		AIController->Respawn();
+}
