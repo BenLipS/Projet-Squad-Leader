@@ -302,17 +302,27 @@ public:
 	// Connected to the "L" key
 	void cycleBetweenTeam();
 
-
+/////////////// Respawn
 public:
-	/////////////// Respawn
 	UFUNCTION()
 	virtual FVector GetRespawnPoint() { return FVector(0.f, 0.f, 1500.f); }  // function overide in SoldierPlayer and Soldier AI
 
 
-	//For AIPerception
+//////////////// For AIPerception
 private:
 	class UAIPerceptionStimuliSourceComponent* stimulus;
 
 	void setup_stimulus();
 
+//////////////// Animation
+protected:
+	UPROPERTY(EditDefaultsOnly, Category = "Animation")
+	UParticleSystem* ImpactHitFX;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Animation")
+	FVector ImpactHitFXScale;
+
+public:
+	UFUNCTION()
+	void ShowImpactHitEffect();
 };

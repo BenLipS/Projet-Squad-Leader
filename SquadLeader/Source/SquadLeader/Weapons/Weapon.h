@@ -109,6 +109,7 @@ public:
 	FRotator GetMuzzleRotation() const;
 
 //////////////// Animations
+protected:
 	UPROPERTY(EditDefaultsOnly, Category = Mesh)
 	USkeletalMeshComponent* Mesh;
 

@@ -9,6 +9,8 @@
 #include "Perception/AISense_Sight.h"
 #include "../SquadLeaderGameModeBase.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Kismet/GameplayStatics.h"
+#include "Particles/ParticleSystemComponent.h"
 //#include "DrawDebugHelpers.h"
 
 // States
@@ -32,7 +34,7 @@ FGameplayTag ASoldier::SkillAreaEffectFromSelfTag = FGameplayTag::RequestGamepla
 FGameplayTag ASoldier::SkillGiveOrderTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.GiveOrder"));
 FGameplayTag ASoldier::SkillReloadWeaponTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.ReloadWeapon"));
 
-ASoldier::ASoldier(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer.SetDefaultSubobjectClass<USoldierMovementComponent>(ACharacter::CharacterMovementComponentName)), bAbilitiesInitialized{ false }, bDefaultWeaponsInitialized{ false }
+ASoldier::ASoldier(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer.SetDefaultSubobjectClass<USoldierMovementComponent>(ACharacter::CharacterMovementComponentName)), bAbilitiesInitialized{ false }, bDefaultWeaponsInitialized{ false }, ImpactHitFXScale{ FVector{1.f} }
 {
 	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
@@ -649,4 +651,10 @@ void ASoldier::setup_stimulus() {
 
 uint8 ASoldier::GetInfluenceRadius() const noexcept{
 	return InfluenceRadius;
+}
+
+// TODO: Show particle from the hit location - not center of the soldier
+void ASoldier::ShowImpactHitEffect()
+{
+	UParticleSystemComponent* LaserParticle = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactHitFX, GetActorLocation(), FRotator(), ImpactHitFXScale);
 }

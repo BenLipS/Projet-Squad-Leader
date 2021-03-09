@@ -52,10 +52,23 @@ float AWeapon::GetFieldOfViewAim() const noexcept
 
 void AWeapon::ApplyImpactDamage(UAbilitySystemComponent* _TargetASC)
 {
+	AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*DamageEffectSpecHandle.Data.Get(), _TargetASC);
 }
 
 void AWeapon::ApplyImpactEffects(UAbilitySystemComponent* _TargetASC)
 {
+	if (ASoldier* Soldier = Cast<ASoldier>(GetOwner()); Soldier)
+	{
+		FGameplayEffectContextHandle EffectContext = _TargetASC->MakeEffectContext();
+		EffectContext.AddSourceObject(Soldier);
+
+		for (TSubclassOf<UGameplayEffect> ImpactEffect : ImpactEffects)
+		{
+			FGameplayEffectSpecHandle NewHandle = _TargetASC->MakeOutgoingSpec(ImpactEffect, Soldier->GetCharacterLevel(), EffectContext);
+			if (NewHandle.IsValid())
+				AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*NewHandle.Data.Get(), _TargetASC);
+		}
+	}
 }
 
 void AWeapon::TryFiring()
@@ -95,12 +108,10 @@ void AWeapon::Fire()
 
 void AWeapon::FireAnimation()
 {
+	// TODO: should be safe here since we call from Fire
 	if (ASoldier* Soldier = Cast<ASoldier>(GetOwner()); Soldier)
 	{
-		UParticleSystemComponent* FireFX = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), FireMuzzleFX, GetMuzzleLocation(), Soldier->GetSyncControlRotation() /*GetMuzzleRotation()*/);
-
-		if (FireFX)
-			FireFX->SetRelativeScale3D(FireMuzzleFXScale);
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), FireMuzzleFX, GetMuzzleLocation(), Soldier->GetSyncControlRotation() /*GetMuzzleRotation()*/, FireMuzzleFXScale);
 	}
 }
 

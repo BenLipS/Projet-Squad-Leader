@@ -3,6 +3,7 @@
 #include "Kismet/GamePlayStatics.h"
 #include "../Soldiers/Soldier.h"
 #include "SquadLeader/SquadLeader.h"
+#include "Particles/ParticleSystemComponent.h"
 
 AWeaponLaser::AWeaponLaser() : AWeapon(), CollisionChannelImpact{ ECC_Player }
 {
@@ -15,11 +16,11 @@ void AWeaponLaser::BeginPlay()
 
 void AWeaponLaser::Fire()
 {
-	Super::Fire();
-
 	ASoldier* Soldier = Cast<ASoldier>(GetOwner());
 	if (!Soldier && GetLocalRole() != ROLE_Authority)
 		return;
+
+	Super::Fire();
 
 	TArray<FHitResult> outHits = GetActorsFromLineTrace(Soldier->GetActorLocation(), Soldier->lookingAtPosition());
 
@@ -60,23 +61,20 @@ TArray<FHitResult> AWeaponLaser::GetActorsFromLineTrace(const FVector& _StartLoc
 	return outHits;
 }
 
-void AWeaponLaser::ApplyImpactDamage(UAbilitySystemComponent* _TargetASC)
-{
-	AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*DamageEffectSpecHandle.Data.Get(), _TargetASC);
-}
-
 void AWeaponLaser::ApplyImpactEffects(UAbilitySystemComponent* _TargetASC)
 {
+	// TODO: should be safe here since we call from Fire
+	if (ASoldier* Soldier = Cast<ASoldier>(_TargetASC->AvatarActor); Soldier)
+		Soldier->ShowImpactHitEffect();
+}
+
+void AWeaponLaser::FireAnimation()
+{
+	Super::FireAnimation();
+
+	// TODO: should be safe here since we call from Fire
 	if (ASoldier* Soldier = Cast<ASoldier>(GetOwner()); Soldier)
 	{
-		FGameplayEffectContextHandle EffectContext = _TargetASC->MakeEffectContext();
-		EffectContext.AddSourceObject(Soldier);
-
-		for (TSubclassOf<UGameplayEffect> ImpactEffect : ImpactEffects)
-		{
-			FGameplayEffectSpecHandle NewHandle = _TargetASC->MakeOutgoingSpec(ImpactEffect, Soldier->GetCharacterLevel(), EffectContext);
-			if (NewHandle.IsValid())
-				AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*NewHandle.Data.Get(), _TargetASC);
-		}
+		UParticleSystemComponent* LaserParticle = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), LaserFX, GetMuzzleLocation(), Soldier->GetSyncControlRotation() /*GetMuzzleRotation()*/);
 	}
 }
