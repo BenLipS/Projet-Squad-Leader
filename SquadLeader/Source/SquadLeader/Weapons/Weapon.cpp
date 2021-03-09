@@ -160,9 +160,11 @@ void AWeapon::OnReloaded()
 
 FVector AWeapon::GetMuzzleLocation() const
 {
-	return Mesh->GetSocketLocation(FireMuzzleAttachPoint);
+	// TODO: Should have a mesh anytime
+	return Mesh ? Mesh->GetSocketLocation(FireMuzzleAttachPoint) : FVector{0.f};
 }
 FRotator AWeapon::GetMuzzleRotation() const
 {
-	return Mesh->GetSocketRotation(FireMuzzleAttachPoint);
+	// TODO: Should have a mesh anytime
+	return Mesh ? Mesh->GetSocketRotation(FireMuzzleAttachPoint) : FRotator{ 0.f };
 }
