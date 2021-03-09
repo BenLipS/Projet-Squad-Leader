@@ -26,19 +26,6 @@ public:
 
 //////////////// Abilities
 public:
-	// Generic
-	UFUNCTION(BlueprintCallable, Category = "Abilities")
-	bool ActivateAbilities(const FGameplayTagContainer &_TagContainer);
-
-	UFUNCTION(BlueprintCallable, Category = "Abilities")
-	bool ActivateAbility(const FGameplayTag &_Tag);
-
-	UFUNCTION(BlueprintCallable, Category = "Abilities")
-	void CancelAbilities(const FGameplayTagContainer &_TagContainer);
-
-	UFUNCTION(BlueprintCallable, Category = "Abilities")
-	void CancelAbility(const FGameplayTag &_Tag);
-
 	// Fire
 	UFUNCTION(BlueprintCallable, Category = "Abilities")
 	bool ActivateAbilityFire();
@@ -54,7 +41,7 @@ public:
 	void CancelAbilityRun();
 
 	UFUNCTION(BlueprintCallable, Category = "Shoot")
-	void SetLookingAtPosition(FVector lookingAtPosition);
+	void SetLookingAtPosition(const FVector& _LookingAtPosition);
 
 	virtual void Die() override;
 

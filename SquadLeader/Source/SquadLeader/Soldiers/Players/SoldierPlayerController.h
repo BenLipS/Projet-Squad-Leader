@@ -46,7 +46,7 @@ protected:
 	bool bIsFirstPerson;
 
 	UFUNCTION()
-	void onSwitchCamera();
+	void OnSwitchCamera();
 
 //////////////// UI
 protected:
@@ -64,20 +64,20 @@ public:
 protected:
 	// Move direction
 	UFUNCTION()
-	void onMoveForward(const float _Val);
+	void OnMoveForward(const float _Val);
 
 	UFUNCTION()
-	void onMoveRight(const float _Val);
+	void OnMoveRight(const float _Val);
 
 	UFUNCTION()
-	void onLookUp(const float _Val);
+	void OnLookUp(const float _Val);
 
 	UFUNCTION()
-	void onTurn(const float _Val);
+	void OnTurn(const float _Val);
 
 //////////////// Teams
 	UFUNCTION()
-	void onChangeTeam();
+	void OnChangeTeam();
 
 public:
 ///////// Consoles Commands
