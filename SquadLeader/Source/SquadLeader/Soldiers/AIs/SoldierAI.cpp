@@ -9,6 +9,14 @@ ASoldierAI::ASoldierAI(const FObjectInitializer& _ObjectInitializer) : Super(_Ob
 	AttributeSet = CreateDefaultSubobject<UAttributeSetSoldier>(TEXT("Attribute Set"));
 }
 
+void ASoldierAI::BroadCastDatas()
+{
+	OnHealthChanged.Broadcast(AttributeSet->GetHealth());
+	OnMaxHealthChanged.Broadcast(AttributeSet->GetMaxHealth());
+	OnShieldChanged.Broadcast(AttributeSet->GetShield());
+	OnMaxShieldChanged.Broadcast(AttributeSet->GetMaxShield());
+}
+
 void ASoldierAI::BeginPlay()
 {
 	Super::BeginPlay();
@@ -107,4 +115,35 @@ void ASoldierAI::Die() {
 	auto AIController = Cast<AAIGeneralController>(GetController());
 	if(AIController)
 		AIController->Die();
+}
+
+void ASoldierAI::InitializeAttributeChangeCallbacks()
+{
+	if (AbilitySystemComponent)
+	{
+		HealthChangedDelegateHandle = AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetHealthAttribute()).AddUObject(this, &ASoldierAI::HealthChanged);
+		MaxHealthChangedDelegateHandle = AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetMaxHealthAttribute()).AddUObject(this, &ASoldierAI::MaxHealthChanged);
+		ShieldChangedDelegateHandle = AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetShieldAttribute()).AddUObject(this, &ASoldierAI::ShieldChanged);
+		MaxShieldChangedDelegateHandle = AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetMaxShieldAttribute()).AddUObject(this, &ASoldierAI::MaxShieldChanged);
+	}
+}
+
+void ASoldierAI::HealthChanged(const FOnAttributeChangeData& Data)
+{
+	OnHealthChanged.Broadcast(Data.NewValue);
+}
+
+void ASoldierAI::MaxHealthChanged(const FOnAttributeChangeData& Data)
+{
+	OnMaxHealthChanged.Broadcast(Data.NewValue);
+}
+
+void ASoldierAI::ShieldChanged(const FOnAttributeChangeData& Data)
+{
+	OnShieldChanged.Broadcast(Data.NewValue);
+}
+
+void ASoldierAI::MaxShieldChanged(const FOnAttributeChangeData& Data)
+{
+	OnMaxShieldChanged.Broadcast(Data.NewValue);
 }

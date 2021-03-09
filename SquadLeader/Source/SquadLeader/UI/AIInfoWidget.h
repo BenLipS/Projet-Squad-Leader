@@ -36,8 +36,5 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void OnMaxHealthChanged(float newValue);
 
-	UFUNCTION(BlueprintCallable)
-	void OnTextChanged(FText newText);
-
 	UObject* GetListItemObject();
 };

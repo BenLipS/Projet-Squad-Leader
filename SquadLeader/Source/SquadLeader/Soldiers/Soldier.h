@@ -70,7 +70,7 @@ protected:
 	void InitializeAbilities();
 	void AddStartupEffects();
 	void InitializeTagChangeCallbacks();
-	void InitializeAttributeChangeCallbacks();
+	virtual void InitializeAttributeChangeCallbacks();
 
 //////////////// Tag Change Callbacks
 public:

@@ -27,5 +27,5 @@ protected:
 
 public:
 	UAIInfoListWidget(const FObjectInitializer& ObjectInitializer);
-	void AddItem(float Health, float HealthMax);
+	void AddItem(ASoldierAI* SoldierBound);
 };

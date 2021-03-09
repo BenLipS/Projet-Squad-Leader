@@ -8,6 +8,7 @@
 #include "AIInfoListWidget.h"
 #include "Blueprint/UserWidget.h"
 #include "../AI/AISquadController.h"
+#include "../Soldiers/AIs/SoldierAI.h"
 
 APlayerHUD::APlayerHUD()
 {
@@ -16,8 +17,6 @@ APlayerHUD::APlayerHUD()
 void APlayerHUD::DrawHUD()
 {
 	Super::DrawHUD();
-	/*WidgetHealth->RemoveFromViewport();
-	WidgetHealth->AddToViewport();*/
 }
 
 void APlayerHUD::BeginPlay()
@@ -91,9 +90,13 @@ void APlayerHUD::OnSquadChanged(TArray<AAISquadController*> newValue)
 	AIInfoWidget = CreateWidget<UAIInfoListWidget>(GetWorld(), AIInfoWidgetClass);
 	if (AIInfoWidget) {
 		AIInfoWidget->AddToViewport();
-		for (auto AI : newValue)
+		for (auto AIController : newValue)
 		{
-			AIInfoWidget->AddItem(100.f, 100.f);
+			ASoldierAI* PlayerAI = Cast<ASoldierAI>(AIController->GetPawn());
+			if (PlayerAI)
+			{
+				AIInfoWidget->AddItem(PlayerAI);
+			}
 		}
 	}
 }

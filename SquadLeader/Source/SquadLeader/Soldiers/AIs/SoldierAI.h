@@ -4,6 +4,12 @@
 #include "../Soldier.h"
 #include "SoldierAI.generated.h"
 
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAIHealthChanged, float, newValue);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAIMaxHealthChanged, float, newValue);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAIShieldChanged, float, newValue);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAIMaxShieldChanged, float, newValue);
+
 UCLASS()
 class SQUADLEADER_API ASoldierAI : public ASoldier
 {
@@ -11,8 +17,16 @@ class SQUADLEADER_API ASoldierAI : public ASoldier
 	
 public:
 	ASoldierAI(const FObjectInitializer& _ObjectInitializer);
+	void BroadCastDatas();
 
+public:
+	//-----DELEGATE-----
+	FAIHealthChanged OnHealthChanged;
+	FAIMaxHealthChanged OnMaxHealthChanged;
+	FAIShieldChanged OnShieldChanged;
+	FAIMaxShieldChanged OnMaxShieldChanged;
 protected:
+
 	virtual void BeginPlay() override;
 
 	virtual FVector lookingAtPosition() override;
@@ -57,6 +71,21 @@ public:
 	void SetLookingAtPosition(FVector lookingAtPosition);
 
 	virtual void Die() override;
+
+	void InitializeAttributeChangeCallbacks() override;
+
+	//-----Delegate-----	
+protected:
+
+	FDelegateHandle HealthChangedDelegateHandle;
+	FDelegateHandle MaxHealthChangedDelegateHandle;
+	FDelegateHandle ShieldChangedDelegateHandle;
+	FDelegateHandle MaxShieldChangedDelegateHandle;
+
+	virtual void HealthChanged(const FOnAttributeChangeData& Data);
+	virtual void MaxHealthChanged(const FOnAttributeChangeData& Data);
+	virtual void ShieldChanged(const FOnAttributeChangeData& Data);
+	virtual void MaxShieldChanged(const FOnAttributeChangeData& Data);
 
 /////////// Respawn
 public:
