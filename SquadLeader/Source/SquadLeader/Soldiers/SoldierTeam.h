@@ -65,8 +65,10 @@ protected:  // Tickets
 	UPROPERTY(EditDefaultsOnly, Replicated, Category = "Tickets")
 		int Tickets = 5;  // default value, must be changed in blueprint
 public:
-	UFUNCTION(BlueprintCallable, Category = "SpawnPoints")
+	UFUNCTION(BlueprintCallable, Category = "Tickets")
 		void RemoveOneTicket();
-	UFUNCTION(BlueprintCallable, Category = "SpawnPoints")
+	UFUNCTION(BlueprintCallable, Category = "Tickets")
 		int GetTicket() const { return Tickets; }
+	UFUNCTION(BlueprintCallable, Category = "Tickets")
+		void SetTicket(int _Ticket) { Tickets = _Ticket; }
 };

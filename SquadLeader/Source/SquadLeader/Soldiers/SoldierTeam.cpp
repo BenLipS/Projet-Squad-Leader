@@ -78,12 +78,12 @@ void ASoldierTeam::RemoveOneTicket()
 	
 	// TODO : End game here if no tickets left and team is primordial
 	if (Tickets == 0 /*&& ...*/) {
-		GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Red, TEXT("END GAME : ") +  TeamName + TEXT(" lose !"), false, FVector2D(7,7));
+		GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Red, TEXT("END GAME: Tickets depleted\n") +  TeamName + TEXT(" lose !"), false, FVector2D(7,7));
 		if (GetLocalRole() == ROLE_Authority) {
 			if (ASquadLeaderGameModeBase* GameMode = Cast<ASquadLeaderGameModeBase>(soldierList[0]->GetWorld()->GetAuthGameMode()); GameMode) {  // only for the server
 				FTimerHandle timerBeforeClosing;
 				soldierList[0]->GetWorld()->GetTimerManager().SetTimer(timerBeforeClosing, GameMode,
-					&ASquadLeaderGameModeBase::EndGame, 5.f);
+					&ASquadLeaderGameModeBase::EndGame, 5.f);  // request to the server to end the game
 			}
 		}
 	}
