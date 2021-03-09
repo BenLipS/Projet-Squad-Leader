@@ -175,7 +175,7 @@ void AAIBasicController::UpdateFlockingPosition(float DeltaSeconds)
 	MovementVector = MovementVector * MaxSpeed;
 	blackboard->SetValueAsVector("FlockingLocation", GetPawn()->GetActorLocation() + MovementVector);
 
-	DrawDebug();
+	//DrawDebug();
 }
 
 void AAIBasicController::UpdateMission()

@@ -25,7 +25,7 @@ void AAIBasicManager::Init(TSubclassOf<ASoldierTeam> _Team)
 
 	/*For now Each AIBasicManager Spawn with 4 AIs*/
 	/*TEMPORARY*/
-	if (GEngine)GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Purple, TEXT("Init AIBasicManger"));
+	//if (GEngine)GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Purple, TEXT("Init AIBasicManger"));
 	auto gameMode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
 	FVector Start1{};
 	FVector Start2{};
