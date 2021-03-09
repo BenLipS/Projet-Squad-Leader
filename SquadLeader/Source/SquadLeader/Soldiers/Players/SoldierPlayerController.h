@@ -78,4 +78,9 @@ protected:
 //////////////// Teams
 	UFUNCTION()
 	void OnChangeTeam();
+
+public:
+///////// Consoles Commands
+	UFUNCTION(Client, Reliable)
+	void ClientSendCommand(const FString& Cmd, bool bWriteToLog);
 };

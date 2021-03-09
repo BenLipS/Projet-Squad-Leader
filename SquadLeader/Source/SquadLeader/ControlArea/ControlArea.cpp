@@ -135,11 +135,16 @@ void AControlArea::calculateControlValue()
 					else
 						TeamData[presentTeam]->controlValue = maxControlValue;
 
-					if (isTakenBy != presentTeam && TeamData[presentTeam]->controlValue >= controlValueToTake) {
+					if (isTakenBy != presentTeam && TeamData[presentTeam]->controlValue >= controlValueToTake) {  // take control of the point
 						isTakenBy = presentTeam;
 						TeamData[presentTeam]->ChangeSpawnState(true);
 						// notify here the changement if needed
 						GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("ControlArea : Team control =" + presentTeam.GetDefaultObject()->TeamName));
+
+						// check the victory condition
+						if (auto gameMode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode()); gameMode) {
+							gameMode->CheckControlAreaVictoryCondition();
+						}
 					}
 				}
 			}
