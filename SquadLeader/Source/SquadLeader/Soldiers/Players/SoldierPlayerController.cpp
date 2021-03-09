@@ -2,6 +2,7 @@
 #include "SoldierPlayerState.h"
 #include "../Soldier.h"
 #include "AbilitySystemComponent.h"
+#include "../../UI/PlayerHUD.h"
 
 //TODO: rmove next include -> only use for the team init -> only use on temporary debug
 #include "../../SquadLeaderGameModeBase.h"
@@ -17,27 +18,38 @@ ASoldierPlayerController::ASoldierPlayerController()
 void ASoldierPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
+	CreateHUD();
 }
 
-void ASoldierPlayerController::createHUD()
+void ASoldierPlayerController::CreateHUD_Implementation()
 {
-	if (HUDWidget || !IsLocalPlayerController()) // We only want the HUD in local
-		return;
-
-	if (!HUDWidgetClass)
+	if (!HUDClass)
 	{
 		UE_LOG(LogTemp, Error, TEXT("%s() Missing HUDWidgetClass. Please fill in on the Blueprint of the PlayerController."), *FString(__FUNCTION__));
 		return;
 	}
-
-	HUDWidget = CreateWidget<UHUDWidget>(this, HUDWidgetClass);
-	HUDWidget->AddToViewport();
+	APlayerHUD* CurrentPlayerHUD = GetHUD<APlayerHUD>();
+	if (CurrentPlayerHUD)
+		return;
+	ClientSetHUD(HUDClass);
 }
 
-UUserWidget* ASoldierPlayerController::getHUD() const
+
+/*UHUDWidget* ASoldierPlayerController::GetHUD() const
 {
 	return HUDWidget;
+}*/
+
+/*void ASoldierPlayerController::SetRespawnCountdown_Implementation(const float _RespawnTimeRemaining)
+{
+	/*if (HUDWidget)
+		HUDWidget->SetRespawnCountdown(_RespawnTimeRemaining);
 }
+
+bool ASoldierPlayerController::SetRespawnCountdown_Validate(const float _RespawnTimeRemaining)
+{
+	return true;
+}*/
 
 // Server only
 void ASoldierPlayerController::OnPossess(APawn* InPawn)
@@ -59,8 +71,14 @@ void ASoldierPlayerController::OnPossess(APawn* InPawn)
 void ASoldierPlayerController::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();
-}
 
+	// For edge cases where the PlayerState is repped before the Soldier is possessed.
+	CreateHUD();
+	if (APlayerHUD* CurrentPlayerHUD = GetHUD<APlayerHUD>())
+	{
+		CurrentPlayerHUD->SetPlayerStateLink();
+	}
+}
 
 void ASoldierPlayerController::Tick(float _deltaTime)
 {

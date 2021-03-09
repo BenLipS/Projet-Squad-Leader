@@ -19,6 +19,8 @@ ASquadLeaderGameModeBase::ASquadLeaderGameModeBase() : RespawnDelay{ 3.f }
 
 	if (PlayerStateObject.Class != NULL)
 		PlayerStateClass = PlayerStateObject.Class;
+
+	//HUDClass = maclasse::StaticClass();
 }
 
 void ASquadLeaderGameModeBase::StartPlay() {
@@ -31,7 +33,7 @@ void ASquadLeaderGameModeBase::StartPlay() {
 	ControlAreaManager.GetDefaultObject()->CleanControlAreaList();  // clean the list of all control area
 
 	//Init for AI
-	Cast<USquadLeaderGameInstance>(GetGameInstance())->InitInfluenceMap();
+	//Cast<USquadLeaderGameInstance>(GetGameInstance())->InitInfluenceMap();
 	Cast<USquadLeaderGameInstance>(GetGameInstance())->InitAIManagers();
 
 	Super::StartPlay();
@@ -44,6 +46,9 @@ void ASquadLeaderGameModeBase::SoldierDied(AController* _Controller)
 
 	RespawnDelegate = FTimerDelegate::CreateUObject(this, &ASquadLeaderGameModeBase::RespawnSoldier, _Controller);
 	GetWorldTimerManager().SetTimer(RespawnTimerHandle, RespawnDelegate, RespawnDelay, false);
+
+	/*if (ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(_Controller); PC)
+		PC->SetRespawnCountdown(RespawnDelay);*/
 }
 
 void ASquadLeaderGameModeBase::RespawnSoldier(AController* _Controller)

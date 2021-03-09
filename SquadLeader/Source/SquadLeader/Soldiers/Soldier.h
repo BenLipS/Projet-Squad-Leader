@@ -70,7 +70,7 @@ protected:
 	void InitializeAbilities();
 	void AddStartupEffects();
 	void InitializeTagChangeCallbacks();
-	void InitializeAttributeChangeCallbacks();
+	virtual void InitializeAttributeChangeCallbacks();
 
 //////////////// Tag Change Callbacks
 public:
@@ -134,6 +134,12 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
 	float GetMaxHealth() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
+	float GetShield() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
+	float GetMaxShield() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
 	float GetMoveSpeedWalk() const;

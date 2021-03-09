@@ -446,6 +446,16 @@ float ASoldier::GetMaxHealth() const
 	return AttributeSet ? AttributeSet->GetMaxHealth() : -1.0f;
 }
 
+float ASoldier::GetShield() const
+{
+	return AttributeSet ? AttributeSet->GetHealth() : -1.0f;
+}
+
+float ASoldier::GetMaxShield() const
+{
+	return AttributeSet ? AttributeSet->GetMaxShield() : -1.0f;
+}
+
 bool ASoldier::IsAlive() const
 {
 	return GetHealth() > 0.0f;

@@ -57,5 +57,6 @@ void AProjectile_Mine::OnStick()
 {
 	Super::OnStick();
 	Placed = true;
-	CollisionComp->SetSphereRadius(DetectionRadius);
+	CollisionComp->SetSphereRadius(DetectionRadius, true);
+	//CollisionComp->UpdateOverlaps();
 }
