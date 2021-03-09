@@ -117,6 +117,8 @@ public://Mission
 	UFUNCTION()
 	void UpdateMission();
 
-	virtual void Die() const override;
+	virtual void Die() override;
+
+	virtual void ResetBlackBoard() const override;
 
 };

@@ -64,7 +64,7 @@ void AAIGeneralController::ontargetperception_update_sight(AActor* actor, FAISti
 void AAIGeneralController::ActorsPerceptionUpdated(const TArray < AActor* >& UpdatedActors) {
 
 	for (auto& Elem : UpdatedActors) {
-		if(ASoldier* soldier = Cast<ASoldier>(Elem); soldier && soldier->IsAlive()){
+		if(ASoldier* soldier = Cast<ASoldier>(Elem); soldier && soldier->IsAlive() && soldier->GetTeam().GetDefaultObject()->TeamName != "Spectator"){//TO DO : If team == spectateur then AI don't see you Cool to test
 			if (SeenSoldier.Contains(soldier));
 			else SeenSoldier.Add(soldier);
 		}
@@ -330,12 +330,22 @@ UMission* AAIGeneralController::GetMission()
 	return Mission;
 }
 
-void AAIGeneralController::Die() const {
+void AAIGeneralController::Die(){
+	ResetBlackBoard();
+	SeenSoldier.Empty();
+}
+
+void AAIGeneralController::ResetBlackBoard() const
+{
 	blackboard->SetValueAsBool("is_attacking", false);
 	blackboard->SetValueAsBool("need_GoBackward", false);
 	blackboard->SetValueAsBool("need_GoForward", false);
+	blackboard->SetValueAsBool("IsSearching", false);
+	blackboard->SetValueAsBool("IsHit", false);
 	blackboard->SetValueAsObject("FocusActor", NULL);
 	blackboard->SetValueAsVector("EnemyLocation", FVector());
+	blackboard->SetValueAsVector("VectorLocation", FVector());
+	blackboard->SetValueAsVector("MissionLocation", FVector());
 }
 
 void AAIGeneralController::SetState(AIBasicState _state) noexcept {

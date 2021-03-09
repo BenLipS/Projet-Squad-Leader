@@ -5,7 +5,7 @@
 #include "AI/AIBasicManager.h"
 #include "AI/AISquadManager.h"
 #include "AI/AIBasicController.h"
-#include "AI/InfluenceMap/GrdiSetUp.h"
+#include "AI/InfluenceMap/InfluenceMapGrid.h"
 #include "SquadLeaderGameInstance.generated.h"
 
 /**
@@ -20,7 +20,7 @@ class SQUADLEADER_API USquadLeaderGameInstance : public UGameInstance
 	TSubclassOf<AAIBasicManager> AIBasicManagerClass;
 
 	UPROPERTY(EditDefaultsOnly)
-		TSubclassOf<AGrdiSetUp> InfluenceMapClass;
+		TSubclassOf<AInfluenceMapGrid> InfluenceMapClass;
 
 public:
 
@@ -31,7 +31,7 @@ public:
 	AAIBasicManager* AIBasicManagerTeam2;
 
 	UPROPERTY()
-	AGrdiSetUp* InfluenceMap;
+	AInfluenceMapGrid* InfluenceMap;
 
 	UPROPERTY()
 	TArray<AAISquadManager*> ListAISquadManagers;

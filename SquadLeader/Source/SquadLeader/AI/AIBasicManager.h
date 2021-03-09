@@ -6,7 +6,6 @@
 #include "UObject/NoExportTypes.h"
 #include "AIBasicController.h"
 #include "../ControlArea/ControlAreaManager.h"
-#include "InfluenceMap/GrdiSetUp.h"
 #include "AIBasicManager.generated.h"
 
 /**
@@ -38,12 +37,6 @@ public:
 private:
 
 	/*
-	* Get the influence map that is in the Game Instance
-	*/
-	UFUNCTION()
-		void InitInfluenceMap();
-
-	/*
 	* Initialize the number of unit and the number of control area 
 	*/
 	UFUNCTION()
@@ -57,9 +50,6 @@ private:
 		void ChooseCOntrolArea();
 
 private:
-	
-	UPROPERTY()
-		AGrdiSetUp* m_influenceMap;
 
 	/*
 	* Get the number of control area in the world
