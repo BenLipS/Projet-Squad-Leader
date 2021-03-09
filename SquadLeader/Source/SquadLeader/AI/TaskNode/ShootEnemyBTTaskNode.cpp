@@ -2,6 +2,7 @@
 
 
 #include "ShootEnemyBTTaskNode.h"
+#include "BehaviorTree/BlackboardComponent.h"
 #include "../../AI/AIGeneralController.h"
 
 UShootEnemyBTTaskNode::UShootEnemyBTTaskNode() {
@@ -24,8 +25,12 @@ void UShootEnemyBTTaskNode::TickTask(class UBehaviorTreeComponent& OwnerComp, ui
 	AAIGeneralController* _controller = Cast<AAIGeneralController>(OwnerComp.GetOwner());
 
 	ResultState _result = _controller->ShootEnemy();
-	if (_result == ResultState::Success)
+	if (_result == ResultState::Success) {
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+		_controller->get_blackboard()->SetValueAsVector("EnemyLocation", FVector());
+		_controller->get_blackboard()->SetValueAsBool("is_attacking", false);
+		_controller->get_blackboard()->SetValueAsObject("FocusActor", NULL);
+	}
 	else if (_result == ResultState::Failed)
 		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
 }
