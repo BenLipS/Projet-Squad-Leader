@@ -30,8 +30,15 @@ FVector ASoldierAI::lookingAtPosition()
 	return LookingAtPosition;
 }
 
-void ASoldierAI::SetLookingAtPosition(FVector _lookingAtPosition) {
-	LookingAtPosition = _lookingAtPosition;
+void ASoldierAI::SetLookingAtPosition(const FVector &_LookingAtPosition)
+{
+	LookingAtPosition = _LookingAtPosition;
+	SyncControlRotation = FVector{ LookingAtPosition - GetActorLocation() }.Rotation();
+
+	if (HasAuthority())
+		MulticastSyncControlRotation(SyncControlRotation);
+	else
+		ServerSyncControlRotation(SyncControlRotation);
 };
 
 bool ASoldierAI::ActivateAbilityFire()

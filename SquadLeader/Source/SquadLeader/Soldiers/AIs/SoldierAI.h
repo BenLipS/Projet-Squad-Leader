@@ -36,7 +36,7 @@ public:
 	void CancelAbilityRun();
 
 	UFUNCTION(BlueprintCallable, Category = "Shoot")
-	void SetLookingAtPosition(FVector lookingAtPosition);
+	void SetLookingAtPosition(const FVector& _LookingAtPosition);
 
 	virtual void Die() override;
 
