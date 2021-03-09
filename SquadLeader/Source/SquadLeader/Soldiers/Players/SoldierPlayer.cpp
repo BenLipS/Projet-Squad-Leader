@@ -40,9 +40,6 @@ void ASoldierPlayer::PossessedBy(AController* _newController)
 		SquadManager->Init(GetTeam(), this);
 		Cast<USquadLeaderGameInstance>(GetGameInstance())->ListAISquadManagers.Add(SquadManager);
 	}
-
-	/*if (ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(GetController()); PC)
-		PC->CreateHUD();*/
 }
 
 // Client only 
@@ -52,8 +49,8 @@ void ASoldierPlayer::OnRep_PlayerState()
 	SetAbilitySystemComponent();
 	initWeapons();
 
-	/*if (ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(GetController()); PC)
-		PC->CreateHUD();*/
+	if (ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(GetController()); PC)
+		PC->CreateHUD();
 }
 
 AAISquadManager* ASoldierPlayer::GetSquadManager()

@@ -62,6 +62,12 @@ void APlayerHUD::SetPlayerStateLink()
 		ASoldierPlayerState* PS = PC->GetPlayerState<ASoldierPlayerState>();
 		if (PS)
 		{
+			//TODO faire ça plus propre ?
+			PS->OnHealthChanged.RemoveAll(this);
+			PS->OnMaxHealthChanged.RemoveAll(this);
+			PS->OnShieldChanged.RemoveAll(this);
+			PS->OnMaxShieldChanged.RemoveAll(this);
+
 			PS->OnHealthChanged.AddDynamic(this, &APlayerHUD::OnHealthChanged);
 			PS->OnMaxHealthChanged.AddDynamic(this, &APlayerHUD::OnMaxHealthChanged);
 			PS->OnShieldChanged.AddDynamic(this, &APlayerHUD::OnShieldChanged);
