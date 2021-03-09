@@ -43,6 +43,15 @@ void APlayerHUD::BeginPlay()
 			ShieldWidget->AddToViewport();
 		}
 	}
+	//-----CrossHair-----
+	/*if (CrosshairWidgetClass != nullptr)
+	{
+		CrosshairWidget = CreateWidget<USL_UserWidget>(GetWorld(), CrosshairWidgetClass);
+		if (CrosshairWidget) {
+			CrosshairWidget->AddToViewport();
+		}
+	}*/
+	
 	//-----AIInfo-----
 	/*if (AIInfoWidgetClass != nullptr)
 	{

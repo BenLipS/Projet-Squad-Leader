@@ -27,6 +27,11 @@ protected:
 	TSubclassOf<class UShieldWidget> ShieldWidgetClass;
 
 	class UShieldWidget* ShieldWidget;
+
+	/*UPROPERTY(EditDefaultsOnly, Category = "Widget | Crosshair")
+	TSubclassOf<class USL_UserWidget> CrosshairWidgetClass;
+
+	class USL_UserWidget* CrosshairWidget;*/
 	/*
 	UPROPERTY(EditDefaultsOnly, Category = "Widget | AIInfo")
 	TSubclassOf<class UAIInfoListWidget> AIInfoWidgetClass;
