@@ -359,17 +359,19 @@ void ASoldier::setToThirdCameraPerson()
 
 void ASoldier::MoveForward(const float _Val)
 {
-	AddMovementInput(UKismetMathLibrary::GetForwardVector(FRotator(0, GetControlRotation().Yaw, 0)), _Val);
+	if (_Val != 0.0f)
+		AddMovementInput(UKismetMathLibrary::GetForwardVector(FRotator(0, GetControlRotation().Yaw, 0)), _Val);
 }
 
 void ASoldier::MoveRight(const float _Val)
 {
-	AddMovementInput(UKismetMathLibrary::GetRightVector(FRotator(0, GetControlRotation().Yaw, 0)), _Val);
+	if (_Val != 0.0f)
+		AddMovementInput(UKismetMathLibrary::GetRightVector(FRotator(0, GetControlRotation().Yaw, 0)), _Val);
 }
 
 void ASoldier::LookUp(const float _Val)
 {
-	if (IsAlive())
+	if (IsAlive() && _Val != 0.0f)
 	{
 		AddControllerPitchInput(_Val);
 		if (APlayerController* PlayerController = Cast<APlayerController>(Controller); PlayerController)
@@ -381,7 +383,7 @@ void ASoldier::LookUp(const float _Val)
 
 void ASoldier::Turn(const float _Val)
 {
-	if (IsAlive())
+	if (IsAlive() && _Val != 0.0f)
 	{
 		AddControllerYawInput(_Val);
 		if (APlayerController* PlayerController = Cast<APlayerController>(Controller); PlayerController)
