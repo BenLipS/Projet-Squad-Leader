@@ -10,7 +10,7 @@ USquadLeaderGameInstance::USquadLeaderGameInstance() :
 
 void USquadLeaderGameInstance::InitAIManagers()
 {
-	if(GEngine)GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Green, TEXT("Game Instance InitAIManagers()"));
+	//if(GEngine)GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Green, TEXT("Game Instance InitAIManagers()"));
 	auto gameMode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
 
 	/*Init AIBasic Manager*/
@@ -55,7 +55,7 @@ void USquadLeaderGameInstance::AddAIBasicToManager(AAIBasicController* AIBasic)
 		}
 	}
 	else {
-		if (GEngine)GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("AI Spawned thought the manager"));
+		//if (GEngine)GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("AI Spawned thought the manager"));
 	}
 	
 }

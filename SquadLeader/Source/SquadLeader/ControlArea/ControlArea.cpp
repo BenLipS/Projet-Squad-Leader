@@ -171,7 +171,7 @@ void AControlArea::UpdateTeamData()
 		for (auto team : TeamData) {
 			if (!teamCollection.Contains(team.Key)) {
 				keyToRemove.Add(team.Key);
-				GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("ControlArea Update : Unknown team removed : " + team.Key.GetDefaultObject()->TeamName));
+				//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("ControlArea Update : Unknown team removed : " + team.Key.GetDefaultObject()->TeamName));
 			}
 		}
 		for (auto key : keyToRemove) {
@@ -181,7 +181,7 @@ void AControlArea::UpdateTeamData()
 		for (auto team : teamCollection) {  // add element
 			if (!TeamData.Contains(team)) {
 				TeamData.Add(team, NewObject<AControlAreaTeamStat>());
-				GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("ControlArea Update : Unknown team added : " + team.GetDefaultObject()->TeamName));
+				//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("ControlArea Update : Unknown team added : " + team.GetDefaultObject()->TeamName));
 			}
 		}
 
