@@ -3,6 +3,7 @@
 
 #include "ShootEnemyBTTaskNode.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Perception/AIPerceptionComponent.h"
 #include "../../AI/AIGeneralController.h"
 
 UShootEnemyBTTaskNode::UShootEnemyBTTaskNode() {
@@ -26,10 +27,11 @@ void UShootEnemyBTTaskNode::TickTask(class UBehaviorTreeComponent& OwnerComp, ui
 
 	ResultState _result = _controller->ShootEnemy();
 	if (_result == ResultState::Success) {
-		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+		_controller->PerceptionComponent->ForgetActor(Cast<AActor>(_controller->get_blackboard()->GetValueAsObject("FocusActor")));
 		_controller->get_blackboard()->SetValueAsVector("EnemyLocation", FVector());
 		_controller->get_blackboard()->SetValueAsBool("is_attacking", false);
 		_controller->get_blackboard()->SetValueAsObject("FocusActor", NULL);
+		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	}
 	else if (_result == ResultState::Failed)
 		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);

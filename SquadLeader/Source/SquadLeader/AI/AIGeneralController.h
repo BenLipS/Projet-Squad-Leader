@@ -99,6 +99,8 @@ public:
 
 	virtual void Die();
 
+	virtual void Respawn();
+
 	virtual void ResetBlackBoard() const;
 
 	UFUNCTION()
