@@ -173,8 +173,6 @@ void AAIBasicController::UpdateFlockingPosition(float DeltaSeconds)
 
 	float MaxSpeed = GetPawn()->GetMovementComponent()->GetMaxSpeed();
 	MovementVector = MovementVector * MaxSpeed;
-	float TestZ = Cast<ASoldierAI>(GetPawn())->GetLocation().Z;
-	MovementVector.Z = TestZ;
 	blackboard->SetValueAsVector("FlockingLocation", GetPawn()->GetActorLocation() + MovementVector);
 
 	DrawDebug();
