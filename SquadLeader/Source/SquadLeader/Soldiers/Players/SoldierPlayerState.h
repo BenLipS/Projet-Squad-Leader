@@ -9,10 +9,18 @@
 #include "../Interface/Teamable.h"
 #include "SoldierPlayerState.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FFloatAttributeChanged, float, newValue);
+
 UCLASS()
 class SQUADLEADER_API ASoldierPlayerState : public APlayerState, public IAbilitySystemInterface, public ITeamable
 {
 	GENERATED_BODY()
+
+public:
+	FFloatAttributeChanged OnHealthChanged;
+	FFloatAttributeChanged OnMaxHealthChanged;
+	FFloatAttributeChanged OnShieldChanged;
+	FFloatAttributeChanged OnMaxShieldChanged;
 
 public:
 	ASoldierPlayerState();
@@ -66,4 +74,6 @@ protected:
 	virtual void MaxHealthChanged(const FOnAttributeChangeData& Data);
 	virtual void ShieldChanged(const FOnAttributeChangeData& Data);
 	virtual void MaxShieldChanged(const FOnAttributeChangeData& Data);
+public:
+	void BroadCastAllDatas();
 };

@@ -21,36 +21,17 @@ void ASoldierPlayerController::BeginPlay()
 	CreateHUD();
 }
 
-void ASoldierPlayerController::CreateHUD()
+void ASoldierPlayerController::CreateHUD_Implementation()
 {
 	if (!HUDClass)
 	{
 		UE_LOG(LogTemp, Error, TEXT("%s() Missing HUDWidgetClass. Please fill in on the Blueprint of the PlayerController."), *FString(__FUNCTION__));
 		return;
 	}
-	ClientSetHUD(HUDClass);
-
-	ASoldierPlayerState* PS = GetPlayerState<ASoldierPlayerState>();
-	if (!PS)
+	APlayerHUD* CurrentPlayerHUD = GetHUD<APlayerHUD>();
+	if (CurrentPlayerHUD)
 		return;
-
-	auto PlayerHUD = Cast<APlayerHUD>(MyHUD);
-
-	// Player stats
-	PlayerHUD->OnMaxHealthChanged(PS->GetMaxHealth());
-	PlayerHUD->OnHealthChanged(PS->GetHealth());
-	PlayerHUD->OnMaxShieldChanged(PS->GetMaxShield());
-	PlayerHUD->OnShieldChanged(PS->GetShield());
-
-	auto player = Cast<ASoldierPlayer>(GetPawn());
-	if (player)
-	{
-		auto manager = player->GetSquadManager();
-		if (manager)
-		{
-			manager->OnSquadChanged.AddDynamic(PlayerHUD, &APlayerHUD::OnSquadChanged);
-		}
-	}
+	ClientSetHUD(HUDClass);
 }
 
 
@@ -92,7 +73,11 @@ void ASoldierPlayerController::OnRep_PlayerState()
 	Super::OnRep_PlayerState();
 
 	// For edge cases where the PlayerState is repped before the Soldier is possessed.
-	//CreateHUD();
+	CreateHUD();
+	if (APlayerHUD* CurrentPlayerHUD = GetHUD<APlayerHUD>())
+	{
+		CurrentPlayerHUD->SetPlayerStateLink();
+	}
 }
 
 void ASoldierPlayerController::Tick(float _deltaTime)

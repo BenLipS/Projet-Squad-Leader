@@ -14,6 +14,9 @@ class SQUADLEADER_API APlayerHUD : public AHUD
 {
 	GENERATED_BODY()
 
+//-----VALUES-----
+
+//-----WIDGETS-----
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Widget | Health")
 	TSubclassOf<class UHealthWidget> HealthWidgetClass;
@@ -24,20 +27,25 @@ protected:
 	TSubclassOf<class UShieldWidget> ShieldWidgetClass;
 
 	class UShieldWidget* ShieldWidget;
-
+	/*
 	UPROPERTY(EditDefaultsOnly, Category = "Widget | AIInfo")
 	TSubclassOf<class UAIInfoListWidget> AIInfoWidgetClass;
 
-	class UAIInfoListWidget* AIInfoWidget;
+	class UAIInfoListWidget* AIInfoWidget;*/
 	
 public:
 	APlayerHUD();
 
+protected:
+	virtual void BeginPlay() override;
+
 public:
+	/*Initialize all data from Owner controller PlayerState,
+	should be called when changing player controller to relink datas*/
+	void SetPlayerStateLink();
 
 	virtual void DrawHUD() override;
 
-	virtual void BeginPlay() override;
 
 	//-----HP-----
 	UFUNCTION(BlueprintCallable)
@@ -54,6 +62,6 @@ public:
 	void OnMaxShieldChanged(float newValue);
 
 	//-----SquadInfo-----
-	UFUNCTION(BlueprintCallable)
-	void OnSquadChanged(TArray<class AAISquadController*> newValue);
+	/*UFUNCTION(BlueprintCallable)
+	void OnSquadChanged(TArray<class AAISquadController*> newValue);*/
 };

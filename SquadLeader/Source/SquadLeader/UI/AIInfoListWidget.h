@@ -27,5 +27,5 @@ protected:
 
 public:
 	UAIInfoListWidget(const FObjectInitializer& ObjectInitializer);
-	void AddItem(ASoldierAI* SoldierBound);
+	void AddItem(class ASoldierAI* SoldierBound);
 };

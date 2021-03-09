@@ -90,48 +90,28 @@ float ASoldierPlayerState::GetMaxShield() const
 
 void ASoldierPlayerState::HealthChanged(const FOnAttributeChangeData& Data)
 {
-	if (ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(GetOwner()); PC)
-	{
-		if (auto HUD = PC->GetHUD())
-		{
-			if (auto PlayerHUD = Cast<APlayerHUD>(HUD))
-				PlayerHUD->OnHealthChanged(Data.NewValue);
-		}
-	}
+	OnHealthChanged.Broadcast(Data.NewValue);
 }
 
 void ASoldierPlayerState::MaxHealthChanged(const FOnAttributeChangeData& Data)
 {
-	if (ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(GetOwner()); PC)
-	{
-		if (auto HUD = PC->GetHUD())
-		{
-			if (auto PlayerHUD = Cast<APlayerHUD>(HUD))
-				PlayerHUD->OnMaxHealthChanged(Data.NewValue);
-		}
-	}
+	OnMaxHealthChanged.Broadcast(Data.NewValue);
 }
 
 void ASoldierPlayerState::ShieldChanged(const FOnAttributeChangeData& Data)
 {
-	if (ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(GetOwner()); PC)
-	{
-		if (auto HUD = PC->GetHUD())
-		{
-			if (auto PlayerHUD = Cast<APlayerHUD>(HUD))
-				PlayerHUD->OnShieldChanged(Data.NewValue);
-		}
-	}
+	OnShieldChanged.Broadcast(Data.NewValue);
 }
 
 void ASoldierPlayerState::MaxShieldChanged(const FOnAttributeChangeData& Data)
 {
-	if (ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(GetOwner()); PC)
-	{
-		if (auto HUD = PC->GetHUD())
-		{
-			if (auto PlayerHUD = Cast<APlayerHUD>(HUD))
-				PlayerHUD->OnMaxShieldChanged(Data.NewValue);
-		}
-	}
+	OnMaxShieldChanged.Broadcast(Data.NewValue);
+}
+
+void ASoldierPlayerState::BroadCastAllDatas()
+{
+	OnHealthChanged.Broadcast(GetHealth());
+	OnMaxHealthChanged.Broadcast(GetMaxHealth());
+	OnShieldChanged.Broadcast(GetShield());
+	OnMaxShieldChanged.Broadcast(GetMaxShield());
 }

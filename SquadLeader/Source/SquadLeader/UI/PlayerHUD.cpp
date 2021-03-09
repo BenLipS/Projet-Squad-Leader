@@ -9,6 +9,8 @@
 #include "Blueprint/UserWidget.h"
 #include "../AI/AISquadController.h"
 #include "../Soldiers/AIs/SoldierAI.h"
+#include "../Soldiers/Players/SoldierPlayerController.h"
+#include "../Soldiers/Players/SoldierPlayerState.h"
 
 APlayerHUD::APlayerHUD()
 {
@@ -42,17 +44,36 @@ void APlayerHUD::BeginPlay()
 		}
 	}
 	//-----AIInfo-----
-	if (AIInfoWidgetClass != nullptr)
+	/*if (AIInfoWidgetClass != nullptr)
 	{
 		AIInfoWidget = CreateWidget<UAIInfoListWidget>(GetWorld(), AIInfoWidgetClass);
 		if (AIInfoWidget) {
 			AIInfoWidget->AddToViewport();
+		}
+	}*/
+	SetPlayerStateLink();
+}
+
+void APlayerHUD::SetPlayerStateLink()
+{
+	ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(GetOwningPlayerController());
+	if (PC)
+	{
+		ASoldierPlayerState* PS = PC->GetPlayerState<ASoldierPlayerState>();
+		if (PS)
+		{
+			PS->OnHealthChanged.AddDynamic(this, &APlayerHUD::OnHealthChanged);
+			PS->OnMaxHealthChanged.AddDynamic(this, &APlayerHUD::OnMaxHealthChanged);
+			PS->OnShieldChanged.AddDynamic(this, &APlayerHUD::OnShieldChanged);
+			PS->OnMaxShieldChanged.AddDynamic(this, &APlayerHUD::OnMaxShieldChanged);
+			PS->BroadCastAllDatas();
 		}
 	}
 }
 
 void APlayerHUD::OnHealthChanged(float newValue)
 {
+	GetOwningPlayerController();
 	if (HealthWidget)
 	{
 		HealthWidget->OnHealthChanged(newValue);
@@ -83,7 +104,7 @@ void APlayerHUD::OnMaxShieldChanged(float newValue)
 	}
 }
 
-void APlayerHUD::OnSquadChanged(TArray<AAISquadController*> newValue)
+/*void APlayerHUD::OnSquadChanged(TArray<AAISquadController*> newValue)
 {
 	AIInfoWidget->RemoveFromViewport();
 
@@ -100,3 +121,4 @@ void APlayerHUD::OnSquadChanged(TArray<AAISquadController*> newValue)
 		}
 	}
 }
+*/

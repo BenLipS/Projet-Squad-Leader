@@ -54,6 +54,8 @@ protected:
 	TSubclassOf<class AHUD> HUDClass;
 
 public:
+
+	UFUNCTION(Client, Reliable)
 	void CreateHUD();
 
 	/*UFUNCTION(Reliable, Client, WithValidation)
