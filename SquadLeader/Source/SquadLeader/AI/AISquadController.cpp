@@ -65,3 +65,14 @@ EPathFollowingRequestResult::Type AAISquadController::FollowFormation() {
 
 	return _movetoResult;
 }
+
+void AAISquadController::Die() {
+	Super::Die();
+}
+
+void AAISquadController::ResetBlackBoard() const {
+	Super::ResetBlackBoard();
+	blackboard->SetValueAsVector("FormationLocation", Cast<ASoldier>(GetPawn())->GetLocation());
+	blackboard->SetValueAsBool("HasOrder", false);
+	blackboard->SetValueAsBool("IsInFormation", true);
+}

@@ -5,6 +5,7 @@
 #include "GameplayEffect.h"
 #include "AbilitySystemInterface.h"
 #include "../AbilitySystem/Soldiers/AbilitySystemSoldier.h"
+#include "Components/SkeletalMeshComponent.h"
 #include "Weapon.generated.h"
 
 UCLASS(Abstract)
@@ -15,13 +16,20 @@ class SQUADLEADER_API AWeapon : public AActor, public IAbilitySystemInterface
 protected:
 	AWeapon();
 
+protected:
+	virtual void BeginPlay() override;
+	virtual void OnRep_Owner();
+
+public:
+	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
+
 //////////////// Ability System
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ability System Component", meta = (AllowPrivateAccess = "true"))
 	UAbilitySystemSoldier* AbilitySystemComponent;
 
 public:
-	void InitializeAbilitySystemComponent(UAbilitySystemSoldier* _abilitySystemComponent);
+	void InitializeAbilitySystemComponent(UAbilitySystemSoldier* _AbilitySystemComponent);
 	UAbilitySystemSoldier* GetAbilitySystemComponent() const;
 
 //////////////// Fire
@@ -36,6 +44,10 @@ protected:
 	UPROPERTY(BluePrintReadOnly, Category = "Stats")
 	uint8 CurrentAmmo;
 
+public:
+	bool IsFullAmmo() const noexcept;
+
+protected:
 	bool IsNextFireReady;
 
 	UPROPERTY(EditDefaultsOnly, BluePrintReadWrite, Category = "Stats")
@@ -55,7 +67,7 @@ protected:
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Stats")
-	float GetFieldOfViewAim() const;
+	float GetFieldOfViewAim() const noexcept;
 
 protected:
 	UPROPERTY(BluePrintReadWrite, EditAnywhere, Category = "Stats")
@@ -66,24 +78,60 @@ protected:
 	FGameplayEffectSpecHandle DamageEffectSpecHandle;
 
 	UFUNCTION(BlueprintCallable, Category = "Fire | Impact")
-	virtual void ApplyImpactDamage(UAbilitySystemComponent* _targetASC);
+	virtual void ApplyImpactDamage(UAbilitySystemComponent* _TargetASC);
 
 	// Additional impact effects
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Fire | Impact")
 	TArray<TSubclassOf<class UGameplayEffect>> ImpactEffects;
 
 	UFUNCTION(BlueprintCallable, Category = "Fire | Impact")
-	virtual void ApplyImpactEffects(UAbilitySystemComponent* _targetASC);
+	virtual void ApplyImpactEffects(UAbilitySystemComponent* _TargetASC);
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Fire")
 	virtual void TryFiring();
-	void TryFiring(const FGameplayEffectSpecHandle _damageEffectSpecHandle);
+	void TryFiring(const FGameplayEffectSpecHandle _DamageEffectSpecHandle);
 
 	UFUNCTION(BlueprintCallable, Category = "Fire")
 	virtual void Fire();
 
-	virtual void BeginPlay() override;
+	virtual void Reload();
+
+protected:
 	virtual void OnReadyToShoot();
 	virtual void OnReloaded();
+
+public:
+	UFUNCTION()
+	FVector GetMuzzleLocation() const;
+
+	UFUNCTION()
+	FRotator GetMuzzleRotation() const;
+
+//////////////// Animations
+protected:
+	UPROPERTY(EditDefaultsOnly, Category = Mesh)
+	USkeletalMeshComponent* Mesh;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Animation")
+	UParticleSystem* FireMuzzleFX;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Animation")
+	FName FireMuzzleAttachPoint;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Animation")
+	FVector FireMuzzleFXScale;
+
+	UFUNCTION()
+	virtual void FireAnimation();
+
+	UFUNCTION(BlueprintCallable, Reliable, NetMulticast, WithValidation, Category = "Animation")
+	void MulticastFireAnimation();
+	void MulticastFireAnimation_Implementation();
+	bool MulticastFireAnimation_Validate();
+
+	UFUNCTION(BlueprintCallable, Reliable, Server, WithValidation, Category = "Animation")
+	void ServerFireAnimation();
+	void ServerFireAnimation_Implementation();
+	bool ServerFireAnimation_Validate();
 };

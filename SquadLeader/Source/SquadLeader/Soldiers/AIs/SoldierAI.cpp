@@ -38,6 +38,7 @@ FVector ASoldierAI::lookingAtPosition()
 	return LookingAtPosition;
 }
 
+
 TSubclassOf<ASoldierTeam> ASoldierAI::GetTeam()
 {
 	if (auto AIController = Cast<AAIGeneralController>(GetController()); AIController) {
@@ -54,33 +55,16 @@ bool ASoldierAI::SetTeam(TSubclassOf<ASoldierTeam> _Team)
 	return false; // else return default
 }
 
-void ASoldierAI::SetLookingAtPosition(FVector _lookingAtPosition) {
-	LookingAtPosition = _lookingAtPosition;
+void ASoldierAI::SetLookingAtPosition(const FVector &_LookingAtPosition)
+{
+	LookingAtPosition = _LookingAtPosition;
+	SyncControlRotation = FVector{ LookingAtPosition - GetActorLocation() }.Rotation();
+
+	if (HasAuthority())
+		MulticastSyncControlRotation(SyncControlRotation);
+	else
+		ServerSyncControlRotation(SyncControlRotation);
 };
-
-bool ASoldierAI::ActivateAbilities(const FGameplayTagContainer &_TagContainer)
-{
-	return AbilitySystemComponent->TryActivateAbilitiesByTag(_TagContainer);
-}
-
-bool ASoldierAI::ActivateAbility(const FGameplayTag &_Tag)
-{
-	FGameplayTagContainer TagContainer;
-	TagContainer.AddTag(_Tag);
-	return AbilitySystemComponent->TryActivateAbilitiesByTag(TagContainer);
-}
-
-void ASoldierAI::CancelAbilities(const FGameplayTagContainer &_TagContainer)
-{
-	AbilitySystemComponent->CancelAbilities(&_TagContainer);
-}
-
-void ASoldierAI::CancelAbility(const FGameplayTag &_Tag)
-{
-	FGameplayTagContainer TagContainer;
-	TagContainer.AddTag(_Tag);
-	AbilitySystemComponent->CancelAbilities(&TagContainer);
-}
 
 bool ASoldierAI::ActivateAbilityFire()
 {
@@ -114,7 +98,13 @@ void ASoldierAI::Die() {
 	Super::Die();
 	auto AIController = Cast<AAIGeneralController>(GetController());
 	if(AIController)
-		AIController->Die();
+		AIController->Die();}
+
+void ASoldierAI::Respawn() {
+	Super::Respawn();
+	auto AIController = Cast<AAIGeneralController>(GetController());
+	if (AIController)
+		AIController->Respawn();
 }
 
 void ASoldierAI::InitializeAttributeChangeCallbacks()

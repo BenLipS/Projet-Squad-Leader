@@ -97,7 +97,11 @@ public:
 	UFUNCTION(BluePrintCallable, Category = "Comportement")
 		virtual void Tick(float DeltaSeconds) override;
 
-	virtual void Die() const;
+	virtual void Die();
+
+	virtual void Respawn();
+
+	virtual void ResetBlackBoard() const;
 
 	UFUNCTION()
 		void SetState(AIBasicState _state) noexcept;

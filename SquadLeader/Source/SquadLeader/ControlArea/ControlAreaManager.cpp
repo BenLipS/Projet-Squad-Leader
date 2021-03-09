@@ -53,3 +53,16 @@ TSubclassOf<ASoldierTeam> AControlAreaManager::GetTeamWithMostControl()  // to t
 	}
 	return TSubclassOf<ASoldierTeam>();
 }
+
+TSubclassOf<ASoldierTeam> AControlAreaManager::GetTeamWithAllControl()
+{
+	if (ControlAreaList.Num() > 0) {
+		for (auto element : ControlAreaList) {
+			if (element->isTakenBy != ControlAreaList[0]->isTakenBy) {
+				return TSubclassOf<ASoldierTeam>();
+			}
+		}
+		return ControlAreaList[0]->isTakenBy;
+	}
+	return TSubclassOf<ASoldierTeam>();
+}

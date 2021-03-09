@@ -8,6 +8,8 @@
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "Perception/AISense_Sight.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Kismet/GameplayStatics.h"
+#include "Particles/ParticleSystemComponent.h"
 //#include "DrawDebugHelpers.h"
 
 // States
@@ -18,6 +20,7 @@ FGameplayTag ASoldier::StateCrouchingTag = FGameplayTag::RequestGameplayTag(FNam
 FGameplayTag ASoldier::StateFightingTag = FGameplayTag::RequestGameplayTag(FName("State.Fighting"));
 FGameplayTag ASoldier::StateAimingTag = FGameplayTag::RequestGameplayTag(FName("State.Aiming"));
 FGameplayTag ASoldier::StateGivingOrderTag = FGameplayTag::RequestGameplayTag(FName("State.GivingOrder"));
+FGameplayTag ASoldier::StateReloadingWeaponTag = FGameplayTag::RequestGameplayTag(FName("State.ReloadingWeapon"));
 
 // Abilities
 FGameplayTag ASoldier::SkillRunTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Run"));
@@ -28,8 +31,9 @@ FGameplayTag ASoldier::SkillGrenadeTag = FGameplayTag::RequestGameplayTag(FName(
 FGameplayTag ASoldier::SkillAimTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Aim"));
 FGameplayTag ASoldier::SkillAreaEffectFromSelfTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.AreaEffectFromSelf"));
 FGameplayTag ASoldier::SkillGiveOrderTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.GiveOrder"));
+FGameplayTag ASoldier::SkillReloadWeaponTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.ReloadWeapon"));
 
-ASoldier::ASoldier(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer.SetDefaultSubobjectClass<USoldierMovementComponent>(ACharacter::CharacterMovementComponentName)), bAbilitiesInitialized{ false }, bDefaultWeaponsInitialized{ false }
+ASoldier::ASoldier(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer.SetDefaultSubobjectClass<USoldierMovementComponent>(ACharacter::CharacterMovementComponentName)), bAbilitiesInitialized{ false }, bDefaultWeaponsInitialized{ false }, ImpactHitFXScale{ FVector{1.f} }
 {
 	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
@@ -66,7 +70,6 @@ void ASoldier::BeginPlay()
 	}
 }
 
-
 void ASoldier::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -77,6 +80,7 @@ void ASoldier::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifeti
 	// everyone except local owner: flag change is locally instigated
 
 	// everyone
+	DOREPLIFETIME(ASoldier, SyncControlRotation);
 	//DOREPLIFETIME(AShooterCharacter, CurrentWeapon);
 }
 
@@ -159,7 +163,7 @@ void ASoldier::initWeapons()
 	}
 
 	if (Inventory.Num() > 0)
-		currentWeapon = Inventory[0];
+		CurrentWeapon = Inventory[0];
 
 	bDefaultWeaponsInitialized = true;
 }
@@ -236,6 +240,7 @@ void ASoldier::InitializeTagChangeCallbacks()
 	AbilitySystemComponent->RegisterGameplayTagEvent(ASoldier::StateFightingTag, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ASoldier::FightingTagChanged);
 	AbilitySystemComponent->RegisterGameplayTagEvent(ASoldier::StateAimingTag, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ASoldier::AimingTagChanged);
 	AbilitySystemComponent->RegisterGameplayTagEvent(ASoldier::StateGivingOrderTag, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ASoldier::GivingOrderTagChanged);
+	AbilitySystemComponent->RegisterGameplayTagEvent(ASoldier::StateReloadingWeaponTag, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ASoldier::ReloadingWeaponTagChanged);
 }
 
 void ASoldier::InitializeAttributeChangeCallbacks()
@@ -294,6 +299,35 @@ void ASoldier::GivingOrderTagChanged(const FGameplayTag CallbackTag, int32 NewCo
 {
 }
 
+void ASoldier::ReloadingWeaponTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
+{
+}
+
+bool ASoldier::ActivateAbilities(const FGameplayTagContainer& _TagContainer)
+{
+	return AbilitySystemComponent->TryActivateAbilitiesByTag(_TagContainer);
+}
+
+bool ASoldier::ActivateAbility(const FGameplayTag& _Tag)
+{
+	FGameplayTagContainer TagContainer;
+	TagContainer.AddTag(_Tag);
+	return AbilitySystemComponent->TryActivateAbilitiesByTag(TagContainer);
+}
+
+void ASoldier::CancelAbilities(const FGameplayTagContainer& _TagContainer)
+{
+	AbilitySystemComponent->CancelAbilities(&_TagContainer);
+}
+
+void ASoldier::CancelAbility(const FGameplayTag& _Tag)
+{
+	FGameplayTagContainer TagContainer;
+	TagContainer.AddTag(_Tag);
+	AbilitySystemComponent->CancelAbilities(&TagContainer);
+}
+
+
 void ASoldier::onSwitchCamera()
 {
 	if (bIsFirstPerson)
@@ -326,17 +360,19 @@ void ASoldier::setToThirdCameraPerson()
 
 void ASoldier::MoveForward(const float _Val)
 {
-	AddMovementInput(UKismetMathLibrary::GetForwardVector(FRotator(0, GetControlRotation().Yaw, 0)), _Val);
+	if (_Val != 0.0f)
+		AddMovementInput(UKismetMathLibrary::GetForwardVector(FRotator(0, GetControlRotation().Yaw, 0)), _Val);
 }
 
 void ASoldier::MoveRight(const float _Val)
 {
-	AddMovementInput(UKismetMathLibrary::GetRightVector(FRotator(0, GetControlRotation().Yaw, 0)), _Val);
+	if (_Val != 0.0f)
+		AddMovementInput(UKismetMathLibrary::GetRightVector(FRotator(0, GetControlRotation().Yaw, 0)), _Val);
 }
 
 void ASoldier::LookUp(const float _Val)
 {
-	if (IsAlive())
+	if (IsAlive() && _Val != 0.0f)
 	{
 		AddControllerPitchInput(_Val);
 		if (APlayerController* PlayerController = Cast<APlayerController>(Controller); PlayerController)
@@ -348,7 +384,7 @@ void ASoldier::LookUp(const float _Val)
 
 void ASoldier::Turn(const float _Val)
 {
-	if (IsAlive())
+	if (IsAlive() && _Val != 0.0f)
 	{
 		AddControllerYawInput(_Val);
 		if (APlayerController* PlayerController = Cast<APlayerController>(Controller); PlayerController)
@@ -476,7 +512,7 @@ void ASoldier::SetWantsToFire(const bool _want)
 {
 	wantsToFire = _want;
 	if (wantsToFire) {
-		currentWeapon->TryFiring();
+		CurrentWeapon->TryFiring();
 	}
 }
 
@@ -484,14 +520,14 @@ void ASoldier::SetWantsToFire(const bool _want, const FGameplayEffectSpecHandle 
 {
 	wantsToFire = _want;
 	if (wantsToFire) {
-		currentWeapon->TryFiring(_damageEffectSpecHandle);
+		CurrentWeapon->TryFiring(_damageEffectSpecHandle);
 	}
 }
 
 void ASoldier::StartAiming()
 {
-	FirstPersonCameraComponent->SetFieldOfView(currentWeapon->GetFieldOfViewAim());
-	ThirdPersonCameraComponent->SetFieldOfView(currentWeapon->GetFieldOfViewAim());
+	FirstPersonCameraComponent->SetFieldOfView(CurrentWeapon->GetFieldOfViewAim());
+	ThirdPersonCameraComponent->SetFieldOfView(CurrentWeapon->GetFieldOfViewAim());
 }
 
 void ASoldier::StopAiming()
@@ -501,9 +537,14 @@ void ASoldier::StopAiming()
 	ThirdPersonCameraComponent->SetFieldOfView(90.f);
 }
 
+void ASoldier::ReloadWeapon()
+{
+	CurrentWeapon->Reload();
+}
+
 void ASoldier::OnRep_CurrentWeapon(AWeapon* _LastWeapon)
 {
-	SetCurrentWeapon(currentWeapon, _LastWeapon);
+	SetCurrentWeapon(CurrentWeapon, _LastWeapon);
 }
 
 FRotator ASoldier::GetSyncControlRotation() const noexcept
@@ -520,7 +561,6 @@ void ASoldier::ServerSyncControlRotation_Implementation(const FRotator& _Rotatio
 		FirstPersonCameraComponent->SetWorldRotation(SyncControlRotation);
 		ThirdPersonCameraComponent->SetWorldRotation(SyncControlRotation);
 	}
-	GEngine->AddOnScreenDebugMessage(474, 100.f, FColor::Green, FString::Printf(TEXT("%s %s"), *FString::SanitizeFloat(SyncControlRotation.Pitch), *FString::SanitizeFloat(SyncControlRotation.Yaw)));
 }
 
 bool ASoldier::ServerSyncControlRotation_Validate(const FRotator& _Rotation)
@@ -537,7 +577,6 @@ void ASoldier::MulticastSyncControlRotation_Implementation(const FRotator& _Rota
 		FirstPersonCameraComponent->SetWorldRotation(SyncControlRotation);
 		ThirdPersonCameraComponent->SetWorldRotation(SyncControlRotation);
 	}
-	GEngine->AddOnScreenDebugMessage(471, 100.f, FColor::Green, FString::Printf(TEXT("%s %s"), *FString::SanitizeFloat(SyncControlRotation.Pitch), *FString::SanitizeFloat(SyncControlRotation.Yaw)));
 }
 
 bool ASoldier::MulticastSyncControlRotation_Validate(const FRotator& _Rotation)
@@ -553,7 +592,7 @@ void ASoldier::AddToInventory(AWeapon* _Weapon)
 void ASoldier::SetCurrentWeapon(AWeapon* _NewWeapon, AWeapon* _PreviousWeapon)
 {
 	if (_PreviousWeapon && _NewWeapon !=_PreviousWeapon)
-		currentWeapon = _NewWeapon;
+		CurrentWeapon = _NewWeapon;
 }
 
 // network for debug team change
@@ -600,4 +639,10 @@ void ASoldier::setup_stimulus() {
 
 uint8 ASoldier::GetInfluenceRadius() const noexcept{
 	return InfluenceRadius;
+}
+
+// TODO: Show particle from the hit location - not center of the soldier
+void ASoldier::ShowImpactHitEffect()
+{
+	UParticleSystemComponent* LaserParticle = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactHitFX, GetActorLocation(), FRotator(), ImpactHitFXScale);
 }

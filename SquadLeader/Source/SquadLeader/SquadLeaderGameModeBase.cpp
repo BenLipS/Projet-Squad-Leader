@@ -25,6 +25,7 @@ ASquadLeaderGameModeBase::ASquadLeaderGameModeBase() : RespawnDelay{ 3.f }
 
 void ASquadLeaderGameModeBase::StartPlay() {
 	for (auto team : SoldierTeamCollection) {  // clean all team data at the begining
+		team.GetDefaultObject()->SetTicket(BaseTicketNumber);
 		team.GetDefaultObject()->CleanSpawnPoints();
 		team.GetDefaultObject()->CleanSoldierList();
 	}
@@ -57,4 +58,26 @@ void ASquadLeaderGameModeBase::RespawnSoldier(AController* _Controller)
 		soldier->SetActorLocation(soldier->GetRespawnPoint());
 		soldier->Respawn();
 	}
+}
+
+void ASquadLeaderGameModeBase::CheckControlAreaVictoryCondition()
+{
+	if (auto WinnerTeam = ControlAreaManager.GetDefaultObject()->GetTeamWithAllControl(); WinnerTeam) {
+		GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Red, TEXT("END GAME: All control area taken\n") + WinnerTeam.GetDefaultObject()->TeamName + TEXT(" win !"), false, FVector2D(7, 7));
+		FTimerHandle timerBeforeClosing;
+		GetWorld()->GetTimerManager().SetTimer(timerBeforeClosing, this,
+			&ASquadLeaderGameModeBase::EndGame, 5.f);  // request to the server to end the game
+	}
+}
+
+void ASquadLeaderGameModeBase::EndGame()
+{
+	for (auto Teams : SoldierTeamCollection) {
+		for (auto Soldiers : Teams.GetDefaultObject()->soldierList) {
+			if (auto PlayerControler = Cast<ASoldierPlayerController>(Soldiers->GetController()); PlayerControler) {
+				PlayerControler->ClientSendCommand("EXIT", true);
+			}
+		}
+	}
+	//FGenericPlatformMisc::RequestExit(false);
 }

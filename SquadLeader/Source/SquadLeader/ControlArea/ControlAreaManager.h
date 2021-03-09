@@ -36,6 +36,9 @@ public:
 
 	UFUNCTION()
 	TSubclassOf<ASoldierTeam> GetTeamWithMostControl();
+	
+	UFUNCTION()
+	TSubclassOf<ASoldierTeam> GetTeamWithAllControl();
 
 protected:
 	UPROPERTY(VisibleAnywhere, Replicated, Category = "ControlList")

@@ -4,7 +4,7 @@
 #include "SoldierTeam.h"
 #include "Soldier.h"
 #include "../Spawn/SoldierSpawn.h"
-
+#include "../SquadLeaderGameModeBase.h"
 
 ASoldierTeam::ASoldierTeam() {
 	bReplicates = true;
@@ -77,7 +77,14 @@ void ASoldierTeam::RemoveOneTicket()
 	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TeamName + TEXT(" : Loses a ticket."));
 	
 	// TODO : End game here if no tickets left and team is primordial
-	if (Tickets <= 0 /*&& ...*/) {
-		GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Black, TEXT("END GAME : ") +  TeamName + TEXT(" lose !"));
+	if (Tickets == 0 /*&& ...*/) {
+		GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Red, TEXT("END GAME: Tickets depleted\n") +  TeamName + TEXT(" lose !"), false, FVector2D(7,7));
+		if (GetLocalRole() == ROLE_Authority) {
+			if (ASquadLeaderGameModeBase* GameMode = Cast<ASquadLeaderGameModeBase>(soldierList[0]->GetWorld()->GetAuthGameMode()); GameMode) {  // only for the server
+				FTimerHandle timerBeforeClosing;
+				soldierList[0]->GetWorld()->GetTimerManager().SetTimer(timerBeforeClosing, GameMode,
+					&ASquadLeaderGameModeBase::EndGame, 5.f);  // request to the server to end the game
+			}
+		}
 	}
 }

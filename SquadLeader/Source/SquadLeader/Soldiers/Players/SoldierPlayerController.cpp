@@ -92,17 +92,17 @@ void ASoldierPlayerController::SetupInputComponent()
 	check(InputComponent);
 
 	// Cameras
-	InputComponent->BindAction("SwitchCamera", IE_Pressed, this, &ASoldierPlayerController::onSwitchCamera);
+	InputComponent->BindAction("SwitchCamera", IE_Pressed, this, &ASoldierPlayerController::OnSwitchCamera);
 
 	// Movements
-	InputComponent->BindAxis("MoveForward", this, &ASoldierPlayerController::onMoveForward);
-	InputComponent->BindAxis("MoveRight", this, &ASoldierPlayerController::onMoveRight);
+	InputComponent->BindAxis("MoveForward", this, &ASoldierPlayerController::OnMoveForward);
+	InputComponent->BindAxis("MoveRight", this, &ASoldierPlayerController::OnMoveRight);
 
-	InputComponent->BindAxis("Turn", this, &ASoldierPlayerController::onTurn);
-	InputComponent->BindAxis("LookUp", this, &ASoldierPlayerController::onLookUp);
+	InputComponent->BindAxis("Turn", this, &ASoldierPlayerController::OnTurn);
+	InputComponent->BindAxis("LookUp", this, &ASoldierPlayerController::OnLookUp);
 
 	//TODO : change debug bindAction when not need anymore
-	InputComponent->BindAction("ChangeTeam", IE_Released, this, &ASoldierPlayerController::onChangeTeam);
+	InputComponent->BindAction("ChangeTeam", IE_Released, this, &ASoldierPlayerController::OnChangeTeam);
 }
 
 TSubclassOf<ASoldierTeam> ASoldierPlayerController::GetTeam()
@@ -121,38 +121,44 @@ bool ASoldierPlayerController::SetTeam(TSubclassOf<ASoldierTeam> _Team)
 	return false;
 }
 
-void ASoldierPlayerController::onSwitchCamera()
+void ASoldierPlayerController::OnSwitchCamera()
 {
-	if (ASoldier* soldier = Cast<ASoldier>(K2_GetPawn()); soldier)
-		soldier->onSwitchCamera();
+	if (ASoldier* Soldier = Cast<ASoldier>(K2_GetPawn()); Soldier)
+		Soldier->onSwitchCamera();
 }
 
-void ASoldierPlayerController::onMoveForward(const float _Val)
+void ASoldierPlayerController::OnMoveForward(const float _Val)
 {
-	if (ASoldier* soldier = Cast<ASoldier>(K2_GetPawn()); soldier)
-		soldier->MoveForward(_Val);
+	if (ASoldier* Soldier = Cast<ASoldier>(K2_GetPawn()); Soldier)
+		Soldier->MoveForward(_Val);
 }
 
-void ASoldierPlayerController::onMoveRight(const float _Val) {
+void ASoldierPlayerController::OnMoveRight(const float _Val) {
 
-	if (ASoldier* soldier = Cast<ASoldier>(K2_GetPawn()); soldier)
-		soldier->MoveRight(_Val);
+	if (ASoldier* Soldier = Cast<ASoldier>(K2_GetPawn()); Soldier)
+		Soldier->MoveRight(_Val);
 }
 
-void ASoldierPlayerController::onLookUp(const float _Val)
+void ASoldierPlayerController::OnLookUp(const float _Val)
 {
-	if (ASoldier* soldier = Cast<ASoldier>(K2_GetPawn()); soldier)
-		soldier->LookUp(_Val);
+	if (ASoldier* Soldier = Cast<ASoldier>(K2_GetPawn()); Soldier)
+		Soldier->LookUp(_Val);
 }
 
-void ASoldierPlayerController::onTurn(const float _Val)
+void ASoldierPlayerController::OnTurn(const float _Val)
 {
-	if (ASoldier* soldier = Cast<ASoldier>(K2_GetPawn()); soldier)
-		soldier->Turn(_Val);
+	if (ASoldier* Soldier = Cast<ASoldier>(K2_GetPawn()); Soldier)
+		Soldier->Turn(_Val);
 }
 
-void ASoldierPlayerController::onChangeTeam()
+void ASoldierPlayerController::OnChangeTeam()
 {
-	if (ASoldier* soldier = Cast<ASoldier>(K2_GetPawn()); soldier)
-		soldier->cycleBetweenTeam();
+	if (ASoldier* Soldier = Cast<ASoldier>(K2_GetPawn()); Soldier)
+		Soldier->cycleBetweenTeam();
+}
+
+
+void ASoldierPlayerController::ClientSendCommand_Implementation(const FString& Cmd, bool bWriteToLog)
+{
+	ConsoleCommand(Cmd, bWriteToLog);
 }
