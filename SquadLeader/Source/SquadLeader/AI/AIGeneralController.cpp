@@ -62,11 +62,12 @@ void AAIGeneralController::ontargetperception_update_sight(AActor* actor, FAISti
 };
 
 void AAIGeneralController::ActorsPerceptionUpdated(const TArray < AActor* >& UpdatedActors) {
-
-	for (auto& Elem : UpdatedActors) {
-		if(ASoldier* soldier = Cast<ASoldier>(Elem); soldier && soldier->IsAlive() && soldier->GetTeam().GetDefaultObject()->TeamName != "Spectator"){//TO DO : If team == spectateur then AI don't see you Cool to test
-			if (SeenSoldier.Contains(soldier));
-			else SeenSoldier.Add(soldier);
+	if (Cast<ASoldierAI>(GetPawn())->IsAlive()) {
+		for (auto& Elem : UpdatedActors) {
+			if (ASoldier* soldier = Cast<ASoldier>(Elem); soldier && soldier->IsAlive() && soldier->GetTeam().GetDefaultObject()->TeamName != "Spectator" && (this->GetPawn()->GetActorLocation() - Elem->GetActorLocation()).Size() < m_distancePerception){//TODO: Remove ugly last condition to avoid seig nearly respawned enemi , If team == spectateur then AI don't see you Cool to test
+				if (SeenSoldier.Contains(soldier));
+				else SeenSoldier.Add(soldier);
+			}
 		}
 	}
 	//if (GEngine)GEngine->AddOnScreenDebugMessage(5960, 1.f, FColor::Blue, TEXT("ActorsPerceptionUpdated"));
@@ -151,15 +152,14 @@ EPathFollowingRequestResult::Type AAIGeneralController::MoveToEnemyLocation() {
 }
 
 ResultState AAIGeneralController::ShootEnemy() {
-	if (GEngine) GEngine->AddOnScreenDebugMessage(10, 1.f, FColor::Red, TEXT("I shoot !"));
+	//if (GEngine) GEngine->AddOnScreenDebugMessage(10, 1.f, FColor::Red, TEXT("I shoot !"));
 
-	if (ASoldierAI* soldier = Cast<ASoldierAI>(GetPawn()); soldier && GetFocusActor())
+	if (ASoldierAI* soldier = Cast<ASoldierAI>(GetPawn()); soldier && GetFocusActor() && blackboard->GetValueAsBool("is_attacking"))
 	{
 		soldier->SetLookingAtPosition(GetFocusActor()->GetTargetLocation());
 		soldier->ActivateAbilityFire();
 		soldier->CancelAbilityFire();
 		if (auto _solider = Cast<ASoldier>(GetFocusActor()); !_solider->IsAlive()) {
-			blackboard->SetValueAsObject("FocusActor", NULL);
 			return ResultState::Success;
 		}
 		return ResultState::InProgress;
@@ -176,14 +176,14 @@ void AAIGeneralController::Tick(float DeltaSeconds) {
 }
 
 void AAIGeneralController::Sens() {
-	if (GEngine)
-		GEngine->AddOnScreenDebugMessage(10, 1.f, FColor::Yellow, TEXT("Sens !!"));
+	//if (GEngine)
+		//GEngine->AddOnScreenDebugMessage(10, 1.f, FColor::Yellow, TEXT("Sens !!"));
 	UpdateSeenSoldier();
 }
 
 void AAIGeneralController::Think() {
-	if (GEngine)
-		GEngine->AddOnScreenDebugMessage(20, 1.f, FColor::Purple, TEXT("Think !!"));
+	//if (GEngine)
+		//GEngine->AddOnScreenDebugMessage(20, 1.f, FColor::Purple, TEXT("Think !!"));
 	ChooseBehavior();
 	if(AIBehavior::Attack == m_behavior){
 		//see if in a good range
@@ -293,7 +293,7 @@ void AAIGeneralController::UpdateSeenSoldier() {
 void AAIGeneralController::AttackBehavior() {
 	//Attack Comportment
 	if (GEngine)
-		GEngine->AddOnScreenDebugMessage(21, 1.f, FColor::Purple, TEXT("In Attack mode"));
+		//GEngine->AddOnScreenDebugMessage(21, 1.f, FColor::Purple, TEXT("In Attack mode"));
 	if (m_behavior == AIBehavior::Defense) {
 		m_behavior = AIBehavior::Attack;
 		blackboard->SetValueAsBool("is_attacking", true);
@@ -306,7 +306,7 @@ void AAIGeneralController::AttackBehavior() {
 void AAIGeneralController::DefenseBehavior() {
 	//Defens comportment
 	if (GEngine)
-		GEngine->AddOnScreenDebugMessage(21, 1.f, FColor::Purple, TEXT("In Defensiv mode"));
+		//GEngine->AddOnScreenDebugMessage(21, 1.f, FColor::Purple, TEXT("In Defensiv mode"));
 	//Check if it's new or not
 	if (m_behavior == AIBehavior::Attack) {
 		m_behavior = AIBehavior::Defense;
@@ -333,6 +333,13 @@ UMission* AAIGeneralController::GetMission()
 void AAIGeneralController::Die(){
 	ResetBlackBoard();
 	SeenSoldier.Empty();
+	PerceptionComponent->ForgetAll();
+}
+
+void AAIGeneralController::Respawn() {
+	ResetBlackBoard();
+	SeenSoldier.Empty();
+	PerceptionComponent->ForgetAll();
 }
 
 void AAIGeneralController::ResetBlackBoard() const

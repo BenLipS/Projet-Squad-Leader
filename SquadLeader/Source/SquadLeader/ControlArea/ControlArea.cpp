@@ -135,11 +135,16 @@ void AControlArea::calculateControlValue()
 					else
 						TeamData[presentTeam]->controlValue = maxControlValue;
 
-					if (isTakenBy != presentTeam && TeamData[presentTeam]->controlValue >= controlValueToTake) {
+					if (isTakenBy != presentTeam && TeamData[presentTeam]->controlValue >= controlValueToTake) {  // take control of the point
 						isTakenBy = presentTeam;
 						TeamData[presentTeam]->ChangeSpawnState(true);
 						// notify here the changement if needed
 						GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("ControlArea : Team control =" + presentTeam.GetDefaultObject()->TeamName));
+
+						// check the victory condition
+						if (auto gameMode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode()); gameMode) {
+							gameMode->CheckControlAreaVictoryCondition();
+						}
 					}
 				}
 			}
@@ -166,7 +171,7 @@ void AControlArea::UpdateTeamData()
 		for (auto team : TeamData) {
 			if (!teamCollection.Contains(team.Key)) {
 				keyToRemove.Add(team.Key);
-				GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("ControlArea Update : Unknown team removed : " + team.Key.GetDefaultObject()->TeamName));
+				//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("ControlArea Update : Unknown team removed : " + team.Key.GetDefaultObject()->TeamName));
 			}
 		}
 		for (auto key : keyToRemove) {
@@ -176,7 +181,7 @@ void AControlArea::UpdateTeamData()
 		for (auto team : teamCollection) {  // add element
 			if (!TeamData.Contains(team)) {
 				TeamData.Add(team, NewObject<AControlAreaTeamStat>());
-				GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("ControlArea Update : Unknown team added : " + team.GetDefaultObject()->TeamName));
+				//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("ControlArea Update : Unknown team added : " + team.GetDefaultObject()->TeamName));
 			}
 		}
 
