@@ -173,9 +173,33 @@ void AAIBasicController::UpdateFlockingPosition(float DeltaSeconds)
 
 	float MaxSpeed = GetPawn()->GetMovementComponent()->GetMaxSpeed();
 	MovementVector = MovementVector * MaxSpeed;
-	blackboard->SetValueAsVector("FlockingLocation", GetPawn()->GetActorLocation() + MovementVector);
+	if (IsFlockingPositionValid()) {
+		blackboard->SetValueAsVector("FlockingLocation", GetPawn()->GetActorLocation() + MovementVector);
+	}
+	else {
+		FVector RealObjectifLocation = ObjectifLocation;
+		RealObjectifLocation.Z += 100;
+		blackboard->SetValueAsVector("FlockingLocation", RealObjectifLocation);
+	}
 
-	//DrawDebug();
+	DrawDebug();
+}
+
+bool AAIBasicController::IsFlockingPositionValid()
+{
+	FHitResult outHit;
+
+	FVector startLocation = GetPawn()->GetActorLocation();
+	FVector endLocation = startLocation + MovementVector;
+
+	FCollisionQueryParams collisionParams;
+	collisionParams.AddIgnoredActor(Cast<ASoldierAI>(GetPawn()));
+
+	GetWorld()->LineTraceSingleByChannel(outHit, startLocation, endLocation, ECollisionChannel::ECC_WorldStatic, collisionParams);
+	if (outHit.bBlockingHit) return false;
+	//DrawDebugLine(GetWorld(), startLocation, endLocation, FColor::Green);
+	//DrawDebugLine(GetWorld(), GetPawn()->GetActorLocation(), GetPawn()->GetActorLocation() + MovementVector, FColor::Blue);
+	return true;
 }
 
 void AAIBasicController::UpdateMission()
