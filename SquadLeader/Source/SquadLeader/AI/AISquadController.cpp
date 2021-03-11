@@ -2,9 +2,32 @@
 
 
 #include "AISquadController.h"
+#include "AISquadManager.h"
 #include "../Spawn/SoldierSpawn.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "DrawDebugHelpers.h"
 #include "BehaviorTree/BehaviorTree.h"
+
+bool AAISquadController::GetValidFormationPos()
+{
+	FHitResult outHit;
+
+	FVector startLocation = SquadManager->Leader->GetLocation();
+	startLocation.Z -= 20;
+	FVector endLocation = blackboard->GetValueAsVector("FormationLocation");
+	endLocation.Z -= 20;
+
+	FCollisionQueryParams collisionParams;
+	collisionParams.AddIgnoredActor(Cast<ASoldierAI>(GetPawn()));
+	collisionParams.AddIgnoredActor(SquadManager->Leader);
+
+	GetWorld()->LineTraceSingleByChannel(outHit, startLocation, endLocation, ECollisionChannel::ECC_WorldStatic, collisionParams);
+	if (outHit.bBlockingHit) {
+		blackboard->SetValueAsVector("FormationLocation", outHit.Location);
+		return false;
+	}
+	return true;
+}
 
 AAISquadController::AAISquadController() {
 	setup_BehaviorTree();
@@ -56,8 +79,10 @@ void AAISquadController::Init()
 }
 
 EPathFollowingRequestResult::Type AAISquadController::FollowFormation() {
-	EPathFollowingRequestResult::Type _movetoResult = MoveToLocation(blackboard->GetValueAsVector("FormationLocation"), 5.f);
 
+	GetValidFormationPos();
+	EPathFollowingRequestResult::Type _movetoResult = MoveToLocation(blackboard->GetValueAsVector("FormationLocation"), 5.f);
+	DrawDebugPoint(GetWorld(), blackboard->GetValueAsVector("FormationLocation"), 12, FColor::Purple);
 	if ((blackboard->GetValueAsVector("FormationLocation") - GetPawn()->GetActorLocation()).Size() >= RuningDistanceForFormation)
 		Cast<ASoldierAI>(GetPawn())->ActivateAbilityRun();
 	else
