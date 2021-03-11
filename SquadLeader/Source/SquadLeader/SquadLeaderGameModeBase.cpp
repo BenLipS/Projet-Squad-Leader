@@ -25,7 +25,6 @@ ASquadLeaderGameModeBase::ASquadLeaderGameModeBase() : RespawnDelay{ 3.f }
 
 void ASquadLeaderGameModeBase::StartPlay() {
 	for (auto team : SoldierTeamCollection) {  // clean all team data at the begining
-		team.GetDefaultObject()->SetTicket(BaseTicketNumber);
 		team.GetDefaultObject()->CleanSpawnPoints();
 		team.GetDefaultObject()->CleanSoldierList();
 	}

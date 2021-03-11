@@ -75,6 +75,4 @@ public:
 		void RemoveOneTicket();
 	UFUNCTION(BlueprintCallable, Category = "Tickets")
 		int GetTicket() const { return Tickets; }
-	UFUNCTION(BlueprintCallable, Category = "Tickets")
-		void SetTicket(int _Ticket) { Tickets = _Ticket; }
 };
