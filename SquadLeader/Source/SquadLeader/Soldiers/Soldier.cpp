@@ -68,6 +68,9 @@ void ASoldier::BeginPlay()
 			GetTeam().GetDefaultObject()->AddSoldierList(this);
 		}
 	}
+
+	if (StartGameMontage)
+		PlayAnimMontage(StartGameMontage);
 }
 
 void ASoldier::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
@@ -267,6 +270,9 @@ void ASoldier::DeadTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
 		// Notify the death to GameMode - Server only
 		if (ASquadLeaderGameModeBase* GameMode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode()); GameMode)
 			GameMode->SoldierDied(GetController());
+
+		if (DeathMontage)
+			PlayAnimMontage(DeathMontage);
 	}
 	else // If dead tag is removed - Handle respawn
 	{
@@ -276,6 +282,9 @@ void ASoldier::DeadTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
 
 		GetCharacterMovement()->GravityScale = 1.f;
 		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+
+		if (RespawnMontage)
+			PlayAnimMontage(RespawnMontage);
 	}
 }
 

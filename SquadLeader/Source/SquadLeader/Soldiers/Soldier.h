@@ -318,13 +318,23 @@ private:
 
 	void setup_stimulus();
 
-//////////////// Animation
+//////////////// Particles
 protected:
-	UPROPERTY(EditDefaultsOnly, Category = "Animation")
+	UPROPERTY(EditDefaultsOnly, Category = "Animation | Particles")
 	UParticleSystem* ImpactHitFX;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Animation")
+	UPROPERTY(EditDefaultsOnly, Category = "Animation | Particles")
 	FVector ImpactHitFXScale;
+
+//////////////// Montages
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Animation | Montages")
+	UAnimMontage* StartGameMontage;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Animation | Montages")
+	UAnimMontage* DeathMontage;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Animation | Montages")
+	UAnimMontage* RespawnMontage;
 
 public:
 	UFUNCTION()
