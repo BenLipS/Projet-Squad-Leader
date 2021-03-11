@@ -175,7 +175,7 @@ void AAIBasicController::UpdateFlockingPosition(float DeltaSeconds)
 	MovementVector = MovementVector * MaxSpeed;
 	blackboard->SetValueAsVector("FlockingLocation", GetPawn()->GetActorLocation() + MovementVector);
 
-	DrawDebug();
+	//DrawDebug();
 }
 
 void AAIBasicController::UpdateMission()
@@ -187,8 +187,6 @@ void AAIBasicController::UpdateMission()
 }
 
 EPathFollowingRequestResult::Type AAIBasicController::FollowFlocking() {
-	if (!blackboard->GetValueAsBool("DoFlocking"))
-		return EPathFollowingRequestResult::Failed;
 	EPathFollowingRequestResult::Type _movetoResult = MoveToLocation(blackboard->GetValueAsVector("FlockingLocation"), 5.f);
 	return _movetoResult;
 }
@@ -233,7 +231,12 @@ FVector AAIBasicController::GetRespawnPoint()  // TODO : Change this function to
 	return FVector(0.f, 0.f, 1500.f); // else return default
 }
 
-void AAIBasicController::Die() const {
+void AAIBasicController::Die() {
 	Super::Die();
-	blackboard->SetValueAsBool("DoFlocking", false);
+}
+
+void AAIBasicController::ResetBlackBoard() const {
+	Super::ResetBlackBoard();
+	blackboard->SetValueAsBool("DoFlocking", true);
+	blackboard->SetValueAsVector("FlockingLocation", Cast<ASoldierAI>(GetPawn())->GetLocation());
 }

@@ -15,6 +15,8 @@
 UENUM()
 enum class FormationType { Circle, Arrow };
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSquadInfoArrayChanged, TArray<AAISquadController*>, SquadArray);
+
 UCLASS(Blueprintable)
 class SQUADLEADER_API AAISquadManager : public AInfo
 {
@@ -22,7 +24,23 @@ class SQUADLEADER_API AAISquadManager : public AInfo
 
 // TODO: Check if all this should be public
 public:
+	//-----DELEGATE-----
+	FSquadInfoArrayChanged OnSquadChanged;
+
+public:
 	AAISquadManager();
+	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
+
+protected:
+	UPROPERTY(ReplicatedUsing = OnRep_AISquadList)
+	TArray<AAISquadController*> AISquadList;
+
+public:
+
+	void BeginPlay() override;
+
+	UFUNCTION()
+	void OnRep_AISquadList();
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	TSubclassOf<ASoldierAI> ClassAI;
@@ -35,9 +53,6 @@ public:
 
 	UPROPERTY()
 	ASoldierPlayer* Leader;
-
-	UPROPERTY()
-	TArray<AAISquadController*> AISquadList;
 
 	virtual void Tick(float DeltaTime) override;
 

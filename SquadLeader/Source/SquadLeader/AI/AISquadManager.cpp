@@ -15,11 +15,30 @@ AAISquadManager::AAISquadManager() {
 	PrimaryActorTick.TickGroup = TG_PrePhysics;
 }
 
+void AAISquadManager::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	// everyone
+	DOREPLIFETIME(AAISquadManager, AISquadList);
+}
+
+void AAISquadManager::BeginPlay()
+{
+	Super::BeginPlay();
+	OnSquadChanged.Broadcast(AISquadList);
+}
+
+void AAISquadManager::OnRep_AISquadList()
+{
+	OnSquadChanged.Broadcast(AISquadList);
+}
+
 void AAISquadManager::Init(TSubclassOf<ASoldierTeam> _Team, ASoldierPlayer* _Player)
 {
 	Team = _Team;
 	Leader = _Player;
-	if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Black, FString::Printf(TEXT("Init Squad Manager for: %s"), *Leader->GetName()));
+	//if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Black, FString::Printf(TEXT("Init Squad Manager for: %s"), *Leader->GetName()));
 
 	FTransform PlayerTransform = Leader->GetTransform();
 	FVector Offset_{ 300.f,0.f,0.f };

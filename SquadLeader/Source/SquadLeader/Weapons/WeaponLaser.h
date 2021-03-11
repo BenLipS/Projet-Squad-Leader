@@ -19,13 +19,16 @@ protected:
 //////////////// Fire
 	TArray<FHitResult> GetActorsFromLineTrace(const FVector& _StartLocation, const FVector& _EndLocation);
 
-	// Damage impact
-	virtual void ApplyImpactDamage(UAbilitySystemComponent* _TargetASC) override;
-
 	// Additional impact effects
 	virtual void ApplyImpactEffects(UAbilitySystemComponent* _TargetASC) override;
 
 	// CollisionChannel the weapon should detect
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Collision")
 	TEnumAsByte<ECollisionChannel> CollisionChannelImpact;
+
+//////////////// Animations
+	UPROPERTY(EditDefaultsOnly, Category = "Animation")
+	UParticleSystem* LaserFX;
+
+	virtual void FireAnimation() override;
 };

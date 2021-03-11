@@ -70,7 +70,7 @@ protected:
 	void InitializeAbilities();
 	void AddStartupEffects();
 	void InitializeTagChangeCallbacks();
-	void InitializeAttributeChangeCallbacks();
+	virtual void InitializeAttributeChangeCallbacks();
 
 //////////////// Tag Change Callbacks
 public:
@@ -82,6 +82,7 @@ public:
 	static FGameplayTag StateFightingTag;
 	static FGameplayTag StateAimingTag;
 	static FGameplayTag StateGivingOrderTag;
+	static FGameplayTag StateReloadingWeaponTag;
 
 	// Abilities
 	static FGameplayTag SkillRunTag;
@@ -92,6 +93,7 @@ public:
 	static FGameplayTag SkillAimTag;
 	static FGameplayTag SkillAreaEffectFromSelfTag;
 	static FGameplayTag SkillGiveOrderTag;
+	static FGameplayTag SkillReloadWeaponTag;
 
 protected:
 	virtual void DeadTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
@@ -100,15 +102,29 @@ protected:
 	virtual void FightingTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 	virtual void AimingTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 	virtual void GivingOrderTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
+	virtual void ReloadingWeaponTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
+
+public:
+	UFUNCTION(BlueprintCallable, Category = "Abilities")
+	bool ActivateAbilities(const FGameplayTagContainer& _TagContainer);
+
+	UFUNCTION(BlueprintCallable, Category = "Abilities")
+	bool ActivateAbility(const FGameplayTag& _Tag);
+
+	UFUNCTION(BlueprintCallable, Category = "Abilities")
+	void CancelAbilities(const FGameplayTagContainer& _TagContainer);
+
+	UFUNCTION(BlueprintCallable, Category = "Abilities")
+	void CancelAbility(const FGameplayTag& _Tag);
 
 //////////////// Attributes
 public:
 	UPROPERTY(BluePrintReadWrite, Category = "Attributes")
-		uint8 InfluenceRadius = 2;
+	uint8 InfluenceRadius = 2;
 
 	UPROPERTY(BluePrintReadWrite, Category = "Attributes")
-		float InfluenceWeight = 0.5f;
-	
+	float InfluenceWeight = 0.5f;
+
 	// Getters
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
 	int32 GetCharacterLevel() const;
@@ -118,6 +134,12 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
 	float GetMaxHealth() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
+	float GetShield() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
+	float GetMaxShield() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
 	float GetMoveSpeedWalk() const;
@@ -164,7 +186,7 @@ public:
 	USpringArmComponent* SpringArmComponent;
 
 protected:
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly, Replicated)
 	FRotator SyncControlRotation;
 
 public:
@@ -243,6 +265,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	void StopAiming();
 
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	void ReloadWeapon();
+
 protected:
 	bool bDefaultWeaponsInitialized;
 
@@ -255,7 +280,7 @@ protected:
 	TArray<class AWeapon*> Inventory;
 
 	UPROPERTY(Transient, ReplicatedUsing = OnRep_CurrentWeapon)
-	AWeapon* currentWeapon;
+	AWeapon* CurrentWeapon;
 
 	void AddToInventory(AWeapon* _Weapon);
 
@@ -265,7 +290,7 @@ protected:
 	void OnRep_CurrentWeapon(class AWeapon* _LastWeapon);
 
 public:
-	AWeapon* getCurrentWeapon() const noexcept { return currentWeapon; }
+	AWeapon* getCurrentWeapon() const noexcept { return CurrentWeapon; }
 
 	//////////////// Soldier team
 	UPROPERTY(EditAnywhere, Category = "PlayerTeam")
@@ -281,17 +306,27 @@ public:
 	virtual TSubclassOf<ASoldierTeam> GetTeam() override { return nullptr; };  // function overide in SoldierPlayer and Soldier AI
 	virtual bool SetTeam(TSubclassOf<ASoldierTeam> _Team) override { return false; };  // function overide in SoldierPlayer and Soldier AI
 
-
+/////////////// Respawn
 public:
-	/////////////// Respawn
 	UFUNCTION()
 	virtual FVector GetRespawnPoint() { return FVector(0.f, 0.f, 1500.f); }  // function overide in SoldierPlayer and Soldier AI
 
 
-	//For AIPerception
+//////////////// For AIPerception
 private:
 	class UAIPerceptionStimuliSourceComponent* stimulus;
 
 	void setup_stimulus();
 
+//////////////// Animation
+protected:
+	UPROPERTY(EditDefaultsOnly, Category = "Animation")
+	UParticleSystem* ImpactHitFX;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Animation")
+	FVector ImpactHitFXScale;
+
+public:
+	UFUNCTION()
+	void ShowImpactHitEffect();
 };

@@ -9,6 +9,7 @@
 /**
  * 
  */
+
 UCLASS()
 class SQUADLEADER_API AAIBasicController : public AAIGeneralController
 {
@@ -17,6 +18,7 @@ class SQUADLEADER_API AAIBasicController : public AAIGeneralController
 	AAIBasicController();
 
 protected:
+
 	virtual void setup_BehaviorTree() override;
 
 	/*
@@ -117,6 +119,8 @@ public://Mission
 	UFUNCTION()
 	void UpdateMission();
 
-	virtual void Die() const override;
+	virtual void Die() override;
+
+	virtual void ResetBlackBoard() const override;
 
 };

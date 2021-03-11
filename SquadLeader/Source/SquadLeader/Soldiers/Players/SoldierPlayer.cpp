@@ -40,10 +40,6 @@ void ASoldierPlayer::PossessedBy(AController* _newController)
 		SquadManager->Init(GetTeam(), this);
 		Cast<USquadLeaderGameInstance>(GetGameInstance())->ListAISquadManagers.Add(SquadManager);
 	}
-
-	// TODO: Do we need to have the hud in server ?
-	if (ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(GetController()); PC)
-		PC->createHUD();
 }
 
 // Client only 
@@ -54,7 +50,7 @@ void ASoldierPlayer::OnRep_PlayerState()
 	initWeapons();
 
 	if (ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(GetController()); PC)
-		PC->createHUD();
+		PC->CreateHUD();
 }
 
 AAISquadManager* ASoldierPlayer::GetSquadManager()

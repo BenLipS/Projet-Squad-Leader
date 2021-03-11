@@ -29,12 +29,15 @@ void UFollowFlockingBTTaskNode::TickTask(class UBehaviorTreeComponent& OwnerComp
 	EPathFollowingRequestResult::Type MoveToActorResult = AIBasicController->FollowFlocking();
 	FVector distToObjectif = AIBasicController->GetPawn()->GetActorLocation() - AIBasicController->GetObjectifLocation();
 	if (distToObjectif.Size() < 500) {
-		AIBasicController->get_blackboard()->SetValueAsBool("DoFlocking", false);
+		//AIBasicController->get_blackboard()->SetValueAsBool("DoFlocking", false);
 		AIBasicController->SetState(AIBasicState::Patroling);
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	}
-	if (MoveToActorResult == EPathFollowingRequestResult::Failed)
-		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+	else if (AIBasicController->get_blackboard()->GetValueAsBool("is_attacking")) {
+		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+	}
+	/*if (MoveToActorResult == EPathFollowingRequestResult::Failed)
+		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);*/
 
 }
 

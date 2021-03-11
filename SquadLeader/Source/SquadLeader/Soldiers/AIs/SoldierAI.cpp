@@ -9,6 +9,14 @@ ASoldierAI::ASoldierAI(const FObjectInitializer& _ObjectInitializer) : Super(_Ob
 	AttributeSet = CreateDefaultSubobject<UAttributeSetSoldier>(TEXT("Attribute Set"));
 }
 
+void ASoldierAI::BroadCastDatas()
+{
+	OnHealthChanged.Broadcast(AttributeSet->GetHealth());
+	OnMaxHealthChanged.Broadcast(AttributeSet->GetMaxHealth());
+	OnShieldChanged.Broadcast(AttributeSet->GetShield());
+	OnMaxShieldChanged.Broadcast(AttributeSet->GetMaxShield());
+}
+
 void ASoldierAI::BeginPlay()
 {
 	Super::BeginPlay();
@@ -30,6 +38,7 @@ FVector ASoldierAI::lookingAtPosition()
 	return LookingAtPosition;
 }
 
+
 TSubclassOf<ASoldierTeam> ASoldierAI::GetTeam()
 {
 	if (auto AIController = Cast<AAIGeneralController>(GetController()); AIController) {
@@ -46,33 +55,16 @@ bool ASoldierAI::SetTeam(TSubclassOf<ASoldierTeam> _Team)
 	return false; // else return default
 }
 
-void ASoldierAI::SetLookingAtPosition(FVector _lookingAtPosition) {
-	LookingAtPosition = _lookingAtPosition;
+void ASoldierAI::SetLookingAtPosition(const FVector &_LookingAtPosition)
+{
+	LookingAtPosition = _LookingAtPosition;
+	SyncControlRotation = FVector{ LookingAtPosition - GetActorLocation() }.Rotation();
+
+	if (HasAuthority())
+		MulticastSyncControlRotation(SyncControlRotation);
+	else
+		ServerSyncControlRotation(SyncControlRotation);
 };
-
-bool ASoldierAI::ActivateAbilities(const FGameplayTagContainer &_TagContainer)
-{
-	return AbilitySystemComponent->TryActivateAbilitiesByTag(_TagContainer);
-}
-
-bool ASoldierAI::ActivateAbility(const FGameplayTag &_Tag)
-{
-	FGameplayTagContainer TagContainer;
-	TagContainer.AddTag(_Tag);
-	return AbilitySystemComponent->TryActivateAbilitiesByTag(TagContainer);
-}
-
-void ASoldierAI::CancelAbilities(const FGameplayTagContainer &_TagContainer)
-{
-	AbilitySystemComponent->CancelAbilities(&_TagContainer);
-}
-
-void ASoldierAI::CancelAbility(const FGameplayTag &_Tag)
-{
-	FGameplayTagContainer TagContainer;
-	TagContainer.AddTag(_Tag);
-	AbilitySystemComponent->CancelAbilities(&TagContainer);
-}
 
 bool ASoldierAI::ActivateAbilityFire()
 {
@@ -106,5 +98,44 @@ void ASoldierAI::Die() {
 	Super::Die();
 	auto AIController = Cast<AAIGeneralController>(GetController());
 	if(AIController)
-		AIController->Die();
+		AIController->Die();}
+
+void ASoldierAI::Respawn() {
+	Super::Respawn();
+	auto AIController = Cast<AAIGeneralController>(GetController());
+	if (AIController)
+		AIController->Respawn();
+}
+
+void ASoldierAI::InitializeAttributeChangeCallbacks()
+{
+	if (AbilitySystemComponent)
+	{
+		HealthChangedDelegateHandle = AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetHealthAttribute()).AddUObject(this, &ASoldierAI::HealthChanged);
+		MaxHealthChangedDelegateHandle = AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetMaxHealthAttribute()).AddUObject(this, &ASoldierAI::MaxHealthChanged);
+		ShieldChangedDelegateHandle = AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetShieldAttribute()).AddUObject(this, &ASoldierAI::ShieldChanged);
+		MaxShieldChangedDelegateHandle = AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetMaxShieldAttribute()).AddUObject(this, &ASoldierAI::MaxShieldChanged);
+	}
+}
+
+void ASoldierAI::HealthChanged(const FOnAttributeChangeData& Data)
+{
+	// TODO: Review callbacks with soldiers
+	Super::HealthChanged(Data);
+	OnHealthChanged.Broadcast(Data.NewValue);
+}
+
+void ASoldierAI::MaxHealthChanged(const FOnAttributeChangeData& Data)
+{
+	OnMaxHealthChanged.Broadcast(Data.NewValue);
+}
+
+void ASoldierAI::ShieldChanged(const FOnAttributeChangeData& Data)
+{
+	OnShieldChanged.Broadcast(Data.NewValue);
+}
+
+void ASoldierAI::MaxShieldChanged(const FOnAttributeChangeData& Data)
+{
+	OnMaxShieldChanged.Broadcast(Data.NewValue);
 }

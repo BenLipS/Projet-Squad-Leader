@@ -1,4 +1,6 @@
 #include "SoldierPlayerState.h"
+#include "SoldierPlayerController.h"
+#include "../../UI/PlayerHUD.h"
 
 ASoldierPlayerState::ASoldierPlayerState()
 {
@@ -13,6 +15,18 @@ ASoldierPlayerState::ASoldierPlayerState()
 void ASoldierPlayerState::BeginPlay()
 {
 	Super::BeginPlay();
+	InitializeAttributeChangeCallbacks();
+}
+
+void ASoldierPlayerState::InitializeAttributeChangeCallbacks()
+{
+	if (AbilitySystemComponent)
+	{
+		HealthChangedDelegateHandle = AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetHealthAttribute()).AddUObject(this, &ASoldierPlayerState::HealthChanged);
+		MaxHealthChangedDelegateHandle = AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetMaxHealthAttribute()).AddUObject(this, &ASoldierPlayerState::MaxHealthChanged);
+		ShieldChangedDelegateHandle = AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetShieldAttribute()).AddUObject(this, &ASoldierPlayerState::ShieldChanged);
+		MaxShieldChangedDelegateHandle = AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetMaxShieldAttribute()).AddUObject(this, &ASoldierPlayerState::MaxShieldChanged);
+	}
 }
 
 void ASoldierPlayerState::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
@@ -52,4 +66,52 @@ UAbilitySystemSoldier* ASoldierPlayerState::GetAbilitySystemComponent() const
 UAttributeSetSoldier* ASoldierPlayerState::GetAttributeSet() const
 {
 	return AttributeSet;
+}
+
+float ASoldierPlayerState::GetHealth() const
+{
+	return AttributeSet->GetHealth();
+}
+
+float ASoldierPlayerState::GetMaxHealth() const
+{
+	return AttributeSet->GetMaxHealth();
+}
+
+float ASoldierPlayerState::GetShield() const
+{
+	return AttributeSet->GetShield();
+}
+
+float ASoldierPlayerState::GetMaxShield() const
+{
+	return AttributeSet->GetMaxShield();
+}
+
+void ASoldierPlayerState::HealthChanged(const FOnAttributeChangeData& Data)
+{
+	OnHealthChanged.Broadcast(Data.NewValue);
+}
+
+void ASoldierPlayerState::MaxHealthChanged(const FOnAttributeChangeData& Data)
+{
+	OnMaxHealthChanged.Broadcast(Data.NewValue);
+}
+
+void ASoldierPlayerState::ShieldChanged(const FOnAttributeChangeData& Data)
+{
+	OnShieldChanged.Broadcast(Data.NewValue);
+}
+
+void ASoldierPlayerState::MaxShieldChanged(const FOnAttributeChangeData& Data)
+{
+	OnMaxShieldChanged.Broadcast(Data.NewValue);
+}
+
+void ASoldierPlayerState::BroadCastAllDatas()
+{
+	OnHealthChanged.Broadcast(GetHealth());
+	OnMaxHealthChanged.Broadcast(GetMaxHealth());
+	OnShieldChanged.Broadcast(GetShield());
+	OnMaxShieldChanged.Broadcast(GetMaxShield());
 }

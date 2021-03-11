@@ -10,7 +10,7 @@ USquadLeaderGameInstance::USquadLeaderGameInstance() :
 
 void USquadLeaderGameInstance::InitAIManagers()
 {
-	if(GEngine)GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Green, TEXT("Game Instance InitAIManagers()"));
+	//if(GEngine)GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Green, TEXT("Game Instance InitAIManagers()"));
 	auto gameMode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
 
 	/*Init AIBasic Manager*/
@@ -55,19 +55,16 @@ void USquadLeaderGameInstance::AddAIBasicToManager(AAIBasicController* AIBasic)
 		}
 	}
 	else {
-		if (GEngine)GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("AI Spawned thought the manager"));
+		//if (GEngine)GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("AI Spawned thought the manager"));
 	}
 	
 }
 
 void USquadLeaderGameInstance::InitInfluenceMap() {
-	FTransform LocationTemp{ {0.f, -1000.f, 0.f}, {0.f,0.f,0.f} };
-	AGrdiSetUp* _influenceMap = GetWorld()->SpawnActorDeferred<AGrdiSetUp>(InfluenceMapClass, LocationTemp, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
-	if (_influenceMap) {
-		_influenceMap->FinishSpawning(LocationTemp);
-		InfluenceMap = _influenceMap;
+	FTransform LocationTemp{ {0.f, 0.f, 0.f}, {0.f,0.f,0.f} };
+	AInfluenceMapGrid* _InfluenceMap= GetWorld()->SpawnActorDeferred<AInfluenceMapGrid>(InfluenceMapClass, LocationTemp, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+	if (_InfluenceMap) {
+		_InfluenceMap->FinishSpawning(LocationTemp);
+		InfluenceMap = _InfluenceMap;
 	}
-		
-
-
 }

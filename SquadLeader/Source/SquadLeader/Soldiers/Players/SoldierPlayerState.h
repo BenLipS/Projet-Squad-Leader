@@ -9,10 +9,18 @@
 #include "../Interface/Teamable.h"
 #include "SoldierPlayerState.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FFloatAttributeChanged, float, newValue);
+
 UCLASS()
 class SQUADLEADER_API ASoldierPlayerState : public APlayerState, public IAbilitySystemInterface, public ITeamable
 {
 	GENERATED_BODY()
+
+public:
+	FFloatAttributeChanged OnHealthChanged;
+	FFloatAttributeChanged OnMaxHealthChanged;
+	FFloatAttributeChanged OnShieldChanged;
+	FFloatAttributeChanged OnMaxShieldChanged;
 
 public:
 	ASoldierPlayerState();
@@ -20,6 +28,7 @@ public:
 
 private:
 	void BeginPlay() override;
+	void InitializeAttributeChangeCallbacks();
 
 //////////////// Teamable
 protected:
@@ -40,4 +49,31 @@ protected:
 public:
 	UAbilitySystemSoldier* GetAbilitySystemComponent() const override;
 	UAttributeSetSoldier* GetAttributeSet() const;
+
+//////////////// Attributes
+public:
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
+	float GetHealth() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
+	float GetMaxHealth() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
+	float GetShield() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
+	float GetMaxShield() const;
+
+protected:
+	FDelegateHandle HealthChangedDelegateHandle;
+	FDelegateHandle MaxHealthChangedDelegateHandle;
+	FDelegateHandle ShieldChangedDelegateHandle;
+	FDelegateHandle MaxShieldChangedDelegateHandle;
+
+	virtual void HealthChanged(const FOnAttributeChangeData& Data);
+	virtual void MaxHealthChanged(const FOnAttributeChangeData& Data);
+	virtual void ShieldChanged(const FOnAttributeChangeData& Data);
+	virtual void MaxShieldChanged(const FOnAttributeChangeData& Data);
+public:
+	void BroadCastAllDatas();
 };
