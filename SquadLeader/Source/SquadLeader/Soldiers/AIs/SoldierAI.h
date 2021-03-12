@@ -5,10 +5,7 @@
 #include "SoldierAI.generated.h"
 
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAIHealthChanged, float, newValue);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAIMaxHealthChanged, float, newValue);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAIShieldChanged, float, newValue);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAIMaxShieldChanged, float, newValue);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAIFloatChanged, float, newValue);
 
 UCLASS()
 class SQUADLEADER_API ASoldierAI : public ASoldier
@@ -21,10 +18,10 @@ public:
 
 public:
 	//-----DELEGATE-----
-	FAIHealthChanged OnHealthChanged;
-	FAIMaxHealthChanged OnMaxHealthChanged;
-	FAIShieldChanged OnShieldChanged;
-	FAIMaxShieldChanged OnMaxShieldChanged;
+	FAIFloatChanged OnHealthChanged;
+	FAIFloatChanged OnMaxHealthChanged;
+	FAIFloatChanged OnShieldChanged;
+	FAIFloatChanged OnMaxShieldChanged;
 protected:
 
 	virtual void BeginPlay() override;

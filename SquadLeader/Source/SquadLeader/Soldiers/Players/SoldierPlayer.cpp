@@ -22,6 +22,12 @@ void ASoldierPlayer::BeginPlay()
 	Super::BeginPlay();
 }
 
+void ASoldierPlayer::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME_CONDITION_NOTIFY(ASoldierPlayer, SquadManager, COND_None, REPNOTIFY_Always);
+}
+
 // Server only 
 void ASoldierPlayer::PossessedBy(AController* _newController)
 {

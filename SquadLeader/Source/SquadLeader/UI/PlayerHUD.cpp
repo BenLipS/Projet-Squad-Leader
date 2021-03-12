@@ -6,11 +6,14 @@
 #include "HealthWidget.h"
 #include "ShieldWidget.h"
 #include "AIInfoListWidget.h"
+#include "AIInfoWidget.h"
 #include "Blueprint/UserWidget.h"
 #include "../AI/AISquadController.h"
+#include "../AI/AISquadManager.h"
 #include "../Soldiers/AIs/SoldierAI.h"
 #include "../Soldiers/Players/SoldierPlayerController.h"
 #include "../Soldiers/Players/SoldierPlayerState.h"
+#include "../Soldiers/Players/SoldierPlayer.h"
 
 APlayerHUD::APlayerHUD()
 {
@@ -53,6 +56,13 @@ void APlayerHUD::BeginPlay()
 	}*/
 	
 	//-----AIInfo-----
+	if (AIWidgetClass != nullptr)
+	{
+		AIWidget = CreateWidget<UAIInfoWidget>(GetWorld(), AIWidgetClass);
+		if (AIWidget) {
+			AIWidget->AddToViewport();
+		}
+	}
 	/*if (AIInfoWidgetClass != nullptr)
 	{
 		AIInfoWidget = CreateWidget<UAIInfoListWidget>(GetWorld(), AIInfoWidgetClass);
@@ -60,7 +70,9 @@ void APlayerHUD::BeginPlay()
 			AIInfoWidget->AddToViewport();
 		}
 	}*/
+
 	SetPlayerStateLink();
+	SetAIStateLink();
 }
 
 void APlayerHUD::SetPlayerStateLink()
@@ -82,6 +94,23 @@ void APlayerHUD::SetPlayerStateLink()
 			PS->OnShieldChanged.AddDynamic(this, &APlayerHUD::OnShieldChanged);
 			PS->OnMaxShieldChanged.AddDynamic(this, &APlayerHUD::OnMaxShieldChanged);
 			PS->BroadCastAllDatas();
+		}
+	}
+}
+
+void APlayerHUD::SetAIStateLink()
+{
+	ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(GetOwningPlayerController());
+	if (PC)
+	{
+		ASoldierPlayer* Player = PC->GetPawn<ASoldierPlayer>();
+		if (PC)
+		{
+			AAISquadManager* SM = Player->GetSquadManager();
+			if (SM)
+			{
+				SM->OnSquadChanged.AddDynamic(this, &APlayerHUD::OnSquadChanged);
+			}
 		}
 	}
 }
@@ -119,9 +148,9 @@ void APlayerHUD::OnMaxShieldChanged(float newValue)
 	}
 }
 
-/*void APlayerHUD::OnSquadChanged(TArray<AAISquadController*> newValue)
+void APlayerHUD::OnSquadChanged(TArray<AAISquadController*> newValue)
 {
-	AIInfoWidget->RemoveFromViewport();
+	/*AIInfoWidget->RemoveFromViewport();
 
 	AIInfoWidget = CreateWidget<UAIInfoListWidget>(GetWorld(), AIInfoWidgetClass);
 	if (AIInfoWidget) {
@@ -134,6 +163,18 @@ void APlayerHUD::OnMaxShieldChanged(float newValue)
 				AIInfoWidget->AddItem(PlayerAI);
 			}
 		}
+	}*/
+	if (AIWidget) {
+		if (newValue.IsValidIndex(0))
+		{
+			ASoldierAI* AI = newValue[0]->GetPawn<ASoldierAI>();
+			if (AI)
+			{
+				AI->OnHealthChanged.RemoveAll(AIWidget);
+				AI->OnHealthChanged.AddDynamic(AIWidget, &UAIInfoWidget::OnHealthChanged);
+				AI->OnMaxHealthChanged.AddDynamic(AIWidget, &UAIInfoWidget::OnMaxHealthChanged);
+				AI->BroadCastDatas();
+			}
+		}
 	}
 }
-*/

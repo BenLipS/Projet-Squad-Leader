@@ -21,12 +21,14 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "SquadManager")
 	TSubclassOf<AAISquadManager> AISquadManagerClass;
 
-	UPROPERTY(BlueprintReadOnly, Category = "SquadManager")
+	UPROPERTY(BlueprintReadOnly, Replicated, Category = "SquadManager")
 	AAISquadManager* SquadManager;
 
 public:
 	UFUNCTION()
 	AAISquadManager* GetSquadManager();
+
+	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 
 //////////////// Camera
 public:
