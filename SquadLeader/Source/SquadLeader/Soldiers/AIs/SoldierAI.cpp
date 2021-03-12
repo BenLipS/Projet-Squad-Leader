@@ -120,6 +120,7 @@ void ASoldierAI::InitializeAttributeChangeCallbacks()
 
 void ASoldierAI::HealthChanged(const FOnAttributeChangeData& Data)
 {
+	Super::HealthChanged(Data);
 	OnHealthChanged.Broadcast(Data.NewValue);
 }
 
