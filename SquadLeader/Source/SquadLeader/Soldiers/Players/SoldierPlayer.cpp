@@ -137,7 +137,6 @@ void ASoldierPlayer::BindASCInput()
 	}
 }
 
-
 void ASoldierPlayer::cycleBetweenTeam()
 {
 	if (GetLocalRole() == ROLE_Authority) {
@@ -145,6 +144,17 @@ void ASoldierPlayer::cycleBetweenTeam()
 		SquadManager->UpdateSquadTeam(GetTeam());
 	}
 	else ServerCycleBetweenTeam();
+}
+
+void ASoldierPlayer::DeadTagChanged(const FGameplayTag _CallbackTag, int32 _NewCount)
+{
+	Super::DeadTagChanged(_CallbackTag, _NewCount);
+	APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+
+	if (_NewCount > 0) // If dead tag is added - Handle death
+		PC->DisableInput(PC);
+	else // If dead tag is removed - Handle respawn
+		PC->EnableInput(PC);
 }
 
 FVector ASoldierPlayer::GetRespawnPoint()

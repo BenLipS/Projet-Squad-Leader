@@ -387,7 +387,7 @@ void ASoldier::MoveRight(const float _Val)
 
 void ASoldier::LookUp(const float _Val)
 {
-	if (IsAlive() && _Val != 0.0f)
+	if (_Val != 0.0f)
 	{
 		AddControllerPitchInput(_Val);
 		if (APlayerController* PlayerController = Cast<APlayerController>(Controller); PlayerController)
@@ -399,7 +399,7 @@ void ASoldier::LookUp(const float _Val)
 
 void ASoldier::Turn(const float _Val)
 {
-	if (IsAlive() && _Val != 0.0f)
+	if (_Val != 0.0f)
 	{
 		AddControllerYawInput(_Val);
 		if (APlayerController* PlayerController = Cast<APlayerController>(Controller); PlayerController)

@@ -48,6 +48,9 @@ protected:
 
 	bool ASCInputBound;
 
+protected:
+	virtual void DeadTagChanged(const FGameplayTag _CallbackTag, int32 _NewCount) override;
+
 public:  // Respawn
 	virtual FVector GetRespawnPoint() override;
 };
