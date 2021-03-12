@@ -82,6 +82,7 @@ public:
 	static FGameplayTag StateFightingTag;
 	static FGameplayTag StateAimingTag;
 	static FGameplayTag StateGivingOrderTag;
+	static FGameplayTag StateFiringTag;
 	static FGameplayTag StateReloadingWeaponTag;
 
 	// Abilities
@@ -102,6 +103,7 @@ protected:
 	virtual void FightingTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 	virtual void AimingTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 	virtual void GivingOrderTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
+	virtual void FiringTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 	virtual void ReloadingWeaponTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 
 public:
@@ -336,6 +338,9 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Animation | Montages")
 	UAnimMontage* RespawnMontage;
 
+public:
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Animation | Montages")
+	UAnimMontage* WeaponFireMontage;
 public:
 	UFUNCTION()
 	void ShowImpactHitEffect();

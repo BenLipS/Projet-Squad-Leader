@@ -20,6 +20,7 @@ FGameplayTag ASoldier::StateCrouchingTag = FGameplayTag::RequestGameplayTag(FNam
 FGameplayTag ASoldier::StateFightingTag = FGameplayTag::RequestGameplayTag(FName("State.Fighting"));
 FGameplayTag ASoldier::StateAimingTag = FGameplayTag::RequestGameplayTag(FName("State.Aiming"));
 FGameplayTag ASoldier::StateGivingOrderTag = FGameplayTag::RequestGameplayTag(FName("State.GivingOrder"));
+FGameplayTag ASoldier::StateFiringTag = FGameplayTag::RequestGameplayTag(FName("State.Firing"));
 FGameplayTag ASoldier::StateReloadingWeaponTag = FGameplayTag::RequestGameplayTag(FName("State.ReloadingWeapon"));
 
 // Abilities
@@ -243,6 +244,7 @@ void ASoldier::InitializeTagChangeCallbacks()
 	AbilitySystemComponent->RegisterGameplayTagEvent(ASoldier::StateFightingTag, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ASoldier::FightingTagChanged);
 	AbilitySystemComponent->RegisterGameplayTagEvent(ASoldier::StateAimingTag, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ASoldier::AimingTagChanged);
 	AbilitySystemComponent->RegisterGameplayTagEvent(ASoldier::StateGivingOrderTag, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ASoldier::GivingOrderTagChanged);
+	AbilitySystemComponent->RegisterGameplayTagEvent(ASoldier::StateFiringTag, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ASoldier::FiringTagChanged);
 	AbilitySystemComponent->RegisterGameplayTagEvent(ASoldier::StateReloadingWeaponTag, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ASoldier::ReloadingWeaponTagChanged);
 }
 
@@ -305,6 +307,10 @@ void ASoldier::AimingTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
 }
 
 void ASoldier::GivingOrderTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
+{
+}
+
+void ASoldier::FiringTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
 {
 }
 

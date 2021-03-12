@@ -7,20 +7,14 @@
 
 ASquadLeaderGameModeBase::ASquadLeaderGameModeBase() : RespawnDelay{ 3.f }
 {
-	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnObject(TEXT("/Game/BluePrints/Soldiers/Players/BP_SoldierPlayerSupport"));
 	static ConstructorHelpers::FClassFinder<ASoldierPlayerController> PlayerControllerObject(TEXT("/Game/BluePrints/Soldiers/Players/BP_SoldierPlayerController"));
 	static ConstructorHelpers::FClassFinder<ASoldierPlayerState> PlayerStateObject(TEXT("/Game/BluePrints/Soldiers/Players/BP_SoldierPlayerState"));
-
-	if (PlayerPawnObject.Class != NULL)
-		DefaultPawnClass = PlayerPawnObject.Class;
 
 	if (PlayerControllerObject.Class != NULL)
 		PlayerControllerClass = PlayerControllerObject.Class;
 
 	if (PlayerStateObject.Class != NULL)
 		PlayerStateClass = PlayerStateObject.Class;
-
-	//HUDClass = maclasse::StaticClass();
 }
 
 void ASquadLeaderGameModeBase::StartPlay() {
