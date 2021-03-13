@@ -4,6 +4,8 @@
 #include "AISquadManager.h"
 #include "DrawDebugHelpers.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "InfoSquadManager.h"
+
 #include<algorithm>
 // temp include, need to be replace by more robust code
 #include "../Soldiers/Soldier.h"
@@ -58,6 +60,20 @@ void AAISquadManager::Init(TSubclassOf<ASoldierTeam> _Team, ASoldierPlayer* _Pla
 	Mission = NewObject<UMission>(this, UMission::StaticClass());
 	Mission->Type = MissionType::Formation;
 	TypeOfFormation = FormationType::Circle;
+}
+
+void AAISquadManager::SetSquadInfo(AInfoSquadManager* newSquadInfo)
+{
+	SquadInfo = newSquadInfo;
+	UpdateSquadInfo();
+}
+
+void AAISquadManager::UpdateSquadInfo()
+{
+	if (SquadInfo)
+	{
+		SquadInfo->OnSquadManagerChange(AISquadList);
+	}
 }
 
 void AAISquadManager::Tick(float DeltaTime)

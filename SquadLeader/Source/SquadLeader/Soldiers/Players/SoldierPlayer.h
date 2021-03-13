@@ -24,8 +24,12 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "SquadManager")
 	AAISquadManager* SquadManager;
 
-	UPROPERTY(BlueprintReadOnly, Replicated, Category = "SquadManager")
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRepSquadInfoChanged, Category = "SquadManager")
 	class AInfoSquadManager* SquadInfo;
+
+public:
+	UFUNCTION()
+	void OnRepSquadInfoChanged();
 
 public:
 	UFUNCTION()

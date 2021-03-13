@@ -35,7 +35,7 @@ public:
 	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 
 	UFUNCTION()
-	void OnSquadManagerChange(TArray<class AAISquadController*>);
+	void OnSquadManagerChange(TArray<class AAISquadController*> controllerSquad);
 
 	UFUNCTION()
 	void OnRepSquadAIChanged();

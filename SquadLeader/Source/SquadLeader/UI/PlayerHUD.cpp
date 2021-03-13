@@ -9,7 +9,7 @@
 #include "AIInfoWidget.h"
 #include "Blueprint/UserWidget.h"
 #include "../AI/AISquadController.h"
-#include "../AI/AISquadManager.h"
+#include "../AI/InfoSquadManager.h"
 #include "../Soldiers/AIs/SoldierAI.h"
 #include "../Soldiers/Players/SoldierPlayerController.h"
 #include "../Soldiers/Players/SoldierPlayerState.h"
@@ -106,10 +106,11 @@ void APlayerHUD::SetAIStateLink()
 		ASoldierPlayer* Player = PC->GetPawn<ASoldierPlayer>();
 		if (PC)
 		{
-			AAISquadManager* SM = Player->GetSquadManager();
-			if (SM)
+			AInfoSquadManager* MI = Player->GetSquadInfo();
+			if (MI)
 			{
-				SM->OnSquadChanged.AddDynamic(this, &APlayerHUD::OnSquadChanged);
+				MI->OnSquadAIChanged.AddDynamic(this, &APlayerHUD::OnSquadChanged);
+				MI->OnRepSquadAIChanged();
 			}
 		}
 	}
@@ -148,7 +149,7 @@ void APlayerHUD::OnMaxShieldChanged(float newValue)
 	}
 }
 
-void APlayerHUD::OnSquadChanged(TArray<AAISquadController*> newValue)
+void APlayerHUD::OnSquadChanged(TArray<ASoldierAI*> newValue)
 {
 	/*AIInfoWidget->RemoveFromViewport();
 
@@ -167,7 +168,7 @@ void APlayerHUD::OnSquadChanged(TArray<AAISquadController*> newValue)
 	if (AIWidget) {
 		if (newValue.IsValidIndex(0))
 		{
-			ASoldierAI* AI = newValue[0]->GetPawn<ASoldierAI>();
+			ASoldierAI* AI = newValue[0];
 			if (AI)
 			{
 				AI->OnHealthChanged.RemoveAll(AIWidget);
