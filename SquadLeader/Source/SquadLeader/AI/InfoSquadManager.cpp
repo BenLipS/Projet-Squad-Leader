@@ -14,6 +14,14 @@ AInfoSquadManager::AInfoSquadManager()
 void AInfoSquadManager::BeginPlay()
 {
 	Super::BeginPlay();
+	if (!HasAuthority())
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("INFOMANAGER SUCCESSFULLY CREATED ON CLIENT"));
+	}
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("INFOMANAGER SUCCESSFULLY CREATED ON SERVER"));
+	}
 }
 
 void AInfoSquadManager::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

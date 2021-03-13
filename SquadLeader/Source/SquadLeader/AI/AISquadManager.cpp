@@ -62,20 +62,6 @@ void AAISquadManager::Init(TSubclassOf<ASoldierTeam> _Team, ASoldierPlayer* _Pla
 	TypeOfFormation = FormationType::Circle;
 }
 
-void AAISquadManager::SetSquadInfo(AInfoSquadManager* newSquadInfo)
-{
-	SquadInfo = newSquadInfo;
-	UpdateSquadInfo();
-}
-
-void AAISquadManager::UpdateSquadInfo()
-{
-	if (SquadInfo)
-	{
-		SquadInfo->OnSquadManagerChange(AISquadList);
-	}
-}
-
 void AAISquadManager::Tick(float DeltaTime)
 {
 	//if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Black, FString::Printf(TEXT("Tick for: %s"), *Leader->GetName()));

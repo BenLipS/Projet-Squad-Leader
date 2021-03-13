@@ -11,6 +11,7 @@
 
 ASoldierPlayer::ASoldierPlayer(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer), ASCInputBound{ false }
 {
+	bReplicates = true;
 }
 
 /*
@@ -21,6 +22,13 @@ ASoldierPlayer::ASoldierPlayer(const FObjectInitializer& _ObjectInitializer) : S
 void ASoldierPlayer::BeginPlay()
 {
 	Super::BeginPlay();
+	if (!SquadInfo)
+	{
+		FActorSpawnParameters SpawnInfo;
+		SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn; // La maniere de faire le respawn
+		FTransform LocationTemp{ {0.f, -1000.f, 0.f}, {0.f,0.f,0.f} };
+		SquadInfo = GetWorld()->SpawnActor<AInfoSquadManager>();
+	}
 }
 
 AInfoSquadManager* ASoldierPlayer::GetSquadInfo()
@@ -54,9 +62,10 @@ void ASoldierPlayer::PossessedBy(AController* _newController)
 
 		SquadInfo = GetWorld()->SpawnActor<AInfoSquadManager>();
 
+		
 		if (SquadInfo) {
-			SquadManager->SetSquadInfo(SquadInfo);
-			SquadInfo->ForceNetUpdate();
+			SquadManager->OnSquadChanged.AddDynamic(SquadInfo, &AInfoSquadManager::OnSquadManagerChange);
+			SquadManager->OnSquadChanged.Broadcast(SquadManager->AISquadList);
 		}
 	}
 }
@@ -76,9 +85,20 @@ void ASoldierPlayer::OnRep_PlayerState()
 	
 }
 
-void ASoldierPlayer::OnRepSquadInfoChanged()
+/*void ASoldierPlayer::OnRepSquadInfoChanged()
 {
 	
+}*/
+
+void ASoldierPlayer::UpdateSquadInfo()
+{
+	if (SquadManager)
+	{
+		if (SquadInfo)
+		{
+			SquadInfo->OnSquadManagerChange(SquadManager->AISquadList);
+		}
+	}
 }
 
 AAISquadManager* ASoldierPlayer::GetSquadManager()

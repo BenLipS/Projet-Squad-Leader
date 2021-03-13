@@ -19,17 +19,21 @@ protected:
 	void OnRep_PlayerState() override;
 
 	UPROPERTY(EditDefaultsOnly, Category = "SquadManager")
-	TSubclassOf<AAISquadManager> AISquadManagerClass;
+	TSubclassOf<class AAISquadManager> AISquadManagerClass;
 
 	UPROPERTY(BlueprintReadOnly, Category = "SquadManager")
-	AAISquadManager* SquadManager;
+	class AAISquadManager* SquadManager;
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRepSquadInfoChanged, Category = "SquadManager")
+	UPROPERTY(BlueprintReadOnly, Replicated, Category = "SquadManager")
 	class AInfoSquadManager* SquadInfo;
 
 public:
 	UFUNCTION()
-	void OnRepSquadInfoChanged();
+	void UpdateSquadInfo();
+
+/*public:
+	UFUNCTION()
+	void OnRepSquadInfoChanged();*/
 
 public:
 	UFUNCTION()

@@ -9,7 +9,7 @@
 AAISquadController::AAISquadController()
 {
 	setup_BehaviorTree();
-	bReplicates = true;
+	bReplicates = false;
 }
 
 void AAISquadController::setup_BehaviorTree() {
