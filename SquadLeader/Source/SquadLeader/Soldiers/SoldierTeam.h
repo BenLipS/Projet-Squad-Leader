@@ -34,7 +34,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "GlobalTeamData")
 		FString TeamName;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "GlobalTeamData")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GlobalTeamData")
 		int Id = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "GlobalTeamData")

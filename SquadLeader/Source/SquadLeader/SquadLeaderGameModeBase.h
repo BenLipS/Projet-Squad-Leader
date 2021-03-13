@@ -28,6 +28,8 @@ public:
 protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Respawn")
 		float RespawnDelay;
+
+	void InitActorInWorld();
 	
 public:
 	void SoldierDied(AController* _Controller);

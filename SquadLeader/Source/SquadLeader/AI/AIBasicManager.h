@@ -26,6 +26,7 @@ public:
 
 	virtual void BeginPlay() override;
 
+
 	UPROPERTY()
 	TArray<AAIBasicController*> AIBasicList;
 
@@ -34,7 +35,13 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	TSubclassOf<ASoldierAI> ClassAI;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+		FVector InitSpawnDiameter = FVector{ 500.f, 0.f, 0.f };
+
 private:
+	// Calculate Initial position for initial spawn
+	FVector CalculOffSetForInitSpawn(ASoldierSpawn* spawnpoint, int NbAIToSpawn, int AiNb);
 
 	/*
 	* Initialize the number of unit and the number of control area 
