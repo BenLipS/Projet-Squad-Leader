@@ -4,6 +4,7 @@
 #include "../../SquadLeaderGameInstance.h"
 #include "../../AI/AISquadController.h"
 #include "../../AI/AISquadManager.h"
+#include "../../AI/AIInfoSquadManager.h"
 #include "../../AbilitySystem/Soldiers/GameplayAbilitySoldier.h"
 #include "../../Spawn/SoldierSpawn.h"
 
@@ -22,10 +23,15 @@ void ASoldierPlayer::BeginPlay()
 	Super::BeginPlay();
 }
 
+AInfoSquadManager* ASoldierPlayer::GetSquadInfo()
+{
+	return SquadInfo;
+}
+
 void ASoldierPlayer::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME_CONDITION_NOTIFY(ASoldierPlayer, SquadManager, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME(ASoldierPlayer, SquadManager);
 }
 
 // Server only 
@@ -46,6 +52,12 @@ void ASoldierPlayer::PossessedBy(AController* _newController)
 		SquadManager->Init(GetTeam(), this);
 		Cast<USquadLeaderGameInstance>(GetGameInstance())->ListAISquadManagers.Add(SquadManager);
 	}
+
+	SquadInfo = GetWorld()->SpawnActor<AInfoSquadManager>();
+
+	if (SquadInfo) {
+
+	}
 }
 
 // Client only 
@@ -55,8 +67,12 @@ void ASoldierPlayer::OnRep_PlayerState()
 	SetAbilitySystemComponent();
 	initWeapons();
 
+	//-----HUD-----
 	if (ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(GetController()); PC)
 		PC->CreateHUD();
+
+	//-----SQUADMANAGERSTATE-----
+	
 }
 
 AAISquadManager* ASoldierPlayer::GetSquadManager()

@@ -6,8 +6,10 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BehaviorTree/BehaviorTree.h"
 
-AAISquadController::AAISquadController() {
+AAISquadController::AAISquadController()
+{
 	setup_BehaviorTree();
+	bReplicates = true;
 }
 
 void AAISquadController::setup_BehaviorTree() {

@@ -10,28 +10,12 @@
 
 AAISquadManager::AAISquadManager() {
 	PrimaryActorTick.bStartWithTickEnabled = true;
-	bReplicates = true;
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.TickGroup = TG_PrePhysics;
 }
-
-void AAISquadManager::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	// everyone
-	DOREPLIFETIME(AAISquadManager, AISquadList);
-}
-
 void AAISquadManager::BeginPlay()
 {
 	Super::BeginPlay();
-	OnSquadChanged.Broadcast(AISquadList);
-}
-
-void AAISquadManager::OnRep_AISquadList()
-{
-	OnSquadChanged.Broadcast(AISquadList);
 }
 
 void AAISquadManager::Init(TSubclassOf<ASoldierTeam> _Team, ASoldierPlayer* _Player)

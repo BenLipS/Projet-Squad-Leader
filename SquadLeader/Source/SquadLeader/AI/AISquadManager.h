@@ -29,18 +29,14 @@ public:
 
 public:
 	AAISquadManager();
-	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 
-protected:
-	UPROPERTY(ReplicatedUsing = OnRep_AISquadList)
+public:
+	UPROPERTY(BlueprintReadOnly)
 	TArray<AAISquadController*> AISquadList;
 
 public:
 
 	void BeginPlay() override;
-
-	UFUNCTION()
-	void OnRep_AISquadList();
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	TSubclassOf<ASoldierAI> ClassAI;
