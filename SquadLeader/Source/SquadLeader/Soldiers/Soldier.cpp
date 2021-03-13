@@ -307,9 +307,6 @@ void ASoldier::DeadTagChanged(const FGameplayTag _CallbackTag, int32 _NewCount)
 		AttributeSet->SetHealth(AttributeSet->GetMaxHealth());
 		AttributeSet->SetShield(AttributeSet->GetMaxShield());
 
-		GetCharacterMovement()->GravityScale = 1.f;
-		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-
 		if (RespawnMontage)
 		{
 			PlayAnimMontage(RespawnMontage);
@@ -693,6 +690,8 @@ void ASoldier::OnStartGameMontageCompleted(UAnimMontage* _Montage, bool _bInterr
 void ASoldier::OnRespawnMontageCompleted(UAnimMontage* _Montage, bool _bInterrupted)
 {
 	UnLockControls();
+	GetCharacterMovement()->GravityScale = 1.f;
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 }
 
 // TODO: Show particle from the hit location - not center of the soldier
