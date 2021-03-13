@@ -38,9 +38,9 @@ ASoldier::ASoldier(const FObjectInitializer& _ObjectInitializer) : Super(_Object
 {
 	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
-	initCameras();
-	initMovements();
-	initMeshes();
+	InitCameras();
+	InitMovements();
+	InitMeshes();
 	setup_stimulus();
 	GetCapsuleComponent()->BodyInstance.SetObjectType(ECC_Player);
 }
@@ -54,11 +54,16 @@ void ASoldier::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// Cameras
 	if (bIsFirstPerson)
+	{
 		setToFirstCameraPerson();
+		onSwitchCamera(); // Force the third person camera. TODO: Make a cleaner organization
+	}
 	else
 		setToThirdCameraPerson();
 
+	// Teams
 	if (GetLocalRole() == ROLE_Authority) {
 		// init team:
 		if (InitialTeam && !(GetTeam()))
@@ -71,7 +76,13 @@ void ASoldier::BeginPlay()
 	}
 
 	if (StartGameMontage)
+	{
+		LockControls();
+
 		PlayAnimMontage(StartGameMontage);
+		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+		AnimInstance->Montage_SetEndDelegate(StartGame_SoldierMontageEndedDelegate, StartGameMontage);
+	}
 }
 
 void ASoldier::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
@@ -93,7 +104,7 @@ void ASoldier::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-void ASoldier::initCameras()
+void ASoldier::InitCameras()
 {
 	SyncControlRotation = FRotator{0.f, 0.f, 0.f};
 
@@ -123,7 +134,7 @@ void ASoldier::initCameras()
 	CurrentCameraComponent = FirstPersonCameraComponent;
 }
 
-void ASoldier::initMeshes()
+void ASoldier::InitMeshes()
 {
 	// 1st person mesh
 	FirstPersonMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("FirstPersonMesh"));
@@ -133,9 +144,13 @@ void ASoldier::initMeshes()
 	FirstPersonMesh->CastShadow = false;
 
 	// 3rd person mesh - already defined with ACharacter
+
+	// Montage Delegates
+	StartGame_SoldierMontageEndedDelegate.BindUObject(this, &ASoldier::OnStartGameMontageCompleted);
+	Respawn_SoldierMontageEndedDelegate.BindUObject(this, &ASoldier::OnRespawnMontageCompleted);
 }
 
-void ASoldier::initMovements()
+void ASoldier::InitMovements()
 {
 	// TODO: Link with attribut set (when possible)
 	GetCharacterMovement()->GetNavAgentPropertiesRef().bCanCrouch = true;
@@ -143,7 +158,7 @@ void ASoldier::initMovements()
 	GetCharacterMovement()->bCanWalkOffLedgesWhenCrouching = true;
 }
 
-void ASoldier::initWeapons()
+void ASoldier::InitWeapons()
 {
 	if (bDefaultWeaponsInitialized)
 		return;
@@ -170,6 +185,14 @@ void ASoldier::initWeapons()
 		CurrentWeapon = Inventory[0];
 
 	bDefaultWeaponsInitialized = true;
+}
+
+void ASoldier::LockControls()
+{
+}
+
+void ASoldier::UnLockControls()
+{
 }
 
 UAbilitySystemSoldier* ASoldier::GetAbilitySystemComponent() const
@@ -253,10 +276,12 @@ void ASoldier::InitializeAttributeChangeCallbacks()
 	HealthChangedDelegateHandle = AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetHealthAttribute()).AddUObject(this, &ASoldier::HealthChanged);
 }
 
-void ASoldier::DeadTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
+void ASoldier::DeadTagChanged(const FGameplayTag _CallbackTag, int32 _NewCount)
 {
-	if (NewCount > 0) // If dead tag is added - Handle death
+	if (_NewCount > 0) // If dead tag is added - Handle death
 	{
+		LockControls();
+
 		// remove ticket from team (only on server)
 		if (GetTeam() && GetLocalRole() == ROLE_Authority)
 			GetTeam().GetDefaultObject()->RemoveOneTicket();
@@ -286,7 +311,11 @@ void ASoldier::DeadTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
 		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 
 		if (RespawnMontage)
+		{
 			PlayAnimMontage(RespawnMontage);
+			UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+			AnimInstance->Montage_SetEndDelegate(Respawn_SoldierMontageEndedDelegate, RespawnMontage);
+		}
 	}
 }
 
@@ -654,6 +683,16 @@ void ASoldier::setup_stimulus() {
 
 uint8 ASoldier::GetInfluenceRadius() const noexcept{
 	return InfluenceRadius;
+}
+
+void ASoldier::OnStartGameMontageCompleted(UAnimMontage* _Montage, bool _bInterrupted)
+{
+	UnLockControls();
+}
+
+void ASoldier::OnRespawnMontageCompleted(UAnimMontage* _Montage, bool _bInterrupted)
+{
+	UnLockControls();
 }
 
 // TODO: Show particle from the hit location - not center of the soldier

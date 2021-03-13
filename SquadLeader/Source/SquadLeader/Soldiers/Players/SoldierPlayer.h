@@ -18,6 +18,12 @@ protected:
 	void PossessedBy(AController* _newController) override;
 	void OnRep_PlayerState() override;
 
+//////////////// Controllers
+protected:
+	virtual void LockControls() override;
+	virtual void UnLockControls() override;
+
+//////////////// Squad
 	UPROPERTY(EditDefaultsOnly, Category = "SquadManager")
 	TSubclassOf<AAISquadManager> AISquadManagerClass;
 
@@ -47,9 +53,6 @@ protected:
 	void BindASCInput();
 
 	bool ASCInputBound;
-
-protected:
-	virtual void DeadTagChanged(const FGameplayTag _CallbackTag, int32 _NewCount) override;
 
 public:  // Respawn
 	virtual FVector GetRespawnPoint() override;

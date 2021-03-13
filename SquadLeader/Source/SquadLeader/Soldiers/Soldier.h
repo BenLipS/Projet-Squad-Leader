@@ -31,13 +31,22 @@ public:
 	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 	virtual void Tick(float DeltaTime) override;
 
-
 //////////////// Inits
 protected:
-	void initCameras();
-	void initMeshes();
-	void initMovements();
-	virtual void initWeapons();
+	void InitCameras();
+	void InitMeshes();
+	void InitMovements();
+	virtual void InitWeapons();
+
+//////////////// Controllers
+protected:
+	// Lock any interraction with this soldier
+	UFUNCTION()
+	virtual void LockControls();
+
+	// Unlock interractions with this soldier
+	UFUNCTION()
+	virtual void UnLockControls();
 
 //////////////// Ability System
 protected:
@@ -156,10 +165,10 @@ public:
 	bool IsAlive() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
-		FVector GetLocation() const noexcept;
+	FVector GetLocation() const noexcept;
 
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
-		uint8 GetInfluenceRadius() const noexcept;
+	uint8 GetInfluenceRadius() const noexcept;
 
 	// Attribute changed callbacks
 	FDelegateHandle HealthChangedDelegateHandle;
@@ -313,7 +322,6 @@ public:
 	UFUNCTION()
 	virtual FVector GetRespawnPoint() { return FVector(0.f, 0.f, 1500.f); }  // function overide in SoldierPlayer and Soldier AI
 
-
 //////////////// For AIPerception
 private:
 	class UAIPerceptionStimuliSourceComponent* stimulus;
@@ -329,6 +337,8 @@ protected:
 	FVector ImpactHitFXScale;
 
 //////////////// Montages
+public:
+	// Anim Montage
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Animation | Montages")
 	UAnimMontage* StartGameMontage;
 
@@ -338,9 +348,20 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Animation | Montages")
 	UAnimMontage* RespawnMontage;
 
-public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Animation | Montages")
 	UAnimMontage* WeaponFireMontage;
+
+protected:
+	// Callbacks
+	FOnMontageEnded StartGame_SoldierMontageEndedDelegate;
+	FOnMontageEnded Respawn_SoldierMontageEndedDelegate;
+
+	UFUNCTION()
+	virtual void OnStartGameMontageCompleted(UAnimMontage* _Montage, bool _bInterrupted);
+
+	UFUNCTION()
+	virtual void OnRespawnMontageCompleted(UAnimMontage* _Montage, bool _bInterrupted);
+
 public:
 	UFUNCTION()
 	void ShowImpactHitEffect();
