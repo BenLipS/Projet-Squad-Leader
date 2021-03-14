@@ -154,10 +154,10 @@ public:
 	bool IsAlive() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
-		FVector GetLocation() const noexcept;
+	FVector GetLocation() const noexcept;
 
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
-		uint8 GetInfluenceRadius() const noexcept;
+	uint8 GetInfluenceRadius() const noexcept;
 
 	// Attribute changed callbacks
 	FDelegateHandle HealthChangedDelegateHandle;

@@ -72,8 +72,11 @@ void UAttributeSetSoldier::PostGameplayEffectExecute(const FGameplayEffectModCal
 			}
 			if (!TargetSoldier->IsAlive()) // The soldier has been killed
 			{
-				//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("%s is dead"), *TargetSoldier->GetName()));
-				//SourceSoldier->getBounty();
+				// TODO: SourceSoldier should get prestige/experience after killing. Then, in attributeSet we handle leveling up based on exp value
+				if (SourceSoldier)
+				{
+					SourceSoldier->GetAttributeSet()->LevelUp();
+				}
 			}
 			else if (SourceASC)
 			{
@@ -100,6 +103,12 @@ void UAttributeSetSoldier::AdjustAttributeForMaxChange(FGameplayAttributeData& A
 		float NewDelta = (CurrentMaxValue > 0.f) ? (CurrentValue * NewMaxValue / CurrentMaxValue) - CurrentValue : NewMaxValue;
 		ASC->ApplyModToAttributeUnsafe(AffectedAttributeProperty, EGameplayModOp::Additive, FMath::CeilToFloat(NewDelta));
 	}
+}
+
+void UAttributeSetSoldier::LevelUp()
+{
+	if (UAbilitySystemComponent* ASC = GetOwningAbilitySystemComponent(); ASC)
+		ASC->ApplyModToAttributeUnsafe(GetCharacterLevelAttribute(), EGameplayModOp::Additive, 1);
 }
 
 void UAttributeSetSoldier::OnRep_CharacterLevel(const FGameplayAttributeData& _OldCharacterLevel)
