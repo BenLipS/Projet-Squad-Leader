@@ -162,3 +162,9 @@ void ASoldierPlayerController::ClientSendCommand_Implementation(const FString& C
 {
 	ConsoleCommand(Cmd, bWriteToLog);
 }
+
+void ASoldierPlayerController::OnSquadHealthChanged_Implementation(float _NewValue)
+{
+	if (APlayerHUD* CurrentPlayerHUD = GetHUD<APlayerHUD>(); CurrentPlayerHUD)
+		CurrentPlayerHUD->OnSquadHealthChanged(_NewValue);
+}

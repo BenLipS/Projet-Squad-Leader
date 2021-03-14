@@ -165,7 +165,8 @@ void APlayerHUD::OnSquadChanged(TArray<ASoldierAI*> newValue)
 			}
 		}
 	}*/
-	if (AIWidget) {
+
+	/*if (AIWidget) {
 		if (newValue.IsValidIndex(0))
 		{
 			ASoldierAI* AI = newValue[0];
@@ -177,5 +178,13 @@ void APlayerHUD::OnSquadChanged(TArray<ASoldierAI*> newValue)
 				AI->BroadCastDatas();
 			}
 		}
+	}*/
+}
+
+void APlayerHUD::OnSquadHealthChanged(float _NewValue)
+{
+	if (AIWidget)
+	{
+		AIWidget->OnHealthChanged(_NewValue);
 	}
 }

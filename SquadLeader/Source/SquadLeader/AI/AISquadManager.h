@@ -50,7 +50,7 @@ public:
 	UPROPERTY()
 	ASoldierPlayer* Leader;
 
-	void SetSquadInfo(class AInfoSquadManager* newSquadInfo);
+	//void SetSquadInfo(class AInfoSquadManager* newSquadInfo);
 
 	virtual void Tick(float DeltaTime) override;
 

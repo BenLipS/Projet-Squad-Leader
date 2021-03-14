@@ -71,4 +71,7 @@ public:
 	//-----SquadInfo-----
 	UFUNCTION(BlueprintCallable)
 	void OnSquadChanged(TArray<class ASoldierAI*> newValue);
+
+	UFUNCTION()
+	void OnSquadHealthChanged(float _NewValue);
 };

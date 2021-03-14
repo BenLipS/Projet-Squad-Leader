@@ -28,8 +28,8 @@ protected:
 	class AInfoSquadManager* SquadInfo;
 
 public:
-	UFUNCTION()
-	void UpdateSquadInfo();
+	//UFUNCTION()
+	//void UpdateSquadInfo();
 
 /*public:
 	UFUNCTION()
@@ -66,4 +66,9 @@ protected:
 
 public:  // Respawn
 	virtual FVector GetRespawnPoint() override;
+
+//////////////// SquadManager data callbacks
+
+	UFUNCTION()
+	void OnSquadHealthChanged(float _NewValue);
 };

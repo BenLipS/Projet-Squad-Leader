@@ -85,4 +85,11 @@ public:
 ///////// Consoles Commands
 	UFUNCTION(Client, Reliable)
 	void ClientSendCommand(const FString& Cmd, bool bWriteToLog);
+
+
+
+
+	UFUNCTION(Client, Reliable)
+	void OnSquadHealthChanged(float _NewValue);
+	void OnSquadHealthChanged_Implementation(float _NewValue);
 };

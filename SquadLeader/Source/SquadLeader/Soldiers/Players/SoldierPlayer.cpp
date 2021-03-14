@@ -22,13 +22,6 @@ ASoldierPlayer::ASoldierPlayer(const FObjectInitializer& _ObjectInitializer) : S
 void ASoldierPlayer::BeginPlay()
 {
 	Super::BeginPlay();
-	if (!SquadInfo)
-	{
-		FActorSpawnParameters SpawnInfo;
-		SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn; // La maniere de faire le respawn
-		FTransform LocationTemp{ {0.f, -1000.f, 0.f}, {0.f,0.f,0.f} };
-		SquadInfo = GetWorld()->SpawnActor<AInfoSquadManager>();
-	}
 }
 
 AInfoSquadManager* ASoldierPlayer::GetSquadInfo()
@@ -55,17 +48,18 @@ void ASoldierPlayer::PossessedBy(AController* _newController)
 	SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn; // La maniere de faire le respawn
 	FTransform LocationTemp{ {0.f, -1000.f, 0.f}, {0.f,0.f,0.f} };
 	SquadManager = GetWorld()->SpawnActorDeferred<AAISquadManager>(AISquadManagerClass, LocationTemp, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
-	if (SquadManager) {
+
+	if (SquadManager)
+	{
 		SquadManager->FinishSpawning(LocationTemp);
 		SquadManager->Init(GetTeam(), this);
 		Cast<USquadLeaderGameInstance>(GetGameInstance())->ListAISquadManagers.Add(SquadManager);
 
-		SquadInfo = GetWorld()->SpawnActor<AInfoSquadManager>();
-
-		
-		if (SquadInfo) {
-			SquadManager->OnSquadChanged.AddDynamic(SquadInfo, &AInfoSquadManager::OnSquadManagerChange);
-			SquadManager->OnSquadChanged.Broadcast(SquadManager->AISquadList);
+		// Bindings
+		for (AAISquadController* AC : SquadManager->AISquadList)
+		{
+			ASoldierAI* SoldierAI = Cast<ASoldierAI>(AC->GetPawn());
+			SoldierAI->OnHealthChanged.AddDynamic(this, &ASoldierPlayer::OnSquadHealthChanged);
 		}
 	}
 }
@@ -82,15 +76,15 @@ void ASoldierPlayer::OnRep_PlayerState()
 		PC->CreateHUD();
 
 	//-----SQUADMANAGERSTATE-----
-	
+
 }
 
 /*void ASoldierPlayer::OnRepSquadInfoChanged()
 {
-	
+
 }*/
 
-void ASoldierPlayer::UpdateSquadInfo()
+/*void ASoldierPlayer::UpdateSquadInfo()
 {
 	if (SquadManager)
 	{
@@ -99,7 +93,7 @@ void ASoldierPlayer::UpdateSquadInfo()
 			SquadInfo->OnSquadManagerChange(SquadManager->AISquadList);
 		}
 	}
-}
+}*/
 
 AAISquadManager* ASoldierPlayer::GetSquadManager()
 {
@@ -218,4 +212,12 @@ FVector ASoldierPlayer::GetRespawnPoint()
 		}
 	}
 	return FVector(0.f, 0.f, 1500.f); // else return default
+}
+
+void ASoldierPlayer::OnSquadHealthChanged(float _NewValue)
+{
+	if (ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(GetController()); PC)
+	{
+		PC->OnSquadHealthChanged(_NewValue);
+	}
 }
