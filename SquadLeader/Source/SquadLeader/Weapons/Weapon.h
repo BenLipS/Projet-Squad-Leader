@@ -71,7 +71,7 @@ public:
 
 protected:
 	UPROPERTY(BluePrintReadWrite, EditAnywhere, Category = "Stats")
-	float Damage;
+	FScalableFloat Damage;
 
 	// Damage impact
 	UPROPERTY(BlueprintReadWrite, Category = "Fire | Impact")

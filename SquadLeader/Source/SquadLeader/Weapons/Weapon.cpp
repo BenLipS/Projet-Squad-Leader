@@ -3,7 +3,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystemComponent.h"
 
-AWeapon::AWeapon() : MaxAmmo{ 50 }, IsNextFireReady{ true }, TimeToReloadAmmo{ 2.f }, TimeToReloadNextShoot{ 0.2f }, IsAutomatic{ true }, Penetration{ 1 }, FieldOfViewAim{ 50.f }, FireMuzzleFXScale{ FVector{1.f} }
+AWeapon::AWeapon() : MaxAmmo{ 50 }, IsNextFireReady{ true }, TimeToReloadAmmo{ 2.f }, TimeToReloadNextShoot{ 0.2f }, IsAutomatic{ true }, Penetration{ 1 }, FieldOfViewAim{ 50.f }, Damage{ FScalableFloat(1.f) }, FireMuzzleFXScale{ FVector{1.f} }
 {
 	PrimaryActorTick.bCanEverTick = false;
 	bReplicates = true;
@@ -80,9 +80,12 @@ void AWeapon::TryFiring()
 
 void AWeapon::TryFiring(const FGameplayEffectSpecHandle _DamageEffectSpecHandle)
 {
-	DamageEffectSpecHandle = _DamageEffectSpecHandle;
-	DamageEffectSpecHandle.Data.Get()->SetSetByCallerMagnitude(FGameplayTag::RequestGameplayTag(FName("Data.Damage")), Damage);
-	TryFiring();
+	if (ASoldier* Soldier = Cast<ASoldier>(GetOwner()); Soldier)
+	{
+		DamageEffectSpecHandle = _DamageEffectSpecHandle;
+		DamageEffectSpecHandle.Data.Get()->SetSetByCallerMagnitude(FGameplayTag::RequestGameplayTag(FName("Data.Damage")), Damage.GetValueAtLevel(Soldier->GetCharacterLevel()));
+		TryFiring();
+	}
 }
 
 void AWeapon::Fire()
