@@ -13,6 +13,7 @@ ASoldierPlayerController::ASoldierPlayerController()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
+	SquadManagerData = FAISquadManagerData();
 }
 
 void ASoldierPlayerController::BeginPlay()
@@ -66,6 +67,10 @@ void ASoldierPlayerController::OnPossess(APawn* InPawn)
 			soldier->GetSquadManager()->UpdateSquadTeam(GetTeam());
 		}
 	}
+	Cast<ASoldierPlayer>(InPawn)->GetSquadManager()->OnSquadChanged.AddDynamic(this, &ASoldierPlayerController::OnSquadChanged);
+	Cast<ASoldierPlayer>(InPawn)->GetSquadManager()->OnMemberHealthChanged.AddDynamic(this, &ASoldierPlayerController::OnSquadMemberHealthChanged);
+	Cast<ASoldierPlayer>(InPawn)->GetSquadManager()->OnMemberMaxHealthChanged.AddDynamic(this, &ASoldierPlayerController::OnSquadMemberMaxHealthChanged);
+	Cast<ASoldierPlayer>(InPawn)->GetSquadManager()->BroadCastSquadData();
 }
 
 void ASoldierPlayerController::OnRep_PlayerState()
@@ -163,8 +168,43 @@ void ASoldierPlayerController::ClientSendCommand_Implementation(const FString& C
 	ConsoleCommand(Cmd, bWriteToLog);
 }
 
-void ASoldierPlayerController::OnSquadHealthChanged_Implementation(float _NewValue)
+void ASoldierPlayerController::OnSquadChanged_Implementation(const TArray<FSoldierAIData>& newValue)
+{
+	SquadManagerData.OnSquadDataChanged(newValue);
+	if (APlayerHUD* CurrentPlayerHUD = GetHUD<APlayerHUD>(); CurrentPlayerHUD)
+		CurrentPlayerHUD->OnSquadChanged(newValue);
+}
+
+void ASoldierPlayerController::OnSquadMemberHealthChanged_Implementation(int index, float newHealth)
+{
+	if (SquadManagerData.SquadData.IsValidIndex(index))
+	{
+		SquadManagerData.SquadData[index].Health = newHealth;
+		//Appel au HUD
+		if (APlayerHUD* CurrentPlayerHUD = GetHUD<APlayerHUD>(); CurrentPlayerHUD)
+		{
+			CurrentPlayerHUD->OnSquadHealthChanged(index, newHealth);
+		}
+	}
+	// Erreur syncronisation client / serveur
+}
+
+void ASoldierPlayerController::OnSquadMemberMaxHealthChanged_Implementation(int index, float newMaxHealth)
+{
+	if (SquadManagerData.SquadData.IsValidIndex(index))
+	{
+		SquadManagerData.SquadData[index].MaxHealth = newMaxHealth;
+		//Appel au HUD
+		if (APlayerHUD* CurrentPlayerHUD = GetHUD<APlayerHUD>(); CurrentPlayerHUD)
+		{
+			CurrentPlayerHUD->OnSquadMaxHealthChanged(index, newMaxHealth);
+		}
+	}
+	// Erreur syncronisation client / serveur
+}
+
+void ASoldierPlayerController::BroadCastManagerData()
 {
 	if (APlayerHUD* CurrentPlayerHUD = GetHUD<APlayerHUD>(); CurrentPlayerHUD)
-		CurrentPlayerHUD->OnSquadHealthChanged(_NewValue);
+		CurrentPlayerHUD->OnSquadChanged(SquadManagerData.SquadData);
 }

@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "../Soldier.h"
+#include "../AIs/SoldierAI.h"
 #include "SoldierPlayer.generated.h"
 class AAISquadManager;
 
@@ -70,5 +71,5 @@ public:  // Respawn
 //////////////// SquadManager data callbacks
 
 	UFUNCTION()
-	void OnSquadHealthChanged(float _NewValue);
+	void OnSquadChanged(const TArray<FSoldierAIData>& newValue);
 };

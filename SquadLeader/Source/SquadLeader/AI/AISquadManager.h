@@ -12,10 +12,25 @@
  * 
  */
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSquadInfoArrayChanged, const TArray<FSoldierAIData>&, SquadArray);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FSquadMemberDataChanged, int, Index, float, newValue);
+
 UENUM()
 enum class FormationType { Circle, Arrow };
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSquadInfoArrayChanged, TArray<AAISquadController*>, SquadArray);
+USTRUCT()
+struct FAISquadManagerData
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditAnywhere)
+	TArray<FSoldierAIData> SquadData;
+
+	FAISquadManagerData() = default;
+
+	void OnSquadDataChanged(const TArray<FSoldierAIData>& newValue);
+};
 
 UCLASS(Blueprintable)
 class SQUADLEADER_API AAISquadManager : public AInfo
@@ -26,6 +41,9 @@ class SQUADLEADER_API AAISquadManager : public AInfo
 public:
 	//-----DELEGATE-----
 	FSquadInfoArrayChanged OnSquadChanged;
+
+	FSquadMemberDataChanged OnMemberHealthChanged;
+	FSquadMemberDataChanged OnMemberMaxHealthChanged;
 
 public:
 	AAISquadManager();
@@ -77,4 +95,13 @@ public:
 
 	// temp function, need to be replace by more robust code
 	void UpdateSquadTeam(TSubclassOf<ASoldierTeam> _NewTeam);
+
+	UFUNCTION()
+	void BroadCastSquadData();
+
+	UFUNCTION()
+	void OnSquadMemberHealthChange(float newValue, AAISquadController* SoldierController);
+
+	UFUNCTION()
+	void OnSquadMemberMaxHealthChange(float newValue, AAISquadController* SoldierController);
 };

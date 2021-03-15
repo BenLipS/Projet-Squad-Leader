@@ -6,6 +6,8 @@
 #include "camera/cameracomponent.h"
 #include "../../UI/HUDWidget.h"
 #include "../Interface/Teamable.h"
+#include "../../AI/AISquadManager.h"
+#include "../AIs/SoldierAI.h"
 #include "SoldierPlayerController.generated.h"
 
 UCLASS()
@@ -87,9 +89,24 @@ public:
 	void ClientSendCommand(const FString& Cmd, bool bWriteToLog);
 
 
+	//-----HUD SquadManager-----
 
+protected:
+	FAISquadManagerData SquadManagerData;
+
+public:
+	UFUNCTION(Client, Reliable)
+	void OnSquadChanged(const TArray<FSoldierAIData>& newValue);
+	void OnSquadChanged_Implementation(const TArray<FSoldierAIData>& newValue);
 
 	UFUNCTION(Client, Reliable)
-	void OnSquadHealthChanged(float _NewValue);
-	void OnSquadHealthChanged_Implementation(float _NewValue);
+	void OnSquadMemberHealthChanged(int index, float newHealth);
+	void OnSquadMemberHealthChanged_Implementation(int index, float newHealth);
+
+	UFUNCTION(Client, Reliable)
+	void OnSquadMemberMaxHealthChanged(int index, float newMaxHealth);
+	void OnSquadMemberMaxHealthChanged_Implementation(int index, float newMaxHealth);
+
+	UFUNCTION()
+	void BroadCastManagerData();
 };

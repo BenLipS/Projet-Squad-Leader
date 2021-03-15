@@ -10,7 +10,6 @@
 #include "Blueprint/UserWidget.h"
 #include "../AI/AISquadController.h"
 #include "../AI/InfoSquadManager.h"
-#include "../Soldiers/AIs/SoldierAI.h"
 #include "../Soldiers/Players/SoldierPlayerController.h"
 #include "../Soldiers/Players/SoldierPlayerState.h"
 #include "../Soldiers/Players/SoldierPlayer.h"
@@ -103,16 +102,7 @@ void APlayerHUD::SetAIStateLink()
 	ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(GetOwningPlayerController());
 	if (PC)
 	{
-		ASoldierPlayer* Player = PC->GetPawn<ASoldierPlayer>();
-		if (PC)
-		{
-			AInfoSquadManager* MI = Player->GetSquadInfo();
-			if (MI)
-			{
-				MI->OnSquadAIChanged.AddDynamic(this, &APlayerHUD::OnSquadChanged);
-				MI->OnRepSquadAIChanged();
-			}
-		}
+		
 	}
 }
 
@@ -149,7 +139,7 @@ void APlayerHUD::OnMaxShieldChanged(float newValue)
 	}
 }
 
-void APlayerHUD::OnSquadChanged(TArray<ASoldierAI*> newValue)
+void APlayerHUD::OnSquadChanged(TArray<FSoldierAIData> newValue)
 {
 	/*AIInfoWidget->RemoveFromViewport();
 
@@ -166,25 +156,29 @@ void APlayerHUD::OnSquadChanged(TArray<ASoldierAI*> newValue)
 		}
 	}*/
 
-	/*if (AIWidget) {
-		if (newValue.IsValidIndex(0))
-		{
-			ASoldierAI* AI = newValue[0];
-			if (AI)
-			{
-				AI->OnHealthChanged.RemoveAll(AIWidget);
-				AI->OnHealthChanged.AddDynamic(AIWidget, &UAIInfoWidget::OnHealthChanged);
-				AI->OnMaxHealthChanged.AddDynamic(AIWidget, &UAIInfoWidget::OnMaxHealthChanged);
-				AI->BroadCastDatas();
-			}
-		}
-	}*/
-}
-
-void APlayerHUD::OnSquadHealthChanged(float _NewValue)
-{
 	if (AIWidget)
 	{
-		AIWidget->OnHealthChanged(_NewValue);
+		if (newValue.IsValidIndex(0))
+		{
+			FSoldierAIData AI = newValue[0];
+			AIWidget->OnHealthChanged(AI.Health);
+			AIWidget->OnMaxHealthChanged(AI.MaxHealth);
+		}
+	}
+}
+
+void APlayerHUD::OnSquadHealthChanged(int index, float newHealth)
+{
+	if (index == 0 && AIWidget)
+	{
+		AIWidget->OnHealthChanged(newHealth);
+	}
+}
+
+void APlayerHUD::OnSquadMaxHealthChanged(int index, float newHealth)
+{
+	if (index == 0 && AIWidget)
+	{
+		AIWidget->OnMaxHealthChanged(newHealth);
 	}
 }

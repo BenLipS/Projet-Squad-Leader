@@ -60,6 +60,12 @@ void AAISquadManager::Init(TSubclassOf<ASoldierTeam> _Team, ASoldierPlayer* _Pla
 	Mission = NewObject<UMission>(this, UMission::StaticClass());
 	Mission->Type = MissionType::Formation;
 	TypeOfFormation = FormationType::Circle;
+
+	for (auto SC : AISquadList)
+	{
+		SC->GetPawn<ASoldierAI>()->OnHealthChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberHealthChange);
+		SC->GetPawn<ASoldierAI>()->OnMaxHealthChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberMaxHealthChange);
+	}
 }
 
 void AAISquadManager::Tick(float DeltaTime)
@@ -155,4 +161,45 @@ void AAISquadManager::UpdateSquadTeam(TSubclassOf<ASoldierTeam> _NewTeam)
 			soldier->SetTeam(_NewTeam);
 		}
 	}
+}
+
+void AAISquadManager::BroadCastSquadData()
+{
+	TArray<FSoldierAIData> SoldierData;
+	for (auto AIC : AISquadList)
+	{
+		FSoldierAIData data;
+		if (ASoldierAI* SoldierAI = AIC->GetPawn<ASoldierAI>(); SoldierAI)
+		{
+			data.Health = SoldierAI->GetHealth();
+			data.MaxHealth = SoldierAI->GetMaxHealth();
+			SoldierData.Add(data);
+		}
+	}
+	OnSquadChanged.Broadcast(SoldierData);
+}
+
+void AAISquadManager::OnSquadMemberHealthChange(float newHealth, AAISquadController* SoldierController)
+{
+	int index;
+	index = AISquadList.Find(SoldierController);
+	if (index != INDEX_NONE)
+	{
+		OnMemberHealthChanged.Broadcast(index, newHealth);
+	}
+}
+
+void AAISquadManager::OnSquadMemberMaxHealthChange(float newMaxHealth, AAISquadController* SoldierController)
+{
+	int index;
+	index = AISquadList.Find(SoldierController);
+	if (index != INDEX_NONE)
+	{
+		OnMemberMaxHealthChanged.Broadcast(index, newMaxHealth);
+	}
+}
+
+void FAISquadManagerData::OnSquadDataChanged(const TArray<FSoldierAIData>& newValue)
+{
+	SquadData = newValue;
 }

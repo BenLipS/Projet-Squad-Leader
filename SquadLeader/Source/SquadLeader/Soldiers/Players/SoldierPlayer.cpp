@@ -56,11 +56,11 @@ void ASoldierPlayer::PossessedBy(AController* _newController)
 		Cast<USquadLeaderGameInstance>(GetGameInstance())->ListAISquadManagers.Add(SquadManager);
 
 		// Bindings
-		for (AAISquadController* AC : SquadManager->AISquadList)
+		/*for (AAISquadController* AC : SquadManager->AISquadList)
 		{
 			ASoldierAI* SoldierAI = Cast<ASoldierAI>(AC->GetPawn());
 			SoldierAI->OnHealthChanged.AddDynamic(this, &ASoldierPlayer::OnSquadHealthChanged);
-		}
+		}*/
 	}
 }
 
@@ -214,10 +214,10 @@ FVector ASoldierPlayer::GetRespawnPoint()
 	return FVector(0.f, 0.f, 1500.f); // else return default
 }
 
-void ASoldierPlayer::OnSquadHealthChanged(float _NewValue)
+void ASoldierPlayer::OnSquadChanged(const TArray<FSoldierAIData>& newValue)
 {
-	if (ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(GetController()); PC)
+	if (ASoldierPlayerController* PC = GetController<ASoldierPlayerController>(); PC)
 	{
-		PC->OnSquadHealthChanged(_NewValue);
+		PC->OnSquadChanged(newValue);
 	}
 }

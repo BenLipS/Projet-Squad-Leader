@@ -10,7 +10,7 @@ UAIInfoListWidget::UAIInfoListWidget(const FObjectInitializer& ObjectInitializer
 
 void UAIInfoListWidget::AddItem(ASoldierAI* SoldierBound)
 {
-	if (AIInfoWidgetClass != nullptr)
+	/*if (AIInfoWidgetClass != nullptr)
 	{
 		UAIInfoWidget* entry = CreateWidget<UAIInfoWidget>(GetWorld(), AIInfoWidgetClass);
 		if (entry) {
@@ -21,5 +21,5 @@ void UAIInfoListWidget::AddItem(ASoldierAI* SoldierBound)
 			//ListWidget.Add(entry);
 			AIInfoTileView->AddItem(entry);
 		}
-	}
+	}*/
 }

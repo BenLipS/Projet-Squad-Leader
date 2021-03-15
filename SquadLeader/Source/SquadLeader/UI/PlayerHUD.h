@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/HUD.h"
+#include "../Soldiers/AIs/SoldierAI.h"
 #include "PlayerHUD.generated.h"
 
 /**
@@ -69,9 +70,12 @@ public:
 	void OnMaxShieldChanged(float newValue);
 
 	//-----SquadInfo-----
-	UFUNCTION(BlueprintCallable)
-	void OnSquadChanged(TArray<class ASoldierAI*> newValue);
+	UFUNCTION()
+	void OnSquadChanged(TArray<FSoldierAIData> newValue);
 
 	UFUNCTION()
-	void OnSquadHealthChanged(float _NewValue);
+	void OnSquadHealthChanged(int index, float newHealth);
+
+	UFUNCTION()
+	void OnSquadMaxHealthChanged(int index, float newHealth);
 };
