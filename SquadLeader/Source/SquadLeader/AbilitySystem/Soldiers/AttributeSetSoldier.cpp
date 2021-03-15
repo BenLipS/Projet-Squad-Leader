@@ -3,6 +3,12 @@
 #include "GameplayEffectExtension.h"
 #include "../../Soldiers/Soldier.h"
 #include "GameplayEffects/States/GE_StateFighting.h"
+#include "GameplayEffects/GE_UpdateStats.h"
+
+UAttributeSetSoldier::UAttributeSetSoldier(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer)
+{
+	CharacterLevel = 1.f;
+}
 
 void UAttributeSetSoldier::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
@@ -105,10 +111,26 @@ void UAttributeSetSoldier::AdjustAttributeForMaxChange(FGameplayAttributeData& A
 	}
 }
 
+// TODO: See what to do with basic AIs and squad AIs. 
+// Should they solo level up ? Do their levels depend of the leader of squad ?
+// Do the Basic AIs have the same than the lower player/squad leader ?
 void UAttributeSetSoldier::LevelUp()
 {
-	if (UAbilitySystemComponent* ASC = GetOwningAbilitySystemComponent(); ASC)
+	UAbilitySystemComponent* ASC = GetOwningAbilitySystemComponent();
+	if (!ASC)
+		return;
+
+	if (ASoldier* Soldier = Cast<ASoldier>(ASC->AbilityActorInfo->AvatarActor.Get()); Soldier)
+	{
+		// Increase level by 1
 		ASC->ApplyModToAttributeUnsafe(GetCharacterLevelAttribute(), EGameplayModOp::Additive, 1);
+
+		// Grant new attribute values
+		FGameplayEffectSpecHandle Handle = ASC->MakeOutgoingSpec(Soldier->GetStatAttributeEffects(), GetCharacterLevel(), ASC->MakeEffectContext());
+		ASC->ApplyGameplayEffectSpecToSelf(*Handle.Data.Get());
+
+		// TODO: We should not give full hp when leveling up
+	}
 }
 
 void UAttributeSetSoldier::OnRep_CharacterLevel(const FGameplayAttributeData& _OldCharacterLevel)

@@ -182,13 +182,13 @@ void ASoldier::InitializeAttributes()
 {
 	check(AbilitySystemComponent);
 
-	if (!DefaultAttributeEffects)
+	if (!StatAttributeEffects)
 		return;
 
 	FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
 	EffectContext.AddSourceObject(this);
 
-	FGameplayEffectSpecHandle NewHandle = AbilitySystemComponent->MakeOutgoingSpec(DefaultAttributeEffects, GetCharacterLevel(), EffectContext);
+	FGameplayEffectSpecHandle NewHandle = AbilitySystemComponent->MakeOutgoingSpec(StatAttributeEffects, GetCharacterLevel(), EffectContext);
 	if (NewHandle.IsValid())
 	{
 		FActiveGameplayEffectHandle ActiveGEHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*NewHandle.Data.Get());
@@ -246,6 +246,11 @@ void ASoldier::InitializeTagChangeCallbacks()
 void ASoldier::InitializeAttributeChangeCallbacks()
 {
 	HealthChangedDelegateHandle = AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetHealthAttribute()).AddUObject(this, &ASoldier::HealthChanged);
+}
+
+TSubclassOf<UGE_UpdateStats> ASoldier::GetStatAttributeEffects() const
+{
+	return StatAttributeEffects;
 }
 
 void ASoldier::DeadTagChanged(const FGameplayTag CallbackTag, int32 NewCount)

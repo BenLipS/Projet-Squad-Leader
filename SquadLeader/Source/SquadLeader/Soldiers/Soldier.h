@@ -7,6 +7,7 @@
 #include "AbilitySystemInterface.h"
 #include "../AbilitySystem/Soldiers/AttributeSetSoldier.h"
 #include "../AbilitySystem/Soldiers/AbilitySystemSoldier.h"
+#include "../AbilitySystem/Soldiers/GameplayEffects/GE_UpdateStats.h"
 #include "../Weapons/Weapon.h"
 #include "Interface/Teamable.h"
 //
@@ -44,7 +45,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ability System Component", meta = (AllowPrivateAccess = "true"))
 	UAbilitySystemSoldier* AbilitySystemComponent;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute Set", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Stat Attributes", meta = (AllowPrivateAccess = "true"))
 	UAttributeSetSoldier* AttributeSet;
 
 public:
@@ -52,11 +53,11 @@ public:
 	UAttributeSetSoldier* GetAttributeSet() const;
 
 protected:
-	// Define the default stats
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Abilities")
-	TSubclassOf<class UGameplayEffect> DefaultAttributeEffects;
+	// Define the stats for any level. It is call at the beginning and when leveling up
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Stat Attributes")
+	TSubclassOf<UGE_UpdateStats> StatAttributeEffects;
 
-	// Define the default abilities
+	// Define the start abilities
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Abilities")
 	TArray<TSubclassOf<class UGameplayAbilitySoldier>> CharacterDefaultAbilities;
 
@@ -71,6 +72,9 @@ protected:
 	void AddStartupEffects();
 	void InitializeTagChangeCallbacks();
 	virtual void InitializeAttributeChangeCallbacks();
+
+public:
+	TSubclassOf<UGE_UpdateStats> GetStatAttributeEffects() const;
 
 //////////////// Tag Change Callbacks
 public:
