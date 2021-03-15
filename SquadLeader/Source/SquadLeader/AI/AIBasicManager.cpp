@@ -44,17 +44,17 @@ void AAIBasicManager::Init(TSubclassOf<ASoldierTeam> _Team)
 	
 	FVector OffSet{ 0.f, 500.f, 0.f };
 
-	FTransform LocationAI{  };
-	LocationAI.SetLocation(Start1);
-	FActorSpawnParameters SpawnInfo;
-	SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn; // La maniere de faire le respawn
-	ASoldierAI* BasicAI = GetWorld()->SpawnActorDeferred<ASoldierAI>(ClassAI, LocationAI, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
-	if (BasicAI) {
-		BasicAI->SpawnDefaultController();
-		BasicAI->SetTeam(Team);
-		BasicAI->FinishSpawning(LocationAI);
-		AIBasicList.Add(Cast<AAIBasicController>(BasicAI->GetController()));
-	}
+	//FTransform LocationAI{  };
+	//LocationAI.SetLocation(Start1);
+	//FActorSpawnParameters SpawnInfo;
+	//SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn; // La maniere de faire le respawn
+	//ASoldierAI* BasicAI = GetWorld()->SpawnActorDeferred<ASoldierAI>(ClassAI, LocationAI, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+	//if (BasicAI) {
+	//	BasicAI->SpawnDefaultController();
+	//	BasicAI->SetTeam(Team);
+	//	BasicAI->FinishSpawning(LocationAI);
+	//	AIBasicList.Add(Cast<AAIBasicController>(BasicAI->GetController()));
+	//}
 
 	//FTransform LocationAI1{};
 	//LocationAI1.SetLocation(LocationAI.GetLocation() + OffSet);
