@@ -19,93 +19,43 @@ void AAIBasicManager::BeginPlay() {
 		ChooseCOntrolArea();
 }
 
+FVector AAIBasicManager::CalculOffSetForInitSpawn(ASoldierSpawn* spawnpoint, int maxNumberBySpawn, int AiNb)
+{
+	FVector DirSpawn = spawnpoint->GetActorForwardVector();
+	DirSpawn = -DirSpawn;  // invert it to clear the front
+	FVector LocSpawn = spawnpoint->GetActorLocation();
+	float angle = FMath::RadiansToDegrees(FGenericPlatformMath::Acos(FVector::DotProduct({ 1,0,0 }, DirSpawn) / (1 * DirSpawn.Size())));
+	if (DirSpawn.Y < 0) angle = -angle;  // regulate the angle signe
+	float AnglePerAI = 360.f / maxNumberBySpawn;
+
+	FVector Offset = InitSpawnDiameter;  // take the diameter
+	Offset = Offset.RotateAngleAxis(angle, { 0, 0, 1 });
+	Offset = Offset.RotateAngleAxis(AnglePerAI * AiNb, { 0, 0, 1 });
+	return LocSpawn + Offset;
+}
+
 void AAIBasicManager::Init(TSubclassOf<ASoldierTeam> _Team)
 {
 	Team = _Team;
-
-	/*For now Each AIBasicManager Spawn with 4 AIs*/
-	/*TEMPORARY*/
-	//if (GEngine)GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Purple, TEXT("Init AIBasicManger"));
-	auto gameMode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
-	FVector Start1{};
-	FVector Start2{};
-	FVector Start3{};
-
-	if (Team == gameMode->SoldierTeamCollection[0]) {
-		Start1 = { 19000.f, 10000.f, 125.f }; //Start = { 5490.f, 1200.f, 87.999985f }; //Start = { 8760.f, 15590.f, 87.999985f };
-		Start2 = { 19000.f, 19000.f, 430.f };
-		Start3 = { 19000.f, 1000.f, 430.f };
-	}
-	else if (Team == gameMode->SoldierTeamCollection[1]){
-		Start1 = { 1000.f, 10000.f, 125.f }; //Start = { 2830.f, 4590.f, 87.999985f }; //Start = { 16350.f, 15590.f, 87.999985f };
-		Start2 = { 1900.f, 19000.f, 430.f };
-		Start3 = { 1000.f, 1000.f, 430.f };
-	}
 	
-	FVector OffSet{ 0.f, 500.f, 0.f };
+	// calculate information for placement
+	TArray<ASoldierSpawn*> spawnList = Team.GetDefaultObject()->GetUsableSpawnPoints();
+	int NbAIToSpawn = Team.GetDefaultObject()->NbAIBasic;
+	int maxNumberBySpawn = ceil((NbAIToSpawn+0.0) / spawnList.Num());
+		
+	for (int spawnLoop = 0; spawnLoop < NbAIToSpawn; spawnLoop++) {
+		ASoldierSpawn* spawnpoint = spawnList[spawnLoop % (spawnList.Num())];
 
-	//FTransform LocationAI{  };
-	//LocationAI.SetLocation(Start1);
-	//FActorSpawnParameters SpawnInfo;
-	//SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn; // La maniere de faire le respawn
-	//ASoldierAI* BasicAI = GetWorld()->SpawnActorDeferred<ASoldierAI>(ClassAI, LocationAI, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
-	//if (BasicAI) {
-	//	BasicAI->SpawnDefaultController();
-	//	BasicAI->SetTeam(Team);
-	//	BasicAI->FinishSpawning(LocationAI);
-	//	AIBasicList.Add(Cast<AAIBasicController>(BasicAI->GetController()));
-	//}
-
-	//FTransform LocationAI1{};
-	//LocationAI1.SetLocation(LocationAI.GetLocation() + OffSet);
-	//ASoldierAI* BasicAI1 = GetWorld()->SpawnActorDeferred<ASoldierAI>(ClassAI, LocationAI, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
-	//if (BasicAI1) {
-	//	BasicAI1->SpawnDefaultController();
-	//	BasicAI1->SetTeam(Team);
-	//	BasicAI1->FinishSpawning(LocationAI1);
-	//	AIBasicList.Add(Cast<AAIBasicController>(BasicAI1->GetController()));
-	//}
-
-	//FTransform LocationAI2{};
-	//LocationAI2.SetLocation(Start2);
-	//ASoldierAI* BasicAI2 = GetWorld()->SpawnActorDeferred<ASoldierAI>(ClassAI, LocationAI, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
-	//if (BasicAI2) {
-	//	BasicAI2->SpawnDefaultController();
-	//	BasicAI2->SetTeam(Team);
-	//	BasicAI2->FinishSpawning(LocationAI2);
-	//	AIBasicList.Add(Cast<AAIBasicController>(BasicAI2->GetController()));
-	//}
-
-	//FTransform LocationAI3{};
-	//LocationAI3.SetLocation(LocationAI2.GetLocation() + OffSet);
-	//ASoldierAI* BasicAI3 = GetWorld()->SpawnActorDeferred<ASoldierAI>(ClassAI, LocationAI, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
-	//if (BasicAI3) {
-	//	BasicAI3->SpawnDefaultController();
-	//	BasicAI3->SetTeam(Team);
-	//	BasicAI3->FinishSpawning(LocationAI3);
-	//	AIBasicList.Add(Cast<AAIBasicController>(BasicAI3->GetController()));
-	//}
-
-	//FTransform LocationAI4{};
-	//LocationAI4.SetLocation(Start3);
-	//ASoldierAI* BasicAI4 = GetWorld()->SpawnActorDeferred<ASoldierAI>(ClassAI, LocationAI, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
-	//if (BasicAI4) {
-	//	BasicAI4->SpawnDefaultController();
-	//	BasicAI4->SetTeam(Team);
-	//	BasicAI4->FinishSpawning(LocationAI4);
-	//	AIBasicList.Add(Cast<AAIBasicController>(BasicAI4->GetController()));
-	//}
-
-	//FTransform LocationAI5{};
-	//LocationAI5.SetLocation(LocationAI4.GetLocation() + OffSet);
-	//ASoldierAI* BasicAI5 = GetWorld()->SpawnActorDeferred<ASoldierAI>(ClassAI, LocationAI, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
-	//if (BasicAI5) {
-	//	BasicAI5->SpawnDefaultController();
-	//	BasicAI5->SetTeam(Team);
-	//	BasicAI5->FinishSpawning(LocationAI5);
-	//	AIBasicList.Add(Cast<AAIBasicController>(BasicAI5->GetController()));
-	//}
-	
+		FTransform LocationAI{};
+		LocationAI.SetLocation(CalculOffSetForInitSpawn(spawnpoint, maxNumberBySpawn, spawnLoop));
+		ASoldierAI* BasicAI = GetWorld()->SpawnActorDeferred<ASoldierAI>(ClassAI, LocationAI, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+		if (BasicAI) {
+			BasicAI->SpawnDefaultController();
+			BasicAI->SetTeam(Team);
+			BasicAI->FinishSpawning(LocationAI);
+			AIBasicList.Add(Cast<AAIBasicController>(BasicAI->GetController()));
+		}
+	}
 }
 
 void AAIBasicManager::Tick(float DeltaSeconds) {
@@ -132,7 +82,7 @@ void AAIBasicManager::ChooseCOntrolArea() {
 	while (_index_player < nbr_unite) {
 		if (_index_control_area >= nbr_controlArea)
 			_index_control_area = 0;
-		for (int i = 0; i != nbr_unit_per_controlArea; ++i) {
+		for (int i = 0; i != nbr_unit_per_controlArea && _index_player < nbr_unite; ++i) {
 			UMission* _mission = NewObject<UMission>(this, UMission::StaticClass());;
 			_mission->Type = MissionType::MoveTo;
 			_mission->Location = m_controlAreaManager->GetControlArea()[_index_control_area]->GetActorLocation();
