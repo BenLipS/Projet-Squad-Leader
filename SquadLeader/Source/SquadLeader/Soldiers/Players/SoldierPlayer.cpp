@@ -4,7 +4,6 @@
 #include "../../SquadLeaderGameInstance.h"
 #include "../../AI/AISquadController.h"
 #include "../../AI/AISquadManager.h"
-#include "../../AI/InfoSquadManager.h"
 #include "../../AbilitySystem/Soldiers/GameplayAbilitySoldier.h"
 #include "../../Spawn/SoldierSpawn.h"
 
@@ -22,17 +21,6 @@ ASoldierPlayer::ASoldierPlayer(const FObjectInitializer& _ObjectInitializer) : S
 void ASoldierPlayer::BeginPlay()
 {
 	Super::BeginPlay();
-}
-
-AInfoSquadManager* ASoldierPlayer::GetSquadInfo()
-{
-	return SquadInfo;
-}
-
-void ASoldierPlayer::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(ASoldierPlayer, SquadInfo);
 }
 
 // Server only 

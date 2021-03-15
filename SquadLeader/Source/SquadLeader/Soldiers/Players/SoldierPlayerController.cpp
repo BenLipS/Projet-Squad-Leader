@@ -82,6 +82,7 @@ void ASoldierPlayerController::OnRep_PlayerState()
 	if (APlayerHUD* CurrentPlayerHUD = GetHUD<APlayerHUD>())
 	{
 		CurrentPlayerHUD->SetPlayerStateLink();
+		CurrentPlayerHUD->SetAIStateLink();
 	}
 }
 

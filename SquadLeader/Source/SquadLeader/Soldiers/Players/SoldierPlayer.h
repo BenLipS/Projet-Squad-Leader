@@ -25,9 +25,6 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "SquadManager")
 	class AAISquadManager* SquadManager;
 
-	UPROPERTY(BlueprintReadOnly, Replicated, Category = "SquadManager")
-	class AInfoSquadManager* SquadInfo;
-
 public:
 	//UFUNCTION()
 	//void UpdateSquadInfo();
@@ -39,9 +36,6 @@ public:
 public:
 	UFUNCTION()
 	AAISquadManager* GetSquadManager();
-
-	UFUNCTION()
-	class AInfoSquadManager* GetSquadInfo();
 
 	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 

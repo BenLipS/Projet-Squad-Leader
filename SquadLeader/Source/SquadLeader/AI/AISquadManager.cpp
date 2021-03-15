@@ -4,7 +4,6 @@
 #include "AISquadManager.h"
 #include "DrawDebugHelpers.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "InfoSquadManager.h"
 
 #include<algorithm>
 // temp include, need to be replace by more robust code
@@ -41,18 +40,24 @@ void AAISquadManager::Init(TSubclassOf<ASoldierTeam> _Team, ASoldierPlayer* _Pla
 	ASoldierAI* SquadAI = GetWorld()->SpawnActorDeferred<ASoldierAI>(ClassAI, LocationAI, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn); 
 	if (SquadAI) {
 		SquadAI->SpawnDefaultController();
+		SquadAI->OnHealthChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberHealthChange);
+		SquadAI->OnMaxHealthChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberMaxHealthChange);
 		SquadAI->FinishSpawning(LocationAI);
 		AISquadList.Add(Cast<AAISquadController>(SquadAI->Controller));
 	}
 	ASoldierAI* SquadAI1 = GetWorld()->SpawnActorDeferred<ASoldierAI>(ClassAI, LocationAI1, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 	if (SquadAI1) {
 		SquadAI1->SpawnDefaultController();
+		SquadAI1->OnHealthChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberHealthChange);
+		SquadAI1->OnMaxHealthChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberMaxHealthChange);
 		SquadAI1->FinishSpawning(LocationAI1);
 		AISquadList.Add(Cast<AAISquadController>(SquadAI1->Controller));
 	}
 	ASoldierAI* SquadAI2 = GetWorld()->SpawnActorDeferred<ASoldierAI>(ClassAI, LocationAI2, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 	if (SquadAI2) {
 		SquadAI2->SpawnDefaultController();
+		SquadAI2->OnHealthChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberHealthChange);
+		SquadAI2->OnMaxHealthChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberMaxHealthChange);
 		SquadAI2->FinishSpawning(LocationAI2);
 		AISquadList.Add(Cast<AAISquadController>(SquadAI2->Controller));
 	}
@@ -61,11 +66,11 @@ void AAISquadManager::Init(TSubclassOf<ASoldierTeam> _Team, ASoldierPlayer* _Pla
 	Mission->Type = MissionType::Formation;
 	TypeOfFormation = FormationType::Circle;
 
-	for (auto SC : AISquadList)
+	/*for (auto SC : AISquadList)
 	{
 		SC->GetPawn<ASoldierAI>()->OnHealthChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberHealthChange);
 		SC->GetPawn<ASoldierAI>()->OnMaxHealthChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberMaxHealthChange);
-	}
+	}*/
 }
 
 void AAISquadManager::Tick(float DeltaTime)

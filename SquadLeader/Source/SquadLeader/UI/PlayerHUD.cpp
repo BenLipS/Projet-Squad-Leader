@@ -9,7 +9,6 @@
 #include "AIInfoWidget.h"
 #include "Blueprint/UserWidget.h"
 #include "../AI/AISquadController.h"
-#include "../AI/InfoSquadManager.h"
 #include "../Soldiers/Players/SoldierPlayerController.h"
 #include "../Soldiers/Players/SoldierPlayerState.h"
 #include "../Soldiers/Players/SoldierPlayer.h"
@@ -70,7 +69,6 @@ void APlayerHUD::BeginPlay()
 		}
 	}*/
 
-	SetPlayerStateLink();
 	SetAIStateLink();
 }
 
@@ -102,7 +100,7 @@ void APlayerHUD::SetAIStateLink()
 	ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(GetOwningPlayerController());
 	if (PC)
 	{
-		
+		PC->BroadCastManagerData();
 	}
 }
 
@@ -141,21 +139,6 @@ void APlayerHUD::OnMaxShieldChanged(float newValue)
 
 void APlayerHUD::OnSquadChanged(TArray<FSoldierAIData> newValue)
 {
-	/*AIInfoWidget->RemoveFromViewport();
-
-	AIInfoWidget = CreateWidget<UAIInfoListWidget>(GetWorld(), AIInfoWidgetClass);
-	if (AIInfoWidget) {
-		AIInfoWidget->AddToViewport();
-		for (auto AIController : newValue)
-		{
-			ASoldierAI* PlayerAI = Cast<ASoldierAI>(AIController->GetPawn());
-			if (PlayerAI)
-			{
-				AIInfoWidget->AddItem(PlayerAI);
-			}
-		}
-	}*/
-
 	if (AIWidget)
 	{
 		if (newValue.IsValidIndex(0))
