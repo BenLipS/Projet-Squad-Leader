@@ -13,5 +13,10 @@ UCLASS()
 class SQUADLEADER_API ASquadLeaderInitGameState : public AGameStateBase
 {
 	GENERATED_BODY()
-	
+
+public:
+	ASquadLeaderInitGameState();
+
+	void InitMapAndData();
+	void InitActorInWorld();
 };

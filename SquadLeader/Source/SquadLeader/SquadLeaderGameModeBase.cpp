@@ -6,7 +6,10 @@
 #include "Soldiers/Soldier.h"
 
 #include "Interface/PreInitable.h"
-#include "ControlArea/ControlArea.h"
+#include "SquadLeaderGameState.h"
+#include "SquadLeaderInitGameState.h"
+#include "SquadLeaderCloseGameState.h"
+
 
 ASquadLeaderGameModeBase::ASquadLeaderGameModeBase() : RespawnDelay{ 3.f }
 {
@@ -26,32 +29,43 @@ ASquadLeaderGameModeBase::ASquadLeaderGameModeBase() : RespawnDelay{ 3.f }
 	//HUDClass = maclasse::StaticClass();
 }
 
-void ASquadLeaderGameModeBase::StartPlay() {
-	// Clean Managers and collections
-	for (auto team : SoldierTeamCollection) {  // clean all team data at the begining
-		team.GetDefaultObject()->CleanSpawnPoints();
-		team.GetDefaultObject()->CleanSoldierList();
+
+void ASquadLeaderGameModeBase::InitGameWithGameState() {
+	// set parameters for GameState's spawn
+	FActorSpawnParameters SpawnInfo;
+	SpawnInfo.Instigator = GetInstigator();
+	SpawnInfo.ObjectFlags |= RF_Transient;
+	
+	// change gameState
+	GameStateClass = ASquadLeaderInitGameState::StaticClass();
+
+	// spawn and set GameState
+	UWorld* World = GetWorld();
+	GameState = World->SpawnActor<ASquadLeaderInitGameState>(GameStateClass, SpawnInfo);
+	World->SetGameState(GameState);
+	if (GameState)
+	{
+		GameState->AuthorityGameMode = this;
 	}
 
-	ControlAreaManager.GetDefaultObject()->CleanControlAreaList();  // clean the list of all control area
+	InitGameState();
+}
 
-	//Init static world actors
-	InitActorInWorld();
+
+void ASquadLeaderGameModeBase::StartPlay() {
+	// Set the GameState
+	InitGameWithGameState();
+
+	// launch the game initialization from the GameState 
+	if (auto SLInitGameState = Cast<ASquadLeaderInitGameState>(GameState); SLInitGameState) {
+		SLInitGameState->InitMapAndData();
+	}
 	
 	//Init for AI
 	//Cast<USquadLeaderGameInstance>(GetGameInstance())->InitInfluenceMap();
 	Cast<USquadLeaderGameInstance>(GetGameInstance())->InitAIManagers();
 
 	Super::StartPlay();
-}
-
-void ASquadLeaderGameModeBase::InitActorInWorld()
-{
-	for (auto SceneActors: GetWorld()->PersistentLevel->Actors)  // cycle each actor
-	{
-		if (auto PreInitialisableObject = Cast<IPreInitable>(SceneActors); PreInitialisableObject)
-			PreInitialisableObject->PreInitialisation();
-	}
 }
 
 void ASquadLeaderGameModeBase::SoldierDied(AController* _Controller)

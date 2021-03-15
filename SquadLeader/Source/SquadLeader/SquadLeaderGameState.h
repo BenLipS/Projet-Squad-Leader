@@ -13,5 +13,7 @@ UCLASS()
 class SQUADLEADER_API ASquadLeaderGameState : public AGameStateBase
 {
 	GENERATED_BODY()
-	
+
+public:
+	ASquadLeaderGameState();
 };

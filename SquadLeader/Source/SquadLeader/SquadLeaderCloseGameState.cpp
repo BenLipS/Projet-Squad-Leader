@@ -3,3 +3,6 @@
 
 #include "SquadLeaderCloseGameState.h"
 
+ASquadLeaderCloseGameState::ASquadLeaderCloseGameState()
+{
+}

@@ -14,4 +14,6 @@ class SQUADLEADER_API ASquadLeaderCloseGameState : public AGameStateBase
 {
 	GENERATED_BODY()
 	
+public:
+	ASquadLeaderCloseGameState();
 };

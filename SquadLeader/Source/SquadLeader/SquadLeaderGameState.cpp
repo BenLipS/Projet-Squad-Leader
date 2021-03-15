@@ -3,3 +3,6 @@
 
 #include "SquadLeaderGameState.h"
 
+ASquadLeaderGameState::ASquadLeaderGameState()
+{
+}

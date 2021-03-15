@@ -17,6 +17,7 @@ public:
 	virtual void StartPlay() override;
 	ASquadLeaderGameModeBase();
 
+	void InitGameWithGameState();
 
 public:
 	// storage of global data for all the game
@@ -28,8 +29,6 @@ public:
 protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Respawn")
 		float RespawnDelay;
-
-	void InitActorInWorld();
 	
 public:
 	void SoldierDied(AController* _Controller);
