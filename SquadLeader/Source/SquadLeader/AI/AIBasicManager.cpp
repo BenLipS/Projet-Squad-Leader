@@ -43,7 +43,7 @@ void AAIBasicManager::Init(TSubclassOf<ASoldierTeam> _Team)
 	int NbAIToSpawn = Team.GetDefaultObject()->NbAIBasic;
 	int maxNumberBySpawn = ceil((NbAIToSpawn+0.0) / spawnList.Num());
 		
-	for (int spawnLoop = 0; spawnLoop < NbAIToSpawn; spawnLoop++) {
+	/*for (int spawnLoop = 0; spawnLoop < NbAIToSpawn; spawnLoop++) {
 		ASoldierSpawn* spawnpoint = spawnList[spawnLoop % (spawnList.Num())];
 
 		FTransform LocationAI{};
@@ -55,7 +55,7 @@ void AAIBasicManager::Init(TSubclassOf<ASoldierTeam> _Team)
 			BasicAI->FinishSpawning(LocationAI);
 			AIBasicList.Add(Cast<AAIBasicController>(BasicAI->GetController()));
 		}
-	}
+	}*/
 }
 
 void AAIBasicManager::Tick(float DeltaSeconds) {

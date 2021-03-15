@@ -2,7 +2,7 @@
 
 
 #include "NavLinkProxy_V1.h"
-
+#include "../../Soldiers/Soldier.h"
 
 ANavLinkProxy_V1::ANavLinkProxy_V1() {
 	PrimaryActorTick.bStartWithTickEnabled = true;
@@ -16,4 +16,7 @@ void ANavLinkProxy_V1::Tick(float DeltaTime) {
 void ANavLinkProxy_V1::Jump(AActor* Agent, const FVector& Destination) {
 	if (GEngine)
 		GEngine->AddOnScreenDebugMessage(20, 1.f, FColor::Blue, TEXT("Start to jump."));
+	ASoldier* _soldier = Cast<ASoldier>(Agent);
+	_soldier->lookingAtPosition();
+	_soldier->ActivateAbility(ASoldier::SkillJumpTag);
 }
