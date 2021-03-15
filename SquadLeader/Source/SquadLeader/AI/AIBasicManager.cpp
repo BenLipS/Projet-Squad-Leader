@@ -56,55 +56,55 @@ void AAIBasicManager::Init(TSubclassOf<ASoldierTeam> _Team)
 		AIBasicList.Add(Cast<AAIBasicController>(BasicAI->GetController()));
 	}
 
-	FTransform LocationAI1{};
-	LocationAI1.SetLocation(LocationAI.GetLocation() + OffSet);
-	ASoldierAI* BasicAI1 = GetWorld()->SpawnActorDeferred<ASoldierAI>(ClassAI, LocationAI, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
-	if (BasicAI1) {
-		BasicAI1->SpawnDefaultController();
-		BasicAI1->SetTeam(Team);
-		BasicAI1->FinishSpawning(LocationAI1);
-		AIBasicList.Add(Cast<AAIBasicController>(BasicAI1->GetController()));
-	}
+	//FTransform LocationAI1{};
+	//LocationAI1.SetLocation(LocationAI.GetLocation() + OffSet);
+	//ASoldierAI* BasicAI1 = GetWorld()->SpawnActorDeferred<ASoldierAI>(ClassAI, LocationAI, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+	//if (BasicAI1) {
+	//	BasicAI1->SpawnDefaultController();
+	//	BasicAI1->SetTeam(Team);
+	//	BasicAI1->FinishSpawning(LocationAI1);
+	//	AIBasicList.Add(Cast<AAIBasicController>(BasicAI1->GetController()));
+	//}
 
-	FTransform LocationAI2{};
-	LocationAI2.SetLocation(Start2);
-	ASoldierAI* BasicAI2 = GetWorld()->SpawnActorDeferred<ASoldierAI>(ClassAI, LocationAI, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
-	if (BasicAI2) {
-		BasicAI2->SpawnDefaultController();
-		BasicAI2->SetTeam(Team);
-		BasicAI2->FinishSpawning(LocationAI2);
-		AIBasicList.Add(Cast<AAIBasicController>(BasicAI2->GetController()));
-	}
+	//FTransform LocationAI2{};
+	//LocationAI2.SetLocation(Start2);
+	//ASoldierAI* BasicAI2 = GetWorld()->SpawnActorDeferred<ASoldierAI>(ClassAI, LocationAI, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+	//if (BasicAI2) {
+	//	BasicAI2->SpawnDefaultController();
+	//	BasicAI2->SetTeam(Team);
+	//	BasicAI2->FinishSpawning(LocationAI2);
+	//	AIBasicList.Add(Cast<AAIBasicController>(BasicAI2->GetController()));
+	//}
 
-	FTransform LocationAI3{};
-	LocationAI3.SetLocation(LocationAI2.GetLocation() + OffSet);
-	ASoldierAI* BasicAI3 = GetWorld()->SpawnActorDeferred<ASoldierAI>(ClassAI, LocationAI, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
-	if (BasicAI3) {
-		BasicAI3->SpawnDefaultController();
-		BasicAI3->SetTeam(Team);
-		BasicAI3->FinishSpawning(LocationAI3);
-		AIBasicList.Add(Cast<AAIBasicController>(BasicAI3->GetController()));
-	}
+	//FTransform LocationAI3{};
+	//LocationAI3.SetLocation(LocationAI2.GetLocation() + OffSet);
+	//ASoldierAI* BasicAI3 = GetWorld()->SpawnActorDeferred<ASoldierAI>(ClassAI, LocationAI, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+	//if (BasicAI3) {
+	//	BasicAI3->SpawnDefaultController();
+	//	BasicAI3->SetTeam(Team);
+	//	BasicAI3->FinishSpawning(LocationAI3);
+	//	AIBasicList.Add(Cast<AAIBasicController>(BasicAI3->GetController()));
+	//}
 
-	FTransform LocationAI4{};
-	LocationAI4.SetLocation(Start3);
-	ASoldierAI* BasicAI4 = GetWorld()->SpawnActorDeferred<ASoldierAI>(ClassAI, LocationAI, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
-	if (BasicAI4) {
-		BasicAI4->SpawnDefaultController();
-		BasicAI4->SetTeam(Team);
-		BasicAI4->FinishSpawning(LocationAI4);
-		AIBasicList.Add(Cast<AAIBasicController>(BasicAI4->GetController()));
-	}
+	//FTransform LocationAI4{};
+	//LocationAI4.SetLocation(Start3);
+	//ASoldierAI* BasicAI4 = GetWorld()->SpawnActorDeferred<ASoldierAI>(ClassAI, LocationAI, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+	//if (BasicAI4) {
+	//	BasicAI4->SpawnDefaultController();
+	//	BasicAI4->SetTeam(Team);
+	//	BasicAI4->FinishSpawning(LocationAI4);
+	//	AIBasicList.Add(Cast<AAIBasicController>(BasicAI4->GetController()));
+	//}
 
-	FTransform LocationAI5{};
-	LocationAI5.SetLocation(LocationAI4.GetLocation() + OffSet);
-	ASoldierAI* BasicAI5 = GetWorld()->SpawnActorDeferred<ASoldierAI>(ClassAI, LocationAI, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
-	if (BasicAI5) {
-		BasicAI5->SpawnDefaultController();
-		BasicAI5->SetTeam(Team);
-		BasicAI5->FinishSpawning(LocationAI5);
-		AIBasicList.Add(Cast<AAIBasicController>(BasicAI5->GetController()));
-	}
+	//FTransform LocationAI5{};
+	//LocationAI5.SetLocation(LocationAI4.GetLocation() + OffSet);
+	//ASoldierAI* BasicAI5 = GetWorld()->SpawnActorDeferred<ASoldierAI>(ClassAI, LocationAI, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+	//if (BasicAI5) {
+	//	BasicAI5->SpawnDefaultController();
+	//	BasicAI5->SetTeam(Team);
+	//	BasicAI5->FinishSpawning(LocationAI5);
+	//	AIBasicList.Add(Cast<AAIBasicController>(BasicAI5->GetController()));
+	//}
 	
 }
 

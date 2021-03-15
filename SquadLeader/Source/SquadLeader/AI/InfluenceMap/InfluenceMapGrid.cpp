@@ -4,6 +4,7 @@
 #include "InfluenceMapGrid.h"
 #include "NavigationSystem.h"
 #include "NavigationPath.h"
+#include "../../Thread/MyThreadManager.h"
 #include "../../SquadLeaderGameModeBase.h"
 #include "../../Soldiers/Soldier.h"
 
@@ -19,6 +20,8 @@ void AInfluenceMapGrid::BeginPlay() {
 		m_neighboors.Init(FNeighboor(), nbr_tile);
 		FindNeighboor();
 	}
+
+	m_ThreadManager = NewObject<UMyThreadManager>();
 }
 
 void AInfluenceMapGrid::Tick(float DeltaSeconds) {
@@ -29,6 +32,10 @@ void AInfluenceMapGrid::Tick(float DeltaSeconds) {
 		//DrawGrid();
 		ResetGrid();
 		UpdateGrid();
+
+		value_tick++;
+		/*if (value_tick > 1000)
+			m_ThreadManager->StartProcess()*/;
 	}
 }
 
