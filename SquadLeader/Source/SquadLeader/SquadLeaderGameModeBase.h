@@ -28,8 +28,8 @@ public:
 protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Respawn")
 		float RespawnDelay;
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Ticket")
-		int BaseTicketNumber = 50;
+
+	void InitActorInWorld();
 	
 public:
 	void SoldierDied(AController* _Controller);
