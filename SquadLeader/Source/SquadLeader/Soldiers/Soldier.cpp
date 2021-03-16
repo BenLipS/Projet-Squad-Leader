@@ -157,7 +157,7 @@ void ASoldier::InitMovements()
 	GetCharacterMovement()->GetNavAgentPropertiesRef().bCanCrouch = true;
 
 	// TODO. Review this value
-	GetCharacterMovement()->GravityScale = 1.5f;
+	GetCharacterMovement()->GravityScale = 1.f;
 	GetCharacterMovement()->bCanWalkOffLedgesWhenCrouching = true;
 }
 
@@ -312,6 +312,10 @@ void ASoldier::DeadTagChanged(const FGameplayTag _CallbackTag, int32 _NewCount)
 
 		if (RespawnMontage)
 		{
+			// Remove any interaction with the world during the respawn animation - avoid damage while the player can't play
+			GetCharacterMovement()->GravityScale = 0.f;
+			GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
 			PlayAnimMontage(RespawnMontage);
 			UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 			AnimInstance->Montage_SetEndDelegate(Respawn_SoldierMontageEndedDelegate, RespawnMontage);
@@ -706,6 +710,9 @@ void ASoldier::OnStartGameMontageCompleted(UAnimMontage* _Montage, bool _bInterr
 void ASoldier::OnRespawnMontageCompleted(UAnimMontage* _Montage, bool _bInterrupted)
 {
 	UnLockControls();
+
+	GetCharacterMovement()->GravityScale = 1.f;
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Player, ECollisionResponse::ECR_Block);
 }
 
