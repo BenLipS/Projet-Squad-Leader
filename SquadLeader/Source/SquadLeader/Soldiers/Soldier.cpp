@@ -34,6 +34,7 @@ FGameplayTag ASoldier::SkillAimTag = FGameplayTag::RequestGameplayTag(FName("Abi
 FGameplayTag ASoldier::SkillAreaEffectFromSelfTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.AreaEffectFromSelf"));
 FGameplayTag ASoldier::SkillGiveOrderTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.GiveOrder"));
 FGameplayTag ASoldier::SkillReloadWeaponTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.ReloadWeapon"));
+FGameplayTag ASoldier::SkillQuickDashTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.QuickDash"));
 
 ASoldier::ASoldier(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer.SetDefaultSubobjectClass<USoldierMovementComponent>(ACharacter::CharacterMovementComponentName)), bAbilitiesInitialized{ false }, bDefaultWeaponsInitialized{ false }, ImpactHitFXScale{ FVector{1.f} }
 {
