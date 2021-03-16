@@ -10,6 +10,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystemComponent.h"
+#include "SquadLeader/SquadLeader.h"
 //#include "DrawDebugHelpers.h"
 
 // States
@@ -20,6 +21,7 @@ FGameplayTag ASoldier::StateCrouchingTag = FGameplayTag::RequestGameplayTag(FNam
 FGameplayTag ASoldier::StateFightingTag = FGameplayTag::RequestGameplayTag(FName("State.Fighting"));
 FGameplayTag ASoldier::StateAimingTag = FGameplayTag::RequestGameplayTag(FName("State.Aiming"));
 FGameplayTag ASoldier::StateGivingOrderTag = FGameplayTag::RequestGameplayTag(FName("State.GivingOrder"));
+FGameplayTag ASoldier::StateFiringTag = FGameplayTag::RequestGameplayTag(FName("State.Firing"));
 FGameplayTag ASoldier::StateReloadingWeaponTag = FGameplayTag::RequestGameplayTag(FName("State.ReloadingWeapon"));
 
 // Abilities
@@ -37,9 +39,9 @@ ASoldier::ASoldier(const FObjectInitializer& _ObjectInitializer) : Super(_Object
 {
 	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
-	initCameras();
-	initMovements();
-	initMeshes();
+	InitCameras();
+	InitMovements();
+	InitMeshes();
 	setup_stimulus();
 	GetCapsuleComponent()->BodyInstance.SetObjectType(ECC_Player);
 }
@@ -53,11 +55,16 @@ void ASoldier::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// Cameras
 	if (bIsFirstPerson)
+	{
 		setToFirstCameraPerson();
+		onSwitchCamera(); // Force the third person camera. TODO: Make a cleaner organization
+	}
 	else
 		setToThirdCameraPerson();
 
+	// Teams
 	if (GetLocalRole() == ROLE_Authority) {
 		// init team:
 		if (InitialTeam && !(GetTeam()))
@@ -67,6 +74,15 @@ void ASoldier::BeginPlay()
 		if (GetTeam()) {
 			GetTeam().GetDefaultObject()->AddSoldierList(this);
 		}
+	}
+
+	if (StartGameMontage)
+	{
+		LockControls();
+
+		PlayAnimMontage(StartGameMontage);
+		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+		AnimInstance->Montage_SetEndDelegate(StartGame_SoldierMontageEndedDelegate, StartGameMontage);
 	}
 }
 
@@ -89,7 +105,7 @@ void ASoldier::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-void ASoldier::initCameras()
+void ASoldier::InitCameras()
 {
 	SyncControlRotation = FRotator{0.f, 0.f, 0.f};
 
@@ -119,7 +135,7 @@ void ASoldier::initCameras()
 	CurrentCameraComponent = FirstPersonCameraComponent;
 }
 
-void ASoldier::initMeshes()
+void ASoldier::InitMeshes()
 {
 	// 1st person mesh
 	FirstPersonMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("FirstPersonMesh"));
@@ -129,17 +145,23 @@ void ASoldier::initMeshes()
 	FirstPersonMesh->CastShadow = false;
 
 	// 3rd person mesh - already defined with ACharacter
+
+	// Montage Delegates
+	StartGame_SoldierMontageEndedDelegate.BindUObject(this, &ASoldier::OnStartGameMontageCompleted);
+	Respawn_SoldierMontageEndedDelegate.BindUObject(this, &ASoldier::OnRespawnMontageCompleted);
 }
 
-void ASoldier::initMovements()
+void ASoldier::InitMovements()
 {
 	// TODO: Link with attribut set (when possible)
 	GetCharacterMovement()->GetNavAgentPropertiesRef().bCanCrouch = true;
-	GetCharacterMovement()->GravityScale = 1.5f;
+
+	// TODO. Review this value
+	GetCharacterMovement()->GravityScale = 1.f;
 	GetCharacterMovement()->bCanWalkOffLedgesWhenCrouching = true;
 }
 
-void ASoldier::initWeapons()
+void ASoldier::InitWeapons()
 {
 	if (bDefaultWeaponsInitialized)
 		return;
@@ -166,6 +188,14 @@ void ASoldier::initWeapons()
 		CurrentWeapon = Inventory[0];
 
 	bDefaultWeaponsInitialized = true;
+}
+
+void ASoldier::LockControls()
+{
+}
+
+void ASoldier::UnLockControls()
+{
 }
 
 UAbilitySystemSoldier* ASoldier::GetAbilitySystemComponent() const
@@ -240,6 +270,7 @@ void ASoldier::InitializeTagChangeCallbacks()
 	AbilitySystemComponent->RegisterGameplayTagEvent(ASoldier::StateFightingTag, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ASoldier::FightingTagChanged);
 	AbilitySystemComponent->RegisterGameplayTagEvent(ASoldier::StateAimingTag, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ASoldier::AimingTagChanged);
 	AbilitySystemComponent->RegisterGameplayTagEvent(ASoldier::StateGivingOrderTag, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ASoldier::GivingOrderTagChanged);
+	AbilitySystemComponent->RegisterGameplayTagEvent(ASoldier::StateFiringTag, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ASoldier::FiringTagChanged);
 	AbilitySystemComponent->RegisterGameplayTagEvent(ASoldier::StateReloadingWeaponTag, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ASoldier::ReloadingWeaponTagChanged);
 }
 
@@ -248,17 +279,19 @@ void ASoldier::InitializeAttributeChangeCallbacks()
 	HealthChangedDelegateHandle = AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetHealthAttribute()).AddUObject(this, &ASoldier::HealthChanged);
 }
 
-void ASoldier::DeadTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
+void ASoldier::DeadTagChanged(const FGameplayTag _CallbackTag, int32 _NewCount)
 {
-	if (NewCount > 0) // If dead tag is added - Handle death
+	if (_NewCount > 0) // If dead tag is added - Handle death
 	{
+		LockControls();
+
 		// remove ticket from team (only on server)
 		if (GetTeam() && GetLocalRole() == ROLE_Authority)
 			GetTeam().GetDefaultObject()->RemoveOneTicket();
 
-		// Stop the soldier and remove any interaction with the world
-		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		GetCharacterMovement()->GravityScale = 0.f;
+		//TODO. Should we keep the velocity to be more realistic ?
+		// Stop the soldier and remove any interaction with the other soldiers
+		GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Player, ECollisionResponse::ECR_Ignore);
 		GetCharacterMovement()->Velocity = FVector(0.f);
 
 		// Cancel abilities
@@ -267,6 +300,9 @@ void ASoldier::DeadTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
 		// Notify the death to GameMode - Server only
 		if (ASquadLeaderGameModeBase* GameMode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode()); GameMode)
 			GameMode->SoldierDied(GetController());
+
+		if (DeathMontage)
+			PlayAnimMontage(DeathMontage);
 	}
 	else // If dead tag is removed - Handle respawn
 	{
@@ -274,8 +310,16 @@ void ASoldier::DeadTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
 		AttributeSet->SetHealth(AttributeSet->GetMaxHealth());
 		AttributeSet->SetShield(AttributeSet->GetMaxShield());
 
-		GetCharacterMovement()->GravityScale = 1.f;
-		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		if (RespawnMontage)
+		{
+			// Remove any interaction with the world during the respawn animation - avoid damage while the player can't play
+			GetCharacterMovement()->GravityScale = 0.f;
+			GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+			PlayAnimMontage(RespawnMontage);
+			UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+			AnimInstance->Montage_SetEndDelegate(Respawn_SoldierMontageEndedDelegate, RespawnMontage);
+		}
 	}
 }
 
@@ -296,6 +340,10 @@ void ASoldier::AimingTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
 }
 
 void ASoldier::GivingOrderTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
+{
+}
+
+void ASoldier::FiringTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
 {
 }
 
@@ -372,7 +420,7 @@ void ASoldier::MoveRight(const float _Val)
 
 void ASoldier::LookUp(const float _Val)
 {
-	if (IsAlive() && _Val != 0.0f)
+	if (_Val != 0.0f)
 	{
 		AddControllerPitchInput(_Val);
 		if (APlayerController* PlayerController = Cast<APlayerController>(Controller); PlayerController)
@@ -384,7 +432,7 @@ void ASoldier::LookUp(const float _Val)
 
 void ASoldier::Turn(const float _Val)
 {
-	if (IsAlive() && _Val != 0.0f)
+	if (_Val != 0.0f)
 	{
 		AddControllerYawInput(_Val);
 		if (APlayerController* PlayerController = Cast<APlayerController>(Controller); PlayerController)
@@ -652,6 +700,20 @@ void ASoldier::setup_stimulus() {
 
 uint8 ASoldier::GetInfluenceRadius() const noexcept{
 	return InfluenceRadius;
+}
+
+void ASoldier::OnStartGameMontageCompleted(UAnimMontage* _Montage, bool _bInterrupted)
+{
+	UnLockControls();
+}
+
+void ASoldier::OnRespawnMontageCompleted(UAnimMontage* _Montage, bool _bInterrupted)
+{
+	UnLockControls();
+
+	GetCharacterMovement()->GravityScale = 1.f;
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Player, ECollisionResponse::ECR_Block);
 }
 
 // TODO: Show particle from the hit location - not center of the soldier
