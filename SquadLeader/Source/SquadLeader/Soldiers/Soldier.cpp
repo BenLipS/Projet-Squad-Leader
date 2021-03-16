@@ -57,10 +57,8 @@ void ASoldier::BeginPlay()
 {
 	Super::BeginPlay();
 
-	auto test = GetTeam();
-
 	// Cameras
-		if (bIsFirstPerson)
+	if (bIsFirstPerson)
 	{
 		setToFirstCameraPerson();
 		onSwitchCamera(); // Force the third person camera. TODO: Make a cleaner organization
