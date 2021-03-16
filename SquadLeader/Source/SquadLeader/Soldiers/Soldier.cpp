@@ -10,6 +10,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystemComponent.h"
+#include "SquadLeader/SquadLeader.h"
 //#include "DrawDebugHelpers.h"
 
 // States
@@ -154,6 +155,8 @@ void ASoldier::InitMovements()
 {
 	// TODO: Link with attribut set (when possible)
 	GetCharacterMovement()->GetNavAgentPropertiesRef().bCanCrouch = true;
+
+	// TODO. Review this value
 	GetCharacterMovement()->GravityScale = 1.5f;
 	GetCharacterMovement()->bCanWalkOffLedgesWhenCrouching = true;
 }
@@ -286,9 +289,9 @@ void ASoldier::DeadTagChanged(const FGameplayTag _CallbackTag, int32 _NewCount)
 		if (GetTeam() && GetLocalRole() == ROLE_Authority)
 			GetTeam().GetDefaultObject()->RemoveOneTicket();
 
-		// Stop the soldier and remove any interaction with the world
-		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		GetCharacterMovement()->GravityScale = 0.f;
+		//TODO. Should we keep the velocity to be more realistic ?
+		// Stop the soldier and remove any interaction with the other soldiers
+		GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Player, ECollisionResponse::ECR_Ignore);
 		GetCharacterMovement()->Velocity = FVector(0.f);
 
 		// Cancel abilities
@@ -690,8 +693,7 @@ void ASoldier::OnStartGameMontageCompleted(UAnimMontage* _Montage, bool _bInterr
 void ASoldier::OnRespawnMontageCompleted(UAnimMontage* _Montage, bool _bInterrupted)
 {
 	UnLockControls();
-	GetCharacterMovement()->GravityScale = 1.f;
-	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Player, ECollisionResponse::ECR_Block);
 }
 
 // TODO: Show particle from the hit location - not center of the soldier
