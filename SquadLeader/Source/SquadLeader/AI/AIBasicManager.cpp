@@ -48,12 +48,15 @@ void AAIBasicManager::Init(TSubclassOf<ASoldierTeam> _Team)
 
 		FTransform LocationAI{};
 		LocationAI.SetLocation(CalculOffSetForInitSpawn(spawnpoint, maxNumberBySpawn, spawnLoop));
-		ASoldierAI* BasicAI = GetWorld()->SpawnActorDeferred<ASoldierAI>(ClassAI, LocationAI, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+		ASoldierAI* BasicAI = GetWorld()->SpawnActorDeferred<ASoldierAI>(Team.GetDefaultObject()->GetClassBasicAI(), LocationAI, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 		if (BasicAI) {
 			BasicAI->SpawnDefaultController();
 			BasicAI->SetTeam(Team);
 			BasicAI->FinishSpawning(LocationAI);
-			AIBasicList.Add(Cast<AAIBasicController>(BasicAI->GetController()));
+
+			AAIBasicController* AC = Cast<AAIBasicController>(BasicAI->GetController());
+			ensure(AC);
+			AIBasicList.Add(AC);
 		}
 	}
 }

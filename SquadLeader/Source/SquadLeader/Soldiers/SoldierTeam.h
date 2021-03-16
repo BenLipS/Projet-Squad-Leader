@@ -42,9 +42,17 @@ public:
 
 
 public:  // Soldier List
-	UPROPERTY(EditAnywhere, Replicated, Category = "SoldierList")
+	UPROPERTY(BlueprintReadOnly, Replicated, Category = "SoldierList")
 		TArray<ASoldier*> soldierList;
+
+protected:
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "SoldierList")
+		TSubclassOf<class ASoldierAI> ClassBasicAI;
+
 public:
+	UFUNCTION(BlueprintCallable, Category = "SoldierList")
+		TSubclassOf<class ASoldierAI> GetClassBasicAI();
+
 	UFUNCTION(BlueprintCallable, Category = "SoldierList")
 		void AddSoldierList(ASoldier* newSoldier);
 	UFUNCTION(BlueprintCallable, Category = "SoldierList")
