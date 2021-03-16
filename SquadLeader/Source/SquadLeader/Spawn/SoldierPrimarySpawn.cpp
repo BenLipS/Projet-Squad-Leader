@@ -14,8 +14,6 @@ ASoldierPrimarySpawn::ASoldierPrimarySpawn() {
 
 void ASoldierPrimarySpawn::BeginPlay() {
 	Super::BeginPlay();
-	
-	UpdateTeamOwner();
 }
 
 
@@ -32,6 +30,17 @@ void ASoldierPrimarySpawn::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(ASoldierPrimarySpawn, teamOwner);
+}
+
+
+void ASoldierPrimarySpawn::PreInitialisation()
+{
+	UpdateTeamOwner();
+}
+
+int ASoldierPrimarySpawn::getpriority()
+{
+	return 1;
 }
 
 

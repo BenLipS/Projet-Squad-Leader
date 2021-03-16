@@ -11,6 +11,7 @@
 #include "../Soldiers/Interface/Teamable.h"
 #include "AIGeneralController.generated.h"
 
+class UFlockingComponent;
 
 /**
  * This enum contains the different behavior the AI can have
@@ -51,7 +52,22 @@ public:
 protected:
 	UPROPERTY(Replicated)
 		TSubclassOf<ASoldierTeam> Team = nullptr;  // only server can replicate it
+	UPROPERTY()
+	FVector ObjectifLocation{ 1000.f, 1000.f, 10.f };
 public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Flocking Behaviour")
+	TSubclassOf<UFlockingComponent> ClassFlockingComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Flocking Behaviour")
+	UFlockingComponent* FlockingComponent;
+
+	UFUNCTION(BlueprintCallable)
+		FVector GetObjectifLocation() { return ObjectifLocation; };
+
+	/* For BT Task  */
+	UFUNCTION(BlueprintCallable, Category = "Flocking Behaviour")
+		EPathFollowingRequestResult::Type FollowFlocking();
+
 	virtual TSubclassOf<ASoldierTeam> GetTeam() override;
 	virtual bool SetTeam(TSubclassOf<ASoldierTeam> _Team) override;
 
@@ -194,16 +210,13 @@ private:
 	class UAISenseConfig_Sight* sight_config;
 
 	UPROPERTY()
-	class UBlackboardComponent* m_BlackBoard;
-
-	UPROPERTY()
 	TEnumAsByte<AIBehavior> m_behavior;
 
 	UPROPERTY()
 	FVector m_destination;
 
 public:
-
+	TArray<ASoldier*> GetSeenSoldier() { return SeenSoldier; }
 	/*
 	* The distance from where we can walk and shoot the enemy
 	*/

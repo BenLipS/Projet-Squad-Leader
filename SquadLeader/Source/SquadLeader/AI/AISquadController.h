@@ -6,6 +6,8 @@
 #include "AIGeneralController.h"
 #include "AISquadController.generated.h"
 
+class AAISquadManager;
+
 /**
  * 
  */
@@ -17,8 +19,11 @@ class SQUADLEADER_API AAISquadController : public AAIGeneralController
 protected:
 	virtual void setup_BehaviorTree() override;
 
+	bool GetValidFormationPos();
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Formation Behaviour")
 	float RuningDistanceForFormation = 100.f;
+
 /////////// Respawn
 public:
 	AAISquadController();
@@ -30,6 +35,8 @@ public:
 	/*not used*/
 	void Init();
 
+	UPROPERTY()
+	AAISquadManager* SquadManager;
 public:
 	/* For BT Task  */
 	UFUNCTION(BlueprintCallable, Category = "Formation Behaviour")

@@ -415,6 +415,19 @@ bool ASoldier::Walk()
 	return true;
 }
 
+void ASoldier::Landed(const FHitResult& _Hit)
+{
+	Super::Landed(_Hit);
+
+	// Force jump ability to end when reaching the ground
+	// This is necessary for AIs and players who would keep pressing the input
+	CancelAbility(ASoldier::SkillJumpTag);
+
+	FGameplayTagContainer EffectTagsToRemove;
+	EffectTagsToRemove.AddTag(ASoldier::StateJumpingTag);
+	AbilitySystemComponent->RemoveActiveEffectsWithGrantedTags(EffectTagsToRemove);
+}
+
 FVector ASoldier::lookingAtPosition()
 {
 	FHitResult outHit;

@@ -58,12 +58,14 @@ void UGA_Jump::CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGam
 
 	Super::CancelAbility(Handle, ActorInfo, ActivationInfo, bReplicateCancelAbility);
 
-	if (ASoldier* soldier = Cast<ASoldier>(ActorInfo->AvatarActor.Get()); soldier)
+	if (ASoldier* Soldier = Cast<ASoldier>(ActorInfo->AvatarActor.Get()); Soldier)
 	{
-		soldier->StopJumping();
+		Soldier->StopJumping();
 
-		FGameplayTagContainer EffectTagsToRemove;
+		// Jumping state is kept as long as the soldier is in air - See Landed method in Soldier
+		/*FGameplayTagContainer EffectTagsToRemove;
 		EffectTagsToRemove.AddTag(ASoldier::StateJumpingTag);
 		soldier->GetAbilitySystemComponent()->RemoveActiveEffectsWithGrantedTags(EffectTagsToRemove);
+		*/
 	}
 }

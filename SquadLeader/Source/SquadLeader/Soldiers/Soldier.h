@@ -242,9 +242,11 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Movement")
 	void StopRunning();
-	
+
 	UFUNCTION(BlueprintCallable, Category = "Movement")
 	bool Walk();
+
+	virtual void Landed(const FHitResult& _Hit) override;
 
 //////////////// Weapons
 protected:
