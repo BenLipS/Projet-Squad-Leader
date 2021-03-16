@@ -71,10 +71,8 @@ void UAttributeSetSoldier::PostGameplayEffectExecute(const FGameplayEffectModCal
 				SetShield(GetShield() - LocalDamage);
 			else
 			{
-				SetHealth(GetHealth() - (LocalDamage - GetShield()));
+				SetHealth(FMath::Max(GetHealth() - (LocalDamage - GetShield()), 0.0f));
 				SetShield(0.f);
-
-				//GEngine->AddOnScreenDebugMessage(78, 1.f, FColor::Red, FString::Printf(TEXT("%s still has %s HPs"), *TargetSoldier->GetName(), *FString::SanitizeFloat(GetHealth())));
 			}
 			if (!TargetSoldier->IsAlive()) // The soldier has been killed
 			{
