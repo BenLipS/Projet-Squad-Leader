@@ -20,11 +20,21 @@ struct FSoldierAIData
 	UPROPERTY(EditAnywhere)
 	float MaxHealth;
 
+	UPROPERTY(EditAnywhere)
+	float Shield;
+
+	UPROPERTY(EditAnywhere)
+	float MaxShield;
+
 	void OnHealthChanged(float newHealth);
 	void OnMaxHealthChanged(float newMaxHealth);
+	void OnShieldChanged(float newShield);
+	void OnMaxShieldChanged(float newMaxShield);
 
 	FAIFloatChanged OnHealthNotify;
 	FAIFloatChanged OnMaxHealthNotify;
+	FAIFloatChanged OnShieldNotify;
+	FAIFloatChanged OnMaxShieldNotify;
 
 	FSoldierAIData() = default;
 };

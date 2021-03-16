@@ -29,15 +29,15 @@ protected:
 
 	class UShieldWidget* ShieldWidget;
 	
-	/*UPROPERTY(EditDefaultsOnly, Category = "Widget | AIInfo")
-	TSubclassOf<class UAIInfoListWidget> AIInfoWidgetClass;
-
-	class UAIInfoListWidget* AIInfoWidget;*/
-
 	UPROPERTY(EditDefaultsOnly, Category = "Widget | AIInfo")
+	TSubclassOf<class UAIInfoListWidget> AIListInfoWidgetClass;
+
+	class UAIInfoListWidget* AIListInfoWidget;
+
+	/*UPROPERTY(EditDefaultsOnly, Category = "Widget | AIInfo")
 	TSubclassOf<class UAIInfoWidget> AIWidgetClass;
 
-	class UAIInfoWidget* AIWidget;
+	class UAIInfoWidget* AIWidget;*/
 	
 public:
 	APlayerHUD();
@@ -71,11 +71,17 @@ public:
 
 	//-----SquadInfo-----
 	UFUNCTION()
-	void OnSquadChanged(TArray<FSoldierAIData> newValue);
+	void OnSquadChanged(const TArray<FSoldierAIData>& newValue);
 
 	UFUNCTION()
 	void OnSquadHealthChanged(int index, float newHealth);
 
 	UFUNCTION()
 	void OnSquadMaxHealthChanged(int index, float newHealth);
+
+	UFUNCTION()
+	void OnSquadShieldChanged(int index, float newShield);
+
+	UFUNCTION()
+	void OnSquadMaxShieldChanged(int index, float newMaxShield);
 };

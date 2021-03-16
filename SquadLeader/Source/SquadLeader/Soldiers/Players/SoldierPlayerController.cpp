@@ -70,6 +70,8 @@ void ASoldierPlayerController::OnPossess(APawn* InPawn)
 	Cast<ASoldierPlayer>(InPawn)->GetSquadManager()->OnSquadChanged.AddDynamic(this, &ASoldierPlayerController::OnSquadChanged);
 	Cast<ASoldierPlayer>(InPawn)->GetSquadManager()->OnMemberHealthChanged.AddDynamic(this, &ASoldierPlayerController::OnSquadMemberHealthChanged);
 	Cast<ASoldierPlayer>(InPawn)->GetSquadManager()->OnMemberMaxHealthChanged.AddDynamic(this, &ASoldierPlayerController::OnSquadMemberMaxHealthChanged);
+	Cast<ASoldierPlayer>(InPawn)->GetSquadManager()->OnMemberShieldChanged.AddDynamic(this, &ASoldierPlayerController::OnSquadMemberShieldChanged);
+	Cast<ASoldierPlayer>(InPawn)->GetSquadManager()->OnMemberMaxShieldChanged.AddDynamic(this, &ASoldierPlayerController::OnSquadMemberMaxShieldChanged);
 	Cast<ASoldierPlayer>(InPawn)->GetSquadManager()->BroadCastSquadData();
 }
 
@@ -199,6 +201,34 @@ void ASoldierPlayerController::OnSquadMemberMaxHealthChanged_Implementation(int 
 		if (APlayerHUD* CurrentPlayerHUD = GetHUD<APlayerHUD>(); CurrentPlayerHUD)
 		{
 			CurrentPlayerHUD->OnSquadMaxHealthChanged(index, newMaxHealth);
+		}
+	}
+	// Erreur syncronisation client / serveur
+}
+
+void ASoldierPlayerController::OnSquadMemberShieldChanged_Implementation(int index, float newShield)
+{
+	if (SquadManagerData.SquadData.IsValidIndex(index))
+	{
+		SquadManagerData.SquadData[index].Shield = newShield;
+		//Appel au HUD
+		if (APlayerHUD* CurrentPlayerHUD = GetHUD<APlayerHUD>(); CurrentPlayerHUD)
+		{
+			CurrentPlayerHUD->OnSquadShieldChanged(index, newShield);
+		}
+	}
+	// Erreur syncronisation client / serveur
+}
+
+void ASoldierPlayerController::OnSquadMemberMaxShieldChanged_Implementation(int index, float newMaxShield)
+{
+	if (SquadManagerData.SquadData.IsValidIndex(index))
+	{
+		SquadManagerData.SquadData[index].MaxShield = newMaxShield;
+		//Appel au HUD
+		if (APlayerHUD* CurrentPlayerHUD = GetHUD<APlayerHUD>(); CurrentPlayerHUD)
+		{
+			CurrentPlayerHUD->OnSquadMaxShieldChanged(index, newMaxShield);
 		}
 	}
 	// Erreur syncronisation client / serveur

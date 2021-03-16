@@ -44,6 +44,8 @@ public:
 
 	FSquadMemberDataChanged OnMemberHealthChanged;
 	FSquadMemberDataChanged OnMemberMaxHealthChanged;
+	FSquadMemberDataChanged OnMemberShieldChanged;
+	FSquadMemberDataChanged OnMemberMaxShieldChanged;
 
 public:
 	AAISquadManager();
@@ -102,4 +104,10 @@ public:
 
 	UFUNCTION()
 	void OnSquadMemberMaxHealthChange(float newValue, AAISquadController* SoldierController);
+
+	UFUNCTION()
+	void OnSquadMemberShieldChange(float newValue, AAISquadController* SoldierController);
+
+	UFUNCTION()
+	void OnSquadMemberMaxShieldChange(float newValue, AAISquadController* SoldierController);
 };

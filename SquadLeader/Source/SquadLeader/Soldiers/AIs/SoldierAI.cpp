@@ -152,3 +152,15 @@ void FSoldierAIData::OnMaxHealthChanged(float newMaxHealth)
 	MaxHealth = newMaxHealth;
 	OnMaxHealthNotify.Broadcast(MaxHealth);
 }
+
+void FSoldierAIData::OnShieldChanged(float newShield)
+{
+	Shield = newShield;
+	OnShieldNotify.Broadcast(Shield);
+}
+
+void FSoldierAIData::OnMaxShieldChanged(float newMaxShield)
+{
+	MaxShield = newMaxShield;
+	OnMaxShieldNotify.Broadcast(MaxShield);
+}

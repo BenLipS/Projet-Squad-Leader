@@ -42,7 +42,10 @@ void AAISquadManager::Init(TSubclassOf<ASoldierTeam> _Team, ASoldierPlayer* _Pla
 		SquadAI->SpawnDefaultController();
 		SquadAI->OnHealthChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberHealthChange);
 		SquadAI->OnMaxHealthChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberMaxHealthChange);
+		SquadAI->OnShieldChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberShieldChange);
+		SquadAI->OnMaxShieldChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberMaxShieldChange);
 		SquadAI->FinishSpawning(LocationAI);
+		SquadAI->BroadCastDatas();
 		AISquadList.Add(Cast<AAISquadController>(SquadAI->Controller));
 	}
 	ASoldierAI* SquadAI1 = GetWorld()->SpawnActorDeferred<ASoldierAI>(ClassAI, LocationAI1, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
@@ -50,7 +53,10 @@ void AAISquadManager::Init(TSubclassOf<ASoldierTeam> _Team, ASoldierPlayer* _Pla
 		SquadAI1->SpawnDefaultController();
 		SquadAI1->OnHealthChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberHealthChange);
 		SquadAI1->OnMaxHealthChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberMaxHealthChange);
+		SquadAI1->OnShieldChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberShieldChange);
+		SquadAI1->OnMaxShieldChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberMaxShieldChange);
 		SquadAI1->FinishSpawning(LocationAI1);
+		SquadAI1->BroadCastDatas();
 		AISquadList.Add(Cast<AAISquadController>(SquadAI1->Controller));
 	}
 	ASoldierAI* SquadAI2 = GetWorld()->SpawnActorDeferred<ASoldierAI>(ClassAI, LocationAI2, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
@@ -58,19 +64,16 @@ void AAISquadManager::Init(TSubclassOf<ASoldierTeam> _Team, ASoldierPlayer* _Pla
 		SquadAI2->SpawnDefaultController();
 		SquadAI2->OnHealthChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberHealthChange);
 		SquadAI2->OnMaxHealthChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberMaxHealthChange);
+		SquadAI2->OnShieldChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberShieldChange);
+		SquadAI2->OnMaxShieldChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberMaxShieldChange);
 		SquadAI2->FinishSpawning(LocationAI2);
+		SquadAI2->BroadCastDatas();
 		AISquadList.Add(Cast<AAISquadController>(SquadAI2->Controller));
 	}
 
 	Mission = NewObject<UMission>(this, UMission::StaticClass());
 	Mission->Type = MissionType::Formation;
 	TypeOfFormation = FormationType::Circle;
-
-	/*for (auto SC : AISquadList)
-	{
-		SC->GetPawn<ASoldierAI>()->OnHealthChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberHealthChange);
-		SC->GetPawn<ASoldierAI>()->OnMaxHealthChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberMaxHealthChange);
-	}*/
 }
 
 void AAISquadManager::Tick(float DeltaTime)
@@ -178,6 +181,8 @@ void AAISquadManager::BroadCastSquadData()
 		{
 			data.Health = SoldierAI->GetHealth();
 			data.MaxHealth = SoldierAI->GetMaxHealth();
+			data.Shield = SoldierAI->GetShield();
+			data.MaxShield = SoldierAI->GetMaxShield();
 			SoldierData.Add(data);
 		}
 	}
@@ -201,6 +206,26 @@ void AAISquadManager::OnSquadMemberMaxHealthChange(float newMaxHealth, AAISquadC
 	if (index != INDEX_NONE)
 	{
 		OnMemberMaxHealthChanged.Broadcast(index, newMaxHealth);
+	}
+}
+
+void AAISquadManager::OnSquadMemberShieldChange(float newShield, AAISquadController* SoldierController)
+{
+	int index;
+	index = AISquadList.Find(SoldierController);
+	if (index != INDEX_NONE)
+	{
+		OnMemberShieldChanged.Broadcast(index, newShield);
+	}
+}
+
+void AAISquadManager::OnSquadMemberMaxShieldChange(float newMaxShield, AAISquadController* SoldierController)
+{
+	int index;
+	index = AISquadList.Find(SoldierController);
+	if (index != INDEX_NONE)
+	{
+		OnMemberMaxShieldChanged.Broadcast(index, newMaxShield);
 	}
 }
 

@@ -107,6 +107,14 @@ public:
 	void OnSquadMemberMaxHealthChanged(int index, float newMaxHealth);
 	void OnSquadMemberMaxHealthChanged_Implementation(int index, float newMaxHealth);
 
+	UFUNCTION(Client, Reliable)
+	void OnSquadMemberShieldChanged(int index, float newShield);
+	void OnSquadMemberShieldChanged_Implementation(int index, float newShield);
+
+	UFUNCTION(Client, Reliable)
+	void OnSquadMemberMaxShieldChanged(int index, float newMaxShield);
+	void OnSquadMemberMaxShieldChanged_Implementation(int index, float newMaxShield);
+
 	UFUNCTION()
 	void BroadCastManagerData();
 };

@@ -54,20 +54,20 @@ void APlayerHUD::BeginPlay()
 	}*/
 	
 	//-----AIInfo-----
-	if (AIWidgetClass != nullptr)
+	/*if (AIWidgetClass != nullptr)
 	{
 		AIWidget = CreateWidget<UAIInfoWidget>(GetWorld(), AIWidgetClass);
 		if (AIWidget) {
 			AIWidget->AddToViewport();
 		}
-	}
-	/*if (AIInfoWidgetClass != nullptr)
-	{
-		AIInfoWidget = CreateWidget<UAIInfoListWidget>(GetWorld(), AIInfoWidgetClass);
-		if (AIInfoWidget) {
-			AIInfoWidget->AddToViewport();
-		}
 	}*/
+	if (AIListInfoWidgetClass != nullptr)
+	{
+		AIListInfoWidget = CreateWidget<UAIInfoListWidget>(GetWorld(), AIListInfoWidgetClass);
+		if (AIListInfoWidget) {
+			AIListInfoWidget->AddToViewport();
+		}
+	}
 	SetPlayerStateLink();
 	SetAIStateLink();
 }
@@ -137,31 +137,30 @@ void APlayerHUD::OnMaxShieldChanged(float newValue)
 	}
 }
 
-void APlayerHUD::OnSquadChanged(TArray<FSoldierAIData> newValue)
+void APlayerHUD::OnSquadChanged(const TArray<FSoldierAIData>& newValue)
 {
-	if (AIWidget)
+	if (AIListInfoWidget)
 	{
-		if (newValue.IsValidIndex(0))
-		{
-			FSoldierAIData AI = newValue[0];
-			AIWidget->OnHealthChanged(AI.Health);
-			AIWidget->OnMaxHealthChanged(AI.MaxHealth);
-		}
+		AIListInfoWidget->OnSquadChanged(newValue);
 	}
 }
 
 void APlayerHUD::OnSquadHealthChanged(int index, float newHealth)
 {
-	if (index == 0 && AIWidget)
-	{
-		AIWidget->OnHealthChanged(newHealth);
-	}
+	AIListInfoWidget->OnSquadHealthChanged(index, newHealth);
 }
 
 void APlayerHUD::OnSquadMaxHealthChanged(int index, float newHealth)
 {
-	if (index == 0 && AIWidget)
-	{
-		AIWidget->OnMaxHealthChanged(newHealth);
-	}
+	AIListInfoWidget->OnSquadMaxHealthChanged(index, newHealth);
+}
+
+void APlayerHUD::OnSquadShieldChanged(int index, float newShield)
+{
+	AIListInfoWidget->OnSquadShieldChanged(index, newShield);
+}
+
+void APlayerHUD::OnSquadMaxShieldChanged(int index, float newMaxShield)
+{
+	AIListInfoWidget->OnSquadMaxShieldChanged(index, newMaxShield);
 }
