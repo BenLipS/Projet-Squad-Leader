@@ -2,7 +2,8 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+#include "Core.h"
+#include "Net/UnrealNetwork.h"
 #include "GameFramework/GameStateBase.h"
 #include "SquadLeaderGameState.generated.h"
 
@@ -16,4 +17,9 @@ class SQUADLEADER_API ASquadLeaderGameState : public AGameStateBase
 
 public:
 	ASquadLeaderGameState();
+
+	// for replication purpose
+	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
+
+	//UPROPERTY(Replicated)
 };

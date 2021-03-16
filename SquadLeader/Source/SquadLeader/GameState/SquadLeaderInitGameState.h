@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/GameStateBase.h"
+#include "SquadLeaderGameState.h"
 #include "SquadLeaderInitGameState.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class SQUADLEADER_API ASquadLeaderInitGameState : public AGameStateBase
+class SQUADLEADER_API ASquadLeaderInitGameState : public ASquadLeaderGameState
 {
 	GENERATED_BODY()
 

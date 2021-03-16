@@ -4,16 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "SquadLeaderGameState.h"
-#include "SquadLeaderCloseGameState.generated.h"
+#include "SquadLeaderPlayGameState.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class SQUADLEADER_API ASquadLeaderCloseGameState : public ASquadLeaderGameState
+class SQUADLEADER_API ASquadLeaderPlayGameState : public ASquadLeaderGameState
 {
 	GENERATED_BODY()
 	
 public:
-	ASquadLeaderCloseGameState();
+	ASquadLeaderPlayGameState();
 };
