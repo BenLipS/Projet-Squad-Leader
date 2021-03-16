@@ -2,7 +2,6 @@
 
 #include "CoreMinimal.h"
 #include "../GameplayAbilitySoldier.h"
-#include "../GameplayEffects/States/GE_StateGivingOrder.h"
 #include "Abilities/Tasks/AbilityTask_WaitTargetData.h"
 #include "GA_GiveOrder.generated.h"
 
@@ -20,12 +19,7 @@ public:
 
 	virtual void InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) override;
 
-	virtual void CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateCancelAbility) override;
-
 protected:
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-	TSubclassOf<UGE_StateGivingOrder> GivingOrderGameplayEffect;
-	
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	TSubclassOf<AGameplayAbilityTargetActor> TargetActorClass;
 
@@ -34,7 +28,4 @@ protected:
 
 	UFUNCTION()
 	void OnOrderCancelled(const FGameplayAbilityTargetDataHandle& _Data);
-
-	UFUNCTION(BlueprintImplementableEvent)
-	void Activation();
 };

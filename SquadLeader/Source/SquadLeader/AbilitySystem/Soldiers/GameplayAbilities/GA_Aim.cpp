@@ -3,10 +3,12 @@
 
 UGA_Aim::UGA_Aim()
 {
+	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
+
 	AbilityInputID = ESoldierAbilityInputID::Aim;
 	AbilityID = ESoldierAbilityInputID::None;
 	AbilityTags.AddTag(ASoldier::SkillAimTag);
-	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
+	ActivationOwnedTags.AddTag(ASoldier::StateAimingTag);
 }
 
 void UGA_Aim::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
@@ -18,9 +20,6 @@ void UGA_Aim::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGa
 
 		ASoldier* soldier = CastChecked<ASoldier>(ActorInfo->AvatarActor.Get());
 		soldier->StartAiming();
-
-		FGameplayEffectSpecHandle AimingEffectSpecHandle = MakeOutgoingGameplayEffectSpec(AimingGameplayEffect, GetAbilityLevel());
-		soldier->GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*AimingEffectSpecHandle.Data.Get());
 	}
 }
 
@@ -51,8 +50,4 @@ void UGA_Aim::CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGame
 
 	ASoldier* soldier = CastChecked<ASoldier>(ActorInfo->AvatarActor.Get());
 	soldier->StopAiming();
-
-	FGameplayTagContainer EffectTagsToRemove;
-	EffectTagsToRemove.AddTag(ASoldier::StateAimingTag);
-	soldier->GetAbilitySystemComponent()->RemoveActiveEffectsWithGrantedTags(EffectTagsToRemove);
 }
