@@ -34,6 +34,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "GlobalTeamData")
 		FString TeamName;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GlobalTeamData")
+		int Id = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "GlobalTeamData")
+		int NbAIBasic = 6;
+
 
 public:  // Soldier List
 	UPROPERTY(EditAnywhere, Replicated, Category = "SoldierList")
@@ -69,6 +75,4 @@ public:
 		void RemoveOneTicket();
 	UFUNCTION(BlueprintCallable, Category = "Tickets")
 		int GetTicket() const { return Tickets; }
-	UFUNCTION(BlueprintCallable, Category = "Tickets")
-		void SetTicket(int _Ticket) { Tickets = _Ticket; }
 };
