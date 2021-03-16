@@ -11,6 +11,7 @@ ASoldierTeam::ASoldierTeam() {
 }
 
 
+// useless when it's not physicaly in game
 void ASoldierTeam::BeginPlay() {
 	Super::BeginPlay();
 }
@@ -20,6 +21,8 @@ void ASoldierTeam::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
+	DOREPLIFETIME(ASoldierTeam, NbAIBasic);
+	DOREPLIFETIME(ASoldierTeam, TeamName);
 	DOREPLIFETIME(ASoldierTeam, soldierList);
 	DOREPLIFETIME(ASoldierTeam, mainSpawnPoints);
 

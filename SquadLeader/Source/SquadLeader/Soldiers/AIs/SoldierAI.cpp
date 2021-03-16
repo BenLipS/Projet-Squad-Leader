@@ -148,6 +148,7 @@ void ASoldierAI::InitializeAttributeChangeCallbacks()
 
 void ASoldierAI::HealthChanged(const FOnAttributeChangeData& Data)
 {
+	// TODO: Review callbacks with soldiers
 	Super::HealthChanged(Data);
 	OnHealthChanged.Broadcast(Data.NewValue);
 }

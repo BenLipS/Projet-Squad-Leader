@@ -4,6 +4,7 @@
 
 #include "Core.h"
 #include "GameFramework/Actor.h"
+#include "../Interface/PreInitable.h"
 #include "../Soldiers/SoldierTeam.h"
 #include "ControlAreaTeamStat.h"
 #include "Net/UnrealNetwork.h"
@@ -11,7 +12,7 @@
 
 
 UCLASS()
-class SQUADLEADER_API AControlArea : public AActor
+class SQUADLEADER_API AControlArea : public AActor, public IPreInitable
 {
 	GENERATED_BODY()
 	
@@ -29,6 +30,10 @@ public:
 
 	// for replication purpose
 	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
+
+	// Pre init launch by the gameMode before the BeginPlay() function
+	virtual void PreInitialisation() override;
+	virtual int getpriority() override;
 
 public:
 	/** Zone Collide */
