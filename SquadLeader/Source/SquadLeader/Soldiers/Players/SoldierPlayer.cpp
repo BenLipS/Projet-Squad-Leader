@@ -28,7 +28,7 @@ void ASoldierPlayer::PossessedBy(AController* _newController)
 {
 	Super::PossessedBy(_newController);
 	SetAbilitySystemComponent();
-	initWeapons();
+	InitWeapons();
 
 	/*Init Squad Manager for this Player*/
 
@@ -57,7 +57,7 @@ void ASoldierPlayer::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();
 	SetAbilitySystemComponent();
-	initWeapons();
+	InitWeapons();
 
 	//-----HUD-----
 	if (ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(GetController()); PC)
@@ -65,6 +65,18 @@ void ASoldierPlayer::OnRep_PlayerState()
 
 	//-----SQUADMANAGERSTATE-----
 
+}
+
+void ASoldierPlayer::LockControls()
+{
+	if (APlayerController* PC = Cast<APlayerController>(Controller); PC)
+		PC->DisableInput(PC);
+}
+
+void ASoldierPlayer::UnLockControls()
+{
+	if (APlayerController* PC = Cast<APlayerController>(Controller); PC)
+		PC->EnableInput(PC);
 }
 
 AAISquadManager* ASoldierPlayer::GetSquadManager()
@@ -150,7 +162,6 @@ void ASoldierPlayer::BindASCInput()
 		ASCInputBound = true;
 	}
 }
-
 
 void ASoldierPlayer::cycleBetweenTeam()
 {

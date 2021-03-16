@@ -5,7 +5,7 @@
 #include "../Soldiers/AIs/SoldierAI.h"
 
 
-UAIInfoListWidget::UAIInfoListWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
+UAIInfoListWidget::UAIInfoListWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer), AIInfoWidgetList()
 {
 }
 

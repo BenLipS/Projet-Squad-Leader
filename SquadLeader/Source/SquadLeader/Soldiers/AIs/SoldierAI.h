@@ -46,6 +46,15 @@ class SQUADLEADER_API ASoldierAI : public ASoldier
 	
 public:
 	ASoldierAI(const FObjectInitializer& _ObjectInitializer);
+
+//////////////// Controllers
+protected:
+	virtual void LockControls() override;
+	virtual void UnLockControls() override;
+
+	AController* LastUnpossessedController = nullptr;
+
+public:
 	void BroadCastDatas();
 
 public:

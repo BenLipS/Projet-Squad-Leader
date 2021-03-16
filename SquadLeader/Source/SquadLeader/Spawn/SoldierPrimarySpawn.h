@@ -4,6 +4,7 @@
 
 #include "Core.h"
 #include "SoldierSpawn.h"
+#include "../Interface/PreInitable.h"
 #include "../Soldiers/SoldierTeam.h"
 #include "Net/UnrealNetwork.h"
 #include "SoldierPrimarySpawn.generated.h"
@@ -12,7 +13,7 @@
  * 
  */
 UCLASS()
-class SQUADLEADER_API ASoldierPrimarySpawn : public ASoldierSpawn
+class SQUADLEADER_API ASoldierPrimarySpawn : public ASoldierSpawn, public IPreInitable
 {
 	GENERATED_BODY()
 
@@ -25,6 +26,10 @@ public:
 
 	// for replication purpose
 	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
+
+	// Pre init launch by the gameMode before the BeginPlay() function
+	virtual void PreInitialisation() override;
+	virtual int getpriority() override;
 
 protected:
 	virtual void BeginPlay() override;

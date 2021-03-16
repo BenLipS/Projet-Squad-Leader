@@ -13,6 +13,7 @@
 #include "NavigationPath.h"
 #include "Math/Vector.h"
 #include "GenericPlatform/GenericPlatformMath.h"
+#include "Components/FlockingComponent.h"
 
 
 AAIGeneralController::AAIGeneralController(FObjectInitializer const& object_initializer)
@@ -25,6 +26,7 @@ AAIGeneralController::AAIGeneralController(FObjectInitializer const& object_init
 
 void AAIGeneralController::BeginPlay() {
 	Super::BeginPlay();
+	FlockingComponent = NewObject<UFlockingComponent>(this, ClassFlockingComponent);
 	RunBehaviorTree(m_behaviorTree);
 	blackboard = BrainComponent->GetBlackboardComponent();
 	blackboard->SetValueAsBool("IsHit", false);
@@ -36,6 +38,11 @@ void AAIGeneralController::GetLifetimeReplicatedProps(TArray< FLifetimeProperty 
 
 	// everyone
 	DOREPLIFETIME(AAIGeneralController, Team);
+}
+
+EPathFollowingRequestResult::Type AAIGeneralController::FollowFlocking() {
+	EPathFollowingRequestResult::Type _movetoResult = MoveToLocation(blackboard->GetValueAsVector("FlockingLocation"), 5.f);
+	return _movetoResult;
 }
 
 TSubclassOf<ASoldierTeam> AAIGeneralController::GetTeam()
@@ -168,11 +175,13 @@ ResultState AAIGeneralController::ShootEnemy() {
 }
 
 void AAIGeneralController::Tick(float DeltaSeconds) {
+	Super::Tick(DeltaSeconds);
 	Sens();
 	Think(); // == if we need to change the BehaviorTree,
 	Act();
+	FlockingComponent->UpdateFlockingPosition(DeltaSeconds);
 	//Act will also be done in the behavior tree
-	Super::Tick(DeltaSeconds);
+	
 }
 
 void AAIGeneralController::Sens() {
