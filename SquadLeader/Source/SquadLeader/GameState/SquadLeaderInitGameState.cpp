@@ -2,7 +2,7 @@
 
 
 #include "SquadLeaderInitGameState.h"
-#include "SquadLeaderGameModeBase.h"
+#include "../SquadLeaderGameModeBase.h"
 
 ASquadLeaderInitGameState::ASquadLeaderInitGameState()
 {

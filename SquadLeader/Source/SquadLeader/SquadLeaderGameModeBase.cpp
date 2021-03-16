@@ -6,9 +6,9 @@
 #include "Soldiers/Soldier.h"
 
 #include "Interface/PreInitable.h"
-#include "SquadLeaderGameState.h"
-#include "SquadLeaderInitGameState.h"
-#include "SquadLeaderCloseGameState.h"
+#include "GameState/SquadLeaderGameState.h"
+#include "GameState/SquadLeaderInitGameState.h"
+#include "GameState/SquadLeaderCloseGameState.h"
 
 
 ASquadLeaderGameModeBase::ASquadLeaderGameModeBase() : RespawnDelay{ 3.f }
