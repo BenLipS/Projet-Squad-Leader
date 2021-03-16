@@ -26,18 +26,8 @@ protected:
 	class AAISquadManager* SquadManager;
 
 public:
-	//UFUNCTION()
-	//void UpdateSquadInfo();
-
-/*public:
-	UFUNCTION()
-	void OnRepSquadInfoChanged();*/
-
-public:
 	UFUNCTION()
 	AAISquadManager* GetSquadManager();
-
-	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 
 //////////////// Camera
 public:

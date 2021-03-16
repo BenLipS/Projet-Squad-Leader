@@ -68,7 +68,7 @@ void APlayerHUD::BeginPlay()
 			AIInfoWidget->AddToViewport();
 		}
 	}*/
-
+	SetPlayerStateLink();
 	SetAIStateLink();
 }
 

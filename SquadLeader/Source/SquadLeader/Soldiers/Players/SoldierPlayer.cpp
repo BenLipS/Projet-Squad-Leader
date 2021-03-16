@@ -67,22 +67,6 @@ void ASoldierPlayer::OnRep_PlayerState()
 
 }
 
-/*void ASoldierPlayer::OnRepSquadInfoChanged()
-{
-
-}*/
-
-/*void ASoldierPlayer::UpdateSquadInfo()
-{
-	if (SquadManager)
-	{
-		if (SquadInfo)
-		{
-			SquadInfo->OnSquadManagerChange(SquadManager->AISquadList);
-		}
-	}
-}*/
-
 AAISquadManager* ASoldierPlayer::GetSquadManager()
 {
 	return SquadManager;
