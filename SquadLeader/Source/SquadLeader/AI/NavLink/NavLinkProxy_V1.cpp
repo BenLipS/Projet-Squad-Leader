@@ -26,7 +26,7 @@ void ANavLinkProxy_V1::Jump(AActor* Agent, const FVector& Destination) {
 
 	_soldier->SetActorRotation(rotation_actor);
 	_soldier->GetCharacterMovement()->Velocity = _soldier->GetActorForwardVector() * _soldier->GetCharacterMovement()->Velocity.Size();
-	_soldier->GetCharacterMovement()->JumpZVelocity = 500.f;
+	_soldier->GetCharacterMovement()->JumpZVelocity = 1000.f;
 
 	_soldier->ActivateAbility(ASoldier::SkillJumpTag);
 }

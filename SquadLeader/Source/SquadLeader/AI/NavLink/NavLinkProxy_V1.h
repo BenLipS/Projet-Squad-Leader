@@ -22,4 +22,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	virtual void Jump(AActor* Agent, const FVector& Destination);
+
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "JumpHeight")
+		float JumpHeight = 1000.f;
 };
