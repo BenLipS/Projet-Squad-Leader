@@ -10,7 +10,7 @@
 
 ASoldierPlayer::ASoldierPlayer(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer), ASCInputBound{ false }
 {
-	bReplicates = true;
+
 }
 
 /*
@@ -42,13 +42,6 @@ void ASoldierPlayer::PossessedBy(AController* _newController)
 		SquadManager->FinishSpawning(LocationTemp);
 		SquadManager->Init(GetTeam(), this);
 		Cast<USquadLeaderGameInstance>(GetGameInstance())->ListAISquadManagers.Add(SquadManager);
-
-		// Bindings
-		/*for (AAISquadController* AC : SquadManager->AISquadList)
-		{
-			ASoldierAI* SoldierAI = Cast<ASoldierAI>(AC->GetPawn());
-			SoldierAI->OnHealthChanged.AddDynamic(this, &ASoldierPlayer::OnSquadHealthChanged);
-		}*/
 	}
 }
 
@@ -62,9 +55,6 @@ void ASoldierPlayer::OnRep_PlayerState()
 	//-----HUD-----
 	if (ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(GetController()); PC)
 		PC->CreateHUD();
-
-	//-----SQUADMANAGERSTATE-----
-
 }
 
 void ASoldierPlayer::LockControls()

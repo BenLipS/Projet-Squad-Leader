@@ -35,23 +35,6 @@ void ASoldierPlayerController::CreateHUD_Implementation()
 	ClientSetHUD(HUDClass);
 }
 
-
-/*UHUDWidget* ASoldierPlayerController::GetHUD() const
-{
-	return HUDWidget;
-}*/
-
-/*void ASoldierPlayerController::SetRespawnCountdown_Implementation(const float _RespawnTimeRemaining)
-{
-	/*if (HUDWidget)
-		HUDWidget->SetRespawnCountdown(_RespawnTimeRemaining);
-}
-
-bool ASoldierPlayerController::SetRespawnCountdown_Validate(const float _RespawnTimeRemaining)
-{
-	return true;
-}*/
-
 // Server only
 void ASoldierPlayerController::OnPossess(APawn* InPawn)
 {

@@ -33,11 +33,6 @@ protected:
 	TSubclassOf<class UAIInfoListWidget> AIListInfoWidgetClass;
 
 	class UAIInfoListWidget* AIListInfoWidget;
-
-	/*UPROPERTY(EditDefaultsOnly, Category = "Widget | AIInfo")
-	TSubclassOf<class UAIInfoWidget> AIWidgetClass;
-
-	class UAIInfoWidget* AIWidget;*/
 	
 public:
 	APlayerHUD();

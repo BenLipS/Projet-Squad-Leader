@@ -59,11 +59,6 @@ public:
 
 	UFUNCTION(Client, Reliable)
 	void CreateHUD();
-
-	/*UFUNCTION(Reliable, Client, WithValidation)
-	void SetRespawnCountdown(const float _RespawnTimeRemaining);
-	void SetRespawnCountdown_Implementation(const float _RespawnTimeRemaining);
-	bool SetRespawnCountdown_Validate(const float _RespawnTimeRemaining);*/
 //////////////// Movements
 protected:
 	// Move direction
