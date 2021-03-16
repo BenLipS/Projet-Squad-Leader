@@ -111,6 +111,10 @@ void AWeapon::FireAnimation()
 	// TODO: should be safe here since we call from Fire
 	if (ASoldier* Soldier = Cast<ASoldier>(GetOwner()); Soldier)
 	{
+		// TODO: Perhaps give a default value to avoid this if. It could be expensive for rapid fires
+		if (UAnimMontage* FireMontage = Soldier->WeaponFireMontage; FireMontage)
+			Soldier->PlayAnimMontage(FireMontage);
+
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), FireMuzzleFX, GetMuzzleLocation(), Soldier->GetSyncControlRotation() /*GetMuzzleRotation()*/, FireMuzzleFXScale);
 	}
 }

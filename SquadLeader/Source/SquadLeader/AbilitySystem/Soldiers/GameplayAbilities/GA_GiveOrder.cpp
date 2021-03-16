@@ -21,6 +21,18 @@ void UGA_GiveOrder::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 
 		if (ASoldierPlayer* Soldier = Cast<ASoldierPlayer>(ActorInfo->AvatarActor.Get()); Soldier)
 		{
+			if (Soldier->GetLocalRole() == ROLE_Authority)
+			{
+				if (Soldier->GetSquadManager()->GetMission()->Type != MissionType::Formation)
+				{
+
+					Soldier->GetSquadManager()->UpdateMission(MissionType::Formation, FVector{ 0, 0, 0 });
+
+					CancelAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true);
+					return;
+				}
+			}
+
 			// Init task
 			UAbilityTask_WaitTargetData *Task = UAbilityTask_WaitTargetData::WaitTargetData(this, FName("WaitTargetData Give Order"), TEnumAsByte<EGameplayTargetingConfirmation::Type>(EGameplayTargetingConfirmation::UserConfirmed), TargetActorClass);
 
