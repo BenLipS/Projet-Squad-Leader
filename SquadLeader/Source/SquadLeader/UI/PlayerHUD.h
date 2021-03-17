@@ -19,12 +19,12 @@ class SQUADLEADER_API APlayerHUD : public AHUD
 
 //-----WIDGETS-----
 protected:
-	UPROPERTY(EditDefaultsOnly, Category = "Widget | Health")
+	UPROPERTY(EditDefaultsOnly, Category = "Widget | PlayerHealth")
 	TSubclassOf<class UHealthWidget> HealthWidgetClass;
 
 	class UHealthWidget* HealthWidget;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Widget | Shield")
+	UPROPERTY(EditDefaultsOnly, Category = "Widget | PlayerShield")
 	TSubclassOf<class UShieldWidget> ShieldWidgetClass;
 
 	class UShieldWidget* ShieldWidget;
@@ -33,6 +33,11 @@ protected:
 	TSubclassOf<class UAIInfoListWidget> AIListInfoWidgetClass;
 
 	class UAIInfoListWidget* AIListInfoWidget;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Widget | PlayerAmmo")
+	TSubclassOf<class UAmmoWidget> AmmoWidgetClass;
+
+	class UAmmoWidget* AmmoWidget;
 	
 public:
 	APlayerHUD();
@@ -79,4 +84,10 @@ public:
 
 	UFUNCTION()
 	void OnSquadMaxShieldChanged(int index, float newMaxShield);
+	
+	UFUNCTION()
+	void OnAmmoChanged(int8 newAmmo);
+
+	UFUNCTION()
+	void OnMaxAmmoChanged(int8 newMaxAmmo);
 };

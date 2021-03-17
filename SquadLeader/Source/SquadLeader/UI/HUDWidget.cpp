@@ -19,6 +19,7 @@ void UHUDWidget::UpdateTextRespawnRemainTime()
 		RespawnTimer = UKismetSystemLibrary::K2_SetTimer(this, "UpdateTextRespawnRemainTime", 1.f, false);
 		// TODO: Remove the digit after coma ?
 	}
+	
 }
 
 void UHUDWidget::SetMaxHealth(float const _MaxHealth)
