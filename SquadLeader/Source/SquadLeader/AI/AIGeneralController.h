@@ -26,6 +26,7 @@ UENUM()
 enum AIBasicState {
 	Attacking UMETA(DisplayName = "Attacking"),
 	Patroling UMETA(DisplayName = "Patroling"),
+	Search UMETA(DisplayName = "Searching"),
 	Moving UMETA(DisplayName = "Moving"),
 };
 
@@ -67,6 +68,9 @@ public:
 	/* For BT Task  */
 	UFUNCTION(BlueprintCallable, Category = "Flocking Behaviour")
 		EPathFollowingRequestResult::Type FollowFlocking();
+
+	UFUNCTION()
+		ResultState ArriveAtDestination();
 
 	virtual TSubclassOf<ASoldierTeam> GetTeam() override;
 	virtual bool SetTeam(TSubclassOf<ASoldierTeam> _Team) override;
@@ -146,7 +150,7 @@ private:
 		void Act();
 
 	
-		void ChooseBehavior();
+		void ChooseState();
 
 	/*
 	* Will sort the Actor with catch with
@@ -188,10 +192,13 @@ private:
 		void TooFar();
 
 	UFUNCTION()
-		void AttackBehavior();
+		void AttackingState();
 
 	UFUNCTION()
-		void DefenseBehavior();
+		void PatrolingState();
+
+	UFUNCTION()
+		void MovingState();
 
 protected:
 	/*The behaviorTree that we are running*/
@@ -206,6 +213,10 @@ protected:
 
 	UPROPERTY()
 		int m_state;
+
+	UPROPERTY()
+		int m_old_state;
+
 private:
 	class UAISenseConfig_Sight* sight_config;
 
