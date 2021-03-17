@@ -103,9 +103,10 @@ void UAttributeSetSoldier::AdjustAttributeForMaxChange(FGameplayAttributeData& A
 
 	if (!FMath::IsNearlyEqual(CurrentMaxValue, NewMaxValue) && ASC)
 	{
-		const float CurrentValue = AffectedAttribute.GetCurrentValue();
-		float NewDelta = (CurrentMaxValue > 0.f) ? (CurrentValue * NewMaxValue / CurrentMaxValue) - CurrentValue : NewMaxValue;
-		ASC->ApplyModToAttributeUnsafe(AffectedAttributeProperty, EGameplayModOp::Additive, FMath::CeilToFloat(NewDelta));
+		// Increase affected attribute to same max attribute increase
+		// Only decrease affected attribute if max attribute is lower
+		const float CurrentAffectedValue = AffectedAttribute.GetBaseValue();
+		ASC->ApplyModToAttributeUnsafe(AffectedAttributeProperty, EGameplayModOp::Override, FMath::Clamp(CurrentAffectedValue + NewMaxValue - CurrentMaxValue, FMath::Min(CurrentAffectedValue, NewMaxValue), NewMaxValue));
 	}
 }
 
@@ -126,8 +127,6 @@ void UAttributeSetSoldier::LevelUp()
 		// Grant new attribute values
 		FGameplayEffectSpecHandle Handle = ASC->MakeOutgoingSpec(Soldier->GetStatAttributeEffects(), GetCharacterLevel(), ASC->MakeEffectContext());
 		ASC->ApplyGameplayEffectSpecToSelf(*Handle.Data.Get());
-
-		// TODO: We should not give full hp when leveling up
 	}
 }
 
