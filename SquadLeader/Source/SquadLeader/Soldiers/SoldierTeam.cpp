@@ -5,6 +5,7 @@
 #include "Soldier.h"
 #include "../Spawn/SoldierSpawn.h"
 #include "../SquadLeaderGameModeBase.h"
+#include "SquadLeader/Soldiers/AIs/SoldierAI.h"
 
 ASoldierTeam::ASoldierTeam() {
 	bReplicates = true;
@@ -28,6 +29,10 @@ void ASoldierTeam::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 
 }
 
+TSubclassOf<ASoldierAI> ASoldierTeam::GetClassBasicAI()
+{
+	return ClassBasicAI;
+}
 
 void ASoldierTeam::AddSoldierList(ASoldier* newSoldier)
 {
