@@ -97,6 +97,7 @@ public:
 	static FGameplayTag StateGivingOrderTag;
 	static FGameplayTag StateFiringTag;
 	static FGameplayTag StateReloadingWeaponTag;
+	static FGameplayTag StateDashingTag;
 
 	// Abilities
 	static FGameplayTag SkillRunTag;
@@ -119,6 +120,7 @@ protected:
 	virtual void GivingOrderTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 	virtual void FiringTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 	virtual void ReloadingWeaponTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
+	virtual void DashingTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Abilities")

@@ -23,6 +23,7 @@ FGameplayTag ASoldier::StateAimingTag = FGameplayTag::RequestGameplayTag(FName("
 FGameplayTag ASoldier::StateGivingOrderTag = FGameplayTag::RequestGameplayTag(FName("State.GivingOrder"));
 FGameplayTag ASoldier::StateFiringTag = FGameplayTag::RequestGameplayTag(FName("State.Firing"));
 FGameplayTag ASoldier::StateReloadingWeaponTag = FGameplayTag::RequestGameplayTag(FName("State.ReloadingWeapon"));
+FGameplayTag ASoldier::StateDashingTag = FGameplayTag::RequestGameplayTag(FName("State.Dashing"));
 
 // Abilities
 FGameplayTag ASoldier::SkillRunTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Run"));
@@ -354,6 +355,10 @@ void ASoldier::FiringTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
 }
 
 void ASoldier::ReloadingWeaponTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
+{
+}
+
+void ASoldier::DashingTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
 {
 }
 

@@ -6,11 +6,12 @@
 #include "HealthWidget.h"
 #include "ShieldWidget.h"
 #include "AIInfoListWidget.h"
+#include "AIInfoWidget.h"
 #include "Blueprint/UserWidget.h"
 #include "../AI/AISquadController.h"
-#include "../Soldiers/AIs/SoldierAI.h"
 #include "../Soldiers/Players/SoldierPlayerController.h"
 #include "../Soldiers/Players/SoldierPlayerState.h"
+#include "../Soldiers/Players/SoldierPlayer.h"
 
 APlayerHUD::APlayerHUD()
 {
@@ -53,14 +54,22 @@ void APlayerHUD::BeginPlay()
 	}*/
 	
 	//-----AIInfo-----
-	/*if (AIInfoWidgetClass != nullptr)
+	/*if (AIWidgetClass != nullptr)
 	{
-		AIInfoWidget = CreateWidget<UAIInfoListWidget>(GetWorld(), AIInfoWidgetClass);
-		if (AIInfoWidget) {
-			AIInfoWidget->AddToViewport();
+		AIWidget = CreateWidget<UAIInfoWidget>(GetWorld(), AIWidgetClass);
+		if (AIWidget) {
+			AIWidget->AddToViewport();
 		}
 	}*/
+	if (AIListInfoWidgetClass != nullptr)
+	{
+		AIListInfoWidget = CreateWidget<UAIInfoListWidget>(GetWorld(), AIListInfoWidgetClass);
+		if (AIListInfoWidget) {
+			AIListInfoWidget->AddToViewport();
+		}
+	}
 	SetPlayerStateLink();
+	SetAIStateLink();
 }
 
 void APlayerHUD::SetPlayerStateLink()
@@ -83,6 +92,15 @@ void APlayerHUD::SetPlayerStateLink()
 			PS->OnMaxShieldChanged.AddDynamic(this, &APlayerHUD::OnMaxShieldChanged);
 			PS->BroadCastAllDatas();
 		}
+	}
+}
+
+void APlayerHUD::SetAIStateLink()
+{
+	ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(GetOwningPlayerController());
+	if (PC)
+	{
+		PC->BroadCastManagerData();
 	}
 }
 
@@ -119,21 +137,30 @@ void APlayerHUD::OnMaxShieldChanged(float newValue)
 	}
 }
 
-/*void APlayerHUD::OnSquadChanged(TArray<AAISquadController*> newValue)
+void APlayerHUD::OnSquadChanged(const TArray<FSoldierAIData>& newValue)
 {
-	AIInfoWidget->RemoveFromViewport();
-
-	AIInfoWidget = CreateWidget<UAIInfoListWidget>(GetWorld(), AIInfoWidgetClass);
-	if (AIInfoWidget) {
-		AIInfoWidget->AddToViewport();
-		for (auto AIController : newValue)
-		{
-			ASoldierAI* PlayerAI = Cast<ASoldierAI>(AIController->GetPawn());
-			if (PlayerAI)
-			{
-				AIInfoWidget->AddItem(PlayerAI);
-			}
-		}
+	if (AIListInfoWidget)
+	{
+		AIListInfoWidget->OnSquadChanged(newValue);
 	}
 }
-*/
+
+void APlayerHUD::OnSquadHealthChanged(int index, float newHealth)
+{
+	AIListInfoWidget->OnSquadHealthChanged(index, newHealth);
+}
+
+void APlayerHUD::OnSquadMaxHealthChanged(int index, float newHealth)
+{
+	AIListInfoWidget->OnSquadMaxHealthChanged(index, newHealth);
+}
+
+void APlayerHUD::OnSquadShieldChanged(int index, float newShield)
+{
+	AIListInfoWidget->OnSquadShieldChanged(index, newShield);
+}
+
+void APlayerHUD::OnSquadMaxShieldChanged(int index, float newMaxShield)
+{
+	AIListInfoWidget->OnSquadMaxShieldChanged(index, newMaxShield);
+}

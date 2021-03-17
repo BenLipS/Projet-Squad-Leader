@@ -2,7 +2,6 @@
 
 #include "CoreMinimal.h"
 #include "../GameplayAbilitySoldier.h"
-#include "../GameplayEffects/States/GE_StateCrouching.h"
 #include "GA_Crouch.generated.h"
 
 UCLASS()
@@ -21,8 +20,4 @@ protected:
 	virtual void InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) override;
 
 	virtual void CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateCancelAbility) override;
-
-protected:
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-	TSubclassOf<UGE_StateCrouching> CrouchingGameplayEffect;
 };
