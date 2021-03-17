@@ -558,6 +558,20 @@ void ASoldier::HealthChanged(const FOnAttributeChangeData& _Data)
 		Die();
 }
 
+void ASoldier::LevelUp()
+{
+	AttributeSet->LevelUp();
+
+	// TODO: Review the particle application here. I did this because the level up only is triggered on server due to the weapon fire working on server only
+	if (LevelUpFX)
+	{
+		if (GetLocalRole() == ROLE_Authority)
+			ClientSpawnLevelUpParticle(); 
+		else
+			UParticleSystemComponent* LaserParticle = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), LevelUpFX, GetActorLocation(), GetActorRotation());
+	}
+}
+
 void ASoldier::Die()
 {
 	// Give dead tag - death will be handled in DeadTagChanged
@@ -713,6 +727,16 @@ uint8 ASoldier::GetInfluenceRadius() const noexcept{
 	return InfluenceRadius;
 }
 
+void ASoldier::ClientSpawnLevelUpParticle_Implementation()
+{
+	UParticleSystemComponent* LaserParticle = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), LevelUpFX, GetActorLocation(), GetActorRotation());
+}
+
+bool ASoldier::ClientSpawnLevelUpParticle_Validate()
+{
+	return true;
+}
+
 void ASoldier::OnStartGameMontageCompleted(UAnimMontage* _Montage, bool _bInterrupted)
 {
 	UnLockControls();
@@ -730,5 +754,5 @@ void ASoldier::OnRespawnMontageCompleted(UAnimMontage* _Montage, bool _bInterrup
 // TODO: Show particle from the hit location - not center of the soldier
 void ASoldier::ShowImpactHitEffect()
 {
-	UParticleSystemComponent* LaserParticle = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactHitFX, GetActorLocation(), FRotator(), ImpactHitFXScale);
+	UParticleSystemComponent* LaserParticle = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactHitFX, GetActorLocation(), GetActorRotation(), ImpactHitFXScale);
 }

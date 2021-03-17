@@ -181,6 +181,7 @@ public:
 	FDelegateHandle HealthChangedDelegateHandle;
 	virtual void HealthChanged(const FOnAttributeChangeData& _Data);
 
+	void LevelUp();
 	virtual void Die();
 	virtual void Respawn();
 
@@ -340,10 +341,18 @@ private:
 //////////////// Particles
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Animation | Particles")
+	UParticleSystem* LevelUpFX;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Animation | Particles")
 	UParticleSystem* ImpactHitFX;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Animation | Particles")
 	FVector ImpactHitFXScale;
+
+	UFUNCTION(Reliable, Client, WithValidation)
+	void ClientSpawnLevelUpParticle();
+	void ClientSpawnLevelUpParticle_Implementation();
+	bool ClientSpawnLevelUpParticle_Validate();
 
 //////////////// Montages
 public:

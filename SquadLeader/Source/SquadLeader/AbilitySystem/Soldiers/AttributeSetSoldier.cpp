@@ -79,7 +79,7 @@ void UAttributeSetSoldier::PostGameplayEffectExecute(const FGameplayEffectModCal
 				// TODO: SourceSoldier should get prestige/experience after killing. Then, in attributeSet we handle leveling up based on exp value
 				if (SourceSoldier)
 				{
-					SourceSoldier->GetAttributeSet()->LevelUp();
+					SourceSoldier->LevelUp();
 				}
 			}
 			else if (SourceASC)

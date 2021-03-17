@@ -35,7 +35,7 @@ public:
 	FGameplayAttributeData CharacterLevel;
 	ATTRIBUTE_ACCESSORS(UAttributeSetSoldier, CharacterLevel)
 
-protected:
+public:
 	UFUNCTION()
 	void LevelUp();
 
