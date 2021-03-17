@@ -1,5 +1,13 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+/*
+* Things to know : 
+*  - we have a value m_state and m_old_state. This two value are, most of the time, the same.
+* It only differ when the AI enter in the Attacking state, because after the attack, we want the AI to return to the state he was.
+* For now this is the best solution, maybe we'll find a better way to do this
+*/
+
+
 
 #include "AIGeneralController.h"
 #include "Perception/AISenseConfig_Sight.h"
@@ -199,11 +207,13 @@ void AAIGeneralController::FocusEnemy() {
 			if (Cast<ASoldier>(SeenSoldier[i])->GetTeam() != Cast<ASoldier>(GetPawn())->GetTeam()) {
 				this->SetFocus(SeenSoldier[i]);
 				enemyDetected = true;
+				//TO-DO : if already in the state attacking don't do this line
 				m_state = AIBasicState::Attacking;
 				blackboard->SetValueAsObject("FocusActor", SeenSoldier[i]);
 			}
 			i++;
 		}
+		//TO-DO : the next four line are the basicly the same, see if we can find another way for doing this
 		if (!enemyDetected && m_state != m_old_state)
 			m_state = m_old_state;
 	}else if(m_state != m_old_state)
@@ -377,8 +387,7 @@ EPathFollowingRequestResult::Type AAIGeneralController::FollowFlocking() {
 
 ResultState AAIGeneralController::ArriveAtDestination() {
 	if ( GetPawn() && FVector::Dist(GetPawn()->GetActorLocation(), GetObjectifLocation()) < 300.f) {
-		m_state = AIBasicState::Patroling;
-		m_old_state = m_state;
+		SetState(AIBasicState::Patroling);
 		return ResultState::Success;
 	}
 	if (m_state == AIBasicState::Attacking)
