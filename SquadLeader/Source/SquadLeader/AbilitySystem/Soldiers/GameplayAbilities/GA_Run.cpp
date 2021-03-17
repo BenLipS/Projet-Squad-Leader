@@ -3,10 +3,12 @@
 
 UGA_Run::UGA_Run()
 {
+	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
+
 	AbilityInputID = ESoldierAbilityInputID::Run;
 	AbilityID = ESoldierAbilityInputID::None;
 	AbilityTags.AddTag(ASoldier::SkillRunTag);
-	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
+	ActivationOwnedTags.AddTag(ASoldier::StateRunningTag);
 }
 
 void UGA_Run::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
@@ -16,11 +18,8 @@ void UGA_Run::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGa
 		if (!CommitAbility(Handle, ActorInfo, ActivationInfo))
 			EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
 
-		if (ASoldier* soldier = Cast<ASoldier>(ActorInfo->AvatarActor.Get()); soldier && soldier->StartRunning())
-		{
-			FGameplayEffectSpecHandle RunningEffectSpecHandle = MakeOutgoingGameplayEffectSpec(RunningGameplayEffect, GetAbilityLevel());
-			soldier->GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*RunningEffectSpecHandle.Data.Get());
-		}
+		if (ASoldier* Soldier = Cast<ASoldier>(ActorInfo->AvatarActor.Get()); Soldier)
+			Soldier->StartRunning();
 	}
 }
 
@@ -36,13 +35,6 @@ void UGA_Run::InputReleased(const FGameplayAbilitySpecHandle Handle, const FGame
 		CancelAbility(Handle, ActorInfo, ActivationInfo, true);
 }
 
-// Epic's comment
-/**
- *	Canceling an non instanced ability is tricky. Right now this works for Jump since there is nothing that can go wrong by calling
- *	StopJumping() if you aren't already jumping. If we had a montage playing non instanced ability, it would need to make sure the
- *	Montage that *it* played was still playing, and if so, to cancel it. If this is something we need to support, we may need some
- *	light weight data structure to represent 'non intanced abilities in action' with a way to cancel/end them.
- */
 void UGA_Run::CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateCancelAbility)
 {
 	if (ScopeLockCount > 0)
@@ -54,11 +46,5 @@ void UGA_Run::CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGame
 	Super::CancelAbility(Handle, ActorInfo, ActivationInfo, bReplicateCancelAbility);
 
 	if (ASoldier* soldier = Cast<ASoldier>(ActorInfo->AvatarActor.Get()); soldier)
-	{
 		soldier->StopRunning();
-
-		FGameplayTagContainer EffectTagsToRemove;
-		EffectTagsToRemove.AddTag(ASoldier::StateRunningTag);
-		soldier->GetAbilitySystemComponent()->RemoveActiveEffectsWithGrantedTags(EffectTagsToRemove);
-	}
 }
