@@ -29,6 +29,12 @@ void AWeapon::OnRep_Owner()
 		Mesh = Soldier->GetMesh();
 }
 
+void AWeapon::Reset()
+{
+	SetAmmo(MaxAmmo);
+	IsNextFireReady = true;
+}
+
 void AWeapon::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);

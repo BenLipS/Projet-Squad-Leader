@@ -38,6 +38,9 @@ protected:
 	void InitMovements();
 	virtual void InitWeapons();
 
+//////////////// Resets
+	void ResetWeapons();
+
 //////////////// Controllers
 protected:
 	// Lock any interraction with this soldier

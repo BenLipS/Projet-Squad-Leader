@@ -192,6 +192,12 @@ void ASoldier::InitWeapons()
 	bDefaultWeaponsInitialized = true;
 }
 
+void ASoldier::ResetWeapons()
+{
+	for (AWeapon* Weapon : Inventory)
+		Weapon->Reset();
+}
+
 void ASoldier::LockControls()
 {
 }
@@ -311,6 +317,8 @@ void ASoldier::DeadTagChanged(const FGameplayTag _CallbackTag, int32 _NewCount)
 		// A setter is ok for this special case. Otherwise use GEs to handle attributes
 		AttributeSet->SetHealth(AttributeSet->GetMaxHealth());
 		AttributeSet->SetShield(AttributeSet->GetMaxShield());
+
+		ResetWeapons();
 
 		if (RespawnMontage)
 		{

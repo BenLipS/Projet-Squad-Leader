@@ -21,6 +21,9 @@ protected:
 	virtual void OnRep_Owner();
 
 public:
+	void Reset();
+
+public:
 	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 
 //////////////// Ability System
