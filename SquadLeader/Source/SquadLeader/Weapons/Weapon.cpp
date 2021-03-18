@@ -132,7 +132,7 @@ void AWeapon::TryFiring(const FGameplayEffectSpecHandle _DamageEffectSpecHandle)
 void AWeapon::Fire()
 {
 	ASoldier* Soldier = Cast<ASoldier>(GetOwner());
-	if (!Soldier)
+	if (!Soldier || Soldier->GetAbilitySystemComponent()->HasMatchingGameplayTag(ASoldier::StateReloadingWeaponTag))
 		return;
 
 	if (HasAuthority())
@@ -147,7 +147,6 @@ void AWeapon::Fire()
 		Soldier->ActivateAbility(ASoldier::SkillReloadWeaponTag);
 	else
 		GetWorldTimerManager().SetTimer(TimerReloadNextShoot, this, &AWeapon::OnReadyToShoot, TimeToReloadNextShoot, false);
-
 }
 
 void AWeapon::FireAnimation()
