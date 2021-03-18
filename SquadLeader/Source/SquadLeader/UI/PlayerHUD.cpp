@@ -67,6 +67,17 @@ void APlayerHUD::BeginPlay()
 			AmmoWidget->AddToViewport();
 		}
 	}
+
+	//-----Wheel-----
+	if (WheelWidgetClass != nullptr)
+	{
+		WheelWidget = CreateWidget<USL_UserWidget>(GetWorld(), WheelWidgetClass);
+		if (WheelWidget) {
+			WheelWidget->AddToViewport();
+		}
+	}
+
+
 	SetPlayerStateLink();
 	SetAIStateLink();
 }

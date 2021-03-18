@@ -39,6 +39,11 @@ protected:
 
 	class UAmmoWidget* AmmoWidget;
 	
+	UPROPERTY(EditDefaultsOnly, Category = "Widget | PlayerAmmo")
+	TSubclassOf<class USL_UserWidget> WheelWidgetClass;
+
+	class USL_UserWidget* WheelWidget;
+	
 public:
 	APlayerHUD();
 
