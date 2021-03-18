@@ -18,6 +18,12 @@ protected:
 	void PossessedBy(AController* _newController) override;
 	void OnRep_PlayerState() override;
 
+//////////////// Controllers
+protected:
+	virtual void LockControls() override;
+	virtual void UnLockControls() override;
+
+//////////////// Squad
 	UPROPERTY(EditDefaultsOnly, Category = "SquadManager")
 	TSubclassOf<AAISquadManager> AISquadManagerClass;
 

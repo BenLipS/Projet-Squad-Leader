@@ -59,7 +59,7 @@ void AAISquadManager::Init(TSubclassOf<ASoldierTeam> _Team, ASoldierPlayer* _Pla
 		AISquadList.Add(Cast<AAISquadController>(SquadAI->Controller));
 		Cast<AAISquadController>(SquadAI->Controller)->SquadManager = this;
 	}
-	ASoldierAI* SquadAI1 = GetWorld()->SpawnActorDeferred<ASoldierAI>(ClassAI, LocationAI1, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+	/*ASoldierAI* SquadAI1 = GetWorld()->SpawnActorDeferred<ASoldierAI>(ClassAI, LocationAI1, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 	if (SquadAI1) {
 		SquadAI1->SpawnDefaultController();
 		SquadAI1->FinishSpawning(LocationAI1);
@@ -72,7 +72,7 @@ void AAISquadManager::Init(TSubclassOf<ASoldierTeam> _Team, ASoldierPlayer* _Pla
 		SquadAI2->FinishSpawning(LocationAI2);
 		AISquadList.Add(Cast<AAISquadController>(SquadAI2->Controller));
 		Cast<AAISquadController>(SquadAI2->Controller)->SquadManager = this;
-	}
+	}*/
 
 	Mission = NewObject<UMission>(this, UMission::StaticClass());
 	Mission->Type = MissionType::Formation;

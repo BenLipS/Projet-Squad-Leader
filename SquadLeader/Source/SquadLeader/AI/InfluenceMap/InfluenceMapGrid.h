@@ -125,6 +125,7 @@ private:
 	* Update the information of control area in the influence map
 	*/
 	void UpdateControlArea() noexcept;
+
 public:
 
 	//Dimension of the grid
@@ -157,4 +158,8 @@ private:
 	*/
 	UPROPERTY()
 		TArray<FNeighboor> m_neighboors;
+
+
+	int value_tick = 0;
+	class UMyThreadManager* m_ThreadManager;
 };
