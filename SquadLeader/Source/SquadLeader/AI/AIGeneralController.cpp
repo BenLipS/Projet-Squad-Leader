@@ -299,31 +299,28 @@ UMission* AAIGeneralController::GetMission()
 }
 
 void AAIGeneralController::Die() {
-	ResetBlackBoard();
+	//ResetBlackBoard();
 	SeenSoldier.Empty();
 	PerceptionComponent->ForgetAll();
 }
 
 void AAIGeneralController::Respawn() 
 {
-	BrainComponent->StartLogic();
+	ResetBlackBoard();
+	SetState(AIBasicState::Moving);
 	SeenSoldier.Empty();
 	PerceptionComponent->ForgetAll();
 }
 
 void AAIGeneralController::ResetBlackBoard() const
 {
-	//blackboard->SetValueAsBool("is_attacking", false);
-	//blackboard->SetValueAsBool("need_GoBackward", false);
-	//blackboard->SetValueAsBool("need_GoForward", false);
-	//blackboard->SetValueAsBool("IsSearching", false);
-	//blackboard->SetValueAsBool("IsHit", false);
-	//blackboard->SetValueAsObject("FocusActor", NULL);
-	//blackboard->SetValueAsVector("EnemyLocation", FVector());
-	//blackboard->SetValueAsVector("VectorLocation", FVector());
-	//blackboard->SetValueAsVector("MissionLocation", FVector());
-	BrainComponent->StopLogic(TEXT("Because he's dead."));
-	BrainComponent->Cleanup();
+	blackboard->SetValueAsBool("is_attacking", false);
+	blackboard->SetValueAsBool("is_moving", true);
+	blackboard->SetValueAsBool("is_patroling", false);
+	blackboard->SetValueAsBool("is_searching", false);
+	blackboard->SetValueAsBool("need_GoBackward", false);
+	blackboard->SetValueAsBool("need_GoForward", false);
+	blackboard->SetValueAsObject("FocusActor", NULL);
 }
 
 /*
@@ -376,7 +373,13 @@ EPathFollowingRequestResult::Type AAIGeneralController::MoveToEnemyLocation() {
 }
 
 EPathFollowingRequestResult::Type AAIGeneralController::MoveToSearchEnemy() {
+	if (m_state != AIBasicState::Search)
+		return EPathFollowingRequestResult::Failed;
+
 	FVector location_ = blackboard->GetValueAsVector("EnemyLocation");
+
+	ASoldierAI* soldier = Cast<ASoldierAI>(GetPawn());
+	soldier->CancelAbilityRun();
 
 	EPathFollowingRequestResult::Type _movetoResult = MoveToLocation(location_, 5.f);
 
