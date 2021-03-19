@@ -3,8 +3,8 @@
 
 #include "InfluenceMapGrid.h"
 #include "NavigationSystem.h"
-#include "NavigationPath.h"
-#include "../../Thread/MyThreadManager.h"
+#include "NavigationPath.h"/*
+#include "../../Thread/MyThreadManager.h"*/
 #include "../../SquadLeaderGameModeBase.h"
 #include "../../Soldiers/Soldier.h"
 
