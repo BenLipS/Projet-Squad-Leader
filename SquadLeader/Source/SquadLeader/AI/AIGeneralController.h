@@ -110,6 +110,18 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "SquadLeader")
 		EPathFollowingRequestResult::Type MoveToEnemyLocation();
 
+	/*Move to the last known position of the enemy*/
+	UFUNCTION(BlueprintCallable, Category = "SquadLeader")
+		EPathFollowingRequestResult::Type MoveToSearchEnemy();
+
+	/*
+	* End the search of the enemy
+	* rest the state to the old one
+	* clear some value of the blackboard
+	*/
+	UFUNCTION(BlueprintCallable, Category = "SquadLeader")
+		ResultState EndTheResearch();
+
 	/*Shoot the enemy we see*/
 	UFUNCTION(BlueprintCallable, Category = "Shoot")
 	ResultState ShootEnemy();
@@ -218,6 +230,9 @@ private:
 	*/
 	UFUNCTION()
 		void MovingState();
+
+	UFUNCTION()
+		void SearchState();
 
 protected:
 	/*The behaviorTree that we are running*/

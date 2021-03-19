@@ -168,6 +168,9 @@ void AAIGeneralController::ChooseState() {
 	else if(m_state == AIBasicState::Patroling){
 		PatrolingState();
 	}
+	else if (m_state == AIBasicState::Search) {
+		SearchState();
+	}
 	else {
 		MovingState();
 	}
@@ -183,18 +186,26 @@ void AAIGeneralController::AttackingState() {
 	blackboard->SetValueAsBool("is_moving", false);
 	blackboard->SetValueAsBool("is_patroling", false);
 	blackboard->SetValueAsBool("is_attacking", true);
-
+	blackboard->SetValueAsBool("is_searching", false);
 }
 void AAIGeneralController::PatrolingState() {
 	blackboard->SetValueAsBool("is_attacking", false);
 	blackboard->SetValueAsBool("is_patroling", true);
 	blackboard->SetValueAsBool("is_moving", false);
+	blackboard->SetValueAsBool("is_searching", false);
 }
 void AAIGeneralController::MovingState() {
 	//Check if it's new or not
 	blackboard->SetValueAsBool("is_attacking", false);
 	blackboard->SetValueAsBool("is_moving", true);
 	blackboard->SetValueAsBool("is_patroling", false);
+	blackboard->SetValueAsBool("is_searching", false);
+}
+void AAIGeneralController::SearchState() {
+	blackboard->SetValueAsBool("is_attacking", false);
+	blackboard->SetValueAsBool("is_moving", false);
+	blackboard->SetValueAsBool("is_patroling", false);
+	blackboard->SetValueAsBool("is_searching", true);
 }
 
 void AAIGeneralController::FocusEnemy() {
@@ -210,15 +221,15 @@ void AAIGeneralController::FocusEnemy() {
 				//TO-DO : if already in the state attacking don't do this line
 				m_state = AIBasicState::Attacking;
 				blackboard->SetValueAsObject("FocusActor", SeenSoldier[i]);
+				blackboard->SetValueAsVector("EnemyLocation", SeenSoldier[i]->GetActorLocation());
 			}
 			i++;
 		}
 		//TO-DO : the next four line are the basicly the same, see if we can find another way for doing this
 		if (!enemyDetected && m_state != m_old_state)
-			m_state = m_old_state;
+			m_state = AIBasicState::Search;
 	}else if(m_state != m_old_state)
-		m_state = m_old_state;
-
+		m_state = AIBasicState::Search;
 }
 
 void AAIGeneralController::Run(ASoldierAI* _soldier, ASoldier* _soldier_enemy) {
@@ -364,6 +375,14 @@ EPathFollowingRequestResult::Type AAIGeneralController::MoveToEnemyLocation() {
 	return EPathFollowingRequestResult::Failed;
 }
 
+EPathFollowingRequestResult::Type AAIGeneralController::MoveToSearchEnemy() {
+	FVector location_ = blackboard->GetValueAsVector("EnemyLocation");
+
+	EPathFollowingRequestResult::Type _movetoResult = MoveToLocation(location_, 5.f);
+
+	return _movetoResult;
+}
+
 ResultState AAIGeneralController::ShootEnemy() {
 
 	if (ASoldierAI* soldier = Cast<ASoldierAI>(GetPawn()); soldier && GetFocusActor() && m_state==AIBasicState::Attacking)
@@ -394,4 +413,10 @@ ResultState AAIGeneralController::ArriveAtDestination() {
 		return ResultState::Failed;
 
 	return ResultState::InProgress;
+}
+
+ResultState AAIGeneralController::EndTheResearch() {
+	m_state = m_old_state;
+	blackboard->ClearValue("EnemyLocation");
+	return ResultState::Success;
 }

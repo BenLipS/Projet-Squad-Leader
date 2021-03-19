@@ -53,12 +53,12 @@ void AAISquadManager::Init(TSubclassOf<ASoldierTeam> _Team, ASoldierPlayer* _Pla
 	FActorSpawnParameters SpawnInfo;
 	SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn; // La maniere de faire le respawn
 	ASoldierAI* SquadAI = GetWorld()->SpawnActorDeferred<ASoldierAI>(ClassAI, LocationAI, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn); 
-	if (SquadAI) {
+	/*if (SquadAI) {
 		SquadAI->SpawnDefaultController();
 		SquadAI->FinishSpawning(LocationAI);
 		AISquadList.Add(Cast<AAISquadController>(SquadAI->Controller));
 		Cast<AAISquadController>(SquadAI->Controller)->SquadManager = this;
-	}
+	}*/
 	/*ASoldierAI* SquadAI1 = GetWorld()->SpawnActorDeferred<ASoldierAI>(ClassAI, LocationAI1, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 	if (SquadAI1) {
 		SquadAI1->SpawnDefaultController();
