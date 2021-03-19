@@ -1,13 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
-
 /*
 * Things to know : 
 *  - we have a value m_state and m_old_state. This two value are, most of the time, the same.
 * It only differ when the AI enter in the Attacking state, because after the attack, we want the AI to return to the state he was.
 * For now this is the best solution, maybe we'll find a better way to do this
 */
-
-
 
 #include "AIGeneralController.h"
 #include "Perception/AISenseConfig_Sight.h"
@@ -307,6 +304,10 @@ void AAIGeneralController::Die() {
 void AAIGeneralController::Respawn() 
 {
 	ResetBlackBoard();
+	//we restart the state machine
+	//TO-DO : make a list of what should be in an Init function
+	//for example SetState(AIBasicState::Moving) shall be in it
+	//ResetBlackBoard() shall not
 	SetState(AIBasicState::Moving);
 	SeenSoldier.Empty();
 	PerceptionComponent->ForgetAll();
