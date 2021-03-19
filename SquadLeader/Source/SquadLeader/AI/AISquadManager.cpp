@@ -4,34 +4,19 @@
 #include "AISquadManager.h"
 #include "DrawDebugHelpers.h"
 #include "BehaviorTree/BlackboardComponent.h"
+
 #include<algorithm>
 // temp include, need to be replace by more robust code
 #include "../Soldiers/Soldier.h"
 
 AAISquadManager::AAISquadManager() {
 	PrimaryActorTick.bStartWithTickEnabled = true;
-	bReplicates = true;
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.TickGroup = TG_PrePhysics;
 }
-
-void AAISquadManager::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	// everyone
-	DOREPLIFETIME(AAISquadManager, AISquadList);
-}
-
 void AAISquadManager::BeginPlay()
 {
 	Super::BeginPlay();
-	OnSquadChanged.Broadcast(AISquadList);
-}
-
-void AAISquadManager::OnRep_AISquadList()
-{
-	OnSquadChanged.Broadcast(AISquadList);
 }
 
 void AAISquadManager::Init(TSubclassOf<ASoldierTeam> _Team, ASoldierPlayer* _Player)
@@ -55,21 +40,36 @@ void AAISquadManager::Init(TSubclassOf<ASoldierTeam> _Team, ASoldierPlayer* _Pla
 	ASoldierAI* SquadAI = GetWorld()->SpawnActorDeferred<ASoldierAI>(ClassAI, LocationAI, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn); 
 	if (SquadAI) {
 		SquadAI->SpawnDefaultController();
+		SquadAI->OnHealthChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberHealthChange);
+		SquadAI->OnMaxHealthChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberMaxHealthChange);
+		SquadAI->OnShieldChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberShieldChange);
+		SquadAI->OnMaxShieldChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberMaxShieldChange);
 		SquadAI->FinishSpawning(LocationAI);
+		SquadAI->BroadCastDatas();
 		AISquadList.Add(Cast<AAISquadController>(SquadAI->Controller));
 		Cast<AAISquadController>(SquadAI->Controller)->SquadManager = this;
 	}
 	ASoldierAI* SquadAI1 = GetWorld()->SpawnActorDeferred<ASoldierAI>(ClassAI, LocationAI1, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 	if (SquadAI1) {
 		SquadAI1->SpawnDefaultController();
+		SquadAI1->OnHealthChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberHealthChange);
+		SquadAI1->OnMaxHealthChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberMaxHealthChange);
+		SquadAI1->OnShieldChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberShieldChange);
+		SquadAI1->OnMaxShieldChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberMaxShieldChange);
 		SquadAI1->FinishSpawning(LocationAI1);
+		SquadAI1->BroadCastDatas();
 		AISquadList.Add(Cast<AAISquadController>(SquadAI1->Controller));
 		Cast<AAISquadController>(SquadAI1->Controller)->SquadManager = this;
 	}
 	ASoldierAI* SquadAI2 = GetWorld()->SpawnActorDeferred<ASoldierAI>(ClassAI, LocationAI2, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 	if (SquadAI2) {
 		SquadAI2->SpawnDefaultController();
+		SquadAI2->OnHealthChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberHealthChange);
+		SquadAI2->OnMaxHealthChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberMaxHealthChange);
+		SquadAI2->OnShieldChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberShieldChange);
+		SquadAI2->OnMaxShieldChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberMaxShieldChange);
 		SquadAI2->FinishSpawning(LocationAI2);
+		SquadAI2->BroadCastDatas();
 		AISquadList.Add(Cast<AAISquadController>(SquadAI2->Controller));
 		Cast<AAISquadController>(SquadAI2->Controller)->SquadManager = this;
 	}
@@ -172,4 +172,67 @@ void AAISquadManager::UpdateSquadTeam(TSubclassOf<ASoldierTeam> _NewTeam)
 			soldier->SetTeam(_NewTeam);
 		}
 	}
+}
+
+void AAISquadManager::BroadCastSquadData()
+{
+	TArray<FSoldierAIData> SoldierData;
+	for (auto AIC : AISquadList)
+	{
+		FSoldierAIData data;
+		if (ASoldierAI* SoldierAI = AIC->GetPawn<ASoldierAI>(); SoldierAI)
+		{
+			data.Health = SoldierAI->GetHealth();
+			data.MaxHealth = SoldierAI->GetMaxHealth();
+			data.Shield = SoldierAI->GetShield();
+			data.MaxShield = SoldierAI->GetMaxShield();
+			SoldierData.Add(data);
+		}
+	}
+	OnSquadChanged.Broadcast(SoldierData);
+}
+
+void AAISquadManager::OnSquadMemberHealthChange(float newHealth, AAISquadController* SoldierController)
+{
+	int index;
+	index = AISquadList.Find(SoldierController);
+	if (index != INDEX_NONE)
+	{
+		OnMemberHealthChanged.Broadcast(index, newHealth);
+	}
+}
+
+void AAISquadManager::OnSquadMemberMaxHealthChange(float newMaxHealth, AAISquadController* SoldierController)
+{
+	int index;
+	index = AISquadList.Find(SoldierController);
+	if (index != INDEX_NONE)
+	{
+		OnMemberMaxHealthChanged.Broadcast(index, newMaxHealth);
+	}
+}
+
+void AAISquadManager::OnSquadMemberShieldChange(float newShield, AAISquadController* SoldierController)
+{
+	int index;
+	index = AISquadList.Find(SoldierController);
+	if (index != INDEX_NONE)
+	{
+		OnMemberShieldChanged.Broadcast(index, newShield);
+	}
+}
+
+void AAISquadManager::OnSquadMemberMaxShieldChange(float newMaxShield, AAISquadController* SoldierController)
+{
+	int index;
+	index = AISquadList.Find(SoldierController);
+	if (index != INDEX_NONE)
+	{
+		OnMemberMaxShieldChanged.Broadcast(index, newMaxShield);
+	}
+}
+
+void FAISquadManagerData::OnSquadDataChanged(const TArray<FSoldierAIData>& newValue)
+{
+	SquadData = newValue;
 }

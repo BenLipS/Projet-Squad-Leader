@@ -6,6 +6,8 @@
 #include "camera/cameracomponent.h"
 #include "../../UI/HUDWidget.h"
 #include "../Interface/Teamable.h"
+#include "../../AI/AISquadManager.h"
+#include "../AIs/SoldierAI.h"
 #include "SoldierPlayerController.generated.h"
 
 UCLASS()
@@ -57,11 +59,6 @@ public:
 
 	UFUNCTION(Client, Reliable)
 	void CreateHUD();
-
-	/*UFUNCTION(Reliable, Client, WithValidation)
-	void SetRespawnCountdown(const float _RespawnTimeRemaining);
-	void SetRespawnCountdown_Implementation(const float _RespawnTimeRemaining);
-	bool SetRespawnCountdown_Validate(const float _RespawnTimeRemaining);*/
 //////////////// Movements
 protected:
 	// Move direction
@@ -85,4 +82,34 @@ public:
 ///////// Consoles Commands
 	UFUNCTION(Client, Reliable)
 	void ClientSendCommand(const FString& Cmd, bool bWriteToLog);
+
+
+	//-----HUD SquadManager-----
+
+protected:
+	FAISquadManagerData SquadManagerData;
+
+public:
+	UFUNCTION(Client, Reliable)
+	void OnSquadChanged(const TArray<FSoldierAIData>& newValue);
+	void OnSquadChanged_Implementation(const TArray<FSoldierAIData>& newValue);
+
+	UFUNCTION(Client, Reliable)
+	void OnSquadMemberHealthChanged(int index, float newHealth);
+	void OnSquadMemberHealthChanged_Implementation(int index, float newHealth);
+
+	UFUNCTION(Client, Reliable)
+	void OnSquadMemberMaxHealthChanged(int index, float newMaxHealth);
+	void OnSquadMemberMaxHealthChanged_Implementation(int index, float newMaxHealth);
+
+	UFUNCTION(Client, Reliable)
+	void OnSquadMemberShieldChanged(int index, float newShield);
+	void OnSquadMemberShieldChanged_Implementation(int index, float newShield);
+
+	UFUNCTION(Client, Reliable)
+	void OnSquadMemberMaxShieldChanged(int index, float newMaxShield);
+	void OnSquadMemberMaxShieldChanged_Implementation(int index, float newMaxShield);
+
+	UFUNCTION()
+	void BroadCastManagerData();
 };

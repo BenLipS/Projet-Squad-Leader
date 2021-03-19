@@ -22,10 +22,16 @@ protected:
 	UProgressBar* ProgressBarHP;
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UProgressBar* ProgressBarShield;
+
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UTextBlock* TextAI;
 
 	float Health = 100;
 	float MaxHealth = 100;
+
+	float Shield = 100;
+	float MaxShield = 100;
 
 public:
 	UAIInfoWidget(const FObjectInitializer& ObjectInitializer);
@@ -35,6 +41,10 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void OnMaxHealthChanged(float newValue);
+	
+	UFUNCTION(BlueprintCallable)
+	void OnShieldChanged(float newValue);
 
-	UObject* GetListItemObject();
+	UFUNCTION(BlueprintCallable)
+	void OnMaxShieldChanged(float newValue);
 };

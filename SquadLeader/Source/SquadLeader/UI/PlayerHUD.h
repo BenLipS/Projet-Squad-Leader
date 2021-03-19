@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/HUD.h"
+#include "../Soldiers/AIs/SoldierAI.h"
 #include "PlayerHUD.generated.h"
 
 /**
@@ -18,25 +19,25 @@ class SQUADLEADER_API APlayerHUD : public AHUD
 
 //-----WIDGETS-----
 protected:
-	UPROPERTY(EditDefaultsOnly, Category = "Widget | Health")
+	UPROPERTY(EditDefaultsOnly, Category = "Widget | PlayerHealth")
 	TSubclassOf<class UHealthWidget> HealthWidgetClass;
 
 	class UHealthWidget* HealthWidget;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Widget | Shield")
+	UPROPERTY(EditDefaultsOnly, Category = "Widget | PlayerShield")
 	TSubclassOf<class UShieldWidget> ShieldWidgetClass;
 
 	class UShieldWidget* ShieldWidget;
-
-	/*UPROPERTY(EditDefaultsOnly, Category = "Widget | Crosshair")
-	TSubclassOf<class USL_UserWidget> CrosshairWidgetClass;
-
-	class USL_UserWidget* CrosshairWidget;*/
-	/*
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Widget | AIInfo")
-	TSubclassOf<class UAIInfoListWidget> AIInfoWidgetClass;
+	TSubclassOf<class UAIInfoListWidget> AIListInfoWidgetClass;
 
-	class UAIInfoListWidget* AIInfoWidget;*/
+	class UAIInfoListWidget* AIListInfoWidget;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Widget | PlayerAmmo")
+	TSubclassOf<class UAmmoWidget> AmmoWidgetClass;
+
+	class UAmmoWidget* AmmoWidget;
 	
 public:
 	APlayerHUD();
@@ -48,6 +49,8 @@ public:
 	/*Initialize all data from Owner controller PlayerState,
 	should be called when changing player controller to relink datas*/
 	void SetPlayerStateLink();
+
+	void SetAIStateLink();
 
 	virtual void DrawHUD() override;
 
@@ -67,6 +70,24 @@ public:
 	void OnMaxShieldChanged(float newValue);
 
 	//-----SquadInfo-----
-	/*UFUNCTION(BlueprintCallable)
-	void OnSquadChanged(TArray<class AAISquadController*> newValue);*/
+	UFUNCTION()
+	void OnSquadChanged(const TArray<FSoldierAIData>& newValue);
+
+	UFUNCTION()
+	void OnSquadHealthChanged(int index, float newHealth);
+
+	UFUNCTION()
+	void OnSquadMaxHealthChanged(int index, float newHealth);
+
+	UFUNCTION()
+	void OnSquadShieldChanged(int index, float newShield);
+
+	UFUNCTION()
+	void OnSquadMaxShieldChanged(int index, float newMaxShield);
+	
+	UFUNCTION()
+	void OnAmmoChanged(int8 newAmmo);
+
+	UFUNCTION()
+	void OnMaxAmmoChanged(int8 newMaxAmmo);
 };
