@@ -187,14 +187,7 @@ void UFlockingComponent::UpdateFlockingPosition(float DeltaSeconds)
 
 	UpdateMovementVector();
 
-	//Check if the new movement vector is not to opposit to the previous one
-	auto test = FGenericPlatformMath::Cos(FMath::DegreesToRadians(30.f));
-	auto test2 = FVector::DotProduct(MovementVector.GetSafeNormal(DefaultNormalizeVectorTolerance), PreviousMovementVector.GetSafeNormal(DefaultNormalizeVectorTolerance));
-	if (FGenericPlatformMath::Cos(FMath::DegreesToRadians(0.1f)) > FVector::DotProduct(MovementVector.GetSafeNormal(DefaultNormalizeVectorTolerance), PreviousMovementVector.GetSafeNormal(DefaultNormalizeVectorTolerance))) {
-		//DrawDebugPoint(GetWorld(), Cast<ASoldier>(Cast<AAIGeneralController>(GetOwner())->GetPawn())->GetLocation(), 32, FColor::Yellow);
-		MovementVector = MovementVector.RotateAngleAxis(0.1f, { 0, 0, 1 });//TODO In the right directin
-	};
-
+	//TODO Check if the new movement vector is not to opposit to the previous one
 
 
 	float MaxSpeed = Cast<AAIGeneralController>(GetOwner())->GetPawn()->GetMovementComponent()->GetMaxSpeed();
