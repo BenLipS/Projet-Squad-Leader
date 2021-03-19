@@ -333,7 +333,6 @@ void AAIGeneralController::SetMission(UMission* _Mission)
 	}
 }
 	
-
 UMission* AAIGeneralController::GetMission()
 {
 	return Mission;
@@ -346,22 +345,25 @@ void AAIGeneralController::Die(){
 }
 
 void AAIGeneralController::Respawn() {
-	ResetBlackBoard();
+	//ResetBlackBoard();
+	BrainComponent->StartLogic();
 	SeenSoldier.Empty();
 	PerceptionComponent->ForgetAll();
 }
 
 void AAIGeneralController::ResetBlackBoard() const
 {
-	blackboard->SetValueAsBool("is_attacking", false);
-	blackboard->SetValueAsBool("need_GoBackward", false);
-	blackboard->SetValueAsBool("need_GoForward", false);
-	blackboard->SetValueAsBool("IsSearching", false);
-	blackboard->SetValueAsBool("IsHit", false);
-	blackboard->SetValueAsObject("FocusActor", NULL);
-	blackboard->SetValueAsVector("EnemyLocation", FVector());
-	blackboard->SetValueAsVector("VectorLocation", FVector());
-	blackboard->SetValueAsVector("MissionLocation", FVector());
+	//blackboard->SetValueAsBool("is_attacking", false);
+	//blackboard->SetValueAsBool("need_GoBackward", false);
+	//blackboard->SetValueAsBool("need_GoForward", false);
+	//blackboard->SetValueAsBool("IsSearching", false);
+	//blackboard->SetValueAsBool("IsHit", false);
+	//blackboard->SetValueAsObject("FocusActor", NULL);
+	//blackboard->SetValueAsVector("EnemyLocation", FVector());
+	//blackboard->SetValueAsVector("VectorLocation", FVector());
+	//blackboard->SetValueAsVector("MissionLocation", FVector());
+	BrainComponent->StopLogic(TEXT("Because he's dead."));
+	BrainComponent->Cleanup();
 }
 
 void AAIGeneralController::SetState(AIBasicState _state) noexcept {

@@ -11,13 +11,13 @@ enum class ESoldierAbilityInputID : uint8
 {
 	// None
 	None			UMETA(DisplayName = "None"),
-	// ConfirmSkill
+	// LMB
 	ConfirmSkill	UMETA(DisplayName = "ConfirmSkill"),
-	// CancelSkill
+	// RMB
 	CancelSkill		UMETA(DisplayName = "CancelSkill"),
 	// Shift
 	Run				UMETA(DisplayName = "Run"),
-	// C
+	// Left Ctrl
 	Crouch			UMETA(DisplayName = "Crouch"),
 	// Space
 	Jump			UMETA(DisplayName = "Jump"),
@@ -35,4 +35,6 @@ enum class ESoldierAbilityInputID : uint8
 	GiveOrder		UMETA(DisplayName = "GiveOrder"),
 	// R
 	ReloadWeapon	UMETA(DisplayName = "ReloadWeapon"),
+	// Left Alt
+	QuickDash		UMETA(DisplayName = "QuickDash"),
 };
