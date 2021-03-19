@@ -21,7 +21,7 @@ void AInfluenceMapGrid::BeginPlay() {
 		FindNeighboor();
 	}
 
-	m_ThreadManager = NewObject<UMyThreadManager>();
+	/*m_ThreadManager = NewObject<UMyThreadManager>();*/
 }
 
 void AInfluenceMapGrid::Tick(float DeltaSeconds) {
