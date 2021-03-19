@@ -7,23 +7,19 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "DrawDebugHelpers.h"
 #include "BehaviorTree/BehaviorTree.h"
+#include "NavigationSystem.h"
 
 bool AAISquadController::GetValidFormationPos()
 {
-	FHitResult outHit;
+	FVector HitLocation{};
+
+	UNavigationSystemV1* navSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
 
 	FVector startLocation = SquadManager->Leader->GetLocation();
-	startLocation.Z -= 20;
 	FVector endLocation = blackboard->GetValueAsVector("FormationLocation");
-	endLocation.Z -= 20;
 
-	FCollisionQueryParams collisionParams;
-	collisionParams.AddIgnoredActor(Cast<ASoldierAI>(GetPawn()));
-	collisionParams.AddIgnoredActor(SquadManager->Leader);
-
-	GetWorld()->LineTraceSingleByChannel(outHit, startLocation, endLocation, ECollisionChannel::ECC_WorldStatic, collisionParams);
-	if (outHit.bBlockingHit) {
-		blackboard->SetValueAsVector("FormationLocation", outHit.Location);
+	if (navSys->NavigationRaycast(GetWorld(), startLocation, endLocation, HitLocation)) {
+		blackboard->SetValueAsVector("FormationLocation", HitLocation);
 		return false;
 	}
 	return true;

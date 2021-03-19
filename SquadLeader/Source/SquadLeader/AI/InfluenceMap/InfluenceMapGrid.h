@@ -161,5 +161,5 @@ private:
 
 
 	int value_tick = 0;
-	class UMyThreadManager* m_ThreadManager;
+	/*class UMyThreadManager* m_ThreadManager;*/
 };

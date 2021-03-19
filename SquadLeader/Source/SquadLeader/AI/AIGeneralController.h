@@ -61,7 +61,7 @@ public:
 	UFlockingComponent* FlockingComponent;
 
 	UFUNCTION(BlueprintCallable)
-		FVector GetObjectifLocation() { return ObjectifLocation; };
+		FVector GetObjectifLocation() { return ObjectifLocation + 100; };
 
 	/* For BT Task  */
 	UFUNCTION(BlueprintCallable, Category = "Flocking Behaviour")
