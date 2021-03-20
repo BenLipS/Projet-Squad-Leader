@@ -4,6 +4,7 @@
 #include "SoldierTeam.h"
 #include "Soldier.h"
 #include "../Spawn/SoldierSpawn.h"
+#include "../GameState/SquadLeaderGameState.h"
 #include "../SquadLeaderGameModeBase.h"
 #include "SquadLeader/Soldiers/AIs/SoldierAI.h"
 
@@ -11,6 +12,18 @@ ASoldierTeam::ASoldierTeam() {
 	bReplicates = true;
 }
 
+
+void ASoldierTeam::PreInitialisation()
+{
+	if (auto GS = GetWorld()->GetGameState<ASquadLeaderGameState>(); GS) {
+		GS->AddSoldierTeam(this);
+	}
+}
+
+int ASoldierTeam::getpriority()
+{
+	return 1;
+}
 
 // useless when it's not physicaly in game
 void ASoldierTeam::BeginPlay() {
@@ -53,7 +66,9 @@ void ASoldierTeam::CleanSoldierList()
 
 void ASoldierTeam::AddSpawn(ASoldierSpawn* newSpawn)
 {
-	mainSpawnPoints.AddUnique(newSpawn);
+	if (GetLocalRole() == ROLE_Authority)
+		mainSpawnPoints.AddUnique(newSpawn);
+	CleanSpawnPoints();
 }
 
 void ASoldierTeam::RemoveSpawn(ASoldierSpawn* newSpawn)
@@ -88,7 +103,7 @@ void ASoldierTeam::RemoveOneTicket()
 	if (Tickets == 0 /*&& ...*/) {
 		GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Red, TEXT("END GAME: Tickets depleted\n") +  TeamName + TEXT(" lose !"), false, FVector2D(7,7));
 		if (GetLocalRole() == ROLE_Authority) {
-			if (ASquadLeaderGameModeBase* GameMode = Cast<ASquadLeaderGameModeBase>(soldierList[0]->GetWorld()->GetAuthGameMode()); GameMode) {  // only for the server
+			if (ASquadLeaderGameModeBase* GameMode = soldierList[0]->GetWorld()->GetAuthGameMode<ASquadLeaderGameModeBase>(); GameMode) {  // only for the server
 				FTimerHandle timerBeforeClosing;
 				soldierList[0]->GetWorld()->GetTimerManager().SetTimer(timerBeforeClosing, GameMode,
 					&ASquadLeaderGameModeBase::EndGame, 5.f);  // request to the server to end the game

@@ -44,7 +44,7 @@ FVector AAISquadController::GetRespawnPoint()  // TODO : Change this function to
 {
 	if (ASoldier* soldier = Cast<ASoldier>(GetPawn()); soldier) {
 		if (soldier->GetTeam()) {
-			auto AvailableSpawnPoints = soldier->GetTeam().GetDefaultObject()->GetUsableSpawnPoints();
+			auto AvailableSpawnPoints = soldier->GetTeam()->GetUsableSpawnPoints();
 			if (AvailableSpawnPoints.Num() > 0) {
 
 				FVector OptimalPosition = AvailableSpawnPoints[0]->GetActorLocation();

@@ -1,5 +1,6 @@
 #include "SquadLeaderGameInstance.h"
 #include "SquadLeaderGameModeBase.h"
+#include "GameState/SquadLeaderGameState.h"
 #include "AbilitySystemGlobals.h"
 
 USquadLeaderGameInstance::USquadLeaderGameInstance() : 
@@ -11,7 +12,7 @@ USquadLeaderGameInstance::USquadLeaderGameInstance() :
 void USquadLeaderGameInstance::InitAIManagers()
 {
 	//if(GEngine)GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Green, TEXT("Game Instance InitAIManagers()"));
-	auto gameMode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
+	auto GS = GetWorld()->GetGameState<ASquadLeaderGameState>();
 
 	/*Init AIBasic Manager*/
 
@@ -20,7 +21,7 @@ void USquadLeaderGameInstance::InitAIManagers()
 	if (AIBasicManager) {
 		AIBasicManager->FinishSpawning(LocationTemp);
 		AIBasicManagerTeam1 = AIBasicManager;
-		AIBasicManagerTeam1->Init(gameMode->SoldierTeamCollection[0]);
+		AIBasicManagerTeam1->Init(GS->GetSoldierTeamCollection()[0]);
 	}
 
 	//AIBasicManagerTeam1 = NewObject<AAIBasicManager>(this, AIBasicManagerClass);
@@ -30,7 +31,7 @@ void USquadLeaderGameInstance::InitAIManagers()
 	if (AIBasicManager2) {
 		AIBasicManager2->FinishSpawning(LocationTemp);
 		AIBasicManagerTeam2 = AIBasicManager2;
-		AIBasicManagerTeam2->Init(gameMode->SoldierTeamCollection[1]);
+		AIBasicManagerTeam2->Init(GS->GetSoldierTeamCollection()[1]);
 	}
 
 
@@ -40,13 +41,13 @@ void USquadLeaderGameInstance::InitAIManagers()
 
 void USquadLeaderGameInstance::AddAIBasicToManager(AAIBasicController* AIBasic)
 {
-	auto gameMode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
+	auto GS = GetWorld()->GetGameState<ASquadLeaderGameState>();
 	if (!AIBasicManagerTeam1->AIBasicList.Contains(AIBasic) && !AIBasicManagerTeam2->AIBasicList.Contains(AIBasic)) {
-		if (gameMode && Cast<ASoldier>(AIBasic->GetPawn())->GetTeam() == gameMode->SoldierTeamCollection[0]) {
+		if (GS && Cast<ASoldier>(AIBasic->GetPawn())->GetTeam() == GS->GetSoldierTeamCollection()[0]) {
 			AIBasicManagerTeam1->AIBasicList.Add(AIBasic);
 			if (GEngine)GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("AIBasic Team 1 added"));
 		}
-		else if (gameMode && Cast<ASoldier>(AIBasic->GetPawn())->GetTeam() == gameMode->SoldierTeamCollection[1]) {
+		else if (GS && Cast<ASoldier>(AIBasic->GetPawn())->GetTeam() == GS->GetSoldierTeamCollection()[1]) {
 			AIBasicManagerTeam2->AIBasicList.Add(AIBasic);
 			if (GEngine)GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("AIBasic Team 2 added"));
 		}

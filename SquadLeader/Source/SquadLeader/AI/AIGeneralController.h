@@ -51,7 +51,8 @@ public:
 //////////////// Teamable
 protected:
 	UPROPERTY(Replicated)
-		TSubclassOf<ASoldierTeam> Team = nullptr;  // only server can replicate it
+	ASoldierTeam* Team = nullptr;  // only server can replicate it
+	
 	UPROPERTY()
 	FVector ObjectifLocation{ 1000.f, 1000.f, 10.f };
 public:
@@ -68,8 +69,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Flocking Behaviour")
 		EPathFollowingRequestResult::Type FollowFlocking();
 
-	virtual TSubclassOf<ASoldierTeam> GetTeam() override;
-	virtual bool SetTeam(TSubclassOf<ASoldierTeam> _Team) override;
+	// Teamable
+	virtual ASoldierTeam* GetTeam() override;
+	virtual bool SetTeam(ASoldierTeam* _Team) override;
 
 
 	UFUNCTION()

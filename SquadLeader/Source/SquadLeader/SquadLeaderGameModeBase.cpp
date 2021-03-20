@@ -85,8 +85,8 @@ void ASquadLeaderGameModeBase::RespawnSoldier(AController* _Controller)
 
 void ASquadLeaderGameModeBase::CheckControlAreaVictoryCondition()
 {
-	if (auto WinnerTeam = ControlAreaManager.GetDefaultObject()->GetTeamWithAllControl(); WinnerTeam) {
-		GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Red, TEXT("END GAME: All control area taken\n") + WinnerTeam.GetDefaultObject()->TeamName + TEXT(" win !"), false, FVector2D(7, 7));
+	if (auto WinnerTeam = Cast<ASquadLeaderGameState>(GameState)->GetControlAreaManager()->GetTeamWithAllControl(); WinnerTeam) {
+		GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Red, TEXT("END GAME: All control area taken\n") + WinnerTeam->TeamName + TEXT(" win !"), false, FVector2D(7, 7));
 		FTimerHandle timerBeforeClosing;
 		GetWorld()->GetTimerManager().SetTimer(timerBeforeClosing, this,
 			&ASquadLeaderGameModeBase::EndGame, 5.f);  // request to the server to end the game
@@ -95,8 +95,8 @@ void ASquadLeaderGameModeBase::CheckControlAreaVictoryCondition()
 
 void ASquadLeaderGameModeBase::EndGame()
 {
-	for (auto Teams : SoldierTeamCollection) {
-		for (auto Soldiers : Teams.GetDefaultObject()->soldierList) {
+	for (auto Teams : Cast<ASquadLeaderGameState>(GameState)->GetSoldierTeamCollection()) {
+		for (auto Soldiers : Teams->soldierList) {
 			if (auto PlayerControler = Cast<ASoldierPlayerController>(Soldiers->GetController()); PlayerControler) {
 				PlayerControler->ClientSendCommand("EXIT", true);
 			}

@@ -4,8 +4,10 @@
 #include "InfluenceMapGrid.h"
 #include "NavigationSystem.h"
 #include "NavigationPath.h"
-#include "../../SquadLeaderGameModeBase.h"
+#include "../../GameState/SquadLeaderGameState.h"
 #include "../../Soldiers/Soldier.h"
+#include "../../ControlArea/ControlAreaManager.h"
+
 
 AInfluenceMapGrid::AInfluenceMapGrid() {
 	//Set this AInfo to be call every Tick. 
@@ -144,10 +146,10 @@ void AInfluenceMapGrid::Influence(int index, int start_index, int source_index, 
 
 void AInfluenceMapGrid::UpdatePlayers() noexcept {
 	int team = 1;
-	auto gamemode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
-	for (TSubclassOf<ASoldierTeam> _team : gamemode->SoldierTeamCollection) {
+	auto GS = GetWorld()->GetGameState<ASquadLeaderGameState>();
+	for (ASoldierTeam* _team : GS->GetSoldierTeamCollection()) {
 
-		ASoldierTeam* _teamclass = Cast<ASoldierTeam>(_team->GetDefaultObject());
+		ASoldierTeam* _teamclass = Cast<ASoldierTeam>(_team);
 
 		for (ASoldier* _soldier : _teamclass->soldierList) {
 
@@ -164,8 +166,8 @@ void AInfluenceMapGrid::UpdatePlayers() noexcept {
 }
 
 void AInfluenceMapGrid::UpdateControlArea() noexcept {
-	auto gamemode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
-	AControlAreaManager* controlareamanager = Cast<AControlAreaManager>(gamemode->ControlAreaManager->GetDefaultObject());
+	auto GS = GetWorld()->GetGameState<ASquadLeaderGameState>();
+	AControlAreaManager* controlareamanager = GS->GetControlAreaManager();
 
 	for (int i = 0; i != controlareamanager->GetControlArea().Num(); ++i) {
 		AControlArea* _controlArea = Cast<AControlArea>(controlareamanager->GetControlArea()[i]);
@@ -173,7 +175,7 @@ void AInfluenceMapGrid::UpdateControlArea() noexcept {
 			int index_tile = FindTileIndex(controlareamanager->GetControlArea()[i]->GetActorLocation());
 			if (index_tile != -1) {
 				m_influencemap[index_tile].m_value = 1.f;
-				ASoldierTeam* _soldierTeam = Cast<ASoldierTeam>(_controlArea->isTakenBy->GetDefaultObject());
+				ASoldierTeam* _soldierTeam = Cast<ASoldierTeam>(_controlArea->isTakenBy);
 				if (_soldierTeam->TeamName == "Team1")
 					m_influencemap[index_tile].m_team = 1;
 				else 

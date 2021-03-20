@@ -100,14 +100,14 @@ void ASoldierPlayer::Turn(const float _Val)
 	}
 }
 
-TSubclassOf<ASoldierTeam> ASoldierPlayer::GetTeam()
+ASoldierTeam* ASoldierPlayer::GetTeam()
 {
 	if (auto SoldierPlayerState = Cast<ASoldierPlayerState>(GetPlayerState()); SoldierPlayerState)
 		return SoldierPlayerState->GetTeam();
 	return nullptr;
 }
 
-bool ASoldierPlayer::SetTeam(TSubclassOf<ASoldierTeam> _Team)
+bool ASoldierPlayer::SetTeam(ASoldierTeam* _Team)
 {
 	if (auto SoldierPlayerState = Cast<ASoldierPlayerState>(GetPlayerState()); SoldierPlayerState)
 		return SoldierPlayerState->SetTeam(_Team);
@@ -165,7 +165,7 @@ void ASoldierPlayer::cycleBetweenTeam()
 FVector ASoldierPlayer::GetRespawnPoint()
 {
 	if (GetTeam()) {
-		auto AvailableSpawnPoints = GetTeam().GetDefaultObject()->GetUsableSpawnPoints();
+		auto AvailableSpawnPoints = GetTeam()->GetUsableSpawnPoints();
 		if (AvailableSpawnPoints.Num() > 0) {
 
 			FVector OptimalPosition = AvailableSpawnPoints[0]->GetActorLocation();

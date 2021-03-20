@@ -2,6 +2,7 @@
 #include "SoldierMovementComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "EngineUtils.h"
+#include "../GameState/SquadLeaderGameState.h"
 #include "../SquadLeaderGameModeBase.h"
 #include "../AbilitySystem/Soldiers/GameplayAbilitySoldier.h"
 #include "../AbilitySystem/Soldiers/GameplayEffects/States/GE_StateDead.h"
@@ -74,7 +75,7 @@ void ASoldier::BeginPlay()
 
 		// add this to the team data
 		if (GetTeam()) {
-			GetTeam().GetDefaultObject()->AddSoldierList(this);
+			GetTeam()->AddSoldierList(this);
 		}
 	}
 
@@ -289,7 +290,7 @@ void ASoldier::DeadTagChanged(const FGameplayTag _CallbackTag, int32 _NewCount)
 
 		// remove ticket from team (only on server)
 		if (GetTeam() && GetLocalRole() == ROLE_Authority)
-			GetTeam().GetDefaultObject()->RemoveOneTicket();
+			GetTeam()->RemoveOneTicket();
 
 		//TODO. Should we keep the velocity to be more realistic ?
 		// Stop the soldier and remove any interaction with the other soldiers
@@ -675,25 +676,26 @@ void ASoldier::cycleBetweenTeam()
 {
 	if (GetLocalRole() == ROLE_Authority) {
 		FString message;
-		auto gameMode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
-		auto initialIndex = gameMode->SoldierTeamCollection.Find(GetTeam());
-		if (initialIndex != INDEX_NONE) {  // cycle between existant team
-			auto index = initialIndex + 1;
-			if (!(gameMode->SoldierTeamCollection.IsValidIndex(index))) {
-				index = 0;
-			}
-			SetTeam(gameMode->SoldierTeamCollection[index]);
+		if (auto GS = GetWorld()->GetGameState<ASquadLeaderGameState>(); GS) {
+			auto initialIndex = GS->GetSoldierTeamCollection().Find(GetTeam());
+			if (initialIndex != INDEX_NONE) {  // cycle between existant team
+				auto index = initialIndex + 1;
+				if (!(GS->GetSoldierTeamCollection().IsValidIndex(index))) {
+					index = 0;
+				}
+				SetTeam(GS->GetSoldierTeamCollection()[index]);
 
-			message = GetTeam().GetDefaultObject()->TeamName;  // Log
-		}
-		else {  // if the player have no team for now give the first one
-			if (gameMode->SoldierTeamCollection.Max() > 0) {
-				SetTeam(gameMode->SoldierTeamCollection[0]);
-
-				message = GetTeam().GetDefaultObject()->TeamName;  // Log
+				message = GetTeam()->TeamName;  // Log
 			}
+			else {  // if the player have no team for now give the first one
+				if (GS->GetSoldierTeamCollection().Max() > 0) {
+					SetTeam(GS->GetSoldierTeamCollection()[0]);
+
+					message = GetTeam()->TeamName;  // Log
+				}
+			}
+			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, message);
 		}
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, message);
 	}
 	else ServerCycleBetweenTeam();
 }

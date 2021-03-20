@@ -45,18 +45,18 @@ EPathFollowingRequestResult::Type AAIGeneralController::FollowFlocking() {
 	return _movetoResult;
 }
 
-TSubclassOf<ASoldierTeam> AAIGeneralController::GetTeam()
+ASoldierTeam* AAIGeneralController::GetTeam()
 {
 	return Team;
 }
 
-bool AAIGeneralController::SetTeam(TSubclassOf<ASoldierTeam> _Team)
+bool AAIGeneralController::SetTeam(ASoldierTeam* _Team)
 {
 	if (GetLocalRole() == ROLE_Authority) {  // only server can change team
 		if (Team)
-			Team.GetDefaultObject()->RemoveSoldierList(Cast<ASoldier>(GetPawn()));
+			Team->RemoveSoldierList(Cast<ASoldier>(GetPawn()));
 		if (_Team)
-			_Team.GetDefaultObject()->AddSoldierList(Cast<ASoldier>(GetPawn()));
+			_Team->AddSoldierList(Cast<ASoldier>(GetPawn()));
 
 		Team = _Team;
 		return true;
@@ -71,7 +71,7 @@ void AAIGeneralController::ontargetperception_update_sight(AActor* actor, FAISti
 void AAIGeneralController::ActorsPerceptionUpdated(const TArray < AActor* >& UpdatedActors) {
 	if (Cast<ASoldierAI>(GetPawn())->IsAlive()) {
 		for (auto& Elem : UpdatedActors) {
-			if (ASoldier* soldier = Cast<ASoldier>(Elem); soldier && soldier->IsAlive() && soldier->GetTeam().GetDefaultObject()->TeamName != "Spectator" && (this->GetPawn()->GetActorLocation() - Elem->GetActorLocation()).Size() < m_distancePerception){//TODO: Remove ugly last condition to avoid seig nearly respawned enemi , If team == spectateur then AI don't see you Cool to test
+			if (ASoldier* soldier = Cast<ASoldier>(Elem); soldier && soldier->IsAlive() && soldier->GetTeam()->TeamName != "Spectator" && (this->GetPawn()->GetActorLocation() - Elem->GetActorLocation()).Size() < m_distancePerception){//TODO: Remove ugly last condition to avoid seig nearly respawned enemi , If team == spectateur then AI don't see you Cool to test
 				if (SeenSoldier.Contains(soldier));
 				else SeenSoldier.Add(soldier);
 			}

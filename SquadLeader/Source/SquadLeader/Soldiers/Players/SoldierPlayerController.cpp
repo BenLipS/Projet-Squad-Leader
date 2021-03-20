@@ -5,7 +5,7 @@
 #include "../../UI/PlayerHUD.h"
 
 //TODO: rmove next include -> only use for the team init -> only use on temporary debug
-#include "../../SquadLeaderGameModeBase.h"
+#include "../../GameState/SquadLeaderGameState.h"
 #include "../Players/SoldierPlayer.h"
 #include "../../AI/AISquadManager.h"
 
@@ -44,8 +44,8 @@ void ASoldierPlayerController::OnPossess(APawn* InPawn)
 		PS->GetAbilitySystemComponent()->InitAbilityActorInfo(PS, InPawn);
 
 	//TODO: remove the team init -> only use on temporary debug
-	if (auto gameMode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode()); gameMode) {
-		SetTeam(gameMode->SoldierTeamCollection[0]);
+	if (auto GS = GetWorld()->GetGameState<ASquadLeaderGameState>(); GS) {
+		SetTeam(GS->GetSoldierTeamCollection()[0]);
 		if (auto soldier = Cast<ASoldierPlayer>(InPawn); soldier->GetSquadManager()) {
 			soldier->GetSquadManager()->UpdateSquadTeam(GetTeam());
 		}
@@ -96,7 +96,7 @@ void ASoldierPlayerController::SetupInputComponent()
 	InputComponent->BindAction("ChangeTeam", IE_Released, this, &ASoldierPlayerController::OnChangeTeam);
 }
 
-TSubclassOf<ASoldierTeam> ASoldierPlayerController::GetTeam()
+ASoldierTeam* ASoldierPlayerController::GetTeam()
 {
 	if (auto SoldierState = Cast<ASoldierPlayerState>(PlayerState); SoldierState) {
 		return SoldierState->GetTeam();
@@ -104,7 +104,7 @@ TSubclassOf<ASoldierTeam> ASoldierPlayerController::GetTeam()
 	return nullptr;
 }
 
-bool ASoldierPlayerController::SetTeam(TSubclassOf<ASoldierTeam> _Team)
+bool ASoldierPlayerController::SetTeam(ASoldierTeam* _Team)
 {
 	if (auto SoldierState = Cast<ASoldierPlayerState>(PlayerState); SoldierState) {
 		return SoldierState->SetTeam(_Team);

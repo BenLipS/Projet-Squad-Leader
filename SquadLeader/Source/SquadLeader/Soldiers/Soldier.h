@@ -310,7 +310,7 @@ public:
 
 	//////////////// Soldier team
 	UPROPERTY(EditAnywhere, Category = "PlayerTeam")
-		TSubclassOf<ASoldierTeam> InitialTeam;  // for debug use
+		ASoldierTeam* InitialTeam;  // for debug use
 
 	UFUNCTION(Reliable, Server, WithValidation)
 		void ServerCycleBetweenTeam();
@@ -319,8 +319,8 @@ public:
 	virtual void cycleBetweenTeam();
 	
 	//////////////// Teamable
-	virtual TSubclassOf<ASoldierTeam> GetTeam() override { return nullptr; };  // function overide in SoldierPlayer and Soldier AI
-	virtual bool SetTeam(TSubclassOf<ASoldierTeam> _Team) override { return false; };  // function overide in SoldierPlayer and Soldier AI
+	virtual ASoldierTeam* GetTeam() override { return nullptr; };  // function overide in SoldierPlayer and Soldier AI
+	virtual bool SetTeam(ASoldierTeam* _Team) override { return false; };  // function overide in SoldierPlayer and Soldier AI
 
 /////////////// Respawn
 public:
