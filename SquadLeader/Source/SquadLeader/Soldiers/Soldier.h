@@ -250,7 +250,7 @@ public:
 	virtual void Turn(const float _Val);
 
 	UFUNCTION(BlueprintCallable, Category = "Movement")
-	virtual FVector lookingAtPosition();
+	virtual FVector GetLookingAtPosition();
 
 	// Run
 	UFUNCTION(BlueprintCallable, Category = "Movement")
@@ -267,16 +267,16 @@ public:
 //////////////// Weapons
 protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Weapon")
-	bool wantsToFire = false;
+	bool bWantsToFire = false;
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	bool GetWantsToFire() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
-	void SetWantsToFire(const bool _want);
+	void SetWantsToFire(const bool _Want);
 
-	void SetWantsToFire(const bool _want, const FGameplayEffectSpecHandle _damageEffectSpecHandle);
+	void SetWantsToFire(const bool _Want, const FGameplayEffectSpecHandle _DamageEffectSpecHandle);
 
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	void StartAiming();
@@ -309,14 +309,14 @@ protected:
 	void OnRep_CurrentWeapon(class AWeapon* _LastWeapon);
 
 public:
-	AWeapon* getCurrentWeapon() const noexcept { return CurrentWeapon; }
+	AWeapon* GetCurrentWeapon() const noexcept;
 
 	//////////////// Soldier team
 	UPROPERTY(EditAnywhere, Category = "PlayerTeam")
-		TSubclassOf<ASoldierTeam> InitialTeam;  // for debug use
+	TSubclassOf<ASoldierTeam> InitialTeam;  // for debug use
 
 	UFUNCTION(Reliable, Server, WithValidation)
-		void ServerCycleBetweenTeam();
+	void ServerCycleBetweenTeam();
 
 	// Connected to the "L" key
 	virtual void cycleBetweenTeam();

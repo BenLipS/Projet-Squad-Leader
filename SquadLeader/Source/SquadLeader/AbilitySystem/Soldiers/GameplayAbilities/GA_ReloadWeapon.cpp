@@ -30,7 +30,7 @@ bool UGA_ReloadWeapon::CanActivateAbility(const FGameplayAbilitySpecHandle Handl
 
 	if (ASoldier* Soldier = Cast<ASoldier>(ActorInfo->AvatarActor.Get()); Soldier)
 	{
-		if (AWeapon* Weapon = Soldier->getCurrentWeapon(); Weapon)
+		if (AWeapon* Weapon = Soldier->GetCurrentWeapon(); Weapon)
 			return !Weapon->IsFullAmmo();
 	}
 

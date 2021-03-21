@@ -32,7 +32,7 @@ void UGA_Fire::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FG
 bool UGA_Fire::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, OUT FGameplayTagContainer* OptionalRelevantTags) const
 {
 	ASoldier* Soldier = Cast<ASoldier>(ActorInfo->AvatarActor.Get());
-	return Soldier && Soldier->getCurrentWeapon() && Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags);
+	return Soldier && Soldier->GetCurrentWeapon() && Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags);
 }
 
 void UGA_Fire::InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo)

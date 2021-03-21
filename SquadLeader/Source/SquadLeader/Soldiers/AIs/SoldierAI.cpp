@@ -61,11 +61,10 @@ void ASoldierAI::BeginPlay()
 	InitWeapons();
 }
 
-FVector ASoldierAI::lookingAtPosition()
+FVector ASoldierAI::GetLookingAtPosition()
 {
 	return LookingAtPosition;
 }
-
 
 TSubclassOf<ASoldierTeam> ASoldierAI::GetTeam()
 {

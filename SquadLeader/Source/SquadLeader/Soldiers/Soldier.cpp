@@ -174,14 +174,14 @@ void ASoldier::InitWeapons()
 		{
 			FActorSpawnParameters SpawnInfo;
 			SpawnInfo.Owner = this;
-			SpawnInfo.Instigator = GetInstigator();
+			SpawnInfo.Instigator = this;
 			SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-			AWeapon* weapon = GetWorld()->SpawnActor<AWeapon>(DefaultWeaponClasses[i], SpawnInfo);
+			AWeapon* Weapon = GetWorld()->SpawnActor<AWeapon>(DefaultWeaponClasses[i], SpawnInfo);
 
-			if (weapon)
+			if (Weapon)
 			{
-				AddToInventory(weapon);
-				weapon->InitializeAbilitySystemComponent(AbilitySystemComponent);
+				AddToInventory(Weapon);
+				Weapon->InitializeAbilitySystemComponent(AbilitySystemComponent);
 			}
 		}
 	}
@@ -489,19 +489,19 @@ void ASoldier::Landed(const FHitResult& _Hit)
 	AbilitySystemComponent->RemoveActiveEffectsWithGrantedTags(EffectTagsToRemove);
 }
 
-FVector ASoldier::lookingAtPosition()
+FVector ASoldier::GetLookingAtPosition()
 {
-	FHitResult outHit;
+	FHitResult OutHit;
 
-	FVector startLocation = ThirdPersonCameraComponent->GetComponentTransform().GetLocation();
-	FVector forwardVector = ThirdPersonCameraComponent->GetForwardVector();
-	FVector endLocation = startLocation + forwardVector * 10000.f;
+	FVector StartLocation = ThirdPersonCameraComponent->GetComponentTransform().GetLocation();
+	FVector ForwardVector = ThirdPersonCameraComponent->GetForwardVector();
+	FVector EndLocation = StartLocation + ForwardVector * 10000.f;
 
-	FCollisionQueryParams collisionParams;
-	collisionParams.AddIgnoredActor(this);
+	FCollisionQueryParams CollisionParams;
+	CollisionParams.AddIgnoredActor(this);
 
-	GetWorld()->LineTraceSingleByChannel(outHit, startLocation, endLocation, ECollisionChannel::ECC_WorldStatic, collisionParams);
-	return outHit.bBlockingHit ? outHit.Location : endLocation;
+	GetWorld()->LineTraceSingleByChannel(OutHit, StartLocation, EndLocation, ECollisionChannel::ECC_WorldStatic, CollisionParams);
+	return OutHit.bBlockingHit ? OutHit.Location : EndLocation;
 }
 
 int32 ASoldier::GetCharacterLevel() const
@@ -580,22 +580,22 @@ void ASoldier::Respawn()
 
 bool ASoldier::GetWantsToFire() const
 {
-	return wantsToFire;
+	return bWantsToFire;
 }
 
-void ASoldier::SetWantsToFire(const bool _want)
+void ASoldier::SetWantsToFire(const bool _Want)
 {
-	wantsToFire = _want;
-	if (wantsToFire) {
+	bWantsToFire = _Want;
+	if (bWantsToFire) {
 		CurrentWeapon->TryFiring();
 	}
 }
 
-void ASoldier::SetWantsToFire(const bool _want, const FGameplayEffectSpecHandle _damageEffectSpecHandle)
+void ASoldier::SetWantsToFire(const bool _Want, const FGameplayEffectSpecHandle _DamageEffectSpecHandle)
 {
-	wantsToFire = _want;
-	if (wantsToFire) {
-		CurrentWeapon->TryFiring(_damageEffectSpecHandle);
+	bWantsToFire = _Want;
+	if (bWantsToFire) {
+		CurrentWeapon->TryFiring(_DamageEffectSpecHandle);
 	}
 }
 
@@ -668,6 +668,11 @@ void ASoldier::SetCurrentWeapon(AWeapon* _NewWeapon, AWeapon* _PreviousWeapon)
 {
 	if (_PreviousWeapon && _NewWeapon !=_PreviousWeapon)
 		CurrentWeapon = _NewWeapon;
+}
+
+AWeapon* ASoldier::GetCurrentWeapon() const noexcept
+{
+	return CurrentWeapon;
 }
 
 // network for debug team change

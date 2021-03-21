@@ -67,7 +67,7 @@ protected:
 
 	virtual void BeginPlay() override;
 
-	virtual FVector lookingAtPosition() override;
+	virtual FVector GetLookingAtPosition() override;
 
 	FVector LookingAtPosition;
 

@@ -27,7 +27,7 @@ bool UGA_Aim::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const 
 {
 	ASoldier* soldier = Cast<ASoldier>(ActorInfo->AvatarActor.Get());
 
-	if (soldier && soldier->getCurrentWeapon() && Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags))
+	if (soldier && soldier->GetCurrentWeapon() && Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags))
 		return true;
 	return false;
 }

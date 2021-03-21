@@ -22,7 +22,7 @@ void AWeaponLaser::Fire()
 
 	Super::Fire();
 
-	TArray<FHitResult> outHits = GetActorsFromLineTrace(Soldier->GetActorLocation(), Soldier->lookingAtPosition());
+	TArray<FHitResult> outHits = GetActorsFromLineTrace(Soldier->GetActorLocation(), Soldier->GetLookingAtPosition());
 
 	int remainPenetration = Penetration;
 	for (auto it = outHits.begin(); it != outHits.end() && remainPenetration > 0; ++it)
