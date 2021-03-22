@@ -19,6 +19,9 @@
 #include "Math/Vector.h"
 #include "GenericPlatform/GenericPlatformMath.h"
 #include "Components/FlockingComponent.h"
+#include "DrawDebugHelpers.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "Math/RandomStream.h"
 
 
 AAIGeneralController::AAIGeneralController(FObjectInitializer const& object_initializer)
@@ -391,7 +394,15 @@ ResultState AAIGeneralController::ShootEnemy() {
 
 	if (ASoldierAI* soldier = Cast<ASoldierAI>(GetPawn()); soldier && GetFocusActor() && m_state==AIBasicState::Attacking)
 	{
-		soldier->SetLookingAtPosition(GetFocusActor()->GetTargetLocation());
+		
+		FVector ShootDir = GetFocusActor()->GetTargetLocation() - GetPawn()->GetActorLocation();
+
+		/*Randomise the shoot*/
+		FRandomStream ShootRand;
+		ShootRand.GenerateNewSeed();
+		FVector RandShootDir = ShootRand.VRandCone(ShootDir.GetSafeNormal(), HalfAngleShoot) * ShootDir.Size();
+
+		soldier->SetLookingAtPosition(GetPawn()->GetActorLocation() + RandShootDir);
 		soldier->ActivateAbilityFire();
 		soldier->CancelAbilityFire();
 		if (auto _solider = Cast<ASoldier>(GetFocusActor()); !_solider->IsAlive()) {

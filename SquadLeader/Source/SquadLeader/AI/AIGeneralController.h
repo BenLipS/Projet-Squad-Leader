@@ -280,6 +280,12 @@ public:
 		float m_distanceShootAndStop = 1000.f;
 
 	/*
+	* Halfe Angle of shooting cone
+	*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shoot")
+		float HalfAngleShoot = 0.05f;
+
+	/*
 	* Radius of vision
 	*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Perception")
