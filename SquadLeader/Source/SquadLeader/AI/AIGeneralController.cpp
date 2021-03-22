@@ -419,6 +419,26 @@ EPathFollowingRequestResult::Type AAIGeneralController::FollowFlocking() {
 	return _movetoResult;
 }
 
+void AAIGeneralController::SetPatrolPoint()
+{
+	FVector PatrolPos;
+	PatrolPos.X = FMath::FRandRange(0, 1600);
+	PatrolPos.Y = FMath::FRandRange(0, 1600);
+	PatrolPos.Z = FMath::FRandRange(0, 1600);
+
+	FVector HitLocation{};
+
+	UNavigationSystemV1* navSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
+
+	FVector startLocation = ObjectifLocation;
+	FVector endLocation = ObjectifLocation + PatrolPos;
+
+	if (navSys->NavigationRaycast(GetWorld(), startLocation, endLocation, HitLocation))
+		PatrolPos = HitLocation;
+
+	blackboard->SetValueAsVector("PatrolPoint", ObjectifLocation + PatrolPos);
+}
+
 ResultState AAIGeneralController::ArriveAtDestination() {
 	if ( GetPawn() && FVector::Dist(GetPawn()->GetActorLocation(), GetObjectifLocation()) < 300.f) {
 		SetState(AIBasicState::Patroling);

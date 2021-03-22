@@ -69,6 +69,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Flocking Behaviour")
 		EPathFollowingRequestResult::Type FollowFlocking();
 
+	UFUNCTION(BlueprintCallable, Category = "Flocking Behaviour")
+		void SetPatrolPoint();
+
 	/*
 	* When doing the flocking we'll check if the AI
 	* is arrive at his destination
