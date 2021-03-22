@@ -3,10 +3,12 @@
 
 #include "InfluenceMapGrid.h"
 #include "NavigationSystem.h"
-#include "NavigationPath.h"/*
-#include "../../Thread/MyThreadManager.h"*/
+#include "NavigationPath.h"
 #include "../../SquadLeaderGameModeBase.h"
 #include "../../Soldiers/Soldier.h"
+#include "Templates/Function.h"
+#include "Async/Async.h"
+
 
 AInfluenceMapGrid::AInfluenceMapGrid() {
 	//Set this AInfo to be call every Tick. 
@@ -20,22 +22,15 @@ void AInfluenceMapGrid::BeginPlay() {
 		m_neighboors.Init(FNeighboor(), nbr_tile);
 		FindNeighboor();
 	}
-
-	/*m_ThreadManager = NewObject<UMyThreadManager>();*/
 }
 
 void AInfluenceMapGrid::Tick(float DeltaSeconds) {
 	Super::Tick(DeltaSeconds);
-	/*if (GEngine)
-		GEngine->AddOnScreenDebugMessage(100, 1.f, FColor::Black, TEXT("HELLO, i'm the new InfluenceMap :)"));*/
 	if (GetLocalRole() == ROLE_Authority) {
 		//DrawGrid();
 		ResetGrid();
-		UpdateGrid();
 
 		value_tick++;
-		/*if (value_tick > 1000)
-			m_ThreadManager->StartProcess()*/;
 	}
 }
 
@@ -71,9 +66,15 @@ void AInfluenceMapGrid::DrawGrid() const {
 }
 
 void AInfluenceMapGrid::ResetGrid() noexcept {
+
 	for (FTileBase& _tile : m_influencemap) {
-		_tile.m_value = 0.f;
-		_tile.m_team = -1;
+		if (_tile.m_type != Type::ControlArea) {
+			if(_tile.m_value >= 0.2f)
+				_tile.m_value -= 0.2f;
+			else {
+				_tile.m_team = -1;
+			}
+		}
 	}
 }
 
@@ -188,5 +189,27 @@ void AInfluenceMapGrid::UpdateControlArea() noexcept {
 				Influence(index_tile, index_tile, index_tile, 1);
 			}
 		}
+	}
+}
+
+void AInfluenceMapGrid::ReceivedMessage(FGridPackage _message) {
+	int index_tile = FindTileIndex(_message.m_location_on_map);
+	if (index_tile != -1) {
+		switch (_message.m_type) {
+		case Type::Soldier:
+			m_influencemap[index_tile].m_value = 0.7f;
+			break;
+		case Type::ControlArea:
+			m_influencemap[index_tile].m_value = 0.5f;
+			break;
+		case Type::Projectile:
+			m_influencemap[index_tile].m_value = 0.3f;
+			break;
+		default:
+			break;
+		}
+		m_influencemap[index_tile].m_team = _message.team_value;
+		m_influencemap[index_tile].m_type = _message.m_type;
+		Influence(index_tile, index_tile, index_tile, 1);
 	}
 }

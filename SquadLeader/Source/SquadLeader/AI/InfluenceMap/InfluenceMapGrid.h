@@ -7,24 +7,6 @@
 #include "GameFramework/Info.h"
 #include "InfluenceMapGrid.generated.h"
 
-/*
-* This struct represent a Tile-Base for the grid
-* it contains a value, a location and the information of witch team they are of the influence
-*/
-USTRUCT()
-struct SQUADLEADER_API FTileBase {
-
-	GENERATED_USTRUCT_BODY()
-
-	FTileBase() {
-	}
-
-	float m_value = 0.f;
-	FVector m_location;
-	int m_team = -1;
-
-};
-
 USTRUCT()
 struct SQUADLEADER_API FNeighboor {
 
@@ -36,6 +18,44 @@ struct SQUADLEADER_API FNeighboor {
 	TArray<int> m_neighboor;
 
 };
+
+
+UENUM()
+enum Type {
+	Soldier UMETA(DisplayName = "Soldier"),
+	ControlArea UMETA(DisplayName = "ControlArea"),
+	Projectile UMETA(DisplayName = "Projectile"),
+};
+
+USTRUCT()
+struct SQUADLEADER_API FGridPackage {
+
+	GENERATED_USTRUCT_BODY()
+		FGridPackage() {}
+
+	int team_value = 0;
+	FVector m_location_on_map;
+	TEnumAsByte<Type> m_type;
+};
+
+/*
+* This struct represent a Tile-Base for the grid
+* it contains a value, a location and the information of witch team they are of the influence
+*/
+USTRUCT()
+struct SQUADLEADER_API FTileBase {
+
+	GENERATED_USTRUCT_BODY()
+
+		FTileBase() {
+	}
+
+	float m_value = 0.f;
+	FVector m_location;
+	int m_team = -1;
+	TEnumAsByte<Type> m_type;
+};
+
 
 
 /**
@@ -53,6 +73,8 @@ public:
 	virtual void BeginPlay() override;
 
 	virtual void Tick(float DeltaSeconds) override;
+
+	void ReceivedMessage(FGridPackage _message);
 
 private:
 	/*
