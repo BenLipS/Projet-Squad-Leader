@@ -58,7 +58,6 @@ void ASoldierAI::BeginPlay()
 	InitializeAttributes();
 	InitializeAbilities();
 	AddStartupEffects();
-	InitWeapons();
 }
 
 FVector ASoldierAI::GetLookingAtPosition()

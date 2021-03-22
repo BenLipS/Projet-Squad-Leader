@@ -12,5 +12,11 @@ class SQUADLEADER_API UAbilitySystemSoldier : public UAbilitySystemComponent
 public:
 	UAbilitySystemSoldier() = default;
 
-	bool startupEffectsApplied = false;
+	bool bStartupEffectsApplied = false;
+
+	UFUNCTION(BlueprintCallable, Category = "Abilities")
+	virtual bool BatchRPCTryActivateAbility(FGameplayAbilitySpecHandle _InAbilityHandle, bool _EndAbilityImmediately);
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Abilities")
+	FGameplayAbilitySpecHandle FindAbilitySpecHandleForClass(TSubclassOf<UGameplayAbility> AbilityClass, UObject* OptionalSourceObject = nullptr);
 };

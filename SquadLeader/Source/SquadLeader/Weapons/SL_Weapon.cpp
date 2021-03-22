@@ -1,0 +1,190 @@
+#include "SL_Weapon.h"
+#include "../AbilitySystem/Soldiers/AbilitySystemSoldier.h"
+#include "../AbilitySystem/Soldiers/GameplayAbilitySoldier.h"
+#include "../AbilitySystem/Soldiers/Trace/SL_LineTrace.h"
+#include "../AbilitySystem/Soldiers/Trace/SL_SphereTrace.h"
+#include "Net/UnrealNetwork.h"
+#include "../Soldiers/Soldier.h"
+#include "../Soldiers/Players/SoldierPlayer.h"
+#include "../Soldiers/Players/SoldierPlayerController.h"
+#include "../UI/PlayerHUD.h"
+
+ASL_Weapon::ASL_Weapon() : CurrentAmmo{ 50 }, MaxAmmo{ 50 }, bInfiniteAmmo { false }
+{
+	PrimaryActorTick.bCanEverTick = false;
+	bReplicates = true;
+	bNetUseOwnerRelevancy = true;
+	NetUpdateFrequency = 100.0f; // TODO: Tweak it
+
+	WeaponAbilityTag = FGameplayTag::RequestGameplayTag("Ability.Skill.FireWeapon");
+	WeaponIsFiringTag = FGameplayTag::RequestGameplayTag("Weapon.IsFiring");
+	FireMode = FGameplayTag::RequestGameplayTag("Weapon.FireMode.None");
+}
+
+void ASL_Weapon::BeginPlay()
+{
+	ResetWeapon();
+	Super::BeginPlay();
+}
+
+void ASL_Weapon::EndPlay(EEndPlayReason::Type _EndPlayReason)
+{
+	if (LineTraceTargetActor)
+		LineTraceTargetActor->Destroy();
+
+	if (SphereTraceTargetActor)
+		SphereTraceTargetActor->Destroy();
+
+	Super::EndPlay(_EndPlayReason);
+}
+
+void ASL_Weapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME_CONDITION(ASL_Weapon, OwningSoldier, COND_OwnerOnly);
+	DOREPLIFETIME_CONDITION(ASL_Weapon, CurrentAmmo, COND_OwnerOnly);
+	DOREPLIFETIME_CONDITION(ASL_Weapon, MaxAmmo, COND_OwnerOnly);
+}
+
+void ASL_Weapon::PreReplication(IRepChangedPropertyTracker& ChangedPropertyTracker)
+{
+	Super::PreReplication(ChangedPropertyTracker);
+
+	/*DOREPLIFETIME_ACTIVE_OVERRIDE(ASL_Weapon, CurrentAmmo, (IsValid(AbilitySystemComponent) && !AbilitySystemComponent->HasMatchingGameplayTag(WeaponIsFiringTag)));
+	DOREPLIFETIME_ACTIVE_OVERRIDE(ASL_Weapon, SecondaryClipAmmo, (IsValid(AbilitySystemComponent) && !AbilitySystemComponent->HasMatchingGameplayTag(WeaponIsFiringTag)));*/
+}
+
+void ASL_Weapon::SetOwningCharacter(ASoldier* _InOwningCharacter)
+{
+	OwningSoldier = _InOwningCharacter;
+
+	AbilitySystemComponent = OwningSoldier ? Cast<UAbilitySystemSoldier>(OwningSoldier->GetAbilitySystemComponent()) : nullptr;
+	SetOwner(OwningSoldier);
+	SetInstigator(OwningSoldier);
+}
+
+void ASL_Weapon::ResetWeapon()
+{
+	FireMode = DefaultFireMode;
+}
+
+UAbilitySystemComponent* ASL_Weapon::GetAbilitySystemComponent() const
+{
+	return AbilitySystemComponent;
+}
+
+void ASL_Weapon::AddAbilities()
+{
+	if (!OwningSoldier || GetLocalRole() != ROLE_Authority)
+		return;
+
+	UAbilitySystemSoldier* ASC = Cast<UAbilitySystemSoldier>(OwningSoldier->GetAbilitySystemComponent());
+	
+	if (!ASC)
+		return;
+
+	for (TSubclassOf<UGameplayAbilitySoldier>& Ability : Abilities)
+	{
+		AbilitySpecHandles.Add(ASC->GiveAbility(
+			FGameplayAbilitySpec(Ability, GetAbilityLevel(Ability.GetDefaultObject()->AbilityID), static_cast<int32>(Ability.GetDefaultObject()->AbilityInputID), this)));
+	}
+}
+
+void ASL_Weapon::RemoveAbilities()
+{
+	if (!IsValid(OwningSoldier) || GetLocalRole() != ROLE_Authority)
+		return;
+
+	UAbilitySystemSoldier* ASC = Cast<UAbilitySystemSoldier>(OwningSoldier->GetAbilitySystemComponent());
+
+	if (!ASC)
+		return;
+
+	for (FGameplayAbilitySpecHandle& SpecHandle : AbilitySpecHandles)
+		ASC->ClearAbility(SpecHandle);
+}
+
+int32 ASL_Weapon::GetAbilityLevel(ESoldierAbilityInputID _AbilityID)
+{
+	// All abilities for now are level 1
+	return 1;
+}
+
+int32 ASL_Weapon::GetCurrentAmmo() const
+{
+	return CurrentAmmo;
+}
+
+int32 ASL_Weapon::GetMaxAmmo() const
+{
+	return MaxAmmo;
+}
+
+bool ASL_Weapon::IsFullAmmo() const
+{
+	return CurrentAmmo == MaxAmmo;
+}
+
+void ASL_Weapon::SetAmmo(const int32 _NewAmmo)
+{
+	CurrentAmmo = _NewAmmo;
+
+	if (ASoldierPlayer* SP = GetOwner<ASoldierPlayer>(); SP)
+	{
+		if (ASoldierPlayerController* PC = SP->GetController<ASoldierPlayerController>(); PC)
+		{
+			if (APlayerHUD* HUD = PC->GetHUD<APlayerHUD>(); HUD)
+				HUD->OnAmmoChanged(CurrentAmmo);
+		}
+	}
+}
+
+void ASL_Weapon::SetMaxAmmo(const int32 _NewMaxAmmo)
+{
+	MaxAmmo = _NewMaxAmmo;
+
+	if (ASoldierPlayer* SP = GetOwner<ASoldierPlayer>(); SP)
+	{
+		if (ASoldierPlayerController* PC = SP->GetController<ASoldierPlayerController>(); PC)
+		{
+			if (APlayerHUD* HUD = PC->GetHUD<APlayerHUD>(); HUD)
+				HUD->OnMaxAmmoChanged(MaxAmmo);
+		}
+	}
+}
+
+bool ASL_Weapon::HasInfiniteAmmo() const
+{
+	return bInfiniteAmmo;
+}
+
+void ASL_Weapon::OnRep_Ammo(int32 _OldPrimaryClipAmmo)
+{
+	// TODO: Broadcast ?
+}
+
+void ASL_Weapon::OnRep_MaxAmmo(int32 _OldMaxPrimaryClipAmmo)
+{
+	// TODO: Broadcast ?
+}
+
+ASL_LineTrace* ASL_Weapon::GetLineTraceTargetActor()
+{
+	if (LineTraceTargetActor)
+		return LineTraceTargetActor;
+
+	LineTraceTargetActor = GetWorld()->SpawnActor<ASL_LineTrace>();
+	LineTraceTargetActor->SetOwner(this);
+	return LineTraceTargetActor;
+}
+
+ASL_SphereTrace* ASL_Weapon::GetSphereTraceTargetActor()
+{
+	if (SphereTraceTargetActor)
+		return SphereTraceTargetActor;
+
+	SphereTraceTargetActor = GetWorld()->SpawnActor<ASL_SphereTrace>();
+	SphereTraceTargetActor->SetOwner(this);
+	return SphereTraceTargetActor;
+}

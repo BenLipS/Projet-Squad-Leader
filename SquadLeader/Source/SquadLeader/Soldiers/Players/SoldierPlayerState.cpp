@@ -10,6 +10,7 @@ ASoldierPlayerState::ASoldierPlayerState()
 	AttributeSet = CreateDefaultSubobject<UAttributeSetSoldier>(TEXT("Attribute Set"));
 
 	bReplicates = true;
+	NetUpdateFrequency = 100.0f;
 }
 
 void ASoldierPlayerState::BeginPlay()

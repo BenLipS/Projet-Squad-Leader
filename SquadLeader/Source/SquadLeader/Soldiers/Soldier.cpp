@@ -11,6 +11,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "SquadLeader/SquadLeader.h"
+#include "SquadLeader/Weapons/SL_Weapon.h"
 //#include "DrawDebugHelpers.h"
 
 // States
@@ -37,7 +38,10 @@ FGameplayTag ASoldier::SkillGiveOrderTag = FGameplayTag::RequestGameplayTag(FNam
 FGameplayTag ASoldier::SkillReloadWeaponTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.ReloadWeapon"));
 FGameplayTag ASoldier::SkillQuickDashTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.QuickDash"));
 
-ASoldier::ASoldier(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer.SetDefaultSubobjectClass<USoldierMovementComponent>(ACharacter::CharacterMovementComponentName)), bAbilitiesInitialized{ false }, bDefaultWeaponsInitialized{ false }, ImpactHitFXScale{ FVector{1.f} }
+// Weapon
+FGameplayTag ASoldier::NoWeaponTag = FGameplayTag::RequestGameplayTag(FName("Weapon.Equipped.None"));
+
+ASoldier::ASoldier(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer.SetDefaultSubobjectClass<USoldierMovementComponent>(ACharacter::CharacterMovementComponentName)), bAbilitiesInitialized{ false }, bChangedWeaponLocally{ false }, ImpactHitFXScale{FVector{1.f}}
 {
 	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
@@ -46,6 +50,9 @@ ASoldier::ASoldier(const FObjectInitializer& _ObjectInitializer) : Super(_Object
 	InitMeshes();
 	setup_stimulus();
 	GetCapsuleComponent()->BodyInstance.SetObjectType(ECC_Player);
+
+	Inventory = FSoldier_Inventory{};
+	CurrentWeaponTag = ASoldier::NoWeaponTag;
 }
 
 /*
@@ -88,18 +95,23 @@ void ASoldier::BeginPlay()
 	}
 }
 
+void ASoldier::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	GetWorldTimerManager().SetTimerForNextTick(this, &ASoldier::SpawnDefaultInventory);
+}
+
 void ASoldier::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	// only to local owner: weapon change requests are locally instigated, other clients don't need it
-	//DOREPLIFETIME_CONDITION(ASoldier, Inventory, COND_OwnerOnly);
-
-	// everyone except local owner: flag change is locally instigated
-
-	// everyone
+	DOREPLIFETIME(ASoldier, Inventory);
 	DOREPLIFETIME(ASoldier, SyncControlRotation);
-	//DOREPLIFETIME(AShooterCharacter, CurrentWeapon);
+
+	// Only replicate CurrentWeapon to simulated clients and manually sync CurrentWeeapon with Owner when we're ready.
+	// This allows us to predict weapon changing.
+	DOREPLIFETIME_CONDITION(ASoldier, CurrentWeapon, COND_SimulatedOnly);
 }
 
 void ASoldier::Tick(float DeltaTime)
@@ -163,39 +175,11 @@ void ASoldier::InitMovements()
 	GetCharacterMovement()->bCanWalkOffLedgesWhenCrouching = true;
 }
 
-void ASoldier::InitWeapons()
-{
-	if (bDefaultWeaponsInitialized)
-		return;
-
-	for (int32 i = 0; i < DefaultWeaponClasses.Num(); ++i)
-	{
-		if (DefaultWeaponClasses[i])
-		{
-			FActorSpawnParameters SpawnInfo;
-			SpawnInfo.Owner = this;
-			SpawnInfo.Instigator = this;
-			SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-			AWeapon* Weapon = GetWorld()->SpawnActor<AWeapon>(DefaultWeaponClasses[i], SpawnInfo);
-
-			if (Weapon)
-			{
-				AddToInventory(Weapon);
-				Weapon->InitializeAbilitySystemComponent(AbilitySystemComponent);
-			}
-		}
-	}
-
-	if (Inventory.Num() > 0)
-		CurrentWeapon = Inventory[0];
-
-	bDefaultWeaponsInitialized = true;
-}
-
 void ASoldier::ResetWeapons()
 {
-	for (AWeapon* Weapon : Inventory)
-		Weapon->Reset();
+	// TODO complete here
+	//for (AWeapon* Weapon : Inventory)
+		//Weapon->Reset();
 }
 
 void ASoldier::LockControls()
@@ -252,7 +236,7 @@ void ASoldier::AddStartupEffects()
 {
 	check(AbilitySystemComponent);
 
-	if (GetLocalRole() == ROLE_Authority && !AbilitySystemComponent->startupEffectsApplied)
+	if (GetLocalRole() == ROLE_Authority && !AbilitySystemComponent->bStartupEffectsApplied)
 	{
 		FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
 		EffectContext.AddSourceObject(this);
@@ -266,7 +250,7 @@ void ASoldier::AddStartupEffects()
 			}
 		}
 
-		AbilitySystemComponent->startupEffectsApplied = true;
+		AbilitySystemComponent->bStartupEffectsApplied = true;
 	}
 }
 
@@ -489,6 +473,172 @@ void ASoldier::Landed(const FHitResult& _Hit)
 	AbilitySystemComponent->RemoveActiveEffectsWithGrantedTags(EffectTagsToRemove);
 }
 
+void ASoldier::SpawnDefaultInventory()
+{
+	if (GetLocalRole() < ROLE_Authority)
+		return;
+
+	int32 NumWeaponClasses = DefaultInventoryWeaponClasses.Num();
+	for (int32 i = 0; i < NumWeaponClasses; ++i)
+	{
+		if (!DefaultInventoryWeaponClasses[i]) // Empty element from blueprint
+			continue;
+
+		ASL_Weapon* NewWeapon = GetWorld()->SpawnActorDeferred<ASL_Weapon>(DefaultInventoryWeaponClasses[i],
+			FTransform::Identity, this, this, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+		NewWeapon->FinishSpawning(FTransform::Identity);
+
+		bool bEquipFirstWeapon = (i == 0);
+		AddWeaponToInventory(NewWeapon, bEquipFirstWeapon);
+	}
+}
+
+void ASoldier::OnRep_Inventory()
+{
+	if (GetLocalRole() == ROLE_AutonomousProxy && Inventory.Weapons.Num() > 0 && !CurrentWeapon)
+	{
+		// Since we don't replicate the CurrentWeapon to the owning client, this is a way to ask the Server to sync
+		// the CurrentWeapon after it's been spawned via replication from the Server.
+		// The weapon spawning is replicated but the variable CurrentWeapon is not on the owning client.
+		ServerSyncCurrentWeapon();
+	}
+}
+
+ASL_Weapon* ASoldier::GetCurrentWeapon() const
+{
+	return CurrentWeapon;
+}
+
+bool ASoldier::AddWeaponToInventory(ASL_Weapon* _NewWeapon, const bool _bEquipWeapon)
+{
+	if (!_NewWeapon || GetLocalRole() < ROLE_Authority)
+		return false;
+
+	if (DoesWeaponExistInInventory(_NewWeapon))
+	{
+		_NewWeapon->Destroy();
+		return false;
+	}
+
+	Inventory.Weapons.Add(_NewWeapon);
+	_NewWeapon->SetOwningCharacter(this);
+	_NewWeapon->AddAbilities();
+
+	if (_bEquipWeapon)
+	{
+		EquipWeapon(_NewWeapon);
+		ClientSyncCurrentWeapon(CurrentWeapon);
+	}
+	return true;
+}
+
+void ASoldier::EquipWeapon(ASL_Weapon* _NewWeapon)
+{
+	if (GetLocalRole() < ROLE_Authority)
+	{
+		ServerEquipWeapon(_NewWeapon);
+		SetCurrentWeapon(_NewWeapon, CurrentWeapon);
+		bChangedWeaponLocally = true;
+	}
+	else
+		SetCurrentWeapon(_NewWeapon, CurrentWeapon);
+}
+
+void ASoldier::ServerEquipWeapon_Implementation(ASL_Weapon* _NewWeapon)
+{
+	EquipWeapon(_NewWeapon);
+}
+
+bool ASoldier::ServerEquipWeapon_Validate(ASL_Weapon* _NewWeapon)
+{
+	return true;
+}
+
+bool ASoldier::DoesWeaponExistInInventory(ASL_Weapon* _Weapon)
+{
+	if (!_Weapon)
+		return false;
+
+	for (ASL_Weapon* Weapon : Inventory.Weapons)
+	{
+		if (Weapon && Weapon->GetClass() == _Weapon->GetClass())
+			return true;
+	}
+	return false;
+}
+
+void ASoldier::SetCurrentWeapon(ASL_Weapon* _NewWeapon, ASL_Weapon* _LastWeapon)
+{
+	if (_NewWeapon == _LastWeapon)
+		return;
+
+	// Cancel active weapon abilities
+	if (AbilitySystemComponent)
+	{
+		FGameplayTagContainer AbilityTagsToCancel = FGameplayTagContainer(ASoldier::SkillFireWeaponTag);
+		AbilitySystemComponent->CancelAbilities(&AbilityTagsToCancel);
+	}
+
+	UnEquipWeapon(_LastWeapon);
+
+	if (_NewWeapon)
+	{
+		if (AbilitySystemComponent)
+		{
+			// Clear out potential NoWeaponTag
+			AbilitySystemComponent->RemoveLooseGameplayTag(CurrentWeaponTag);
+		}
+
+		// Weapons coming from OnRep_CurrentWeapon won't have the owner set
+		CurrentWeapon = _NewWeapon;
+		CurrentWeapon->SetOwningCharacter(this);
+		CurrentWeaponTag = CurrentWeapon->WeaponTag;
+
+		if (AbilitySystemComponent)
+			AbilitySystemComponent->AddLooseGameplayTag(CurrentWeaponTag);
+
+		// TODO: Do update for HUD through player controller here
+
+		// TODO: Play montage/ sound cue on the needs
+	}
+}
+
+void ASoldier::UnEquipWeapon(ASL_Weapon* _WeaponToUnEquip)
+{
+	// TODO: See if we need this function
+	//if (_WeaponToUnEquip)
+	//	_WeaponToUnEquip->UnEquip();
+}
+
+void ASoldier::OnRep_CurrentWeapon(ASL_Weapon* _LastWeapon)
+{
+	bChangedWeaponLocally = false;
+	SetCurrentWeapon(CurrentWeapon, _LastWeapon);
+}
+
+void ASoldier::ServerSyncCurrentWeapon_Implementation()
+{
+	ClientSyncCurrentWeapon(CurrentWeapon);
+}
+
+bool ASoldier::ServerSyncCurrentWeapon_Validate()
+{
+	return true;
+}
+
+void ASoldier::ClientSyncCurrentWeapon_Implementation(ASL_Weapon* _InWeapon)
+{
+	ASL_Weapon* LastWeapon = CurrentWeapon;
+	CurrentWeapon = _InWeapon;
+	OnRep_CurrentWeapon(LastWeapon);
+}
+
+bool ASoldier::ClientSyncCurrentWeapon_Validate(ASL_Weapon* _InWeapon)
+{
+	return true;
+}
+
+
 FVector ASoldier::GetLookingAtPosition()
 {
 	FHitResult OutHit;
@@ -578,48 +728,22 @@ void ASoldier::Respawn()
 	AbilitySystemComponent->RemoveActiveEffectsWithGrantedTags(EffectTagsToRemove);
 }
 
-bool ASoldier::GetWantsToFire() const
-{
-	return bWantsToFire;
-}
-
-void ASoldier::SetWantsToFire(const bool _Want)
-{
-	bWantsToFire = _Want;
-	if (bWantsToFire) {
-		CurrentWeapon->TryFiring();
-	}
-}
-
-void ASoldier::SetWantsToFire(const bool _Want, const FGameplayEffectSpecHandle _DamageEffectSpecHandle)
-{
-	bWantsToFire = _Want;
-	if (bWantsToFire) {
-		CurrentWeapon->TryFiring(_DamageEffectSpecHandle);
-	}
-}
-
 void ASoldier::StartAiming()
 {
-	FirstPersonCameraComponent->SetFieldOfView(CurrentWeapon->GetFieldOfViewAim());
+	// TODO complete
+	/*FirstPersonCameraComponent->SetFieldOfView(CurrentWeapon->GetFieldOfViewAim());
 	ThirdPersonCameraComponent->SetFieldOfView(CurrentWeapon->GetFieldOfViewAim());
+	*/
 }
 
 void ASoldier::StopAiming()
 {
+	// TODO: complete
+	/*
 	// TODO: Should we have a variable for that ?
 	FirstPersonCameraComponent->SetFieldOfView(90.f);
 	ThirdPersonCameraComponent->SetFieldOfView(90.f);
-}
-
-void ASoldier::ReloadWeapon()
-{
-	CurrentWeapon->Reload();
-}
-
-void ASoldier::OnRep_CurrentWeapon(AWeapon* _LastWeapon)
-{
-	SetCurrentWeapon(CurrentWeapon, _LastWeapon);
+	*/
 }
 
 FRotator ASoldier::GetSyncControlRotation() const noexcept
@@ -657,22 +781,6 @@ void ASoldier::MulticastSyncControlRotation_Implementation(const FRotator& _Rota
 bool ASoldier::MulticastSyncControlRotation_Validate(const FRotator& _Rotation)
 {
 	return true;
-}
-
-void ASoldier::AddToInventory(AWeapon* _Weapon)
-{
-	Inventory.Add(_Weapon);
-}
-
-void ASoldier::SetCurrentWeapon(AWeapon* _NewWeapon, AWeapon* _PreviousWeapon)
-{
-	if (_PreviousWeapon && _NewWeapon !=_PreviousWeapon)
-		CurrentWeapon = _NewWeapon;
-}
-
-AWeapon* ASoldier::GetCurrentWeapon() const noexcept
-{
-	return CurrentWeapon;
 }
 
 // network for debug team change

@@ -1,6 +1,5 @@
 #include "GA_Fire.h"
 #include "../../../Soldiers/Soldier.h"
-#include "../../../Weapons/WeaponLaser.h"
 
 UGA_Fire::UGA_Fire()
 {
@@ -24,7 +23,7 @@ void UGA_Fire::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FG
 			soldier->GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*FiringEffectSpecHandle.Data.Get());
 
 			FGameplayEffectSpecHandle DamageEffectSpecHandle = MakeOutgoingGameplayEffectSpec(DamageGameplayEffect, GetAbilityLevel());
-			soldier->SetWantsToFire(true, DamageEffectSpecHandle);
+			//soldier->SetWantsToFire(true, DamageEffectSpecHandle);
 		}
 	}
 }
@@ -51,6 +50,6 @@ void UGA_Fire::CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGam
 
 	Super::CancelAbility(Handle, ActorInfo, ActivationInfo, bReplicateCancelAbility);
 
-	if (ASoldier* soldier = Cast<ASoldier>(ActorInfo->AvatarActor.Get()); soldier)
-		soldier->SetWantsToFire(false);
+	//if (ASoldier* soldier = Cast<ASoldier>(ActorInfo->AvatarActor.Get()); soldier)
+	//	soldier->SetWantsToFire(false);
 }

@@ -7,7 +7,6 @@
 #include "AbilitySystemInterface.h"
 #include "../AbilitySystem/Soldiers/AttributeSetSoldier.h"
 #include "../AbilitySystem/Soldiers/AbilitySystemSoldier.h"
-#include "../Weapons/Weapon.h"
 #include "Interface/Teamable.h"
 //
 #include "SoldierTeam.h"
@@ -15,6 +14,21 @@
 #include "Net/UnrealNetwork.h"
 #include "Soldier.generated.h"
 
+class ASL_Weapon;
+
+USTRUCT()
+struct SQUADLEADER_API FSoldier_Inventory
+{
+	GENERATED_USTRUCT_BODY()
+
+	FSoldier_Inventory() = default;
+
+	UPROPERTY()
+	TArray<ASL_Weapon*> Weapons;
+
+	// Consumable items ?
+	// Grenade ?
+};
 
 UCLASS()
 class SQUADLEADER_API ASoldier : public ACharacter, public IAbilitySystemInterface, public ITeamable
@@ -26,6 +40,7 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+	virtual void PostInitializeComponents() override;
 
 public:
 	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
@@ -36,7 +51,6 @@ protected:
 	void InitCameras();
 	void InitMeshes();
 	void InitMovements();
-	virtual void InitWeapons();
 
 //////////////// Resets
 	void ResetWeapons();
@@ -109,6 +123,10 @@ public:
 	static FGameplayTag SkillGiveOrderTag;
 	static FGameplayTag SkillReloadWeaponTag;
 	static FGameplayTag SkillQuickDashTag;
+
+	// Weapon
+	static FGameplayTag NoWeaponTag;
+	FGameplayTag CurrentWeaponTag;
 
 protected:
 	virtual void DeadTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
@@ -264,54 +282,78 @@ public:
 
 	virtual void Landed(const FHitResult& _Hit) override;
 
-//////////////// Weapons
+//////////////// Inventory
 protected:
-	UPROPERTY(BlueprintReadOnly, Category = "Weapon")
-	bool bWantsToFire = false;
+	void SpawnDefaultInventory();
+	
+	UPROPERTY(ReplicatedUsing = OnRep_Inventory)
+	FSoldier_Inventory Inventory;
+
+	UFUNCTION()
+	void OnRep_Inventory();
+
+// Weapons
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Inventory | Weapon")
+	TArray<TSubclassOf<ASL_Weapon>> DefaultInventoryWeaponClasses;
+
+	UPROPERTY(ReplicatedUsing = OnRep_CurrentWeapon)
+	ASL_Weapon* CurrentWeapon;
 
 public:
-	UFUNCTION(BlueprintCallable, Category = "Weapon")
-	bool GetWantsToFire() const;
+	UFUNCTION(BlueprintCallable, Category = "Inventory | Weapon")
+	ASL_Weapon* GetCurrentWeapon() const;
 
-	UFUNCTION(BlueprintCallable, Category = "Weapon")
-	void SetWantsToFire(const bool _Want);
+	bool bChangedWeaponLocally;
 
-	void SetWantsToFire(const bool _Want, const FGameplayEffectSpecHandle _DamageEffectSpecHandle);
+	// Adds a new weapon to the inventory.
+	// Returns false if the weapon already exists in the inventory, true if it's a new weapon.
+	UFUNCTION(BlueprintCallable, Category = "Inventory | Weapon")
+	bool AddWeaponToInventory(ASL_Weapon* _NewWeapon, const bool _bEquipWeapon = false);
 
+	UFUNCTION(BlueprintCallable, Category = "Inventory | Weapon")
+	void EquipWeapon(ASL_Weapon* _NewWeapon);
+
+	UFUNCTION(Server, Reliable)
+	void ServerEquipWeapon(ASL_Weapon* _NewWeapon);
+	bool ServerEquipWeapon_Validate(ASL_Weapon* _NewWeapon);
+	void ServerEquipWeapon_Implementation(ASL_Weapon* _NewWeapon);
+
+protected:
+	bool DoesWeaponExistInInventory(ASL_Weapon* _Weapon);
+
+	void SetCurrentWeapon(ASL_Weapon* _NewWeapon, ASL_Weapon* _LastWeapon);
+
+	// Unequips the specified weapon. Used when OnRep_CurrentWeapon fires.
+	void UnEquipWeapon(ASL_Weapon* WeaponToUnEquip);
+
+	UFUNCTION()
+	void OnRep_CurrentWeapon(ASL_Weapon* _LastWeapon);
+
+	// The CurrentWeapon is only automatically replicated to simulated clients.
+	// The autonomous client can use this to request the proper CurrentWeapon from the server when it knows it may be
+	// out of sync with it from predictive client-side changes.
+	UFUNCTION(Server, Reliable)
+	void ServerSyncCurrentWeapon();
+	void ServerSyncCurrentWeapon_Implementation();
+	bool ServerSyncCurrentWeapon_Validate();
+
+	// The CurrentWeapon is only automatically replicated to simulated clients.
+	// Use this function to manually sync the autonomous client's CurrentWeapon when we're ready to.
+	// This allows us to predict weapon changes (changing weapons fast multiple times in a row so that the server doesn't
+	// replicate and clobber our CurrentWeapon).
+	UFUNCTION(Client, Reliable)
+	void ClientSyncCurrentWeapon(ASL_Weapon* _InWeapon);
+	void ClientSyncCurrentWeapon_Implementation(ASL_Weapon* _InWeapon);
+	bool ClientSyncCurrentWeapon_Validate(ASL_Weapon* _InWeapon);
+
+public:
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	void StartAiming();
 
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	void StopAiming();
 
-	UFUNCTION(BlueprintCallable, Category = "Weapon")
-	void ReloadWeapon();
-
-protected:
-	bool bDefaultWeaponsInitialized;
-
-	// Default inventory
-	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
-	TArray<TSubclassOf<class AWeapon>> DefaultWeaponClasses;
-
-	// Current inventory
-	UPROPERTY(Transient, Replicated)
-	TArray<class AWeapon*> Inventory;
-
-	UPROPERTY(Transient, ReplicatedUsing = OnRep_CurrentWeapon)
-	AWeapon* CurrentWeapon;
-
-	void AddToInventory(AWeapon* _Weapon);
-
-	void SetCurrentWeapon(class AWeapon* _NewWeapon, class AWeapon* _PreviousWeapon = nullptr);
-
-	UFUNCTION()
-	void OnRep_CurrentWeapon(class AWeapon* _LastWeapon);
-
-public:
-	AWeapon* GetCurrentWeapon() const noexcept;
-
-	//////////////// Soldier team
+//////////////// Soldier team
 	UPROPERTY(EditAnywhere, Category = "PlayerTeam")
 	TSubclassOf<ASoldierTeam> InitialTeam;  // for debug use
 
@@ -320,8 +362,8 @@ public:
 
 	// Connected to the "L" key
 	virtual void cycleBetweenTeam();
-	
-	//////////////// Teamable
+
+//////////////// Teamable
 	virtual TSubclassOf<ASoldierTeam> GetTeam() override { return nullptr; };  // function overide in SoldierPlayer and Soldier AI
 	virtual bool SetTeam(TSubclassOf<ASoldierTeam> _Team) override { return false; };  // function overide in SoldierPlayer and Soldier AI
 

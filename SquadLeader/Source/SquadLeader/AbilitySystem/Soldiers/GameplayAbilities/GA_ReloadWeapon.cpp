@@ -18,8 +18,8 @@ void UGA_ReloadWeapon::ActivateAbility(const FGameplayAbilitySpecHandle Handle, 
 		if (!CommitAbility(Handle, ActorInfo, ActivationInfo))
 			EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
 
-		if (ASoldier* soldier = Cast<ASoldier>(ActorInfo->AvatarActor.Get()); soldier)
-			soldier->ReloadWeapon();
+		//if (ASoldier* soldier = Cast<ASoldier>(ActorInfo->AvatarActor.Get()); soldier)
+		//	soldier->ReloadWeapon();
 	}
 }
 
@@ -30,8 +30,8 @@ bool UGA_ReloadWeapon::CanActivateAbility(const FGameplayAbilitySpecHandle Handl
 
 	if (ASoldier* Soldier = Cast<ASoldier>(ActorInfo->AvatarActor.Get()); Soldier)
 	{
-		if (AWeapon* Weapon = Soldier->GetCurrentWeapon(); Weapon)
-			return !Weapon->IsFullAmmo();
+		//if (AWeapon* Weapon = Soldier->GetCurrentWeapon(); Weapon)
+		//	return !Weapon->IsFullAmmo();
 	}
 
 	return false;
