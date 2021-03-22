@@ -135,8 +135,9 @@ void AAISquadManager::UpdateMission(const MissionType _MissionType, const FVecto
 
 	for (AAISquadController* AISquad : AISquadList) {
 		AISquad->SetMission(Mission);
+		AISquad->SetObjectifLocation(_Location);
 		if(Mission->Type == MissionType::Formation){
-			AISquad->get_blackboard()->SetValueAsBool("IsInFormation", true);
+			AISquad->FormationState();
 			AISquad->get_blackboard()->SetValueAsBool("HasOrder", false);
 		}
 		else if (Mission->Type != MissionType::None) {

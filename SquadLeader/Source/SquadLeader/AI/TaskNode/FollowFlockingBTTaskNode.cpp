@@ -4,6 +4,7 @@
 #include "FollowFlockingBTTaskNode.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "../AIBasicController.h"
+#include "../AISquadController.h"
 
 UFollowFlockingBTTaskNode::UFollowFlockingBTTaskNode()
 {
@@ -30,10 +31,16 @@ void UFollowFlockingBTTaskNode::TickTask(class UBehaviorTreeComponent& OwnerComp
 
 	ResultState arrive = AIGeneralController->ArriveAtDestination();
 
+	
+
 	if(arrive == ResultState::Success)
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	if(arrive == ResultState::Failed)
 		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+
+	else if (AAISquadController* AISquadController = Cast<AAISquadController>(OwnerComp.GetOwner()); AISquadController && AISquadController->get_blackboard()->GetValueAsBool("IsInFormation") == true) {
+		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+	}
 }
 
 FString UFollowFlockingBTTaskNode::GetStaticDescription() const

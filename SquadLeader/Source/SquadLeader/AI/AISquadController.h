@@ -45,4 +45,6 @@ public:
 	virtual void Die() override;
 
 	virtual void ResetBlackBoard() const override;
+
+	void FormationState();
 };

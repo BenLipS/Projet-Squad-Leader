@@ -62,6 +62,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		FVector GetObjectifLocation() { return ObjectifLocation + 100; };
+	UFUNCTION(BlueprintCallable)
+		void SetObjectifLocation(FVector _Location) { ObjectifLocation = _Location; };
 
 	/* For BT Task  */
 	UFUNCTION(BlueprintCallable, Category = "Flocking Behaviour")

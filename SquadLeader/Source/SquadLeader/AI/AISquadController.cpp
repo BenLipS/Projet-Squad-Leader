@@ -98,3 +98,13 @@ void AAISquadController::ResetBlackBoard() const {
 	blackboard->SetValueAsBool("HasOrder", false);
 	blackboard->SetValueAsBool("IsInFormation", true);
 }
+
+
+void AAISquadController::FormationState() {
+	SetState(AIBasicState::Moving);
+	blackboard->SetValueAsBool("is_attacking", false);
+	blackboard->SetValueAsBool("is_moving", false);
+	blackboard->SetValueAsBool("is_patroling", false);
+	blackboard->SetValueAsBool("is_searching", false);
+	blackboard->SetValueAsBool("IsInFormation", true);
+}
