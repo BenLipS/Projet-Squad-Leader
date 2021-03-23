@@ -33,6 +33,14 @@ void ASoldierPlayerController::CreateHUD_Implementation()
 	if (CurrentPlayerHUD)
 		return;
 	ClientSetHUD(HUDClass);
+	if (APlayerHUD* HUD = GetHUD<APlayerHUD>(); HUD)
+	{
+		if (InputComponent)
+		{
+			InputComponent->BindAction("GiveOrder", IE_Pressed, HUD, &APlayerHUD::OnOrderInputPressed);
+			InputComponent->BindAction("GiveOrder", IE_Released, HUD, &APlayerHUD::OnOrderInputReleased);
+		}
+	}
 }
 
 // Server only

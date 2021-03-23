@@ -39,6 +39,7 @@ void UWheelWidget::SynchronizeProperties()
 	for (TSubclassOf<UWheelWidgetElement> DefaultItem : ItemsDefault)
 	{
 		UWheelWidgetElement* newItem = CreateWidget<UWheelWidgetElement>(GetWorld(), DefaultItem);
+		newItem->SetRenderTransformPivot(FVector2D(0.f));
 		OnVisibilityChanged.AddDynamic(newItem, &UWheelWidgetElement::SetVisibility);
 		ListItems.Add(newItem);
 	}
@@ -56,19 +57,20 @@ void UWheelWidget::AddToViewport(int32 ZOrder)
 
 	FVector2D CenterScreen = (UWidgetLayoutLibrary::GetViewportSize(GetWorld()) / 2.0f) * (1.0f / UWidgetLayoutLibrary::GetViewportScale(GetWorld()));
 
+	float AngleSection = 360.f / float(NbElement);
+	float Angle = AngleSection / 2.f;
+
 	for (int i = 0; i < ListItems.Num(); ++i)
 	{
+		float NextAngle = Angle + AngleSection;
 		if (!ListItems[i]->IsInViewport())
 		{
-			float AngleSection = 360.f / float(NbElement);
-			float Angle = (AngleSection * i) + (AngleSection / 2.f);
-			float NextAngle = (AngleSection * (i+1)) + (AngleSection / 2.f);
-			
 			ListItems[i]->SetPositionInViewport(
 				(CenterScreen + (FVector2D(UKismetMathLibrary::DegCos(Angle), UKismetMathLibrary::DegSin(Angle)) * (InnerCircleRadius + ((OutterCircleRadius - InnerCircleRadius) / 2.f)))
 				), false);
 			ListItems[i]->AddToViewport();
 		}
+		Angle = NextAngle;
 	}
 }
 
@@ -146,28 +148,52 @@ int32 UWheelWidget::NativePaint(const FPaintArgs& Args, const FGeometry& Allotte
 	}
 
 	//-----DRAW-----
-
+	float Angle = 0.f;
 	for (int i = 0; i < NbElement; i++)
 	{
-		if (i == MouseIndex || i == (MouseIndex + 1) % NbElement)
+		if (i == MouseIndex)
 		{
 			UWidgetBlueprintLibrary::DrawLine(Context,
-				CenterScreen + (FVector2D(UKismetMathLibrary::DegCos(AngleSection * i), UKismetMathLibrary::DegSin(AngleSection * i)) * (InnerCircleRadius + ((OutterCircleRadius - InnerCircleRadius)/10.f))),
-				CenterScreen + (FVector2D(UKismetMathLibrary::DegCos(AngleSection * i), UKismetMathLibrary::DegSin(AngleSection * i)) * (OutterCircleRadius - ((OutterCircleRadius - InnerCircleRadius) / 10.f))),
+				CenterScreen + (FVector2D(UKismetMathLibrary::DegCos(Angle), UKismetMathLibrary::DegSin(Angle)) * (InnerCircleRadius + ((OutterCircleRadius - InnerCircleRadius) / 10.f))),
+				CenterScreen + (FVector2D(UKismetMathLibrary::DegCos(Angle), UKismetMathLibrary::DegSin(Angle)) * (OutterCircleRadius - ((OutterCircleRadius - InnerCircleRadius) / 10.f))),
 				SeparationColor,
 				true,
 				SelectionThickness);
+			if (!ListItems[i]->IsItemHovered())
+			{
+				ListItems[i]->SetItemHovered(true);
+				ListItems[i]->SetPositionInViewport(
+					(CenterScreen + (FVector2D(UKismetMathLibrary::DegCos(Angle + (AngleSection/2.f)), UKismetMathLibrary::DegSin(Angle + (AngleSection / 2.f))) * (InnerCircleRadius + ((OutterCircleRadius - InnerCircleRadius) / 2.f)))
+						), false);
+			}
 		}
 		else
 		{
-			UWidgetBlueprintLibrary::DrawLine(Context,
-				CenterScreen + (FVector2D(UKismetMathLibrary::DegCos(AngleSection * i), UKismetMathLibrary::DegSin(AngleSection * i)) * (InnerCircleRadius + ((OutterCircleRadius - InnerCircleRadius) / 10.f))),
-				CenterScreen + (FVector2D(UKismetMathLibrary::DegCos(AngleSection * i), UKismetMathLibrary::DegSin(AngleSection * i)) * (OutterCircleRadius - ((OutterCircleRadius - InnerCircleRadius) / 10.f))),
-				SeparationColor,
-				true,
-				DefaultThickness);
+			if (ListItems[i]->IsItemHovered())
+			{
+				ListItems[i]->SetItemHovered(false);
+			}
+
+			if (i == (MouseIndex + 1) % NbElement)
+			{
+				UWidgetBlueprintLibrary::DrawLine(Context,
+					CenterScreen + (FVector2D(UKismetMathLibrary::DegCos(Angle), UKismetMathLibrary::DegSin(Angle)) * (InnerCircleRadius + ((OutterCircleRadius - InnerCircleRadius) / 10.f))),
+					CenterScreen + (FVector2D(UKismetMathLibrary::DegCos(Angle), UKismetMathLibrary::DegSin(Angle)) * (OutterCircleRadius - ((OutterCircleRadius - InnerCircleRadius) / 10.f))),
+					SeparationColor,
+					true,
+					SelectionThickness);
+			}
+			else
+			{
+				UWidgetBlueprintLibrary::DrawLine(Context,
+					CenterScreen + (FVector2D(UKismetMathLibrary::DegCos(AngleSection * i), UKismetMathLibrary::DegSin(AngleSection * i)) * (InnerCircleRadius + ((OutterCircleRadius - InnerCircleRadius) / 10.f))),
+					CenterScreen + (FVector2D(UKismetMathLibrary::DegCos(AngleSection * i), UKismetMathLibrary::DegSin(AngleSection * i)) * (OutterCircleRadius - ((OutterCircleRadius - InnerCircleRadius) / 10.f))),
+					SeparationColor,
+					true,
+					DefaultThickness);
+			}
 		}
-		
+		Angle += AngleSection;
 	}
 
 	return Super::NativePaint(Args, AllottedGeometry, MyCullingRect, OutDrawElements, LayerId, InWidgetStyle, bParentEnabled);

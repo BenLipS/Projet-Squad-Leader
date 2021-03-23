@@ -30,7 +30,6 @@ void APlayerHUD::DrawHUD()
 void APlayerHUD::BeginPlay()
 {
 	Super::BeginPlay();
-
 	//Creating widget
 
 	//-----Health-----
@@ -207,6 +206,7 @@ void APlayerHUD::OnMaxAmmoChanged(int8 newMaxAmmo)
 
 void APlayerHUD::OnOrderInputPressed()
 {
+	PlayerOwner->ClientIgnoreLookInput(true);
 	if (WheelWidget)
 	{
 		WheelWidget->OnInputPressed();
@@ -215,6 +215,7 @@ void APlayerHUD::OnOrderInputPressed()
 
 void APlayerHUD::OnOrderInputReleased()
 {
+	PlayerOwner->ClientIgnoreLookInput(false);
 	if (WheelWidget)
 	{
 		WheelWidget->OnInputReleased();

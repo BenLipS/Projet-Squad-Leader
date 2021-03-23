@@ -16,4 +16,11 @@ class SQUADLEADER_API UWheelWidgetElement : public USL_UserWidget
 	
 public:
 	virtual void OnitemSelected() {}
+
+	//Return true if state has changed
+	virtual void SetItemHovered(bool bIsHovered);
+	bool IsItemHovered();
+
+protected:
+	bool bIsItemHovered = false;
 };

@@ -57,16 +57,6 @@ void UGA_GiveOrder::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 			SpawnedActor->StartLocation = TargetingLocationInfo;
 		}*/
 		//Call affichage
-		if (ASoldierPlayer* Soldier = Cast<ASoldierPlayer>(ActorInfo->AvatarActor.Get()); Soldier)
-		{
-			if (ASoldierPlayerController* PC = Soldier->GetController<ASoldierPlayerController>())
-			{
-				if (APlayerHUD* HUD = PC->GetHUD<APlayerHUD>(); HUD)
-				{
-					HUD->OnOrderInputPressed();
-				}
-			}
-		}
 	}
 }
 
@@ -77,18 +67,6 @@ bool UGA_GiveOrder::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, 
 
 void UGA_GiveOrder::InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo)
 {
-	//Finir la roue
-	if (ASoldierPlayer* Soldier = Cast<ASoldierPlayer>(ActorInfo->AvatarActor.Get()); Soldier)
-	{
-		if (ASoldierPlayerController* PC = Soldier->GetController<ASoldierPlayerController>())
-		{
-			if (APlayerHUD* HUD = PC->GetHUD<APlayerHUD>(); HUD)
-			{
-				HUD->OnOrderInputReleased();
-			}
-		}
-	}
-
 	if (ActorInfo != NULL && ActorInfo->AvatarActor != NULL)
 		CancelAbility(Handle, ActorInfo, ActivationInfo, true);
 }
