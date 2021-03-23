@@ -76,14 +76,17 @@ void AAISquadController::Init()
 }
 
 EPathFollowingRequestResult::Type AAISquadController::FollowFormation() {
-
 	GetValidFormationPos();
 	EPathFollowingRequestResult::Type _movetoResult = MoveToLocation(blackboard->GetValueAsVector("FormationLocation"), 5.f);
 	DrawDebugPoint(GetWorld(), blackboard->GetValueAsVector("FormationLocation"), 12, FColor::Purple);
-	if ((blackboard->GetValueAsVector("FormationLocation") - GetPawn()->GetActorLocation()).Size() >= RuningDistanceForFormation)
+	if ((blackboard->GetValueAsVector("FormationLocation") - GetPawn()->GetActorLocation()).Size() >= RuningDistanceForFormation && !RunToFormation) {
 		Cast<ASoldierAI>(GetPawn())->ActivateAbilityRun();
-	else
+		RunToFormation = true;
+	}
+	else if (_movetoResult == EPathFollowingRequestResult::AlreadyAtGoal && RunToFormation) {
 		Cast<ASoldierAI>(GetPawn())->CancelAbilityRun();
+		RunToFormation = false;
+	}
 
 	return _movetoResult;
 }
