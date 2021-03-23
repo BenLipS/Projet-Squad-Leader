@@ -50,6 +50,8 @@ void AAIGeneralController::Tick(float DeltaSeconds) {
 	Think(); // == if we need to change the BehaviorTree,
 	Act();
 	FlockingComponent->UpdateFlockingPosition(DeltaSeconds);
+
+	CheckIfNeedToStopCurrentBehavior();
 	//Act will also be done in the behavior tree
 
 }
@@ -206,6 +208,17 @@ void AAIGeneralController::SearchState() {
 	blackboard->SetValueAsBool("is_moving", false);
 	blackboard->SetValueAsBool("is_patroling", false);
 	blackboard->SetValueAsBool("is_searching", true);
+}
+
+void AAIGeneralController::CheckIfNeedToStopCurrentBehavior()
+{
+	if (StopCurrentBehavior && !HasStopCurrentBehavior) {
+		HasStopCurrentBehavior = true;
+	}
+	else if (HasStopCurrentBehavior) {
+		HasStopCurrentBehavior = false;
+		StopCurrentBehavior = false;
+	}
 }
 
 void AAIGeneralController::FocusEnemy() {

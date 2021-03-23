@@ -273,6 +273,14 @@ private:
 	FVector m_destination;
 
 public:
+	UPROPERTY()
+	bool StopCurrentBehavior = false;
+	UPROPERTY()
+	bool HasStopCurrentBehavior = false;
+
+	UFUNCTION()
+		void CheckIfNeedToStopCurrentBehavior();
+
 	TArray<ASoldier*> GetSeenSoldier() { return SeenSoldier; }
 	/*
 	* The distance from where we can walk and shoot the enemy
