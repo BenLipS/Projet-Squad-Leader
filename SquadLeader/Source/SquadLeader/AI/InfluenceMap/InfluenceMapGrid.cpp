@@ -3,7 +3,8 @@
 
 #include "InfluenceMapGrid.h"
 #include "NavigationSystem.h"
-#include "NavigationPath.h"
+#include "NavigationPath.h"/*
+#include "../../Thread/MyThreadManager.h"*/
 #include "../../SquadLeaderGameModeBase.h"
 #include "../../Soldiers/Soldier.h"
 
@@ -19,6 +20,8 @@ void AInfluenceMapGrid::BeginPlay() {
 		m_neighboors.Init(FNeighboor(), nbr_tile);
 		FindNeighboor();
 	}
+
+	/*m_ThreadManager = NewObject<UMyThreadManager>();*/
 }
 
 void AInfluenceMapGrid::Tick(float DeltaSeconds) {
@@ -29,6 +32,10 @@ void AInfluenceMapGrid::Tick(float DeltaSeconds) {
 		//DrawGrid();
 		ResetGrid();
 		UpdateGrid();
+
+		value_tick++;
+		/*if (value_tick > 1000)
+			m_ThreadManager->StartProcess()*/;
 	}
 }
 
@@ -37,7 +44,7 @@ void AInfluenceMapGrid::InitGrid() noexcept {
 	for (int y = m_tile_height / 2.f; y <= m_grid_height; y += m_tile_height) {
 		for (int x = m_tile_width / 2.f; x <= m_grid_width; x += m_tile_width) {
 			FTileBase m_tile;
-			if (auto _location = FVector(x, y, 20.f); IsValid(_location)) {
+			if (auto _location = FVector(x, y, 100.f); IsValid(_location)) {
 				m_tile.m_location = _location;
 				m_influencemap.Add(m_tile);
 			}
@@ -58,7 +65,7 @@ void AInfluenceMapGrid::DrawGrid() const {
 			DrawDebugSolidBox(GetWorld(),_tile.m_location, FVector(95.f, 95.f,10.f), FColor(0, 0, 255 * _tile.m_value));
 		else if (_tile.m_team == 2)
 			DrawDebugSolidBox(GetWorld(), _tile.m_location, FVector(95.f, 95.f, 10.f), FColor(255 * _tile.m_value, 0, 0));
-		/*else
+	/*	else
 			DrawDebugSolidBox(GetWorld(), _tile.m_location, FVector(95.f, 95.f, 10.f), FColor(0, 255, 0));*/
 	}
 }
