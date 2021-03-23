@@ -19,7 +19,6 @@ struct SQUADLEADER_API FNeighboor {
 
 };
 
-
 UENUM()
 enum Type {
 	Soldier UMETA(DisplayName = "Soldier"),
@@ -54,6 +53,7 @@ struct SQUADLEADER_API FTileBase {
 	FVector m_location;
 	int m_team = -1;
 	TEnumAsByte<Type> m_type;
+	bool in_update = false;
 };
 
 
@@ -95,13 +95,6 @@ private:
 	void DrawGrid() const;
 
 	/*
-	* Reset all the grid
-	* the value of a tile is reset to 0
-	* the team of a tile is reset to none
-	*/
-	void ResetGrid() noexcept;
-
-	/*
 	* Update the grid with world information
 	*/
 	void UpdateGrid() noexcept;
@@ -135,18 +128,19 @@ private:
 	* Algorithm recursif
 	* calculate the influence of player on the grid
 	*/
-	void Influence(int index, int start_index, int source_index, int distance) noexcept;
-
-
-	/*
-	* Update all the players for the grid
-	*/
-	void UpdatePlayers() noexcept;
+	void InfluenceSoldier(int index, int start_index, int source_index, int distance) noexcept;
 
 	/*
-	* Update the information of control area in the influence map
+	* Calculate the influence of a control area
 	*/
-	void UpdateControlArea() noexcept;
+	void InfluenceControlArea(int index, int start_index, int source_index, int distance, int value) noexcept;
+
+	/*
+	* Calculate the time of execution of a function
+	*/
+	void TimeFunction();
+
+	void UpdateTile(int index, float value, int team, Type type) noexcept;
 
 public:
 
@@ -181,6 +175,14 @@ private:
 	UPROPERTY()
 		TArray<FNeighboor> m_neighboors;
 
+	/*
+	* Will contains the index of the tile that need
+	* to be update
+	* with that we don't need tu update all the grid
+	* we pop out an index when he's update value is down to 0
+	*/
+	UPROPERTY()
+		TArray<int> m_index_update;
 
 	int value_tick = 0;
 	/*class UMyThreadManager* m_ThreadManager;*/
