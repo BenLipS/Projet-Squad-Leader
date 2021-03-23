@@ -96,7 +96,7 @@ void AAISquadController::Die() {
 	Super::Die();
 }
 
-void AAISquadController::ResetBlackBoard() const {
+void AAISquadController::ResetBlackBoard() {
 	Super::ResetBlackBoard();
 	blackboard->SetValueAsVector("FormationLocation", Cast<ASoldier>(GetPawn())->GetLocation());
 	blackboard->SetValueAsBool("HasOrder", false);

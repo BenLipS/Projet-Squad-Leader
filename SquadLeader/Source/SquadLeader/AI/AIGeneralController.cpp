@@ -46,9 +46,11 @@ void AAIGeneralController::BeginPlay() {
 
 void AAIGeneralController::Tick(float DeltaSeconds) {
 	Super::Tick(DeltaSeconds);
+
 	Sens();
 	Think(); // == if we need to change the BehaviorTree,
 	Act();
+	//Act will also be done in the behavior tree
 	FlockingComponent->UpdateFlockingPosition(DeltaSeconds);
 
 	CheckIfNeedToStopCurrentBehavior();
@@ -259,30 +261,34 @@ void AAIGeneralController::Run(ASoldierAI* _soldier, ASoldier* _soldier_enemy) {
 
 void AAIGeneralController::TooClose() {
 	ASoldier* _FocusEnemy = Cast<ASoldier>(blackboard->GetValueAsObject("FocusActor"));
-	float _distance = FVector::Dist(GetPawn()->GetActorLocation(), _FocusEnemy->GetActorLocation());
+	if (_FocusEnemy) {
+		float _distance = FVector::Dist(GetPawn()->GetActorLocation(), _FocusEnemy->GetActorLocation());
 
-	if (_distance < m_distanceShootAndStop - 100.f) {
-		blackboard->SetValueAsBool("need_GoBackward", true);
-		FVector _DestinationToGo;
-		float _d = m_distanceShootAndStop - _distance;
-		FVector _unitaire = _FocusEnemy->GetActorForwardVector();
-		_DestinationToGo = _unitaire * _d + GetPawn()->GetActorLocation();
-		blackboard->SetValueAsVector("VectorLocation", _DestinationToGo);
-	}
-	else {
-		blackboard->SetValueAsBool("need_GoBackward", false);
-		blackboard->ClearValue("VectorLocation");
+		if (_distance < m_distanceShootAndStop - 100.f) {
+			blackboard->SetValueAsBool("need_GoBackward", true);
+			FVector _DestinationToGo;
+			float _d = m_distanceShootAndStop - _distance;
+			FVector _unitaire = _FocusEnemy->GetActorForwardVector();
+			_DestinationToGo = _unitaire * _d + GetPawn()->GetActorLocation();
+			blackboard->SetValueAsVector("VectorLocation", _DestinationToGo);
+		}
+		else {
+			blackboard->SetValueAsBool("need_GoBackward", false);
+			blackboard->ClearValue("VectorLocation");
+		}
 	}
 }
 void AAIGeneralController::TooFar() {
 	ASoldier* _FocusEnemy = Cast<ASoldier>(blackboard->GetValueAsObject("FocusActor"));
-	float _distance = FVector::Dist(GetPawn()->GetActorLocation(), _FocusEnemy->GetActorLocation());
+	if (_FocusEnemy) {
+		float _distance = FVector::Dist(GetPawn()->GetActorLocation(), _FocusEnemy->GetActorLocation());
 
-	if (_distance > m_distanceShootAndStop + 100.f) {
-		blackboard->SetValueAsBool("need_GoForward", true);
-	}
-	else {
-		blackboard->SetValueAsBool("need_GoForward", false);
+		if (_distance > m_distanceShootAndStop + 100.f) {
+			blackboard->SetValueAsBool("need_GoForward", true);
+		}
+		else {
+			blackboard->SetValueAsBool("need_GoForward", false);
+		}
 	}
 }
 
@@ -329,7 +335,7 @@ void AAIGeneralController::Respawn()
 	PerceptionComponent->ForgetAll();
 }
 
-void AAIGeneralController::ResetBlackBoard() const
+void AAIGeneralController::ResetBlackBoard()
 {
 	blackboard->SetValueAsBool("is_attacking", false);
 	blackboard->SetValueAsBool("is_moving", true);
@@ -338,6 +344,7 @@ void AAIGeneralController::ResetBlackBoard() const
 	blackboard->SetValueAsBool("need_GoBackward", false);
 	blackboard->SetValueAsBool("need_GoForward", false);
 	blackboard->SetValueAsObject("FocusActor", NULL);
+	tick_value = 0;
 }
 
 /*

@@ -146,7 +146,7 @@ public:
 
 	virtual void Respawn();
 
-	virtual void ResetBlackBoard() const;
+	virtual void ResetBlackBoard();
 
 	/*
 	* Set the state of an AI
@@ -271,6 +271,12 @@ private:
 
 	UPROPERTY()
 	FVector m_destination;
+
+	UPROPERTY()
+		int tick_value = 0;
+
+	UPROPERTY()
+		int max_tick = 2;
 
 public:
 	UPROPERTY()
