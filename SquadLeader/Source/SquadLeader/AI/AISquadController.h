@@ -24,9 +24,6 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Formation Behaviour")
 	float RuningDistanceForFormation = 100.f;
 
-	UPROPERTY()
-	bool RunToFormation = false ;
-
 /////////// Respawn
 public:
 	AAISquadController();
@@ -40,6 +37,9 @@ public:
 
 	UPROPERTY()
 	AAISquadManager* SquadManager;
+
+	UPROPERTY()
+		bool RunToFormation = false;
 public:
 	/* For BT Task  */
 	UFUNCTION(BlueprintCallable, Category = "Formation Behaviour")

@@ -83,7 +83,8 @@ EPathFollowingRequestResult::Type AAISquadController::FollowFormation() {
 		Cast<ASoldierAI>(GetPawn())->ActivateAbilityRun();
 		RunToFormation = true;
 	}
-	else if (_movetoResult == EPathFollowingRequestResult::AlreadyAtGoal && RunToFormation) {
+	else if ((blackboard->GetValueAsVector("FormationLocation") - GetPawn()->GetActorLocation()).Size() < 50.f/*_movetoResult == EPathFollowingRequestResult::AlreadyAtGoal*/) {
+		DrawDebugPoint(GetWorld(), GetPawn()->GetActorLocation(), 32, FColor::Red);
 		Cast<ASoldierAI>(GetPawn())->CancelAbilityRun();
 		RunToFormation = false;
 	}

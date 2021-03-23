@@ -30,11 +30,13 @@ void UFollowFormationBTTaskNode::TickTask(class UBehaviorTreeComponent& OwnerCom
 
 	if (MoveToActorResult == EPathFollowingRequestResult::AlreadyAtGoal && !AISquadController->get_blackboard()->GetValueAsBool("IsInFormation") || AISquadController->get_blackboard()->GetValueAsBool("HasOrder")) {
 		Cast<ASoldierAI>(AISquadController->GetPawn())->CancelAbilityRun();
+		AISquadController->RunToFormation = false;
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	}
-		if (MoveToActorResult == EPathFollowingRequestResult::Failed) {
-			Cast<ASoldierAI>(AISquadController->GetPawn())->CancelAbilityRun();
-			FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+	if (MoveToActorResult == EPathFollowingRequestResult::Failed) {
+		Cast<ASoldierAI>(AISquadController->GetPawn())->CancelAbilityRun();
+		AISquadController->RunToFormation = false;
+		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
 	}
 
 }
