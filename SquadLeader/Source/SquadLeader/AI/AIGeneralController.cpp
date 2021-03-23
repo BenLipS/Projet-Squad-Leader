@@ -419,6 +419,7 @@ ResultState AAIGeneralController::ShootEnemy() {
 		soldier->ActivateAbilityFire();
 		soldier->CancelAbilityFire();
 		if (auto _solider = Cast<ASoldier>(GetFocusActor()); !_solider->IsAlive()) {
+			m_state = m_old_state;
 			return ResultState::Success;
 		}
 		return ResultState::InProgress;
