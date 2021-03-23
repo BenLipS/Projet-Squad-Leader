@@ -422,9 +422,9 @@ EPathFollowingRequestResult::Type AAIGeneralController::FollowFlocking() {
 void AAIGeneralController::SetPatrolPoint()
 {
 	FVector PatrolPos;
-	PatrolPos.X = FMath::FRandRange(0, 1600);
-	PatrolPos.Y = FMath::FRandRange(0, 1600);
-	PatrolPos.Z = FMath::FRandRange(0, 1600);
+	PatrolPos.X = FMath::FRandRange(-HalfRadiusPatrol, HalfRadiusPatrol);
+	PatrolPos.Y = FMath::FRandRange(-HalfRadiusPatrol, HalfRadiusPatrol);
+	PatrolPos.Z = FMath::FRandRange(-HalfRadiusPatrol, HalfRadiusPatrol);
 
 	FVector HitLocation{};
 

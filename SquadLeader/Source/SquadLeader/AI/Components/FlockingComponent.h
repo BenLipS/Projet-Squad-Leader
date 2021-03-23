@@ -44,7 +44,7 @@ protected:
 
 	/* less sacades but more unprecise the greater it gets*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Flocking Behaviour")
-		float MovementVectorScale{ 2.f };
+		float MovementVectorScale{ 300.f };
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Flocking Behaviour")
 		int NumberOfRayForWallAvoidance{ 4 };

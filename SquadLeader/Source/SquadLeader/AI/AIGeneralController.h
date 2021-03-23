@@ -119,6 +119,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "SquadLeader")
 		EPathFollowingRequestResult::Type MoveToSearchEnemy();
 
+	UPROPERTY(BlueprintReadWrite, Category = "Defense")
+	int HalfRadiusPatrol = 1600;
+
 	/*
 	* End the search of the enemy
 	* rest the state to the old one

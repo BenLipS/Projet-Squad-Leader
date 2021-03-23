@@ -79,6 +79,8 @@ void UFlockingComponent::UpdateAlignementVector()
 		if(AlignementVector.Size()>0)AlignementVector += Boid->FlockingComponent->GetMovementVector().GetSafeNormal(DefaultNormalizeVectorTolerance);
 	}
 
+	AlignementVector.Z = 0;//Cast<ASoldier>(Cast<AAIGeneralController>(GetOwner())->GetPawn())->GetLocation().Z;
+
 	if ((MovementVector + AlignementVector).Size() > 0)AlignementVector = (MovementVector + AlignementVector).GetSafeNormal(DefaultNormalizeVectorTolerance);
 }
 
@@ -121,12 +123,25 @@ void UFlockingComponent::UpdateObjectifVector()
 
 void UFlockingComponent::UpdateMovementVector()
 {
-	MovementVector = AlignementVector.GetSafeNormal(DefaultNormalizeVectorTolerance) * AlignementWeight
-		+ CohesionVector.GetSafeNormal(DefaultNormalizeVectorTolerance) * CohesionWeight
-		+ SeparationVector.GetSafeNormal(DefaultNormalizeVectorTolerance) * SeparationWeight
-		+ WallAvoidanceVector.GetSafeNormal(DefaultNormalizeVectorTolerance) * WallAvoidanceWeight
-		+ ObjectifVector.GetSafeNormal(DefaultNormalizeVectorTolerance) * ObjectifWeight;
+
+	AlignementVector = AlignementVector.GetSafeNormal(DefaultNormalizeVectorTolerance);
+	AlignementVector.Z = 0;
+	CohesionVector = CohesionVector.GetSafeNormal(DefaultNormalizeVectorTolerance);
+	CohesionVector.Z = 0;
+	SeparationVector = SeparationVector.GetSafeNormal(DefaultNormalizeVectorTolerance);
+	SeparationVector.Z = 0;
+	WallAvoidanceVector = WallAvoidanceVector.GetSafeNormal(DefaultNormalizeVectorTolerance);
+	WallAvoidanceVector.Z = 0;
+	ObjectifVector = ObjectifVector.GetSafeNormal(DefaultNormalizeVectorTolerance);
+	ObjectifVector.Z = 0;
+
+	MovementVector = AlignementVector * AlignementWeight
+		+ CohesionVector * CohesionWeight
+		+ SeparationVector * SeparationWeight
+		+ WallAvoidanceVector * WallAvoidanceWeight
+		+ ObjectifVector * ObjectifWeight;
 	MovementVector = MovementVector.GetSafeNormal(DefaultNormalizeVectorTolerance);
+	MovementVector.Z = 0;
 }
 
 void UFlockingComponent::UpdateWallAvoidanceVector()
@@ -187,14 +202,15 @@ void UFlockingComponent::UpdateFlockingPosition(float DeltaSeconds)
 
 	UpdateMovementVector();
 
-	//TODO Check if the new movement vector is not to opposit to the previous one
+	//TODO Check if the new movement vector is not too opposit to the previous one
 
 
 	float MaxSpeed = Cast<AAIGeneralController>(GetOwner())->GetPawn()->GetMovementComponent()->GetMaxSpeed();
-	MovementVector = MovementVector * MaxSpeed;
+	MovementVector = MovementVector.GetSafeNormal(DefaultNormalizeVectorTolerance) * MovementVectorScale;
 
 	if (IsFlockingPositionValid()) {
-		Cast<AAIGeneralController>(GetOwner())->get_blackboard()->SetValueAsVector("FlockingLocation", Cast<AAIGeneralController>(GetOwner())->GetPawn()->GetActorLocation() + MovementVector);
+		//Flocking Location Set in IsFlockingPositionValid()
+		//Cast<AAIGeneralController>(GetOwner())->get_blackboard()->SetValueAsVector("FlockingLocation", Cast<AAIGeneralController>(GetOwner())->GetPawn()->GetActorLocation() + MovementVector);
 	}
 	else {
 		FVector RealObjectifLocation = Cast<AAIGeneralController>(GetOwner())->GetObjectifLocation();
@@ -213,9 +229,13 @@ bool UFlockingComponent::IsFlockingPositionValid()
 	FVector startLocation = Cast<AAIGeneralController>(GetOwner())->GetPawn()->GetActorLocation();
 	FVector endLocation = startLocation + MovementVector;
 
-	if (navSys->NavigationRaycast(GetWorld(), startLocation, endLocation, HitLocation)) return false;
+	if (navSys->NavigationRaycast(GetWorld(), startLocation, endLocation, HitLocation)) {
+		return false;
+	}
 	//DrawDebugLine(GetWorld(), startLocation, endLocation, FColor::Green);
 	//DrawDebugLine(GetWorld(), GetPawn()->GetActorLocation(), GetPawn()->GetActorLocation() + MovementVector, FColor::Blue);
+	//DrawDebugPoint(GetWorld(), HitLocation, 35, FColor::Red);
+	Cast<AAIGeneralController>(GetOwner())->get_blackboard()->SetValueAsVector("FlockingLocation", HitLocation);
 	return true;
 }
 
