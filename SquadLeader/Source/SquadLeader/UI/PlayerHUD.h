@@ -40,9 +40,9 @@ protected:
 	class UAmmoWidget* AmmoWidget;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Widget | PlayerAmmo")
-	TSubclassOf<class USL_UserWidget> WheelWidgetClass;
+	TSubclassOf<class UWheelWidget> WheelWidgetClass;
 
-	class USL_UserWidget* WheelWidget;
+	class UWheelWidget* WheelWidget;
 	
 public:
 	APlayerHUD();
@@ -95,4 +95,10 @@ public:
 
 	UFUNCTION()
 	void OnMaxAmmoChanged(int8 newMaxAmmo);
+
+	UFUNCTION()
+	void OnOrderInputPressed();
+
+	UFUNCTION()
+	void OnOrderInputReleased();
 };

@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "SL_UserWidget.h"
+#include "Components/Image.h"
+#include "Components/SizeBox.h"
 #include "WheelWidget.generated.h"
 
 /**
@@ -17,9 +19,21 @@ class SQUADLEADER_API UWheelWidget : public USL_UserWidget
 public:
 	UWheelWidget(const FObjectInitializer& ObjectInitializer);
 	
+	//virtual void PostInitProperties() override;
 
 protected:
-	UPROPERTY(EditDefaultsOnly, Category = "Widget | Wheel")
+	virtual void SynchronizeProperties() override;
+
+protected:
+	//-----UI-----
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UImage* Background;
+	
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	USizeBox* ImageBox;
+
+	//-----parameter-----
+	UPROPERTY(BlueprintReadOnly, Category = "Widget | Wheel")
 	uint8 NbElement;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Widget | Wheel")
@@ -38,17 +52,21 @@ protected:
 	FLinearColor SeparationColor = FLinearColor::White;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Widget | Wheel")
-	TArray<class USL_UserWidget*> ListItems;
+	TArray<class UWheelWidgetElement*> ListItems;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Widget | Wheel")
-	TArray<TSubclassOf<class USL_UserWidget>> Items;
+	TArray<TSubclassOf<class UWheelWidgetElement>> ItemsDefault;
 
 public:
-	const TArray<class USL_UserWidget*>& GetItems();
+	const TArray<class UWheelWidgetElement*>& GetItems();
+
+	void AddToViewport(int32 ZOrder = 0);
+	void RemoveFromViewport();
+	
+
+	void OnInputPressed();
+	void OnInputReleased();
 
 protected:
 	virtual int32 NativePaint(const FPaintArgs& Args, const FGeometry& AllottedGeometry, const FSlateRect& MyCullingRect, FSlateWindowElementList& OutDrawElements, int32 LayerId, const FWidgetStyle& InWidgetStyle, bool bParentEnabled) const;
-	
-public:
-	void Tick();
 };

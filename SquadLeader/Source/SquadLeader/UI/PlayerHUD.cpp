@@ -9,6 +9,7 @@
 #include "AIInfoListWidget.h"
 #include "AIInfoWidget.h"
 #include "AmmoWidget.h"
+#include "WheelWidget.h"
 
 #include "Blueprint/UserWidget.h"
 
@@ -71,7 +72,7 @@ void APlayerHUD::BeginPlay()
 	//-----Wheel-----
 	if (WheelWidgetClass != nullptr)
 	{
-		WheelWidget = CreateWidget<USL_UserWidget>(GetWorld(), WheelWidgetClass);
+		WheelWidget = CreateWidget<UWheelWidget>(GetWorld(), WheelWidgetClass);
 		if (WheelWidget) {
 			WheelWidget->AddToViewport();
 		}
@@ -201,5 +202,21 @@ void APlayerHUD::OnMaxAmmoChanged(int8 newMaxAmmo)
 	if (AmmoWidget)
 	{
 		AmmoWidget->OnMaxAmmoChanged(newMaxAmmo);
+	}
+}
+
+void APlayerHUD::OnOrderInputPressed()
+{
+	if (WheelWidget)
+	{
+		WheelWidget->OnInputPressed();
+	}
+}
+
+void APlayerHUD::OnOrderInputReleased()
+{
+	if (WheelWidget)
+	{
+		WheelWidget->OnInputReleased();
 	}
 }
