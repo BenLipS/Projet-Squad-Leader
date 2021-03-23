@@ -44,6 +44,16 @@ protected:
 	UPROPERTY(BluePrintReadOnly, Category = "Stats")
 	uint8 CurrentAmmo;
 
+	void SetAmmo(uint8 newAmmo);
+	void SetMaxAmmo(uint8 newMaxAmmo);
+
+public:
+	UFUNCTION(BlueprintCallable)
+	uint8 GetAmmo();
+
+	UFUNCTION(BlueprintCallable)
+	uint8 GetMaxAmmo();
+
 public:
 	bool IsFullAmmo() const noexcept;
 

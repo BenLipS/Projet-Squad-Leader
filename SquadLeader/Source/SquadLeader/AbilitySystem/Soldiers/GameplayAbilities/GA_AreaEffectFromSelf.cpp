@@ -3,10 +3,11 @@
 
 UGA_AreaEffectFromSelf::UGA_AreaEffectFromSelf()
 {
+	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
+
 	AbilityInputID = ESoldierAbilityInputID::None; // Must be defined in the BP subclasses
 	AbilityID = ESoldierAbilityInputID::None;
 	AbilityTags.AddTag(ASoldier::SkillAreaEffectFromSelfTag); // Must define another tag in the BP subclasses to be more specific
-	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 }
 
 void UGA_AreaEffectFromSelf::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)

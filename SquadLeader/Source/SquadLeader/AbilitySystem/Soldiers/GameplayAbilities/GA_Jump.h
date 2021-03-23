@@ -1,7 +1,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameplayAbilitySpec.h"
 #include "../GameplayAbilitySoldier.h"
 #include "../GameplayEffects/States/GE_StateJumping.h"
 #include "GA_Jump.generated.h"

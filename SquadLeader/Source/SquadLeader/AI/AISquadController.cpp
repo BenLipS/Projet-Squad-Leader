@@ -27,6 +27,7 @@ bool AAISquadController::GetValidFormationPos()
 
 AAISquadController::AAISquadController() {
 	setup_BehaviorTree();
+	bReplicates = false;
 }
 
 void AAISquadController::setup_BehaviorTree() {

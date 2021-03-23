@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "SL_UserWidget.h"
 #include "Components/TileView.h"
-#include "AIInfoWidget.h"
+#include "../Soldiers/AIs/SoldierAI.h"
 #include "AIInfoListWidget.generated.h"
 
 /**
@@ -17,15 +17,28 @@ class SQUADLEADER_API UAIInfoListWidget : public USL_UserWidget
 	GENERATED_BODY()
 	
 protected:
-	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	UTileView* AIInfoTileView;
+	UPROPERTY(BlueprintReadOnly, Category = "Widget | AIInfo")
+	TArray<class UAIInfoWidget*> AIInfoWidgetList;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Widget | AIInfo")
 	TSubclassOf<class UAIInfoWidget> AIInfoWidgetClass;
 
-	TArray<UAIInfoWidget*> ListWidget;
-
 public:
 	UAIInfoListWidget(const FObjectInitializer& ObjectInitializer);
-	void AddItem(class ASoldierAI* SoldierBound);
+
+	//-----Squad-----
+	UFUNCTION()
+	void OnSquadChanged(const TArray<FSoldierAIData>& newValue);
+
+	UFUNCTION()
+	void OnSquadHealthChanged(int index, float newHealth);
+
+	UFUNCTION()
+	void OnSquadMaxHealthChanged(int index, float newHealth);
+
+	UFUNCTION()
+	void OnSquadShieldChanged(int index, float newShield);
+
+	UFUNCTION()
+	void OnSquadMaxShieldChanged(int index, float newMaxShield);
 };

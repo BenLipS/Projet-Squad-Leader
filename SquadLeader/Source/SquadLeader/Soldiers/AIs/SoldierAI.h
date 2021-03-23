@@ -5,10 +5,39 @@
 #include "SoldierAI.generated.h"
 
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAIHealthChanged, float, newValue);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAIMaxHealthChanged, float, newValue);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAIShieldChanged, float, newValue);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAIMaxShieldChanged, float, newValue);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FAIFloatChangedController, float, newValue, AAISquadController*, controller);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAIFloatChanged, float, newValue);
+
+//For client knowledge purpose
+USTRUCT()
+struct FSoldierAIData
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditAnywhere)
+	float Health;
+
+	UPROPERTY(EditAnywhere)
+	float MaxHealth;
+
+	UPROPERTY(EditAnywhere)
+	float Shield;
+
+	UPROPERTY(EditAnywhere)
+	float MaxShield;
+
+	void OnHealthChanged(float newHealth);
+	void OnMaxHealthChanged(float newMaxHealth);
+	void OnShieldChanged(float newShield);
+	void OnMaxShieldChanged(float newMaxShield);
+
+	FAIFloatChanged OnHealthNotify;
+	FAIFloatChanged OnMaxHealthNotify;
+	FAIFloatChanged OnShieldNotify;
+	FAIFloatChanged OnMaxShieldNotify;
+
+	FSoldierAIData() = default;
+};
 
 UCLASS()
 class SQUADLEADER_API ASoldierAI : public ASoldier
@@ -30,10 +59,10 @@ public:
 
 public:
 	//-----DELEGATE-----
-	FAIHealthChanged OnHealthChanged;
-	FAIMaxHealthChanged OnMaxHealthChanged;
-	FAIShieldChanged OnShieldChanged;
-	FAIMaxShieldChanged OnMaxShieldChanged;
+	FAIFloatChangedController OnHealthChanged;
+	FAIFloatChangedController OnMaxHealthChanged;
+	FAIFloatChangedController OnShieldChanged;
+	FAIFloatChangedController OnMaxShieldChanged;
 protected:
 
 	virtual void BeginPlay() override;
