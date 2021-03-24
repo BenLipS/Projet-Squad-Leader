@@ -197,7 +197,7 @@ void AInfluenceMapGrid::TimeFunction() {
 }
 
 void AInfluenceMapGrid::UpdateTile(int index, float value, int team, Type type) noexcept {
-	if(value > m_influencemap[index].m_value)
+	if (value > m_influencemap[index].m_value)
 		m_influencemap[index].m_value = value;
 	
 	if (!m_influencemap[index].in_update) {

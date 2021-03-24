@@ -307,14 +307,16 @@ void AAIGeneralController::UpdateSeenSoldier() {
 	}
 }
 
-void AAIGeneralController::SetMission(UMission* _Mission)
+template<class T>
+void AAIGeneralController::SetMission(T* _Mission)
 {
-	Mission = _Mission;
+	m_mission = _Mission;
 }
 
-UMission* AAIGeneralController::GetMission()
+template<class T>
+T* AAIGeneralController::GetMission()
 {
-	return Mission;
+	return m_mission;
 }
 
 void AAIGeneralController::Die() {

@@ -4,8 +4,7 @@
 #include "AIBasicManager.h"
 #include "../SquadLeaderGameInstance.h"
 #include "../ControlArea/ControlArea.h"
-#include "../SquadLeaderGameModeBase.h"
-#include "../AI/Mission.h"
+#include "../AI/Mission/CaptureMission.h"
 
 AAIBasicManager::AAIBasicManager() {
 	PrimaryActorTick.bStartWithTickEnabled = true;
@@ -16,7 +15,7 @@ void AAIBasicManager::BeginPlay() {
 	Super::BeginPlay();
 	InitValue();
 	if(nbr_controlArea > 0)
-		ChooseCOntrolArea();
+		ChooseControlArea();
 }
 
 FVector AAIBasicManager::CalculOffSetForInitSpawn(ASoldierSpawn* spawnpoint, int maxNumberBySpawn, int AiNb)
@@ -57,6 +56,7 @@ void AAIBasicManager::Init(TSubclassOf<ASoldierTeam> _Team)
 			AAIBasicController* AC = Cast<AAIBasicController>(BasicAI->GetController());
 			ensure(AC);
 			AIBasicList.Add(AC);
+			AC->SetManager(this);
 		}
 	}
 }
@@ -77,7 +77,7 @@ void AAIBasicManager::InitValue() {
 	}
 }
 
-void AAIBasicManager::ChooseCOntrolArea() {
+void AAIBasicManager::ChooseControlArea() {
 	int _index_player = 0;
 	int _index_control_area = 0;
 	int nbr_unit_per_controlArea = nbr_unite / nbr_controlArea;
@@ -86,9 +86,8 @@ void AAIBasicManager::ChooseCOntrolArea() {
 		if (_index_control_area >= nbr_controlArea)
 			_index_control_area = 0;
 		for (int i = 0; i != nbr_unit_per_controlArea && _index_player < nbr_unite; ++i) {
-			UMission* _mission = NewObject<UMission>(this, UMission::StaticClass());;
-			_mission->Type = MissionType::MoveTo;
-			_mission->Location = m_controlAreaManager->GetControlArea()[_index_control_area]->GetActorLocation();
+			UCaptureMission* _mission = NewObject<UCaptureMission>(this, UMission::StaticClass());;
+			_mission->Init(-1, MissionPriority::eBASIC, m_controlAreaManager->GetControlArea()[_index_control_area]);
 			AIBasicList[_index_player]->SetMission(_mission);
 			_index_player++;
 		}

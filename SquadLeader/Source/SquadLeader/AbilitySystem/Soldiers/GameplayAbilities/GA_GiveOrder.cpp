@@ -23,14 +23,14 @@ void UGA_GiveOrder::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 		{
 			if (Soldier->GetLocalRole() == ROLE_Authority)
 			{
-				if (Soldier->GetSquadManager()->GetMission()->Type != MissionType::Formation)
+				/*if (Soldier->GetSquadManager()->GetMission()->Type != MissionType::Formation)
 				{
 
 					Soldier->GetSquadManager()->UpdateMission(MissionType::Formation, FVector{ 0, 0, 0 });
 
 					CancelAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true);
 					return;
-				}
+				}*/
 			}
 
 			// Init task
@@ -75,7 +75,7 @@ void UGA_GiveOrder::OnOrderValid(const FGameplayAbilityTargetDataHandle& _Data)
 		if (Soldier->GetLocalRole() == ROLE_Authority)
 		{
 			FVector_NetQuantize Location = _Data.Data[0]->GetHitResult()->Location;
-			Soldier->GetSquadManager()->UpdateMission(MissionType::Attack, FVector{ Location.X, Location.Y, Location.Z });
+			//Soldier->GetSquadManager()->UpdateMission(MissionType::Attack, FVector{ Location.X, Location.Y, Location.Z });
 		}
 	}
 	CancelAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true);

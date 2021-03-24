@@ -7,7 +7,8 @@
 #include "../Soldiers/Soldier.h"
 #include "../Soldiers/AIs/SoldierAI.h"
 #include "Perception/AIPerceptiontypes.h"
-#include "Mission.h"
+#include "Mission/CaptureMission.h"
+#include "Misc/TVariant.h"
 #include "../Soldiers/Interface/Teamable.h"
 #include "AIGeneralController.generated.h"
 
@@ -361,10 +362,16 @@ public:
 	virtual FVector GetRespawnPoint() { return FVector(0.f, 0.f, 1500.f); }  // function overide in in each controller
 
 public:	//Mission
-	void SetMission(UMission* _Mission);
-	UMission* GetMission();
+	template <class T>
+	void SetMission(T* _Mission);
+
+	template<class T>
+	T* GetMission();
 
 protected:
 	UPROPERTY()
 	UMission* Mission;
+
+	UPROPERTY()
+		TVariant<UMission*, UCaptureMission*> m_mission;
 };

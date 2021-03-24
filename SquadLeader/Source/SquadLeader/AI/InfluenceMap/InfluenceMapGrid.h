@@ -46,13 +46,18 @@ struct SQUADLEADER_API FTileBase {
 
 	GENERATED_USTRUCT_BODY()
 
-		FTileBase() {
+	FTileBase() {
 	}
 
+	//value of the tile
 	float m_value = 0.f;
+	//the position of the tile in the world
 	FVector m_location;
+	//wich team possess this tile
 	int m_team = -1;
+	//the type of the tile (Soldier, COntrolArea, Projectile, etc.)
 	TEnumAsByte<Type> m_type;
+
 	bool in_update = false;
 };
 
