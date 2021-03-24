@@ -46,12 +46,15 @@ public:
 
 //////////////// Ability System
 protected:
+	// AbilitySystemComponent of the soldier owner - null if it doesn't have an owner
 	UPROPERTY()
 	UAbilitySystemSoldier* AbilitySystemComponent;
 
+	// Granted abilities to the owner
 	UPROPERTY(EditAnywhere, Category = "Ability System")
 	TArray<TSubclassOf<UGameplayAbilitySoldier>> Abilities;
 
+	// Cache to remove granted abilities if the weapon changes owner
 	UPROPERTY(BlueprintReadOnly, Category = "Ability System")
 	TArray<FGameplayAbilitySpecHandle> AbilitySpecHandles;
 public:
@@ -62,45 +65,65 @@ public:
 	virtual int32 GetAbilityLevel(ESoldierAbilityInputID _AbilityID);
 
 protected:
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Ability System")
-	FGameplayTag DefaultFireMode;
-
-	UPROPERTY(BlueprintReadWrite, VisibleInstanceOnly, Category = "Ability System")
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Ability System")
 	FGameplayTag FireMode;
 
 	// Cache tags
 	FGameplayTag WeaponAbilityTag;
 	FGameplayTag WeaponIsFiringTag;
 
-//////////////// Ammo
+//////////////// Stats
 protected:
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, ReplicatedUsing = OnRep_Ammo, Category = "Stats | Ammo")
+// Damage
+	UPROPERTY(BluePrintReadWrite, EditAnywhere, Category = "Stats|Damage")
+	float Damage;
+
+// Aim
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Stats")
+	float FieldOfViewAim;
+
+public:
+	UFUNCTION(BlueprintCallable, Category = "Stats|Ammo")
+	float GetWeaponDamage() const noexcept;
+
+	UFUNCTION(BlueprintCallable, Category = "Stats")
+	float GetFieldOfViewAim() const noexcept;
+
+// Ammo
+protected:
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Replicated, Category = "Stats|Ammo")
+	float TimeBetweenShots;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, ReplicatedUsing = OnRep_Ammo, Category = "Stats|Ammo")
 	int32 CurrentAmmo;
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, ReplicatedUsing = OnRep_MaxAmmo, Category = "Stats | Ammo")
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, ReplicatedUsing = OnRep_MaxAmmo, Category = "Stats|Ammo")
 	int32 MaxAmmo;
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Stats | Ammo")
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Stats|Ammo")
 	bool bInfiniteAmmo;
 
 public:
-	UFUNCTION(BlueprintCallable, Category = "Stats | Ammo")
-	virtual int32 GetCurrentAmmo() const;
+	UFUNCTION(BlueprintCallable, Category = "Stats|Ammo")
+	float GetTimeBetweenShots() const noexcept;
 
-	UFUNCTION(BlueprintCallable, Category = "Stats | Ammo")
-	virtual int32 GetMaxAmmo() const;
+	UFUNCTION(BlueprintCallable, Category = "Stats|Ammo")
+	int32 GetCurrentAmmo() const noexcept;
 
-	UFUNCTION(BlueprintCallable, Category = "Stats | Ammo")
-	bool IsFullAmmo() const;
+	UFUNCTION(BlueprintCallable, Category = "Stats|Ammo")
+	int32 GetMaxAmmo() const noexcept;
 
-	UFUNCTION(BlueprintCallable, Category = "Stats | Ammo")
+	UFUNCTION(BlueprintCallable, Category = "Stats|Ammo")
+	bool IsFullAmmo() const noexcept;
+
+	UFUNCTION(BlueprintCallable, Category = "Stats|Ammo")
 	virtual void SetAmmo(const int32 _NewAmmo);
 
-	UFUNCTION(BlueprintCallable, Category = "Stats | Ammo")
+	UFUNCTION(BlueprintCallable, Category = "Stats|Ammo")
 	virtual void SetMaxAmmo(const int32 _NewMaxAmmo);
 
-	UFUNCTION(BlueprintCallable, Category = "Stats | Ammo")
-	virtual bool HasInfiniteAmmo() const;
+	UFUNCTION(BlueprintCallable, Category = "Stats|Ammo")
+	bool HasInfiniteAmmo() const;
 
 	UFUNCTION()
 	virtual void OnRep_Ammo(int32 _OldPrimaryClipAmmo);
@@ -109,6 +132,7 @@ public:
 	virtual void OnRep_MaxAmmo(int32 _OldMaxPrimaryClipAmmo);
 
 //////////////// Traces
+	// TODO: Only have one generic trace that will be set from blueprint ?
 protected:
 	UPROPERTY()
 	ASL_LineTrace* LineTraceTargetActor;
@@ -118,10 +142,10 @@ protected:
 
 public:
 	// Getter for LineTraceTargetActor. Spawns it if it doesn't exist yet
-	UFUNCTION(BlueprintCallable, Category = "Collision | Trace")
+	UFUNCTION(BlueprintCallable, Category = "Collision|Trace")
 	ASL_LineTrace* GetLineTraceTargetActor();
 
 	// Getter for SphereTraceTargetActor. Spawns it if it doesn't exist yet
-	UFUNCTION(BlueprintCallable, Category = "Collision | Trace")
+	UFUNCTION(BlueprintCallable, Category = "Collision|Trace")
 	ASL_SphereTrace* GetSphereTraceTargetActor();
 };

@@ -292,7 +292,7 @@ protected:
 	UFUNCTION()
 	void OnRep_Inventory();
 
-// Weapons
+//////////////// Weapons
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Inventory | Weapon")
 	TArray<TSubclassOf<ASL_Weapon>> DefaultInventoryWeaponClasses;
 
@@ -313,7 +313,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Inventory | Weapon")
 	void EquipWeapon(ASL_Weapon* _NewWeapon);
 
-	UFUNCTION(Server, Reliable)
+	UFUNCTION(Server, Reliable, Category = "Inventory | Weapon")
 	void ServerEquipWeapon(ASL_Weapon* _NewWeapon);
 	bool ServerEquipWeapon_Validate(ASL_Weapon* _NewWeapon);
 	void ServerEquipWeapon_Implementation(ASL_Weapon* _NewWeapon);
@@ -332,21 +332,23 @@ protected:
 	// The CurrentWeapon is only automatically replicated to simulated clients.
 	// The autonomous client can use this to request the proper CurrentWeapon from the server when it knows it may be
 	// out of sync with it from predictive client-side changes.
-	UFUNCTION(Server, Reliable)
+	UFUNCTION(Server, Reliable, Category = "Inventory | Weapon")
 	void ServerSyncCurrentWeapon();
 	void ServerSyncCurrentWeapon_Implementation();
 	bool ServerSyncCurrentWeapon_Validate();
 
 	// The CurrentWeapon is only automatically replicated to simulated clients.
 	// Use this function to manually sync the autonomous client's CurrentWeapon when we're ready to.
-	// This allows us to predict weapon changes (changing weapons fast multiple times in a row so that the server doesn't
-	// replicate and clobber our CurrentWeapon).
-	UFUNCTION(Client, Reliable)
+	// This allows us to predict weapon changes (changing weapons fast multiple times in a row so that the server doesn't replicate and clobber our CurrentWeapon).
+	UFUNCTION(Client, Reliable, Category = "Inventory | Weapon")
 	void ClientSyncCurrentWeapon(ASL_Weapon* _InWeapon);
 	void ClientSyncCurrentWeapon_Implementation(ASL_Weapon* _InWeapon);
 	bool ClientSyncCurrentWeapon_Validate(ASL_Weapon* _InWeapon);
 
 public:
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Stats")
+	float FieldOfViewNormal;
+
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	void StartAiming();
 

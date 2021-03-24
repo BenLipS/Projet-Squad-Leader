@@ -41,7 +41,11 @@ FGameplayTag ASoldier::SkillQuickDashTag = FGameplayTag::RequestGameplayTag(FNam
 // Weapon
 FGameplayTag ASoldier::NoWeaponTag = FGameplayTag::RequestGameplayTag(FName("Weapon.Equipped.None"));
 
-ASoldier::ASoldier(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer.SetDefaultSubobjectClass<USoldierMovementComponent>(ACharacter::CharacterMovementComponentName)), bAbilitiesInitialized{ false }, bChangedWeaponLocally{ false }, ImpactHitFXScale{FVector{1.f}}
+ASoldier::ASoldier(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer.SetDefaultSubobjectClass<USoldierMovementComponent>(ACharacter::CharacterMovementComponentName)),
+bAbilitiesInitialized{ false },
+bChangedWeaponLocally{ false },
+FieldOfViewNormal{90.f},
+ImpactHitFXScale{FVector{1.f}}
 {
 	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
@@ -226,6 +230,12 @@ void ASoldier::InitializeAbilities()
 		// Grant abilities, but only on the server
 		for (TSubclassOf<UGameplayAbilitySoldier>& StartupAbility : CharacterDefaultAbilities)
 		{
+			if (!StartupAbility) // Empty element from blueprint
+			{
+				UE_LOG(LogTemp, Error, TEXT("%s() Invalid ability in CharacterDefaultAbilities. Check the blueprint of the soldier"), *FString(__FUNCTION__));
+				continue;
+			}
+
 			AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(StartupAbility, GetCharacterLevel(), static_cast<int32>(StartupAbility.GetDefaultObject()->AbilityInputID), this));
 		}
 		bAbilitiesInitialized = true;
@@ -482,7 +492,10 @@ void ASoldier::SpawnDefaultInventory()
 	for (int32 i = 0; i < NumWeaponClasses; ++i)
 	{
 		if (!DefaultInventoryWeaponClasses[i]) // Empty element from blueprint
+		{
+			UE_LOG(LogTemp, Error, TEXT("%s() Invalid weapon in DefaultInventoryWeapon. Check the blueprint of the soldier"), *FString(__FUNCTION__));
 			continue;
+		}
 
 		ASL_Weapon* NewWeapon = GetWorld()->SpawnActorDeferred<ASL_Weapon>(DefaultInventoryWeaponClasses[i],
 			FTransform::Identity, this, this, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
@@ -516,7 +529,7 @@ bool ASoldier::AddWeaponToInventory(ASL_Weapon* _NewWeapon, const bool _bEquipWe
 
 	if (DoesWeaponExistInInventory(_NewWeapon))
 	{
-		_NewWeapon->Destroy();
+		_NewWeapon->Destroy(); // TODO: Do I really need to destroy the weapon ?
 		return false;
 	}
 
@@ -730,20 +743,17 @@ void ASoldier::Respawn()
 
 void ASoldier::StartAiming()
 {
-	// TODO complete
-	/*FirstPersonCameraComponent->SetFieldOfView(CurrentWeapon->GetFieldOfViewAim());
+	if (!CurrentWeapon)
+		return;
+
+	FirstPersonCameraComponent->SetFieldOfView(CurrentWeapon->GetFieldOfViewAim());
 	ThirdPersonCameraComponent->SetFieldOfView(CurrentWeapon->GetFieldOfViewAim());
-	*/
 }
 
 void ASoldier::StopAiming()
 {
-	// TODO: complete
-	/*
-	// TODO: Should we have a variable for that ?
-	FirstPersonCameraComponent->SetFieldOfView(90.f);
-	ThirdPersonCameraComponent->SetFieldOfView(90.f);
-	*/
+	FirstPersonCameraComponent->SetFieldOfView(FieldOfViewNormal);
+	ThirdPersonCameraComponent->SetFieldOfView(FieldOfViewNormal);
 }
 
 FRotator ASoldier::GetSyncControlRotation() const noexcept

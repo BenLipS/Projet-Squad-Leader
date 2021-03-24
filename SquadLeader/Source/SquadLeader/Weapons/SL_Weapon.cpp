@@ -9,7 +9,13 @@
 #include "../Soldiers/Players/SoldierPlayerController.h"
 #include "../UI/PlayerHUD.h"
 
-ASL_Weapon::ASL_Weapon() : CurrentAmmo{ 50 }, MaxAmmo{ 50 }, bInfiniteAmmo { false }
+ASL_Weapon::ASL_Weapon() :
+	Damage{ 10.f },
+	FieldOfViewAim {50.f},
+	TimeBetweenShots { 0.1f },
+	CurrentAmmo{ 50 },
+	MaxAmmo{ 50 },
+	bInfiniteAmmo{ false }
 {
 	PrimaryActorTick.bCanEverTick = false;
 	bReplicates = true;
@@ -18,7 +24,7 @@ ASL_Weapon::ASL_Weapon() : CurrentAmmo{ 50 }, MaxAmmo{ 50 }, bInfiniteAmmo { fal
 
 	WeaponAbilityTag = FGameplayTag::RequestGameplayTag("Ability.Skill.FireWeapon");
 	WeaponIsFiringTag = FGameplayTag::RequestGameplayTag("Weapon.IsFiring");
-	FireMode = FGameplayTag::RequestGameplayTag("Weapon.FireMode.None");
+	FireMode = FGameplayTag::RequestGameplayTag("Weapon.FireMode.Automatic");
 }
 
 void ASL_Weapon::BeginPlay()
@@ -43,8 +49,13 @@ void ASL_Weapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifeti
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME_CONDITION(ASL_Weapon, OwningSoldier, COND_OwnerOnly);
-	DOREPLIFETIME_CONDITION(ASL_Weapon, CurrentAmmo, COND_OwnerOnly);
-	DOREPLIFETIME_CONDITION(ASL_Weapon, MaxAmmo, COND_OwnerOnly);
+
+	DOREPLIFETIME(ASL_Weapon, TimeBetweenShots);
+	DOREPLIFETIME(ASL_Weapon, CurrentAmmo);
+	DOREPLIFETIME(ASL_Weapon, MaxAmmo);
+
+	//DOREPLIFETIME_CONDITION(ASL_Weapon, CurrentAmmo, COND_OwnerOnly);
+	//DOREPLIFETIME_CONDITION(ASL_Weapon, MaxAmmo, COND_OwnerOnly);
 }
 
 void ASL_Weapon::PreReplication(IRepChangedPropertyTracker& ChangedPropertyTracker)
@@ -66,7 +77,6 @@ void ASL_Weapon::SetOwningCharacter(ASoldier* _InOwningCharacter)
 
 void ASL_Weapon::ResetWeapon()
 {
-	FireMode = DefaultFireMode;
 }
 
 UAbilitySystemComponent* ASL_Weapon::GetAbilitySystemComponent() const
@@ -86,6 +96,11 @@ void ASL_Weapon::AddAbilities()
 
 	for (TSubclassOf<UGameplayAbilitySoldier>& Ability : Abilities)
 	{
+		if (!Ability)// Empty element from blueprint
+		{
+			UE_LOG(LogTemp, Error, TEXT("%s() Invalid granted ability in weapon. Check the blueprint of the weapon"), *FString(__FUNCTION__));
+			continue;
+		}
 		AbilitySpecHandles.Add(ASC->GiveAbility(
 			FGameplayAbilitySpec(Ability, GetAbilityLevel(Ability.GetDefaultObject()->AbilityID), static_cast<int32>(Ability.GetDefaultObject()->AbilityInputID), this)));
 	}
@@ -105,23 +120,38 @@ void ASL_Weapon::RemoveAbilities()
 		ASC->ClearAbility(SpecHandle);
 }
 
+float ASL_Weapon::GetWeaponDamage() const noexcept
+{
+	return Damage;
+}
+
+float ASL_Weapon::GetFieldOfViewAim() const noexcept
+{
+	return FieldOfViewAim;
+}
+
 int32 ASL_Weapon::GetAbilityLevel(ESoldierAbilityInputID _AbilityID)
 {
 	// All abilities for now are level 1
 	return 1;
 }
 
-int32 ASL_Weapon::GetCurrentAmmo() const
+float ASL_Weapon::GetTimeBetweenShots() const noexcept
+{
+	return TimeBetweenShots;
+}
+
+int32 ASL_Weapon::GetCurrentAmmo() const noexcept
 {
 	return CurrentAmmo;
 }
 
-int32 ASL_Weapon::GetMaxAmmo() const
+int32 ASL_Weapon::GetMaxAmmo() const noexcept
 {
 	return MaxAmmo;
 }
 
-bool ASL_Weapon::IsFullAmmo() const
+bool ASL_Weapon::IsFullAmmo() const noexcept
 {
 	return CurrentAmmo == MaxAmmo;
 }
