@@ -5,11 +5,6 @@
 #include "../../ControlArea/ControlArea.h"
 
 UCaptureMission::UCaptureMission() : m_controlArea{ nullptr } {
-	Super::UMission();
-}
-
-void UCaptureMission::Init(int _id, MissionPriority _p) {
-	Super::Init(_id, _p);
 }
 
 void UCaptureMission::Init(int _id, MissionPriority _p, AControlArea* _controlArea) {

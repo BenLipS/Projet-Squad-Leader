@@ -40,7 +40,7 @@ public:
 
 	MissionState GetMissionState() const noexcept { return m_state; }
 
-	virtual void Init(int _id, MissionPriority _p) noexcept;
+	void Init(int _id, MissionPriority _p);
 
 	void SetState(MissionState _state) noexcept { m_state = _state; }
 

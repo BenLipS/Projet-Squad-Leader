@@ -17,13 +17,12 @@ class SQUADLEADER_API UCaptureMission : public UMission
 public:
 	UCaptureMission();
 
-	virtual void Init(int _id, MissionPriority _p) override;
 protected:
 	UPROPERTY()
 		class AControlArea* m_controlArea;
 public:
 
-	void Init(int _id, MissionPriority _p, AControlArea* _controlArea) noexcept;
+	void Init(int _id, MissionPriority _p, AControlArea* _controlArea);
 
 	AControlArea* GetControlArea() const noexcept { return m_controlArea; }
 private:

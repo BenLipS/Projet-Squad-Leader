@@ -37,14 +37,14 @@ enum ResultState {
 };
 
 
-
-
 UCLASS()
 class SQUADLEADER_API AAIGeneralController : public AAIController, public ITeamable
 {
 	GENERATED_BODY()
 
 public:
+
+
 	AAIGeneralController(FObjectInitializer const& object_initializer = FObjectInitializer::Get());
 	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 
@@ -362,16 +362,15 @@ public:
 	virtual FVector GetRespawnPoint() { return FVector(0.f, 0.f, 1500.f); }  // function overide in in each controller
 
 public:	//Mission
-	template <class T>
-	void SetMission(T* _Mission);
 
-	template<class T>
-	T* GetMission();
+	void SetMission(UCaptureMission* _Mission);
+
+	UCaptureMission* GetMission();
 
 protected:
 	UPROPERTY()
 	UMission* Mission;
 
 	UPROPERTY()
-		TVariant<UMission*, UCaptureMission*> m_mission;
+		UCaptureMission* m_mission;
 };
