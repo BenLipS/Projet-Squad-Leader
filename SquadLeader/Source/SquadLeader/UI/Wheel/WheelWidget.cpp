@@ -163,9 +163,7 @@ int32 UWheelWidget::NativePaint(const FPaintArgs& Args, const FGeometry& Allotte
 			if (!ListItems[i]->IsItemHovered())
 			{
 				ListItems[i]->SetItemHovered(true);
-				ListItems[i]->SetPositionInViewport(
-					(CenterScreen + (FVector2D(UKismetMathLibrary::DegCos(Angle + (AngleSection/2.f)), UKismetMathLibrary::DegSin(Angle + (AngleSection / 2.f))) * (InnerCircleRadius + ((OutterCircleRadius - InnerCircleRadius) / 2.f)))
-						), false);
+				ListItems[i]->SetRenderScale(FVector2D(ItemHoverScale));
 			}
 		}
 		else
@@ -173,9 +171,10 @@ int32 UWheelWidget::NativePaint(const FPaintArgs& Args, const FGeometry& Allotte
 			if (ListItems[i]->IsItemHovered())
 			{
 				ListItems[i]->SetItemHovered(false);
+				ListItems[i]->SetRenderScale(FVector2D(1.f));
 			}
 
-			if (i == (MouseIndex + 1) % NbElement)
+			if (MouseIndex >=0 && i == (MouseIndex + 1) % NbElement)
 			{
 				UWidgetBlueprintLibrary::DrawLine(Context,
 					CenterScreen + (FVector2D(UKismetMathLibrary::DegCos(Angle), UKismetMathLibrary::DegSin(Angle)) * (InnerCircleRadius + ((OutterCircleRadius - InnerCircleRadius) / 10.f))),

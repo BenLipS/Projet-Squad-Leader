@@ -28,16 +28,19 @@ protected:
 	//-----UI-----
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UImage* Background;
-
-	UPROPERTY(EditDefaultsOnly, meta = (BindWidget))
-	FLinearColor BackgroundColor = FLinearColor::Black;
 	
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	USizeBox* ImageBox;
 
 	//-----parameter-----
+	UPROPERTY(EditDefaultsOnly, Category = "Widget | Wheel")
+	FLinearColor BackgroundColor = FLinearColor::Black;
+
 	UPROPERTY(BlueprintReadOnly, Category = "Widget | Wheel")
 	uint8 NbElement;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Widget | Wheel")
+	float ItemHoverScale = 1.25f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Widget | Wheel")
 	float InnerCircleRadius = 100.f;
