@@ -5,7 +5,7 @@
 
 #include "WheelWidgetElement.h"
 
-#include "../Soldiers/Players/SoldierPlayerController.h"
+#include "../../Soldiers/Players/SoldierPlayerController.h"
 
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
@@ -27,6 +27,7 @@ void UWheelWidget::SynchronizeProperties()
 		if (mat)
 		{
 			mat->SetScalarParameterValue("InnerCircleScale", InnerCircleRadius / OutterCircleRadius);
+			mat->SetVectorParameterValue("Color", BackgroundColor);
 			Background->SetBrushFromMaterial(mat);
 		}
 	}
@@ -135,12 +136,12 @@ int32 UWheelWidget::NativePaint(const FPaintArgs& Args, const FGeometry& Allotte
 	FVector2D RelativeMousePosition = UWidgetLayoutLibrary::GetMousePositionOnViewport(GetWorld()) - CenterScreen;
 
 	//Debug purpose
-	UWidgetBlueprintLibrary::DrawLine(Context,
+	/*UWidgetBlueprintLibrary::DrawLine(Context,
 		CenterScreen,
 		CenterScreen + RelativeMousePosition,
 		FLinearColor::Red,
 		true,
-		2.f);
+		2.f);*/
 
 	if (RelativeMousePosition.Size() >= InnerCircleRadius)
 	{

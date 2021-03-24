@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "../WheelWidgetElement.h"
+#include "WheelWidgetElement.h"
 #include "../../AI/Mission.h"
 #include "PlayerOrderWheelElement.generated.h"
 

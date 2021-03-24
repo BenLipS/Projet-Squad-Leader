@@ -9,7 +9,7 @@
 #include "AIInfoListWidget.h"
 #include "AIInfoWidget.h"
 #include "AmmoWidget.h"
-#include "WheelWidget.h"
+#include "Wheel/WheelWidget.h"
 
 #include "Blueprint/UserWidget.h"
 

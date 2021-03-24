@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "SL_UserWidget.h"
+#include "../SL_UserWidget.h"
 #include "Components/Image.h"
 #include "Components/SizeBox.h"
 #include "WheelWidget.generated.h"
@@ -28,6 +28,9 @@ protected:
 	//-----UI-----
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UImage* Background;
+
+	UPROPERTY(EditDefaultsOnly, meta = (BindWidget))
+	FLinearColor BackgroundColor = FLinearColor::Black;
 	
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	USizeBox* ImageBox;

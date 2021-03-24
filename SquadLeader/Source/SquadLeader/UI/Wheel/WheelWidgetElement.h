@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "SL_UserWidget.h"
+#include "../SL_UserWidget.h"
 #include "WheelWidgetElement.generated.h"
 
 /**
