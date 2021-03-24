@@ -40,7 +40,7 @@ void UWheelWidget::SynchronizeProperties()
 	for (TSubclassOf<UWheelWidgetElement> DefaultItem : ItemsDefault)
 	{
 		UWheelWidgetElement* newItem = CreateWidget<UWheelWidgetElement>(GetWorld(), DefaultItem);
-		newItem->SetRenderTransformPivot(FVector2D(0.f));
+		//newItem->SetRenderTransformPivot(FVector2D(0.f));
 		OnVisibilityChanged.AddDynamic(newItem, &UWheelWidgetElement::SetVisibility);
 		ListItems.Add(newItem);
 	}
@@ -66,9 +66,7 @@ void UWheelWidget::AddToViewport(int32 ZOrder)
 		float NextAngle = Angle + AngleSection;
 		if (!ListItems[i]->IsInViewport())
 		{
-			ListItems[i]->SetPositionInViewport(
-				(CenterScreen + (FVector2D(UKismetMathLibrary::DegCos(Angle), UKismetMathLibrary::DegSin(Angle)) * (InnerCircleRadius + ((OutterCircleRadius - InnerCircleRadius) / 2.f)))
-				), false);
+			ListItems[i]->SetRenderTranslation(FVector2D(UKismetMathLibrary::DegCos(Angle), UKismetMathLibrary::DegSin(Angle)) * (InnerCircleRadius + ((OutterCircleRadius - InnerCircleRadius) / 2.f)));
 			ListItems[i]->AddToViewport();
 		}
 		Angle = NextAngle;
