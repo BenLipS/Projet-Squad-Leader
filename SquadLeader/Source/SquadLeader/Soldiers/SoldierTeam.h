@@ -34,11 +34,25 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "GlobalTeamData")
 		FString TeamName;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GlobalTeamData")
+		int Id = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "GlobalTeamData")
+		int NbAIBasic = 6;
+
 
 public:  // Soldier List
-	UPROPERTY(EditAnywhere, Replicated, Category = "SoldierList")
+	UPROPERTY(BlueprintReadOnly, Replicated, Category = "SoldierList")
 		TArray<ASoldier*> soldierList;
+
+protected:
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "SoldierList")
+		TSubclassOf<class ASoldierAI> ClassBasicAI;
+
 public:
+	UFUNCTION(BlueprintCallable, Category = "SoldierList")
+		TSubclassOf<class ASoldierAI> GetClassBasicAI();
+
 	UFUNCTION(BlueprintCallable, Category = "SoldierList")
 		void AddSoldierList(ASoldier* newSoldier);
 	UFUNCTION(BlueprintCallable, Category = "SoldierList")
@@ -69,6 +83,4 @@ public:
 		void RemoveOneTicket();
 	UFUNCTION(BlueprintCallable, Category = "Tickets")
 		int GetTicket() const { return Tickets; }
-	UFUNCTION(BlueprintCallable, Category = "Tickets")
-		void SetTicket(int _Ticket) { Tickets = _Ticket; }
 };

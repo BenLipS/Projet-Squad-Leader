@@ -31,13 +31,22 @@ public:
 	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 	virtual void Tick(float DeltaTime) override;
 
-
 //////////////// Inits
 protected:
-	void initCameras();
-	void initMeshes();
-	void initMovements();
-	virtual void initWeapons();
+	void InitCameras();
+	void InitMeshes();
+	void InitMovements();
+	virtual void InitWeapons();
+
+//////////////// Controllers
+protected:
+	// Lock any interraction with this soldier
+	UFUNCTION()
+	virtual void LockControls();
+
+	// Unlock interractions with this soldier
+	UFUNCTION()
+	virtual void UnLockControls();
 
 //////////////// Ability System
 protected:
@@ -82,7 +91,9 @@ public:
 	static FGameplayTag StateFightingTag;
 	static FGameplayTag StateAimingTag;
 	static FGameplayTag StateGivingOrderTag;
+	static FGameplayTag StateFiringTag;
 	static FGameplayTag StateReloadingWeaponTag;
+	static FGameplayTag StateDashingTag;
 
 	// Abilities
 	static FGameplayTag SkillRunTag;
@@ -94,6 +105,7 @@ public:
 	static FGameplayTag SkillAreaEffectFromSelfTag;
 	static FGameplayTag SkillGiveOrderTag;
 	static FGameplayTag SkillReloadWeaponTag;
+	static FGameplayTag SkillQuickDashTag;
 
 protected:
 	virtual void DeadTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
@@ -102,7 +114,9 @@ protected:
 	virtual void FightingTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 	virtual void AimingTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 	virtual void GivingOrderTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
+	virtual void FiringTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 	virtual void ReloadingWeaponTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
+	virtual void DashingTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Abilities")
@@ -154,10 +168,10 @@ public:
 	bool IsAlive() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
-		FVector GetLocation() const noexcept;
+	FVector GetLocation() const noexcept;
 
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
-		uint8 GetInfluenceRadius() const noexcept;
+	uint8 GetInfluenceRadius() const noexcept;
 
 	// Attribute changed callbacks
 	FDelegateHandle HealthChangedDelegateHandle;
@@ -241,9 +255,11 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Movement")
 	void StopRunning();
-	
+
 	UFUNCTION(BlueprintCallable, Category = "Movement")
 	bool Walk();
+
+	virtual void Landed(const FHitResult& _Hit) override;
 
 //////////////// Weapons
 protected:
@@ -311,20 +327,45 @@ public:
 	UFUNCTION()
 	virtual FVector GetRespawnPoint() { return FVector(0.f, 0.f, 1500.f); }  // function overide in SoldierPlayer and Soldier AI
 
-
 //////////////// For AIPerception
 private:
 	class UAIPerceptionStimuliSourceComponent* stimulus;
 
 	void setup_stimulus();
 
-//////////////// Animation
+//////////////// Particles
 protected:
-	UPROPERTY(EditDefaultsOnly, Category = "Animation")
+	UPROPERTY(EditDefaultsOnly, Category = "Animation | Particles")
 	UParticleSystem* ImpactHitFX;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Animation")
+	UPROPERTY(EditDefaultsOnly, Category = "Animation | Particles")
 	FVector ImpactHitFXScale;
+
+//////////////// Montages
+public:
+	// Anim Montage
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Animation | Montages")
+	UAnimMontage* StartGameMontage;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Animation | Montages")
+	UAnimMontage* DeathMontage;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Animation | Montages")
+	UAnimMontage* RespawnMontage;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Animation | Montages")
+	UAnimMontage* WeaponFireMontage;
+
+protected:
+	// Callbacks
+	FOnMontageEnded StartGame_SoldierMontageEndedDelegate;
+	FOnMontageEnded Respawn_SoldierMontageEndedDelegate;
+
+	UFUNCTION()
+	virtual void OnStartGameMontageCompleted(UAnimMontage* _Montage, bool _bInterrupted);
+
+	UFUNCTION()
+	virtual void OnRespawnMontageCompleted(UAnimMontage* _Montage, bool _bInterrupted);
 
 public:
 	UFUNCTION()

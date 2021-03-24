@@ -9,8 +9,6 @@ UAIInfoWidget::UAIInfoWidget(const FObjectInitializer& ObjectInitializer) : USL_
 
 void UAIInfoWidget::OnHealthChanged(float newValue)
 {
-	/*if (newValue > MaxHealth)
-		newValue = MaxHealth;*/
 	Health = newValue;
 	ProgressBarHP->SetPercent(Health / MaxHealth);
 	TextAI->SetText(FText::FromString(FString::SanitizeFloat(Health, 0)));
@@ -18,8 +16,18 @@ void UAIInfoWidget::OnHealthChanged(float newValue)
 
 void UAIInfoWidget::OnMaxHealthChanged(float newValue)
 {
-	/*if (newValue < Health)
-		Health = newValue;*/
 	MaxHealth = newValue;
 	ProgressBarHP->SetPercent(Health / MaxHealth);
+}
+
+void UAIInfoWidget::OnShieldChanged(float newValue)
+{
+	Shield = newValue;
+	ProgressBarShield->SetPercent(Shield / MaxShield);
+}
+
+void UAIInfoWidget::OnMaxShieldChanged(float newValue)
+{
+	MaxShield = newValue;
+	ProgressBarShield->SetPercent(Shield / MaxShield);
 }

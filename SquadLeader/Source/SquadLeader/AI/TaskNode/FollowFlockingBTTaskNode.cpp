@@ -15,30 +15,25 @@ EBTNodeResult::Type UFollowFlockingBTTaskNode::ExecuteTask(UBehaviorTreeComponen
 	uint8* NodeMemory)
 {
 	// Obtenir un pointeur sur AIEnemyController
-	AAIBasicController* AIBasicController = Cast<AAIBasicController>(OwnerComp.GetOwner());
+	AAIGeneralController* AIGeneralController = Cast<AAIGeneralController>(OwnerComp.GetOwner());
 	// Appeler la fonctionUpdateNextTargetPoint qui contient la logique pour sélectionner
 	 // le prochain TargetPoint
-	AIBasicController->FollowFlocking();
+	AIGeneralController->FollowFlocking();
 	//Nous retournons Succeeded
 	return EBTNodeResult::InProgress;
 }
 
 void UFollowFlockingBTTaskNode::TickTask(class UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) {
-	AAIBasicController* AIBasicController = Cast<AAIBasicController>(OwnerComp.GetOwner());
+	AAIGeneralController* AIGeneralController = Cast<AAIGeneralController>(OwnerComp.GetOwner());
 
-	EPathFollowingRequestResult::Type MoveToActorResult = AIBasicController->FollowFlocking();
-	FVector distToObjectif = AIBasicController->GetPawn()->GetActorLocation() - AIBasicController->GetObjectifLocation();
-	if (distToObjectif.Size() < 500) {
-		//AIBasicController->get_blackboard()->SetValueAsBool("DoFlocking", false);
-		AIBasicController->SetState(AIBasicState::Patroling);
-		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
-	}
-	else if (AIBasicController->get_blackboard()->GetValueAsBool("is_attacking")) {
-		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
-	}
-	/*if (MoveToActorResult == EPathFollowingRequestResult::Failed)
-		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);*/
+	EPathFollowingRequestResult::Type MoveToActorResult = AIGeneralController->FollowFlocking();
 
+	ResultState arrive = AIGeneralController->ArriveAtDestination();
+
+	if(arrive == ResultState::Success)
+		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+	if(arrive == ResultState::Failed)
+		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
 }
 
 FString UFollowFlockingBTTaskNode::GetStaticDescription() const

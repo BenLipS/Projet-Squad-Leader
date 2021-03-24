@@ -5,38 +5,47 @@
 #include "SquadLeaderGameInstance.h"
 #include "Soldiers/Soldier.h"
 
+#include "Interface/PreInitable.h"
+#include "ControlArea/ControlArea.h"
+
 ASquadLeaderGameModeBase::ASquadLeaderGameModeBase() : RespawnDelay{ 3.f }
 {
-	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnObject(TEXT("/Game/BluePrints/Soldiers/Players/BP_SoldierPlayerSupport"));
 	static ConstructorHelpers::FClassFinder<ASoldierPlayerController> PlayerControllerObject(TEXT("/Game/BluePrints/Soldiers/Players/BP_SoldierPlayerController"));
 	static ConstructorHelpers::FClassFinder<ASoldierPlayerState> PlayerStateObject(TEXT("/Game/BluePrints/Soldiers/Players/BP_SoldierPlayerState"));
-
-	if (PlayerPawnObject.Class != NULL)
-		DefaultPawnClass = PlayerPawnObject.Class;
 
 	if (PlayerControllerObject.Class != NULL)
 		PlayerControllerClass = PlayerControllerObject.Class;
 
 	if (PlayerStateObject.Class != NULL)
 		PlayerStateClass = PlayerStateObject.Class;
-
-	//HUDClass = maclasse::StaticClass();
 }
 
 void ASquadLeaderGameModeBase::StartPlay() {
+	// Clean Managers and collections
 	for (auto team : SoldierTeamCollection) {  // clean all team data at the begining
-		team.GetDefaultObject()->SetTicket(BaseTicketNumber);
 		team.GetDefaultObject()->CleanSpawnPoints();
 		team.GetDefaultObject()->CleanSoldierList();
 	}
 
 	ControlAreaManager.GetDefaultObject()->CleanControlAreaList();  // clean the list of all control area
 
+	//Init static world actors
+	InitActorInWorld();
+	
 	//Init for AI
-	//Cast<USquadLeaderGameInstance>(GetGameInstance())->InitInfluenceMap();
+	Cast<USquadLeaderGameInstance>(GetGameInstance())->InitInfluenceMap();
 	Cast<USquadLeaderGameInstance>(GetGameInstance())->InitAIManagers();
 
 	Super::StartPlay();
+}
+
+void ASquadLeaderGameModeBase::InitActorInWorld()
+{
+	for (auto SceneActors: GetWorld()->PersistentLevel->Actors)  // cycle each actor
+	{
+		if (auto PreInitialisableObject = Cast<IPreInitable>(SceneActors); PreInitialisableObject)
+			PreInitialisableObject->PreInitialisation();
+	}
 }
 
 void ASquadLeaderGameModeBase::SoldierDied(AController* _Controller)

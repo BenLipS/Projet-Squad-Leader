@@ -2,12 +2,32 @@
 
 
 #include "AISquadController.h"
+#include "AISquadManager.h"
 #include "../Spawn/SoldierSpawn.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "DrawDebugHelpers.h"
 #include "BehaviorTree/BehaviorTree.h"
+#include "NavigationSystem.h"
+
+bool AAISquadController::GetValidFormationPos()
+{
+	FVector HitLocation{};
+
+	UNavigationSystemV1* navSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
+
+	FVector startLocation = SquadManager->Leader->GetLocation();
+	FVector endLocation = blackboard->GetValueAsVector("FormationLocation");
+
+	if (navSys->NavigationRaycast(GetWorld(), startLocation, endLocation, HitLocation)) {
+		blackboard->SetValueAsVector("FormationLocation", HitLocation);
+		return false;
+	}
+	return true;
+}
 
 AAISquadController::AAISquadController() {
 	setup_BehaviorTree();
+	bReplicates = false;
 }
 
 void AAISquadController::setup_BehaviorTree() {
@@ -56,8 +76,10 @@ void AAISquadController::Init()
 }
 
 EPathFollowingRequestResult::Type AAISquadController::FollowFormation() {
-	EPathFollowingRequestResult::Type _movetoResult = MoveToLocation(blackboard->GetValueAsVector("FormationLocation"), 5.f);
 
+	GetValidFormationPos();
+	EPathFollowingRequestResult::Type _movetoResult = MoveToLocation(blackboard->GetValueAsVector("FormationLocation"), 5.f);
+	DrawDebugPoint(GetWorld(), blackboard->GetValueAsVector("FormationLocation"), 12, FColor::Purple);
 	if ((blackboard->GetValueAsVector("FormationLocation") - GetPawn()->GetActorLocation()).Size() >= RuningDistanceForFormation)
 		Cast<ASoldierAI>(GetPawn())->ActivateAbilityRun();
 	else

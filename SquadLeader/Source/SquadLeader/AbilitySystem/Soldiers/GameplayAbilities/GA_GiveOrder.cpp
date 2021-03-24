@@ -1,13 +1,17 @@
 #include "GA_GiveOrder.h"
 #include "../../../Soldiers/Players/SoldierPlayer.h"
+#include "../../../Soldiers/Players/SoldierPlayerController.h"
+#include "../../../UI/PlayerHUD.h"
 #include "SquadLeader/AI/AISquadManager.h"
 
 UGA_GiveOrder::UGA_GiveOrder()
 {
+	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
+
 	AbilityInputID = ESoldierAbilityInputID::GiveOrder;
 	AbilityID = ESoldierAbilityInputID::None;
 	AbilityTags.AddTag(ASoldier::SkillGiveOrderTag);
-	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
+	ActivationOwnedTags.AddTag(ASoldier::StateGivingOrderTag);
 }
 
 void UGA_GiveOrder::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
@@ -17,9 +21,20 @@ void UGA_GiveOrder::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 		if (!CommitAbility(Handle, ActorInfo, ActivationInfo))
 			EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
 
-		if (ASoldierPlayer* Soldier = Cast<ASoldierPlayer>(ActorInfo->AvatarActor.Get()); Soldier)
+		/*if (ASoldierPlayer* Soldier = Cast<ASoldierPlayer>(ActorInfo->AvatarActor.Get()); Soldier)
 		{
-			//Activation();
+			if (Soldier->GetLocalRole() == ROLE_Authority)
+			{
+				if (Soldier->GetSquadManager()->GetMission()->Type != MissionType::Formation)
+				{
+
+					Soldier->GetSquadManager()->UpdateMission(MissionType::Formation, FVector{ 0, 0, 0 });
+
+					CancelAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true);
+					return;
+				}
+			}
+
 			// Init task
 			UAbilityTask_WaitTargetData *Task = UAbilityTask_WaitTargetData::WaitTargetData(this, FName("WaitTargetData Give Order"), TEnumAsByte<EGameplayTargetingConfirmation::Type>(EGameplayTargetingConfirmation::UserConfirmed), TargetActorClass);
 
@@ -40,11 +55,8 @@ void UGA_GiveOrder::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 			FGameplayAbilityTargetingLocationInfo TargetingLocationInfo = MakeTargetLocationInfoFromOwnerActor();
 			TargetingLocationInfo.LiteralTransform.SetLocation(Soldier->GetActorForwardVector() * 200 + TargetingLocationInfo.LiteralTransform.GetLocation());
 			SpawnedActor->StartLocation = TargetingLocationInfo;
-			
-			// Apply Gameplay effect
-			FGameplayEffectSpecHandle GivingOrderEffectSpecHandle = MakeOutgoingGameplayEffectSpec(GivingOrderGameplayEffect, GetAbilityLevel());
-			Soldier->GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*GivingOrderEffectSpecHandle.Data.Get());
-		}
+		}*/
+		//Call affichage
 	}
 }
 
@@ -55,26 +67,8 @@ bool UGA_GiveOrder::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, 
 
 void UGA_GiveOrder::InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo)
 {
-	//if (ActorInfo != NULL && ActorInfo->AvatarActor != NULL)
-	//	CancelAbility(Handle, ActorInfo, ActivationInfo, true);
-}
-
-void UGA_GiveOrder::CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateCancelAbility)
-{
-	if (ScopeLockCount > 0)
-	{
-		WaitingToExecute.Add(FPostLockDelegate::CreateUObject(this, &UGA_GiveOrder::CancelAbility, Handle, ActorInfo, ActivationInfo, bReplicateCancelAbility));
-		return;
-	}
-
-	Super::CancelAbility(Handle, ActorInfo, ActivationInfo, bReplicateCancelAbility);
-
-	if (ASoldier* Soldier = Cast<ASoldier>(ActorInfo->AvatarActor.Get()); Soldier)
-	{
-		FGameplayTagContainer EffectTagsToRemove;
-		EffectTagsToRemove.AddTag(ASoldier::StateGivingOrderTag);
-		Soldier->GetAbilitySystemComponent()->RemoveActiveEffectsWithGrantedTags(EffectTagsToRemove);
-	}
+	if (ActorInfo != NULL && ActorInfo->AvatarActor != NULL)
+		CancelAbility(Handle, ActorInfo, ActivationInfo, true);
 }
 
 void UGA_GiveOrder::OnOrderValid(const FGameplayAbilityTargetDataHandle& _Data)

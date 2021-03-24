@@ -10,6 +10,7 @@
 
 ASoldierPlayer::ASoldierPlayer(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer), ASCInputBound{ false }
 {
+
 }
 
 /*
@@ -27,7 +28,7 @@ void ASoldierPlayer::PossessedBy(AController* _newController)
 {
 	Super::PossessedBy(_newController);
 	SetAbilitySystemComponent();
-	initWeapons();
+	InitWeapons();
 
 	/*Init Squad Manager for this Player*/
 
@@ -35,7 +36,9 @@ void ASoldierPlayer::PossessedBy(AController* _newController)
 	SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn; // La maniere de faire le respawn
 	FTransform LocationTemp{ {0.f, -1000.f, 0.f}, {0.f,0.f,0.f} };
 	SquadManager = GetWorld()->SpawnActorDeferred<AAISquadManager>(AISquadManagerClass, LocationTemp, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
-	if (SquadManager) {
+
+	if (SquadManager)
+	{
 		SquadManager->FinishSpawning(LocationTemp);
 		SquadManager->Init(GetTeam(), this);
 		Cast<USquadLeaderGameInstance>(GetGameInstance())->ListAISquadManagers.Add(SquadManager);
@@ -47,10 +50,23 @@ void ASoldierPlayer::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();
 	SetAbilitySystemComponent();
-	initWeapons();
+	InitWeapons();
 
+	//-----HUD-----
 	if (ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(GetController()); PC)
 		PC->CreateHUD();
+}
+
+void ASoldierPlayer::LockControls()
+{
+	if (APlayerController* PC = Cast<APlayerController>(Controller); PC)
+		PC->DisableInput(PC);
+}
+
+void ASoldierPlayer::UnLockControls()
+{
+	if (APlayerController* PC = Cast<APlayerController>(Controller); PC)
+		PC->EnableInput(PC);
 }
 
 AAISquadManager* ASoldierPlayer::GetSquadManager()
@@ -137,7 +153,6 @@ void ASoldierPlayer::BindASCInput()
 	}
 }
 
-
 void ASoldierPlayer::cycleBetweenTeam()
 {
 	if (GetLocalRole() == ROLE_Authority) {
@@ -170,4 +185,12 @@ FVector ASoldierPlayer::GetRespawnPoint()
 		}
 	}
 	return FVector(0.f, 0.f, 1500.f); // else return default
+}
+
+void ASoldierPlayer::OnSquadChanged(const TArray<FSoldierAIData>& newValue)
+{
+	if (ASoldierPlayerController* PC = GetController<ASoldierPlayerController>(); PC)
+	{
+		PC->OnSquadChanged(newValue);
+	}
 }

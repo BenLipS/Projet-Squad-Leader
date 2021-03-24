@@ -2,7 +2,6 @@
 
 #include "CoreMinimal.h"
 #include "../GameplayAbilitySoldier.h"
-#include "../GameplayEffects/States/GE_StateRunning.h"
 #include "GA_Run.generated.h"
 
 UCLASS()
@@ -20,8 +19,4 @@ public:
 	virtual void InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) override;
 
 	virtual void CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateCancelAbility) override;
-
-protected:
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-	TSubclassOf<UGE_StateRunning> RunningGameplayEffect;
 };

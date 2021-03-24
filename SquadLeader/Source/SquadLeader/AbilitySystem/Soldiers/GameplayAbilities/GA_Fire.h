@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "../GameplayAbilitySoldier.h"
+#include "../GameplayEffects/States/GE_StateFiring.h"
 #include "GA_Fire.generated.h"
 
 UCLASS()
@@ -21,6 +22,10 @@ protected:
 
 	virtual void CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateCancelAbility) override;
 
+protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	TSubclassOf<UGameplayEffect> DamageGameplayEffect;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	TSubclassOf<UGE_StateFiring> FiringGameplayEffect;
 };

@@ -5,12 +5,14 @@
 #include "Soldier.h"
 #include "../Spawn/SoldierSpawn.h"
 #include "../SquadLeaderGameModeBase.h"
+#include "SquadLeader/Soldiers/AIs/SoldierAI.h"
 
 ASoldierTeam::ASoldierTeam() {
 	bReplicates = true;
 }
 
 
+// useless when it's not physicaly in game
 void ASoldierTeam::BeginPlay() {
 	Super::BeginPlay();
 }
@@ -20,11 +22,17 @@ void ASoldierTeam::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
+	DOREPLIFETIME(ASoldierTeam, NbAIBasic);
+	DOREPLIFETIME(ASoldierTeam, TeamName);
 	DOREPLIFETIME(ASoldierTeam, soldierList);
 	DOREPLIFETIME(ASoldierTeam, mainSpawnPoints);
 
 }
 
+TSubclassOf<ASoldierAI> ASoldierTeam::GetClassBasicAI()
+{
+	return ClassBasicAI;
+}
 
 void ASoldierTeam::AddSoldierList(ASoldier* newSoldier)
 {

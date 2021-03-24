@@ -24,7 +24,23 @@ void AControlArea::initCollideElement() {
 void AControlArea::BeginPlay()
 {
 	Super::BeginPlay();
+}
 
+// Called every frame
+void AControlArea::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+}
+
+void AControlArea::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME_CONDITION_NOTIFY(AControlArea, isTakenBy, COND_None, REPNOTIFY_Always);
+}
+
+
+void AControlArea::PreInitialisation()
+{
 	/* Var init*/
 	maxControlValue = 20;  // maxValue
 	controlValueToTake = maxControlValue / 2;  // value need to change boolean variables
@@ -39,16 +55,9 @@ void AControlArea::BeginPlay()
 	}
 }
 
-// Called every frame
-void AControlArea::Tick(float DeltaTime)
+int AControlArea::getpriority()
 {
-	Super::Tick(DeltaTime);
-}
-
-void AControlArea::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME_CONDITION_NOTIFY(AControlArea, isTakenBy, COND_None, REPNOTIFY_Always);
+	return 1;
 }
 
 

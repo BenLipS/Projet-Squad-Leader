@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "../Soldier.h"
+#include "../AIs/SoldierAI.h"
 #include "SoldierPlayer.generated.h"
 class AAISquadManager;
 
@@ -18,11 +19,17 @@ protected:
 	void PossessedBy(AController* _newController) override;
 	void OnRep_PlayerState() override;
 
+//////////////// Controllers
+protected:
+	virtual void LockControls() override;
+	virtual void UnLockControls() override;
+
+//////////////// Squad
 	UPROPERTY(EditDefaultsOnly, Category = "SquadManager")
-	TSubclassOf<AAISquadManager> AISquadManagerClass;
+	TSubclassOf<class AAISquadManager> AISquadManagerClass;
 
 	UPROPERTY(BlueprintReadOnly, Category = "SquadManager")
-	AAISquadManager* SquadManager;
+	class AAISquadManager* SquadManager;
 
 public:
 	UFUNCTION()
@@ -50,4 +57,9 @@ protected:
 
 public:  // Respawn
 	virtual FVector GetRespawnPoint() override;
+
+//////////////// SquadManager data callbacks
+
+	UFUNCTION()
+	void OnSquadChanged(const TArray<FSoldierAIData>& newValue);
 };

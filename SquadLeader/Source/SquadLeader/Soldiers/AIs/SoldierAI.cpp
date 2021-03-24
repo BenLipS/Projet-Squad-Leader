@@ -1,5 +1,6 @@
 #include "SoldierAI.h"
 #include "../../AI/AIGeneralController.h"
+#include "../../AI/AISquadController.h"
 
 ASoldierAI::ASoldierAI(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer)
 {
@@ -9,12 +10,39 @@ ASoldierAI::ASoldierAI(const FObjectInitializer& _ObjectInitializer) : Super(_Ob
 	AttributeSet = CreateDefaultSubobject<UAttributeSetSoldier>(TEXT("Attribute Set"));
 }
 
+// TODO: See with AI team how to proceed
+void ASoldierAI::LockControls()
+{
+	//if (LastUnpossessedController = GetController(); LastUnpossessedController)
+		//LastUnpossessedController->UnPossess();
+	
+	/*if (auto AC = Cast<AAIController>(GetController()); AC)
+	{
+		if (AC->BrainComponent)
+			AC->BrainComponent->StopLogic("");
+	}*/
+}
+
+void ASoldierAI::UnLockControls()
+{
+	/*if (LastUnpossessedController)
+	{
+		LastUnpossessedController->Possess(this);
+		LastUnpossessedController = nullptr;
+	}*/
+	/*if (auto AC = Cast<AAIController>(GetController()); AC)
+	{
+		if (AC->BrainComponent)
+			AC->BrainComponent->RestartLogic();
+	}	*/
+}
+
 void ASoldierAI::BroadCastDatas()
 {
-	OnHealthChanged.Broadcast(AttributeSet->GetHealth());
-	OnMaxHealthChanged.Broadcast(AttributeSet->GetMaxHealth());
-	OnShieldChanged.Broadcast(AttributeSet->GetShield());
-	OnMaxShieldChanged.Broadcast(AttributeSet->GetMaxShield());
+	OnHealthChanged.Broadcast(AttributeSet->GetHealth(), GetController<AAISquadController>());
+	OnMaxHealthChanged.Broadcast(AttributeSet->GetMaxHealth(), GetController<AAISquadController>());
+	OnShieldChanged.Broadcast(AttributeSet->GetShield(), GetController<AAISquadController>());
+	OnMaxShieldChanged.Broadcast(AttributeSet->GetMaxShield(), GetController<AAISquadController>());
 }
 
 void ASoldierAI::BeginPlay()
@@ -30,7 +58,7 @@ void ASoldierAI::BeginPlay()
 	InitializeAttributes();
 	InitializeAbilities();
 	AddStartupEffects();
-	initWeapons();
+	InitWeapons();
 }
 
 FVector ASoldierAI::lookingAtPosition()
@@ -122,20 +150,44 @@ void ASoldierAI::HealthChanged(const FOnAttributeChangeData& Data)
 {
 	// TODO: Review callbacks with soldiers
 	Super::HealthChanged(Data);
-	OnHealthChanged.Broadcast(Data.NewValue);
+	OnHealthChanged.Broadcast(Data.NewValue, GetController<AAISquadController>());
 }
 
 void ASoldierAI::MaxHealthChanged(const FOnAttributeChangeData& Data)
 {
-	OnMaxHealthChanged.Broadcast(Data.NewValue);
+	OnMaxHealthChanged.Broadcast(Data.NewValue, GetController<AAISquadController>());
 }
 
 void ASoldierAI::ShieldChanged(const FOnAttributeChangeData& Data)
 {
-	OnShieldChanged.Broadcast(Data.NewValue);
+	OnShieldChanged.Broadcast(Data.NewValue, GetController<AAISquadController>());
 }
 
 void ASoldierAI::MaxShieldChanged(const FOnAttributeChangeData& Data)
 {
-	OnMaxShieldChanged.Broadcast(Data.NewValue);
+	OnMaxShieldChanged.Broadcast(Data.NewValue, GetController<AAISquadController>());
+}
+
+void FSoldierAIData::OnHealthChanged(float newHealth)
+{
+	Health = newHealth;
+	OnHealthNotify.Broadcast(Health);
+}
+
+void FSoldierAIData::OnMaxHealthChanged(float newMaxHealth)
+{
+	MaxHealth = newMaxHealth;
+	OnMaxHealthNotify.Broadcast(MaxHealth);
+}
+
+void FSoldierAIData::OnShieldChanged(float newShield)
+{
+	Shield = newShield;
+	OnShieldNotify.Broadcast(Shield);
+}
+
+void FSoldierAIData::OnMaxShieldChanged(float newMaxShield)
+{
+	MaxShield = newMaxShield;
+	OnMaxShieldNotify.Broadcast(MaxShield);
 }
