@@ -3,7 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "../SL_UserWidget.h"
+#include "../Interface/OrderInterface.h"
+
 #include "Components/Image.h"
 #include "Components/SizeBox.h"
 #include "WheelWidget.generated.h"
@@ -12,7 +15,7 @@
  * 
  */
 UCLASS()
-class SQUADLEADER_API UWheelWidget : public USL_UserWidget
+class SQUADLEADER_API UWheelWidget : public USL_UserWidget, public IOrderInterface
 {
 	GENERATED_BODY()
 
@@ -70,8 +73,8 @@ public:
 	void RemoveFromViewport();
 	
 
-	void OnInputPressed();
-	void OnInputReleased();
+	void OnOrderInputPressed() override;
+	void OnOrderInputReleased() override;
 
 protected:
 	virtual int32 NativePaint(const FPaintArgs& Args, const FGeometry& AllottedGeometry, const FSlateRect& MyCullingRect, FSlateWindowElementList& OutDrawElements, int32 LayerId, const FWidgetStyle& InWidgetStyle, bool bParentEnabled) const;

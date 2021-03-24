@@ -3,16 +3,20 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "SL_UserWidget.h"
+#include "Interface/WeaponInterface.h"
+
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
+
 #include "AmmoWidget.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class SQUADLEADER_API UAmmoWidget : public USL_UserWidget
+class SQUADLEADER_API UAmmoWidget : public USL_UserWidget, public IWeaponInterface
 {
 	GENERATED_BODY()
 	
@@ -29,9 +33,9 @@ protected:
 public:
 	UAmmoWidget(const FObjectInitializer& ObjectInitializer);
 
-	UFUNCTION(BlueprintCallable)
-	void OnAmmoChanged(uint8 newValue);
+	void SetupDelegateToObject(UObject* ObjectIn) override;
 
-	UFUNCTION(BlueprintCallable)
-	void OnMaxAmmoChanged(uint8 newValue);
+	//-----IWeaponInterface-----
+	void OnAmmoChanged(uint8 newValue) override;
+	void OnMaxAmmoChanged(uint8 newValue) override;
 };

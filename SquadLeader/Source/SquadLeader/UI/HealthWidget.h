@@ -7,12 +7,14 @@
 #include "Engine/Canvas.h"
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
+#include "Interface/PlayerHealthInterface.h"
+#include "Interface/PlayerHealthDelegateInterface.h"
 #include "HealthWidget.generated.h"
 /**
  * 
  */
 UCLASS()
-class SQUADLEADER_API UHealthWidget : public USL_UserWidget
+class SQUADLEADER_API UHealthWidget : public USL_UserWidget, public IPlayerHealthInterface
 {
 	GENERATED_BODY()
 
@@ -29,9 +31,9 @@ protected:
 public:
 	UHealthWidget(const FObjectInitializer& ObjectInitializer);
 
-	UFUNCTION(BlueprintCallable)
-	void OnHealthChanged(float newValue);
+	void SetupDelegateToObject(UObject* ObjectIn) override;
 
-	UFUNCTION(BlueprintCallable)
-	void OnMaxHealthChanged(float newValue);
+	//-----IPlayerHealthInterface-----
+	void OnPlayerHealthChanged(float newValue) override;
+	void OnPlayerMaxHealthChanged(float newValue) override;
 };

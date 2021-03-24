@@ -2,25 +2,30 @@
 
 
 #include "ShieldWidget.h"
+#include "Interface/PlayerShieldDelegateInterface.h"
 
 UShieldWidget::UShieldWidget(const FObjectInitializer& ObjectInitializer) : USL_UserWidget(ObjectInitializer)
 {
 }
 
-void UShieldWidget::OnShieldChanged(float newValue)
+void UShieldWidget::OnPlayerShieldChanged(float newValue)
 {
-	/*if (newValue > MaxShield)
-		newValue = MaxShield;*/
 	Shield = newValue;
 	ProgressBarShield->SetPercent(Shield / MaxShield);
 	TextShield->SetText(FText::FromString(FString::SanitizeFloat(Shield, 0) + "/" + FString::SanitizeFloat(MaxShield, 0)));
 }
 
-void UShieldWidget::OnMaxShieldChanged(float newValue)
+void UShieldWidget::OnPlayerMaxShieldChanged(float newValue)
 {
-	/*if (newValue < Shield)
-		Shield = newValue;*/
 	MaxShield = newValue;
 	ProgressBarShield->SetPercent(Shield / MaxShield);
 	TextShield->SetText(FText::FromString(FString::SanitizeFloat(Shield, 0) + "/" + FString::SanitizeFloat(MaxShield, 0)));
+}
+
+void UShieldWidget::SetupDelegateToObject(UObject* ObjectIn)
+{
+	if (IPlayerShieldDelegateInterface* PlayerShieldDelegateInterface = Cast<IPlayerShieldDelegateInterface>(ObjectIn); PlayerShieldDelegateInterface)
+	{
+		PlayerShieldDelegateInterface->AddPlayerShieldDelegate(this);
+	}
 }

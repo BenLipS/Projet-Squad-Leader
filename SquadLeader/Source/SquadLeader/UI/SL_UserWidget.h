@@ -16,4 +16,7 @@ class SQUADLEADER_API USL_UserWidget : public UUserWidget
 
 public:
 	USL_UserWidget(const FObjectInitializer& ObjectInitializer);
+
+	/*Call by HUD to setup the delegate interface*/
+	virtual void SetupDelegateToObject(UObject* ObjectIn);
 };

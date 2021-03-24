@@ -6,3 +6,7 @@
 USL_UserWidget::USL_UserWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
 }
+
+void USL_UserWidget::SetupDelegateToObject(UObject* ObjectIn)
+{
+}

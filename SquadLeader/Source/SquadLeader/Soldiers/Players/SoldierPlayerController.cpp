@@ -2,7 +2,7 @@
 #include "SoldierPlayerState.h"
 #include "../Soldier.h"
 #include "AbilitySystemComponent.h"
-#include "../../UI/PlayerHUD.h"
+#include "../../UI/SL_HUD.h"
 
 //TODO: rmove next include -> only use for the team init -> only use on temporary debug
 #include "../../SquadLeaderGameModeBase.h"
@@ -29,16 +29,16 @@ void ASoldierPlayerController::CreateHUD_Implementation()
 		UE_LOG(LogTemp, Error, TEXT("%s() Missing HUDWidgetClass. Please fill in on the Blueprint of the PlayerController."), *FString(__FUNCTION__));
 		return;
 	}
-	APlayerHUD* CurrentPlayerHUD = GetHUD<APlayerHUD>();
-	if (CurrentPlayerHUD)
+	ASL_HUD* CurrentHUD = GetHUD<ASL_HUD>();
+	if (CurrentHUD)
 		return;
 	ClientSetHUD(HUDClass);
-	if (APlayerHUD* HUD = GetHUD<APlayerHUD>(); HUD)
+	if (ASL_HUD* HUD = GetHUD<ASL_HUD>(); HUD)
 	{
 		if (InputComponent)
 		{
-			InputComponent->BindAction("GiveOrder", IE_Pressed, HUD, &APlayerHUD::OnOrderInputPressed);
-			InputComponent->BindAction("GiveOrder", IE_Released, HUD, &APlayerHUD::OnOrderInputReleased);
+			InputComponent->BindAction("GiveOrder", IE_Pressed, HUD, &ASL_HUD::OnOrderInputPressed);
+			InputComponent->BindAction("GiveOrder", IE_Released, HUD, &ASL_HUD::OnOrderInputReleased);
 		}
 	}
 }
@@ -72,10 +72,10 @@ void ASoldierPlayerController::OnRep_PlayerState()
 
 	// For edge cases where the PlayerState is repped before the Soldier is possessed.
 	CreateHUD();
-	if (APlayerHUD* CurrentPlayerHUD = GetHUD<APlayerHUD>())
+	if (ASL_HUD* CurrentHUD = GetHUD<ASL_HUD>())
 	{
-		CurrentPlayerHUD->SetPlayerStateLink();
-		CurrentPlayerHUD->SetAIStateLink();
+		CurrentHUD->SetPlayerStateLink();
+		CurrentHUD->SetAIStateLink();
 	}
 }
 
@@ -165,8 +165,8 @@ void ASoldierPlayerController::ClientSendCommand_Implementation(const FString& C
 void ASoldierPlayerController::OnSquadChanged_Implementation(const TArray<FSoldierAIData>& newValue)
 {
 	SquadManagerData.OnSquadDataChanged(newValue);
-	if (APlayerHUD* CurrentPlayerHUD = GetHUD<APlayerHUD>(); CurrentPlayerHUD)
-		CurrentPlayerHUD->OnSquadChanged(newValue);
+	if (ASL_HUD* CurrentHUD = GetHUD<ASL_HUD>(); CurrentHUD)
+		CurrentHUD->OnSquadChanged(newValue);
 }
 
 void ASoldierPlayerController::OnSquadMemberHealthChanged_Implementation(int index, float newHealth)
@@ -175,9 +175,9 @@ void ASoldierPlayerController::OnSquadMemberHealthChanged_Implementation(int ind
 	{
 		SquadManagerData.SquadData[index].Health = newHealth;
 		//Appel au HUD
-		if (APlayerHUD* CurrentPlayerHUD = GetHUD<APlayerHUD>(); CurrentPlayerHUD)
+		if (ASL_HUD* CurrentHUD = GetHUD<ASL_HUD>(); CurrentHUD)
 		{
-			CurrentPlayerHUD->OnSquadHealthChanged(index, newHealth);
+			CurrentHUD->OnSquadHealthChanged(index, newHealth);
 		}
 	}
 	// Erreur syncronisation client / serveur
@@ -189,9 +189,9 @@ void ASoldierPlayerController::OnSquadMemberMaxHealthChanged_Implementation(int 
 	{
 		SquadManagerData.SquadData[index].MaxHealth = newMaxHealth;
 		//Appel au HUD
-		if (APlayerHUD* CurrentPlayerHUD = GetHUD<APlayerHUD>(); CurrentPlayerHUD)
+		if (ASL_HUD* CurrentHUD = GetHUD<ASL_HUD>(); CurrentHUD)
 		{
-			CurrentPlayerHUD->OnSquadMaxHealthChanged(index, newMaxHealth);
+			CurrentHUD->OnSquadMaxHealthChanged(index, newMaxHealth);
 		}
 	}
 	// Erreur syncronisation client / serveur
@@ -203,9 +203,9 @@ void ASoldierPlayerController::OnSquadMemberShieldChanged_Implementation(int ind
 	{
 		SquadManagerData.SquadData[index].Shield = newShield;
 		//Appel au HUD
-		if (APlayerHUD* CurrentPlayerHUD = GetHUD<APlayerHUD>(); CurrentPlayerHUD)
+		if (ASL_HUD* CurrentHUD = GetHUD<ASL_HUD>(); CurrentHUD)
 		{
-			CurrentPlayerHUD->OnSquadShieldChanged(index, newShield);
+			CurrentHUD->OnSquadShieldChanged(index, newShield);
 		}
 	}
 	// Erreur syncronisation client / serveur
@@ -217,9 +217,9 @@ void ASoldierPlayerController::OnSquadMemberMaxShieldChanged_Implementation(int 
 	{
 		SquadManagerData.SquadData[index].MaxShield = newMaxShield;
 		//Appel au HUD
-		if (APlayerHUD* CurrentPlayerHUD = GetHUD<APlayerHUD>(); CurrentPlayerHUD)
+		if (ASL_HUD* CurrentHUD = GetHUD<ASL_HUD>(); CurrentHUD)
 		{
-			CurrentPlayerHUD->OnSquadMaxShieldChanged(index, newMaxShield);
+			CurrentHUD->OnSquadMaxShieldChanged(index, newMaxShield);
 		}
 	}
 	// Erreur syncronisation client / serveur
@@ -238,6 +238,6 @@ void ASoldierPlayerController::OnOrderGiven_Implementation(MissionType Order, FV
 
 void ASoldierPlayerController::BroadCastManagerData()
 {
-	if (APlayerHUD* CurrentPlayerHUD = GetHUD<APlayerHUD>(); CurrentPlayerHUD)
-		CurrentPlayerHUD->OnSquadChanged(SquadManagerData.SquadData);
+	if (ASL_HUD* CurrentHUD = GetHUD<ASL_HUD>(); CurrentHUD)
+		CurrentHUD->OnSquadChanged(SquadManagerData.SquadData);
 }

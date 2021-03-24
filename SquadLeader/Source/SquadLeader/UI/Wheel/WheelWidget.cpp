@@ -82,7 +82,7 @@ void UWheelWidget::RemoveFromViewport()
 	}
 }
 
-void UWheelWidget::OnInputPressed()
+void UWheelWidget::OnOrderInputPressed()
 {
 	if (ASoldierPlayerController* PC = GetOwningPlayer<ASoldierPlayerController>(); PC)
 	{
@@ -95,7 +95,7 @@ void UWheelWidget::OnInputPressed()
 	}
 }
 
-void UWheelWidget::OnInputReleased()
+void UWheelWidget::OnOrderInputReleased()
 {
 	SetVisibility(ESlateVisibility::Hidden);
 	if (ASoldierPlayerController* PC = GetOwningPlayer<ASoldierPlayerController>(); PC)
