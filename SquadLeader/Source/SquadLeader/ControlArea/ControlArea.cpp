@@ -163,12 +163,12 @@ void AControlArea::calculateControlValue()
 			}
 			else { // stop the timer
 				GetWorld()->GetTimerManager().ClearTimer(timerCalculationControlValue);
-				GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("ControlArea : Max control for " + presentTeam.GetDefaultObject()->TeamName));
+				GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("ControlArea : Max control for " + presentTeam->TeamName));
 
 				auto gameinstance = Cast<USquadLeaderGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 				FGridPackage m_package;
 				m_package.m_location_on_map = GetActorLocation();
-				switch (presentTeam.GetDefaultObject()->Id) {
+				switch (presentTeam->Id) {
 				case 1:
 					m_package.team_value = 1;
 					break;

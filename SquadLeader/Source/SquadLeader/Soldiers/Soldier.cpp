@@ -114,7 +114,7 @@ void ASoldier::Tick(float DeltaTime)
 		FGridPackage m_package;
 		m_package.m_location_on_map = GetActorLocation();
 
-		ASoldierTeam* team_ = Cast<ASoldierTeam>(GetTeam()->GetDefaultObject());
+		ASoldierTeam* team_ = GetTeam();
 		if (team_) {
 			switch (team_->Id) {
 			case 1:

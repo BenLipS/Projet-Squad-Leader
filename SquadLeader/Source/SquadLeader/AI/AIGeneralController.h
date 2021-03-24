@@ -84,7 +84,7 @@ public:
 
 
 	virtual ASoldierTeam* GetTeam() override;
-	virtual bool ASoldierTeam* _Team) override;
+	virtual bool SetTeam(ASoldierTeam* _Team) override;
 
 
 	UFUNCTION()
