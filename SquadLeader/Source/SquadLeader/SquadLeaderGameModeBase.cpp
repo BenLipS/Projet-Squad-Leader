@@ -93,6 +93,18 @@ void ASquadLeaderGameModeBase::CheckControlAreaVictoryCondition()
 	}
 }
 
+void ASquadLeaderGameModeBase::CheckTeamTicketsVictoryCondition()
+{
+	for (auto teams : Cast<ASquadLeaderGameState>(GameState)->GetSoldierTeamCollection()) {
+		if (teams->GetTicket() == 0) {
+			GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Red, TEXT("END GAME: Tickets depleted\n") + teams->TeamName + TEXT(" lose !"), false, FVector2D(7, 7));
+			FTimerHandle timerBeforeClosing;
+			GetWorld()->GetTimerManager().SetTimer(timerBeforeClosing, this,
+				&ASquadLeaderGameModeBase::EndGame, 5.f);  // request to the server to end the game
+		}
+	}
+}
+
 void ASquadLeaderGameModeBase::EndGame()
 {
 	for (auto Teams : Cast<ASquadLeaderGameState>(GameState)->GetSoldierTeamCollection()) {

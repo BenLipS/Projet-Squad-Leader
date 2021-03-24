@@ -81,7 +81,7 @@ public:
 
 
 protected:  // Tickets
-	UPROPERTY(EditDefaultsOnly, Replicated, Category = "Tickets")
+	UPROPERTY(EditAnywhere, Replicated, Category = "Tickets")
 		int Tickets = 5;  // default value, must be changed in blueprint
 public:
 	UFUNCTION(BlueprintCallable, Category = "Tickets")

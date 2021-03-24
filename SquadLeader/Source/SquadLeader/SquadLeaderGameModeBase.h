@@ -25,5 +25,6 @@ public:
 	void SoldierDied(AController* _Controller);
 	void RespawnSoldier(AController* _Controller);
 	void CheckControlAreaVictoryCondition();
+	void CheckTeamTicketsVictoryCondition();
 	void EndGame();
 };
