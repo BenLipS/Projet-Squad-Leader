@@ -56,7 +56,7 @@ void ASquadLeaderGameModeBase::StartPlay() {
 	}
 	
 	//Init for AI
-	//Cast<USquadLeaderGameInstance>(GetGameInstance())->InitInfluenceMap();
+	Cast<USquadLeaderGameInstance>(GetGameInstance())->InitInfluenceMap();
 	Cast<USquadLeaderGameInstance>(GetGameInstance())->InitAIManagers();
 
 	Super::StartPlay();

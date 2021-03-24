@@ -7,24 +7,6 @@
 #include "GameFramework/Info.h"
 #include "InfluenceMapGrid.generated.h"
 
-/*
-* This struct represent a Tile-Base for the grid
-* it contains a value, a location and the information of witch team they are of the influence
-*/
-USTRUCT()
-struct SQUADLEADER_API FTileBase {
-
-	GENERATED_USTRUCT_BODY()
-
-	FTileBase() {
-	}
-
-	float m_value = 0.f;
-	FVector m_location;
-	int m_team = -1;
-
-};
-
 USTRUCT()
 struct SQUADLEADER_API FNeighboor {
 
@@ -36,6 +18,44 @@ struct SQUADLEADER_API FNeighboor {
 	TArray<int> m_neighboor;
 
 };
+
+UENUM()
+enum Type {
+	Soldier UMETA(DisplayName = "Soldier"),
+	ControlArea UMETA(DisplayName = "ControlArea"),
+	Projectile UMETA(DisplayName = "Projectile"),
+};
+
+USTRUCT()
+struct SQUADLEADER_API FGridPackage {
+
+	GENERATED_USTRUCT_BODY()
+		FGridPackage() {}
+
+	int team_value = 0;
+	FVector m_location_on_map;
+	TEnumAsByte<Type> m_type;
+};
+
+/*
+* This struct represent a Tile-Base for the grid
+* it contains a value, a location and the information of witch team they are of the influence
+*/
+USTRUCT()
+struct SQUADLEADER_API FTileBase {
+
+	GENERATED_USTRUCT_BODY()
+
+		FTileBase() {
+	}
+
+	float m_value = 0.f;
+	FVector m_location;
+	int m_team = -1;
+	TEnumAsByte<Type> m_type;
+	bool in_update = false;
+};
+
 
 
 /**
@@ -54,6 +74,8 @@ public:
 
 	virtual void Tick(float DeltaSeconds) override;
 
+	void ReceivedMessage(FGridPackage _message);
+
 private:
 	/*
 	* will initialize the array with the tile needed
@@ -71,13 +93,6 @@ private:
 	* only use this for debug
 	*/
 	void DrawGrid() const;
-
-	/*
-	* Reset all the grid
-	* the value of a tile is reset to 0
-	* the team of a tile is reset to none
-	*/
-	void ResetGrid() noexcept;
 
 	/*
 	* Update the grid with world information
@@ -113,18 +128,20 @@ private:
 	* Algorithm recursif
 	* calculate the influence of player on the grid
 	*/
-	void Influence(int index, int start_index, int source_index, int distance) noexcept;
-
-
-	/*
-	* Update all the players for the grid
-	*/
-	void UpdatePlayers() noexcept;
+	void InfluenceSoldier(int index, int start_index, int source_index, int distance) noexcept;
 
 	/*
-	* Update the information of control area in the influence map
+	* Calculate the influence of a control area
 	*/
-	void UpdateControlArea() noexcept;
+	void InfluenceControlArea(int index, int start_index, int source_index, int distance, int value) noexcept;
+
+	/*
+	* Calculate the time of execution of a function
+	*/
+	void TimeFunction();
+
+	void UpdateTile(int index, float value, int team, Type type) noexcept;
+
 public:
 
 	//Dimension of the grid
@@ -157,4 +174,16 @@ private:
 	*/
 	UPROPERTY()
 		TArray<FNeighboor> m_neighboors;
+
+	/*
+	* Will contains the index of the tile that need
+	* to be update
+	* with that we don't need tu update all the grid
+	* we pop out an index when he's update value is down to 0
+	*/
+	UPROPERTY()
+		TArray<int> m_index_update;
+
+	int value_tick = 0;
+	/*class UMyThreadManager* m_ThreadManager;*/
 };

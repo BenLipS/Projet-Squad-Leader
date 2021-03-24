@@ -7,23 +7,19 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "DrawDebugHelpers.h"
 #include "BehaviorTree/BehaviorTree.h"
+#include "NavigationSystem.h"
 
 bool AAISquadController::GetValidFormationPos()
 {
-	FHitResult outHit;
+	FVector HitLocation{};
+
+	UNavigationSystemV1* navSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
 
 	FVector startLocation = SquadManager->Leader->GetLocation();
-	startLocation.Z -= 20;
 	FVector endLocation = blackboard->GetValueAsVector("FormationLocation");
-	endLocation.Z -= 20;
 
-	FCollisionQueryParams collisionParams;
-	collisionParams.AddIgnoredActor(Cast<ASoldierAI>(GetPawn()));
-	collisionParams.AddIgnoredActor(SquadManager->Leader);
-
-	GetWorld()->LineTraceSingleByChannel(outHit, startLocation, endLocation, ECollisionChannel::ECC_WorldStatic, collisionParams);
-	if (outHit.bBlockingHit) {
-		blackboard->SetValueAsVector("FormationLocation", outHit.Location);
+	if (navSys->NavigationRaycast(GetWorld(), startLocation, endLocation, HitLocation)) {
+		blackboard->SetValueAsVector("FormationLocation", HitLocation);
 		return false;
 	}
 	return true;
@@ -80,14 +76,18 @@ void AAISquadController::Init()
 }
 
 EPathFollowingRequestResult::Type AAISquadController::FollowFormation() {
-
 	GetValidFormationPos();
 	EPathFollowingRequestResult::Type _movetoResult = MoveToLocation(blackboard->GetValueAsVector("FormationLocation"), 5.f);
 	DrawDebugPoint(GetWorld(), blackboard->GetValueAsVector("FormationLocation"), 12, FColor::Purple);
-	if ((blackboard->GetValueAsVector("FormationLocation") - GetPawn()->GetActorLocation()).Size() >= RuningDistanceForFormation)
+	if ((blackboard->GetValueAsVector("FormationLocation") - GetPawn()->GetActorLocation()).Size() >= RuningDistanceForFormation && !RunToFormation) {
 		Cast<ASoldierAI>(GetPawn())->ActivateAbilityRun();
-	else
+		RunToFormation = true;
+	}
+	else if ((blackboard->GetValueAsVector("FormationLocation") - GetPawn()->GetActorLocation()).Size() < StopRuningDistanceForFormation) {
+		DrawDebugPoint(GetWorld(), GetPawn()->GetActorLocation(), 32, FColor::Red);
 		Cast<ASoldierAI>(GetPawn())->CancelAbilityRun();
+		RunToFormation = false;
+	}
 
 	return _movetoResult;
 }
@@ -96,9 +96,19 @@ void AAISquadController::Die() {
 	Super::Die();
 }
 
-void AAISquadController::ResetBlackBoard() const {
+void AAISquadController::ResetBlackBoard() {
 	Super::ResetBlackBoard();
 	blackboard->SetValueAsVector("FormationLocation", Cast<ASoldier>(GetPawn())->GetLocation());
 	blackboard->SetValueAsBool("HasOrder", false);
+	blackboard->SetValueAsBool("IsInFormation", true);
+}
+
+
+void AAISquadController::FormationState() {
+	SetState(AIBasicState::Moving);
+	blackboard->SetValueAsBool("is_attacking", false);
+	blackboard->SetValueAsBool("is_moving", false);
+	blackboard->SetValueAsBool("is_patroling", false);
+	blackboard->SetValueAsBool("is_searching", false);
 	blackboard->SetValueAsBool("IsInFormation", true);
 }

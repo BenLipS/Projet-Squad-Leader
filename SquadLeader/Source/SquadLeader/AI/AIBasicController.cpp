@@ -80,7 +80,7 @@ void AAIBasicController::Die() {
 	Super::Die();
 }
 
-void AAIBasicController::ResetBlackBoard() const {
+void AAIBasicController::ResetBlackBoard() {
 	Super::ResetBlackBoard();
 	blackboard->SetValueAsBool("DoFlocking", true);
 	blackboard->SetValueAsVector("FlockingLocation", Cast<ASoldierAI>(GetPawn())->GetLocation());

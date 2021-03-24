@@ -14,21 +14,20 @@
 class UFlockingComponent;
 
 /**
- * This enum contains the different behavior the AI can have
+ * This enum contains the different state of the AI 
  */
-UENUM()
-enum AIBehavior {
-	Attack UMETA(DisplayName = "Attack"),
-	Defense UMETA(DisplayName = "Defense"),
-};
-
 UENUM()
 enum AIBasicState {
 	Attacking UMETA(DisplayName = "Attacking"),
 	Patroling UMETA(DisplayName = "Patroling"),
+	Search UMETA(DisplayName = "Searching"),
 	Moving UMETA(DisplayName = "Moving"),
 };
 
+/*
+* For a many function we need to send a signal 
+* A function can then send if it's a succes, a failure or un progress
+*/
 UENUM()
 enum ResultState {
 	Success UMETA(DisplayName = "Success"),
@@ -63,15 +62,29 @@ public:
 	UFlockingComponent* FlockingComponent;
 
 	UFUNCTION(BlueprintCallable)
-		FVector GetObjectifLocation() { return ObjectifLocation; };
+		FVector GetObjectifLocation() { return ObjectifLocation + 100; };
+	UFUNCTION(BlueprintCallable)
+		void SetObjectifLocation(FVector _Location) { ObjectifLocation = _Location; };
 
 	/* For BT Task  */
 	UFUNCTION(BlueprintCallable, Category = "Flocking Behaviour")
 		EPathFollowingRequestResult::Type FollowFlocking();
 
-	// Teamable
+	UFUNCTION(BlueprintCallable, Category = "Flocking Behaviour")
+		void SetPatrolPoint();
+
+	/*
+	* When doing the flocking we'll check if the AI
+	* is arrive at his destination
+	* if it's the case then we change the state to Patroling
+	* else we continue to move
+	*/
+	UFUNCTION()
+		ResultState ArriveAtDestination();
+
+
 	virtual ASoldierTeam* GetTeam() override;
-	virtual bool SetTeam(ASoldierTeam* _Team) override;
+	virtual bool ASoldierTeam* _Team) override;
 
 
 	UFUNCTION()
@@ -103,6 +116,21 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "SquadLeader")
 		EPathFollowingRequestResult::Type MoveToEnemyLocation();
 
+	/*Move to the last known position of the enemy*/
+	UFUNCTION(BlueprintCallable, Category = "SquadLeader")
+		EPathFollowingRequestResult::Type MoveToSearchEnemy();
+
+	UPROPERTY(BlueprintReadWrite, Category = "Defense")
+	int HalfRadiusPatrol = 1600;
+
+	/*
+	* End the search of the enemy
+	* rest the state to the old one
+	* clear some value of the blackboard
+	*/
+	UFUNCTION(BlueprintCallable, Category = "SquadLeader")
+		ResultState EndTheResearch();
+
 	/*Shoot the enemy we see*/
 	UFUNCTION(BlueprintCallable, Category = "Shoot")
 	ResultState ShootEnemy();
@@ -119,8 +147,11 @@ public:
 
 	virtual void Respawn();
 
-	virtual void ResetBlackBoard() const;
+	virtual void ResetBlackBoard();
 
+	/*
+	* Set the state of an AI
+	*/
 	UFUNCTION()
 		void SetState(AIBasicState _state) noexcept;
 protected:
@@ -147,8 +178,10 @@ private:
 	UFUNCTION()
 		void Act();
 
-	
-		void ChooseBehavior();
+	/*
+	* This function will decide wich state the AI shool run
+	*/
+	void ChooseState();
 
 	/*
 	* Will sort the Actor with catch with
@@ -189,11 +222,26 @@ private:
 	UFUNCTION()
 		void TooFar();
 
+	/*
+	* Make all in place for the state Attacking
+	*/
 	UFUNCTION()
-		void AttackBehavior();
+		void AttackingState();
+
+	/*
+	* Make all in place for the state Patroling
+	*/
+	UFUNCTION()
+		void PatrolingState();
+
+	/*
+	* Make all in place for the state Moving
+	*/
+	UFUNCTION()
+		void MovingState();
 
 	UFUNCTION()
-		void DefenseBehavior();
+		void SearchState();
 
 protected:
 	/*The behaviorTree that we are running*/
@@ -206,18 +254,40 @@ protected:
 	UPROPERTY()
 	TArray<ASoldier*> SeenSoldier;
 
+	/*
+	* This here represent the state of an AI
+	*/
 	UPROPERTY()
 		int m_state;
+
+	/*
+	* this variable is here to help when we loose vision of an enemy
+	* this way the AI will return to his old state before he was in the state attack
+	*/
+	UPROPERTY()
+		int m_old_state;
+
 private:
 	class UAISenseConfig_Sight* sight_config;
 
 	UPROPERTY()
-	TEnumAsByte<AIBehavior> m_behavior;
-
-	UPROPERTY()
 	FVector m_destination;
 
+	UPROPERTY()
+		int tick_value = 0;
+
+	UPROPERTY()
+		int max_tick = 2;
+
 public:
+	UPROPERTY()
+	bool StopCurrentBehavior = false;
+	UPROPERTY()
+	bool HasStopCurrentBehavior = false;
+
+	UFUNCTION()
+		void CheckIfNeedToStopCurrentBehavior();
+
 	TArray<ASoldier*> GetSeenSoldier() { return SeenSoldier; }
 	/*
 	* The distance from where we can walk and shoot the enemy
@@ -231,6 +301,12 @@ public:
 	*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shoot")
 		float m_distanceShootAndStop = 1000.f;
+
+	/*
+	* Halfe Angle of shooting cone
+	*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shoot")
+		float HalfAngleShoot = 0.05f;
 
 	/*
 	* Radius of vision

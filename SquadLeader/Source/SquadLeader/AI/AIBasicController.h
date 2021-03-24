@@ -40,6 +40,6 @@ public://Mission
 
 	virtual void Die() override;
 
-	virtual void ResetBlackBoard() const override;
+	virtual void ResetBlackBoard() override;
 
 };

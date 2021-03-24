@@ -3,6 +3,7 @@
 #include "ControlArea.h"
 #include "../GameState/SquadLeaderGameState.h"
 #include "../SquadLeaderGameModeBase.h"
+#include "../SquadLeadergameInstance.h"
 #include "../Soldiers/Soldier.h"
 #include "ControlAreaManager.h"
 
@@ -162,7 +163,23 @@ void AControlArea::calculateControlValue()
 			}
 			else { // stop the timer
 				GetWorld()->GetTimerManager().ClearTimer(timerCalculationControlValue);
-				GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("ControlArea : Max control for " + presentTeam->TeamName));
+				GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("ControlArea : Max control for " + presentTeam.GetDefaultObject()->TeamName));
+
+				auto gameinstance = Cast<USquadLeaderGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+				FGridPackage m_package;
+				m_package.m_location_on_map = GetActorLocation();
+				switch (presentTeam.GetDefaultObject()->Id) {
+				case 1:
+					m_package.team_value = 1;
+					break;
+				case 2:
+					m_package.team_value = 2;
+					break;
+				default:
+					break;
+				}
+				m_package.m_type = Type::ControlArea;
+				gameinstance->InfluenceMap->ReceivedMessage(m_package);
 			}
 		}
 		else {  // too much teams on points or nobody
