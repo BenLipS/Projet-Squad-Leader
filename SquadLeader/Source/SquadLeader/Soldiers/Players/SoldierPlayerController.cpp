@@ -45,7 +45,19 @@ void ASoldierPlayerController::OnPossess(APawn* InPawn)
 
 	//TODO: remove the team init -> only use on temporary debug
 	if (auto GS = GetWorld()->GetGameState<ASquadLeaderGameState>(); GS) {
-		SetTeam(GS->GetSoldierTeamCollection()[0]);
+
+		if (GS->GetSoldierTeamCollection().Num() == 0) {  // no team obtainable for now, we need to find one (used when playing as server or if no teams in the map)
+			ASoldierTeam* LastTeamObtainable = nullptr;
+			for (auto SceneActors : GetWorld()->PersistentLevel->Actors) {
+				if (auto SoldierTeam = Cast<ASoldierTeam>(SceneActors); SoldierTeam) {
+					LastTeamObtainable = SoldierTeam;
+				}
+			}
+			ensure(LastTeamObtainable);  // if trigger, please place a team in the map
+			SetTeam(LastTeamObtainable);
+		}
+		else SetTeam(GS->GetSoldierTeamCollection()[0]);
+		
 		if (auto soldier = Cast<ASoldierPlayer>(InPawn); soldier->GetSquadManager()) {
 			soldier->GetSquadManager()->UpdateSquadTeam(GetTeam());
 		}
