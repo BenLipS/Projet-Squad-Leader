@@ -27,18 +27,13 @@ void UFollowFlockingBTTaskNode::TickTask(class UBehaviorTreeComponent& OwnerComp
 	AAIGeneralController* AIGeneralController = Cast<AAIGeneralController>(OwnerComp.GetOwner());
 
 	EPathFollowingRequestResult::Type MoveToActorResult = AIGeneralController->FollowFlocking();
-	FVector distToObjectif = AIGeneralController->GetPawn()->GetActorLocation() - AIGeneralController->GetObjectifLocation();
-	if (distToObjectif.Size() < 500) {
-		//AIBasicController->get_blackboard()->SetValueAsBool("DoFlocking", false);
-		AIGeneralController->SetState(AIBasicState::Patroling);
-		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
-	}
-	else if (AIGeneralController->get_blackboard()->GetValueAsBool("is_attacking")) {
-		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
-	}
-	/*if (MoveToActorResult == EPathFollowingRequestResult::Failed)
-		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);*/
 
+	ResultState arrive = AIGeneralController->ArriveAtDestination();
+
+	if(arrive == ResultState::Success)
+		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+	if(arrive == ResultState::Failed)
+		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
 }
 
 FString UFollowFlockingBTTaskNode::GetStaticDescription() const

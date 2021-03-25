@@ -1,5 +1,7 @@
 #include "GA_GiveOrder.h"
 #include "../../../Soldiers/Players/SoldierPlayer.h"
+#include "../../../Soldiers/Players/SoldierPlayerController.h"
+#include "../../../UI/PlayerHUD.h"
 #include "SquadLeader/AI/AISquadManager.h"
 
 UGA_GiveOrder::UGA_GiveOrder()
@@ -19,7 +21,7 @@ void UGA_GiveOrder::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 		if (!CommitAbility(Handle, ActorInfo, ActivationInfo))
 			EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
 
-		if (ASoldierPlayer* Soldier = Cast<ASoldierPlayer>(ActorInfo->AvatarActor.Get()); Soldier)
+		/*if (ASoldierPlayer* Soldier = Cast<ASoldierPlayer>(ActorInfo->AvatarActor.Get()); Soldier)
 		{
 			if (Soldier->GetLocalRole() == ROLE_Authority)
 			{
@@ -53,7 +55,8 @@ void UGA_GiveOrder::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 			FGameplayAbilityTargetingLocationInfo TargetingLocationInfo = MakeTargetLocationInfoFromOwnerActor();
 			TargetingLocationInfo.LiteralTransform.SetLocation(Soldier->GetActorForwardVector() * 200 + TargetingLocationInfo.LiteralTransform.GetLocation());
 			SpawnedActor->StartLocation = TargetingLocationInfo;
-		}
+		}*/
+		//Call affichage
 	}
 }
 
@@ -64,8 +67,8 @@ bool UGA_GiveOrder::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, 
 
 void UGA_GiveOrder::InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo)
 {
-	//if (ActorInfo != NULL && ActorInfo->AvatarActor != NULL)
-	//	CancelAbility(Handle, ActorInfo, ActivationInfo, true);
+	if (ActorInfo != NULL && ActorInfo->AvatarActor != NULL)
+		CancelAbility(Handle, ActorInfo, ActivationInfo, true);
 }
 
 void UGA_GiveOrder::OnOrderValid(const FGameplayAbilityTargetDataHandle& _Data)

@@ -33,6 +33,14 @@ void ASoldierPlayerController::CreateHUD_Implementation()
 	if (CurrentPlayerHUD)
 		return;
 	ClientSetHUD(HUDClass);
+	if (APlayerHUD* HUD = GetHUD<APlayerHUD>(); HUD)
+	{
+		if (InputComponent)
+		{
+			InputComponent->BindAction("GiveOrder", IE_Pressed, HUD, &APlayerHUD::OnOrderInputPressed);
+			InputComponent->BindAction("GiveOrder", IE_Released, HUD, &APlayerHUD::OnOrderInputReleased);
+		}
+	}
 }
 
 // Server only
@@ -215,6 +223,17 @@ void ASoldierPlayerController::OnSquadMemberMaxShieldChanged_Implementation(int 
 		}
 	}
 	// Erreur syncronisation client / serveur
+}
+
+void ASoldierPlayerController::OnOrderGiven_Implementation(MissionType Order, FVector Pos)
+{
+	if (ASoldierPlayer* Soldier = GetPawn<ASoldierPlayer>(); Soldier)
+	{
+		if (AAISquadManager* SquadManager = Soldier->GetSquadManager(); SquadManager)
+		{
+			SquadManager->UpdateMission(Order, Pos);
+		}
+	}
 }
 
 void ASoldierPlayerController::BroadCastManagerData()

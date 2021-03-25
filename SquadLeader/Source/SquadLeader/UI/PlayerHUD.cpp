@@ -9,6 +9,7 @@
 #include "AIInfoListWidget.h"
 #include "AIInfoWidget.h"
 #include "AmmoWidget.h"
+#include "Wheel/WheelWidget.h"
 
 #include "Blueprint/UserWidget.h"
 
@@ -29,7 +30,6 @@ void APlayerHUD::DrawHUD()
 void APlayerHUD::BeginPlay()
 {
 	Super::BeginPlay();
-
 	//Creating widget
 
 	//-----Health-----
@@ -67,6 +67,17 @@ void APlayerHUD::BeginPlay()
 			AmmoWidget->AddToViewport();
 		}
 	}
+
+	//-----Wheel-----
+	if (WheelWidgetClass != nullptr)
+	{
+		WheelWidget = CreateWidget<UWheelWidget>(GetWorld(), WheelWidgetClass);
+		if (WheelWidget) {
+			WheelWidget->AddToViewport();
+		}
+	}
+
+
 	SetPlayerStateLink();
 	SetAIStateLink();
 }
@@ -190,5 +201,23 @@ void APlayerHUD::OnMaxAmmoChanged(int8 newMaxAmmo)
 	if (AmmoWidget)
 	{
 		AmmoWidget->OnMaxAmmoChanged(newMaxAmmo);
+	}
+}
+
+void APlayerHUD::OnOrderInputPressed()
+{
+	PlayerOwner->ClientIgnoreLookInput(true);
+	if (WheelWidget)
+	{
+		WheelWidget->OnInputPressed();
+	}
+}
+
+void APlayerHUD::OnOrderInputReleased()
+{
+	PlayerOwner->ClientIgnoreLookInput(false);
+	if (WheelWidget)
+	{
+		WheelWidget->OnInputReleased();
 	}
 }
