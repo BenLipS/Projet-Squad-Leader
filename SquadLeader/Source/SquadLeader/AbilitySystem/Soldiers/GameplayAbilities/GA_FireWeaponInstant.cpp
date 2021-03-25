@@ -112,14 +112,21 @@ void UGA_FireWeaponInstant::HandleTargetData(const FGameplayAbilityTargetDataHan
 	SourceSoldier->GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*FiringEffectSpecHandle.Data.Get());
 
 	// Apply damages
+	ApplyDamagesAndHits(_Data, SourceSoldier);
+}
+
+void UGA_FireWeaponInstant::ApplyDamagesAndHits(const FGameplayAbilityTargetDataHandle& _Data, ASoldier* _SourceSoldier)
+{
 	FGameplayEffectSpecHandle DamageEffectSpecHandle = MakeOutgoingGameplayEffectSpec(GE_DamageClass, GetAbilityLevel());
 	DamageEffectSpecHandle.Data->SetSetByCallerMagnitude(FGameplayTag::RequestGameplayTag(FName("Data.Damage")), SourceWeapon->GetWeaponDamage());
 
 	for (TWeakObjectPtr<AActor> Actor : _Data.Get(0)->GetActors())
 	{
 		if (ASoldier* TargetSoldier = Cast<ASoldier>(Actor); TargetSoldier && TargetSoldier->GetAbilitySystemComponent())
-			SourceSoldier->GetAbilitySystemComponent()->ApplyGameplayEffectSpecToTarget(*DamageEffectSpecHandle.Data.Get(), TargetSoldier->GetAbilitySystemComponent());
-			//SourceSoldier->GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*DamageEffectSpecHandle.Data.Get());
+		{
+			if (TargetSoldier->GetTeam() != _SourceSoldier->GetTeam())
+				_SourceSoldier->GetAbilitySystemComponent()->ApplyGameplayEffectSpecToTarget(*DamageEffectSpecHandle.Data.Get(), TargetSoldier->GetAbilitySystemComponent());
+		}
 	}
 
 	FGameplayEffectContextHandle EffectContext = DamageEffectSpecHandle.Data->GetEffectContext();

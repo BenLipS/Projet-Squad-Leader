@@ -22,6 +22,8 @@ public:
 	void HandleTargetData(const FGameplayAbilityTargetDataHandle& _Data);
 
 protected:
+	void ApplyDamagesAndHits(const FGameplayAbilityTargetDataHandle& _Data, ASoldier* _SourceSoldier);
+
 	virtual bool CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags = nullptr, const FGameplayTagContainer* TargetTags = nullptr, OUT FGameplayTagContainer* OptionalRelevantTags = nullptr) const override;
 
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* OwnerInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
