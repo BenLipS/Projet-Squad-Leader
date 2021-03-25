@@ -40,11 +40,6 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Ability")
 	TSubclassOf<UGE_StateFiring> GE_FiringStateClass;
 
-	// TODO: Make a fname variable to change the type of collision to detect
-	//// CollisionChannel the weapon should detect
-	//UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Collision")
-	//TEnumAsByte<ECollisionChannel> TraceProfile;
-
 	// Cache values
 	USL_ServerWaitForClientTargetData* ServerWaitForClientTargetDataTask;
 	ASL_Weapon* SourceWeapon;

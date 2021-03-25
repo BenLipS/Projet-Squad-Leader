@@ -6,7 +6,7 @@
 #include "Engine/CollisionProfile.h"
 #include "Abilities/Tasks/AbilityTask_WaitDelay.h"
 
-UGA_FireWeaponInstant::UGA_FireWeaponInstant() : ServerWaitForClientTargetDataTask { nullptr }, SourceWeapon { nullptr }, TimeOfLastShoot { -9999.f }
+UGA_FireWeaponInstant::UGA_FireWeaponInstant() : ServerWaitForClientTargetDataTask{ nullptr }, SourceWeapon{ nullptr }, TimeOfLastShoot{ -9999.f }
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 
@@ -78,15 +78,21 @@ void UGA_FireWeaponInstant::FireBullet()
 	ASL_LineTrace* LineTrace = SourceWeapon->GetLineTraceTargetActor();
 
 	LineTrace->SetStartLocation(TraceStartLocation);
-	LineTrace->TraceProfile = FCollisionProfileName{ FName{"Soldier"} };
+	LineTrace->TraceProfile = FCollisionProfileName{ SourceWeapon->CollisionProfileName };
 	LineTrace->bIgnoreBlockingHits = false;
 	LineTrace->SetShouldProduceTargetDataOnServer(bShouldProduceTargetDataOnServer);
 	LineTrace->bUsePersistentHitResults = false;
-	LineTrace->bDebug = true; // TODO: use/defineif
 	LineTrace->bTraceAffectsAimPitch = true;
 	LineTrace->bUseAimingSpreadMod = false;
-	LineTrace->MaxRange = 999'999.f;
-	
+	LineTrace->MaxRange = SourceWeapon->GetMaxRange();
+	LineTrace->BaseSpread = SourceWeapon->GetBaseSpread();
+	LineTrace->TargetingSpreadIncrement = SourceWeapon->GetTargetingSpreadIncrement();
+	LineTrace->TargetingSpreadMax = SourceWeapon->GetTargetingSpreadMax();
+
+#if ENABLE_DRAW_DEBUG
+	LineTrace->bDebug = SourceWeapon->bDebugTrace;
+#endif
+
 	USL_WaitTargetDataUsingActor* TaskWaitTarget = USL_WaitTargetDataUsingActor::WaitTargetDataWithReusableActor(this, NAME_None, EGameplayTargetingConfirmation::Instant, LineTrace, true);
 	TaskWaitTarget->ValidData.AddDynamic(this, &UGA_FireWeaponInstant::HandleTargetData);
 	TaskWaitTarget->ReadyForActivation();

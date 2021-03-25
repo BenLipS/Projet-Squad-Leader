@@ -14,11 +14,17 @@ FGameplayTag ASL_Weapon::FireModeSemiAutoTag = FGameplayTag::RequestGameplayTag(
 
 ASL_Weapon::ASL_Weapon() :
 	Damage{ 10.f },
+	MaxRange{ 999'999.f },
 	FieldOfViewAim {50.f},
 	TimeBetweenShots { 0.1f },
 	CurrentAmmo{ 50 },
 	MaxAmmo{ 50 },
-	bInfiniteAmmo{ false }
+	bInfiniteAmmo{ false },
+	BaseSpread{ 0.f },
+	TargetingSpreadIncrement{ 0.f },
+	TargetingSpreadMax{ 0.f },
+	CollisionProfileName{ FName{"Soldier"} }
+
 {
 	PrimaryActorTick.bCanEverTick = false;
 	bReplicates = true;
@@ -56,17 +62,11 @@ void ASL_Weapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifeti
 	DOREPLIFETIME(ASL_Weapon, TimeBetweenShots);
 	DOREPLIFETIME(ASL_Weapon, CurrentAmmo);
 	DOREPLIFETIME(ASL_Weapon, MaxAmmo);
-
-	//DOREPLIFETIME_CONDITION(ASL_Weapon, CurrentAmmo, COND_OwnerOnly);
-	//DOREPLIFETIME_CONDITION(ASL_Weapon, MaxAmmo, COND_OwnerOnly);
 }
 
 void ASL_Weapon::PreReplication(IRepChangedPropertyTracker& ChangedPropertyTracker)
 {
 	Super::PreReplication(ChangedPropertyTracker);
-
-	/*DOREPLIFETIME_ACTIVE_OVERRIDE(ASL_Weapon, CurrentAmmo, (IsValid(AbilitySystemComponent) && !AbilitySystemComponent->HasMatchingGameplayTag(WeaponIsFiringTag)));
-	DOREPLIFETIME_ACTIVE_OVERRIDE(ASL_Weapon, SecondaryClipAmmo, (IsValid(AbilitySystemComponent) && !AbilitySystemComponent->HasMatchingGameplayTag(WeaponIsFiringTag)));*/
 }
 
 void ASL_Weapon::SetOwningCharacter(ASoldier* _InOwningCharacter)
@@ -121,6 +121,11 @@ void ASL_Weapon::RemoveAbilities()
 
 	for (FGameplayAbilitySpecHandle& SpecHandle : AbilitySpecHandles)
 		ASC->ClearAbility(SpecHandle);
+}
+
+float ASL_Weapon::GetMaxRange() const noexcept
+{
+	return MaxRange;
 }
 
 float ASL_Weapon::GetWeaponDamage() const noexcept
@@ -205,6 +210,21 @@ void ASL_Weapon::OnRep_Ammo(int32 _OldPrimaryClipAmmo)
 void ASL_Weapon::OnRep_MaxAmmo(int32 _OldMaxPrimaryClipAmmo)
 {
 	// TODO: Broadcast ?
+}
+
+float ASL_Weapon::GetBaseSpread() const noexcept
+{
+	return BaseSpread;
+}
+
+float ASL_Weapon::GetTargetingSpreadIncrement() const noexcept
+{
+	return TargetingSpreadIncrement;
+}
+
+float ASL_Weapon::GetTargetingSpreadMax() const noexcept
+{
+	return TargetingSpreadMax;
 }
 
 ASL_LineTrace* ASL_Weapon::GetLineTraceTargetActor()

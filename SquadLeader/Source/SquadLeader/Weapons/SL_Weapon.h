@@ -85,6 +85,13 @@ protected:
 	UPROPERTY(BluePrintReadWrite, EditAnywhere, Category = "Stats|Damage")
 	float Damage;
 
+// Range
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Stats")
+	float MaxRange;
+
+public:
+	float GetMaxRange() const noexcept;
+
 // Aim
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Stats")
 	float FieldOfViewAim;
@@ -137,6 +144,36 @@ public:
 
 	UFUNCTION()
 	virtual void OnRep_MaxAmmo(int32 _OldMaxPrimaryClipAmmo);
+
+// Spread
+protected:
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Stats|Spread")
+	float BaseSpread;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Stats|Spread")
+	float TargetingSpreadIncrement;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Stats|Spread")
+	float TargetingSpreadMax;
+
+public:
+	UFUNCTION(BlueprintCallable, Category = "Stats|Spread")
+	float GetBaseSpread() const noexcept;
+
+	UFUNCTION(BlueprintCallable, Category = "Stats|Spread")
+	float GetTargetingSpreadIncrement() const noexcept;
+
+	UFUNCTION(BlueprintCallable, Category = "Stats|Spread")
+	float GetTargetingSpreadMax() const noexcept;
+
+// Collision
+public:
+	// Collision name the weapon should detect - See Preset in Engine - Collision 
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Collision")
+	FName CollisionProfileName;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Collision")
+	bool bDebugTrace = true;
 
 //////////////// Traces
 	// TODO: Only have one generic trace that will be set from blueprint ?
