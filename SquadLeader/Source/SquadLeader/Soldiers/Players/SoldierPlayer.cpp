@@ -1,8 +1,8 @@
 #include "SoldierPlayer.h"
 #include "SoldierPlayerState.h"
 #include "SoldierPlayerController.h"
-#include "../../SquadLeaderGameInstance.h"
 #include "../../AI/AISquadController.h"
+#include "../../SquadLeaderGameModeBase.h"
 #include "../../AI/AISquadManager.h"
 #include "../../AbilitySystem/Soldiers/GameplayAbilitySoldier.h"
 #include "../../Spawn/SoldierSpawn.h"
@@ -41,7 +41,7 @@ void ASoldierPlayer::PossessedBy(AController* _newController)
 	{
 		SquadManager->FinishSpawning(LocationTemp);
 		SquadManager->Init(GetTeam(), this);
-		Cast<USquadLeaderGameInstance>(GetGameInstance())->ListAISquadManagers.Add(SquadManager);
+		Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode())->ListAISquadManagers.Add(SquadManager);
 	}
 }
 

@@ -14,7 +14,7 @@
 #include "Math/Vector.h"
 #include "GenericPlatform/GenericPlatformMath.h"
 #include "DrawDebugHelpers.h"
-#include "../SquadLeaderGameInstance.h"
+#include "../SquadLeaderGameModeBase.h"
 #include "../Spawn/SoldierSpawn.h"
 #include "Mission.h"
 
@@ -27,7 +27,7 @@ AAIBasicController::AAIBasicController()
 
 void AAIBasicController::BeginPlay() {
 	Super::BeginPlay();
-	Cast<USquadLeaderGameInstance>(GetGameInstance())->AddAIBasicToManager(this);
+	Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode())->AddAIBasicToManager(this);
 }
 
 void AAIBasicController::UpdateMission()

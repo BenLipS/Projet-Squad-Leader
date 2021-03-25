@@ -4,7 +4,6 @@
 #include "EngineUtils.h"
 #include "../GameState/SquadLeaderGameState.h"
 #include "../SquadLeaderGameModeBase.h"
-#include "../SquadLeaderGameInstance.h"
 #include "../AI/InfluenceMap/InfluenceMapGrid.h"
 #include "../AbilitySystem/Soldiers/GameplayAbilitySoldier.h"
 #include "../AbilitySystem/Soldiers/GameplayEffects/States/GE_StateDead.h"
@@ -108,9 +107,9 @@ void ASoldier::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifeti
 void ASoldier::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	auto gameinstance = Cast<USquadLeaderGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	auto GM = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
 
-	if (GetTeam() && gameinstance->InfluenceMap) {
+	if (GetTeam() && GM && GM->InfluenceMap) {
 		FGridPackage m_package;
 		m_package.m_location_on_map = GetActorLocation();
 
@@ -129,7 +128,7 @@ void ASoldier::Tick(float DeltaTime)
 		}
 
 		m_package.m_type = Type::Soldier;
-		gameinstance->InfluenceMap->ReceivedMessage(m_package);
+		GM->InfluenceMap->ReceivedMessage(m_package);
 	}	
 }
 

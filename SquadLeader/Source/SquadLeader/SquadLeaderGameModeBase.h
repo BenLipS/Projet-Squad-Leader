@@ -4,6 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
+#include "AI/AIBasicManager.h"
+#include "AI/AISquadManager.h"
+#include "AI/AIBasicController.h"
+#include "AI/InfluenceMap/InfluenceMapGrid.h"
 #include "SquadLeaderGameModeBase.generated.h"
 
 UCLASS()
@@ -27,4 +31,37 @@ public:
 	void CheckControlAreaVictoryCondition();
 	void CheckTeamTicketsVictoryCondition();
 	void EndGame();
+
+protected:
+	UPROPERTY(EditDefaultsOnly)
+		TSubclassOf<AAIBasicManager> AIBasicManagerClass;
+
+	UPROPERTY(EditDefaultsOnly)
+		TSubclassOf<AInfluenceMapGrid> InfluenceMapClass;
+
+public:
+
+	UPROPERTY()
+		AAIBasicManager* AIBasicManagerTeam1;
+	UPROPERTY()
+		AAIBasicManager* AIBasicManagerTeam2;
+	UFUNCTION()
+		void InitAIManagers();
+
+	UPROPERTY()
+		TArray<AAISquadManager*> ListAISquadManagers;
+
+	UPROPERTY()
+		AInfluenceMapGrid* InfluenceMap;
+	UFUNCTION()
+		void InitInfluenceMap();
+
+	/*
+	* For AI placed via drag and drop
+	*/
+	UFUNCTION()
+		void AddAIBasicToManager(AAIBasicController* AIBasic);
+
+	UFUNCTION()
+		TArray<AAISquadManager*> GetSquadManagers() { return ListAISquadManagers; }
 };
