@@ -22,6 +22,7 @@
 #include "DrawDebugHelpers.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Math/RandomStream.h"
+#include "../ControlArea/ControlArea.h"
 
 
 AAIGeneralController::AAIGeneralController(FObjectInitializer const& object_initializer)
@@ -30,13 +31,20 @@ AAIGeneralController::AAIGeneralController(FObjectInitializer const& object_init
 	setup_perception_system();
 	//m_destination = FVector(11410.f, 2950.f, 0.f);
 	m_destination = FVector(5000.f, 5000.f, 0.f);
+
 }
 
 void AAIGeneralController::BeginPlay() {
 	Super::BeginPlay();
-
-	FlockingComponent = NewObject<UFlockingComponent>(this, ClassFlockingComponent);
 	RunBehaviorTree(m_behaviorTree);
+	Init();
+	blackboard->SetValueAsObject("ControlArea", m_mission->GetControlArea());
+	blackboard->SetValueAsVector("VectorLocation", m_mission->GetControlArea()->GetActorLocation());
+	SetState(AIBasicState::Moving);
+}
+
+void AAIGeneralController::Init() {
+	FlockingComponent = NewObject<UFlockingComponent>(this, ClassFlockingComponent);
 	blackboard = BrainComponent->GetBlackboardComponent();
 
 	m_state = AIBasicState::Moving;
@@ -72,6 +80,8 @@ void AAIGeneralController::Act() {
 	case AIBasicState::Attacking:
 		TooClose();
 		TooFar();
+		break;
+	case AIBasicState::Capturing:
 		break;
 	case AIBasicState::Patroling:
 		break;
@@ -169,6 +179,9 @@ void AAIGeneralController::ChooseState() {
 	if (m_state == AIBasicState::Attacking) {
 		AttackingState();
 	}
+	else if (m_state == AIBasicState::Capturing) {
+		CapturingState();
+	}
 	else if(m_state == AIBasicState::Patroling){
 		PatrolingState();
 	}
@@ -191,12 +204,14 @@ void AAIGeneralController::AttackingState() {
 	blackboard->SetValueAsBool("is_patroling", false);
 	blackboard->SetValueAsBool("is_attacking", true);
 	blackboard->SetValueAsBool("is_searching", false);
+	blackboard->SetValueAsBool("is_capturing", false);
 }
 void AAIGeneralController::PatrolingState() {
 	blackboard->SetValueAsBool("is_attacking", false);
 	blackboard->SetValueAsBool("is_patroling", true);
 	blackboard->SetValueAsBool("is_moving", false);
 	blackboard->SetValueAsBool("is_searching", false);
+	blackboard->SetValueAsBool("is_capturing", false);
 }
 void AAIGeneralController::MovingState() {
 	//Check if it's new or not
@@ -204,12 +219,21 @@ void AAIGeneralController::MovingState() {
 	blackboard->SetValueAsBool("is_moving", true);
 	blackboard->SetValueAsBool("is_patroling", false);
 	blackboard->SetValueAsBool("is_searching", false);
+	blackboard->SetValueAsBool("is_capturing", false);
 }
 void AAIGeneralController::SearchState() {
 	blackboard->SetValueAsBool("is_attacking", false);
 	blackboard->SetValueAsBool("is_moving", false);
 	blackboard->SetValueAsBool("is_patroling", false);
-	blackboard->SetValueAsBool("is_searching", true);
+	blackboard->SetValueAsBool("is_capturing", true);
+	blackboard->SetValueAsBool("is_searching", false);
+}
+void AAIGeneralController::CapturingState() {
+	blackboard->SetValueAsBool("is_attacking", false);
+	blackboard->SetValueAsBool("is_moving", false);
+	blackboard->SetValueAsBool("is_patroling", false);
+	blackboard->SetValueAsBool("is_searching", false);
+	blackboard->SetValueAsBool("is_capturing", true);
 }
 
 void AAIGeneralController::CheckIfNeedToStopCurrentBehavior()
@@ -341,9 +365,11 @@ void AAIGeneralController::ResetBlackBoard()
 	blackboard->SetValueAsBool("is_moving", true);
 	blackboard->SetValueAsBool("is_patroling", false);
 	blackboard->SetValueAsBool("is_searching", false);
+	blackboard->SetValueAsBool("is_capturing", false);
 	blackboard->SetValueAsBool("need_GoBackward", false);
 	blackboard->SetValueAsBool("need_GoForward", false);
 	blackboard->SetValueAsObject("FocusActor", NULL);
+	blackboard->SetValueAsObject("ControlArea", NULL);
 	tick_value = 0;
 }
 
@@ -462,7 +488,7 @@ void AAIGeneralController::SetPatrolPoint()
 
 ResultState AAIGeneralController::ArriveAtDestination() {
 	if ( GetPawn() && FVector::Dist(GetPawn()->GetActorLocation(), GetObjectifLocation()) < 300.f) {
-		SetState(AIBasicState::Patroling);
+		SetState(AIBasicState::Capturing);
 		return ResultState::Success;
 	}
 	if (m_state == AIBasicState::Attacking)
@@ -475,4 +501,20 @@ ResultState AAIGeneralController::EndTheResearch() {
 	m_state = m_old_state;
 	blackboard->ClearValue("EnemyLocation");
 	return ResultState::Success;
+}
+
+ResultState AAIGeneralController::Capturing() {
+	if (m_state != AIBasicState::Capturing)
+		return ResultState::Failed;
+	AControlArea* control_area = Cast<AControlArea>(blackboard->GetValueAsObject("ControlArea"));
+	if (auto value = control_area->TeamData.Find(Team); control_area) {
+		if ((*value)->controlValue == control_area->maxControlValue) {
+			SetState(AIBasicState::Patroling);
+			return ResultState::Success;
+		}
+		else
+			return ResultState::InProgress;
+	}
+	return ResultState::Failed;
+
 }

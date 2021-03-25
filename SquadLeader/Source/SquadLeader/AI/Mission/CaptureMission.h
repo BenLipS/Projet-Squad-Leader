@@ -22,7 +22,7 @@ protected:
 		class AControlArea* m_controlArea;
 public:
 
-	void Init(int _id, MissionPriority _p, AControlArea* _controlArea);
+	void InitCaptureMission(int _id, MissionPriority _p, AControlArea* _controlArea);
 
 	AControlArea* GetControlArea() const noexcept { return m_controlArea; }
 private:

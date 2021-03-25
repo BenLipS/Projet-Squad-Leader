@@ -14,7 +14,7 @@ AAIBasicManager::AAIBasicManager() {
 void AAIBasicManager::BeginPlay() {
 	Super::BeginPlay();
 	InitValue();
-	if(nbr_controlArea > 0)
+	if (nbr_controlArea > 0)
 		ChooseControlArea();
 }
 
@@ -56,7 +56,6 @@ void AAIBasicManager::Init(TSubclassOf<ASoldierTeam> _Team)
 			AAIBasicController* AC = Cast<AAIBasicController>(BasicAI->GetController());
 			ensure(AC);
 			AIBasicList.Add(AC);
-			AC->SetManager(this);
 		}
 	}
 }
@@ -86,8 +85,9 @@ void AAIBasicManager::ChooseControlArea() {
 		if (_index_control_area >= nbr_controlArea)
 			_index_control_area = 0;
 		for (int i = 0; i != nbr_unit_per_controlArea && _index_player < nbr_unite; ++i) {
-			UCaptureMission* _mission = NewObject<UCaptureMission>(this, UMission::StaticClass());;
-			_mission->Init(-1, MissionPriority::eBASIC, m_controlAreaManager->GetControlArea()[_index_control_area]);
+			UMission* _mission_m = NewObject<UMission>(this,UMission::StaticClass());
+			UCaptureMission* _mission = Cast<UCaptureMission>(_mission_m);
+			_mission->InitCaptureMission(-1, MissionPriority::eBASIC, m_controlAreaManager->GetControlArea()[_index_control_area]);
 			AIBasicList[_index_player]->SetMission(_mission);
 			_index_player++;
 		}

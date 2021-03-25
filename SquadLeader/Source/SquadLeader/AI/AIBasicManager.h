@@ -70,5 +70,4 @@ private:
 
 	UPROPERTY()
 		AControlAreaManager* m_controlAreaManager;
-
 };

@@ -21,6 +21,7 @@ UENUM()
 enum AIBasicState {
 	Attacking UMETA(DisplayName = "Attacking"),
 	Patroling UMETA(DisplayName = "Patroling"),
+	Capturing UMETA(DisplayName = "Capturing"),
 	Search UMETA(DisplayName = "Searching"),
 	Moving UMETA(DisplayName = "Moving"),
 };
@@ -103,6 +104,9 @@ public:
 
 	UFUNCTION()
 	virtual void BeginPlay();
+
+	UFUNCTION()
+		void Init();
 	
 	/*Move to a location, the location must be an AActor*/
 	UFUNCTION(BlueprintCallable, Category = "SquadLeader")
@@ -134,6 +138,9 @@ public:
 	/*Shoot the enemy we see*/
 	UFUNCTION(BlueprintCallable, Category = "Shoot")
 	ResultState ShootEnemy();
+
+	UFUNCTION(BlueprintCallable, Category = "Capturing")
+		ResultState Capturing();
 
 	class UBlackboardComponent* get_blackboard() const;
 	
@@ -242,6 +249,9 @@ private:
 
 	UFUNCTION()
 		void SearchState();
+
+	UFUNCTION()
+		void CapturingState();
 
 protected:
 	/*The behaviorTree that we are running*/
@@ -373,4 +383,7 @@ protected:
 
 	UPROPERTY()
 		UCaptureMission* m_mission;
+
+	UPROPERTY()
+		bool first_tick = true;
 };
