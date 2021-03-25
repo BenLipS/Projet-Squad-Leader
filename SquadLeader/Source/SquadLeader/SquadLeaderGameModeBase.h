@@ -42,9 +42,7 @@ protected:
 public:
 
 	UPROPERTY()
-		AAIBasicManager* AIBasicManagerTeam1;
-	UPROPERTY()
-		AAIBasicManager* AIBasicManagerTeam2;
+		TMap<class ASoldierTeam*, AAIBasicManager*> AIBasicManagerCollection;
 	UFUNCTION()
 		void InitAIManagers();
 

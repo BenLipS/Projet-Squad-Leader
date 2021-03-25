@@ -73,8 +73,18 @@ void ASquadLeaderGameModeBase::InitAIManagers()
 	auto GS = Cast<ASquadLeaderInitGameState>(GameState);
 
 	/*Init AIBasic Manager*/
-	
 	FTransform LocationTemp{ {0.f, -1000.f, 0.f}, {0.f,0.f,0.f} };
+	for (auto team : GS->GetSoldierTeamCollection()) {
+		AAIBasicManager* AIBasicManager = GetWorld()->SpawnActorDeferred<AAIBasicManager>(AIBasicManagerClass, LocationTemp, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+		if (AIBasicManager) {
+			AIBasicManager->FinishSpawning(LocationTemp);
+			AIBasicManagerCollection.Add(team, AIBasicManager);
+			AIBasicManagerCollection[team]->Init(team);
+		}
+	}
+
+
+	/*
 	AAIBasicManager* AIBasicManager = GetWorld()->SpawnActorDeferred<AAIBasicManager>(AIBasicManagerClass, LocationTemp, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 	if (AIBasicManager) {
 		AIBasicManager->FinishSpawning(LocationTemp);
@@ -90,7 +100,7 @@ void ASquadLeaderGameModeBase::InitAIManagers()
 		AIBasicManager2->FinishSpawning(LocationTemp);
 		AIBasicManagerTeam2 = AIBasicManager2;
 		AIBasicManagerTeam2->Init(GS->GetSoldierTeamCollection()[1]);
-	}
+	}*/
 
 
 	/*Init AISquad Manager*/
@@ -100,6 +110,20 @@ void ASquadLeaderGameModeBase::InitAIManagers()
 void ASquadLeaderGameModeBase::AddAIBasicToManager(AAIBasicController* AIBasic)
 {
 	auto GS = Cast<ASquadLeaderInitGameState>(GameState);
+	if (AIBasic && AIBasic->GetTeam()) {
+		if (auto FoundAIBasicManager = AIBasicManagerCollection.Find(AIBasic->GetTeam()); FoundAIBasicManager) {
+			(*FoundAIBasicManager)->AIBasicList.Add(AIBasic);
+			if (GEngine)GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString{ "AIBasic " + AIBasic->GetTeam()->TeamName + " added"});
+		}
+		else {
+			if (GEngine)GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("Une AI n'a pas d'equipe"));
+		}
+	}
+	else {
+		//if (GEngine)GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("AI Spawned thought the manager"));
+	}
+
+	/*
 	if (!AIBasicManagerTeam1->AIBasicList.Contains(AIBasic) && !AIBasicManagerTeam2->AIBasicList.Contains(AIBasic)) {
 		if (GS && Cast<ASoldier>(AIBasic->GetPawn())->GetTeam() == GS->GetSoldierTeamCollection()[0]) {
 			AIBasicManagerTeam1->AIBasicList.Add(AIBasic);
@@ -115,7 +139,7 @@ void ASquadLeaderGameModeBase::AddAIBasicToManager(AAIBasicController* AIBasic)
 	}
 	else {
 		//if (GEngine)GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("AI Spawned thought the manager"));
-	}
+	}*/
 
 }
 
