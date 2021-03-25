@@ -27,6 +27,6 @@ public:
 	virtual void OnOrderInputReleased();
 
 
-	void AddPlayerHealthDelegate(IOrderInterface* newDelegate);
-	void RemovePlayerHealthDelegate(IOrderInterface* removeDelegate);
+	void AddOrderDelegate(IOrderInterface* newDelegate);
+	void RemoveOrderDelegate(IOrderInterface* removeDelegate);
 };

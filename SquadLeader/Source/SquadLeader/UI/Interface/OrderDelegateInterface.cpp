@@ -17,16 +17,16 @@ void IOrderDelegateInterface::OnOrderInputReleased()
 {
 	for (auto OrderInterface : OrderDelegates)
 	{
-		OrderInterface->OnOrderInputPressed();
+		OrderInterface->OnOrderInputReleased();
 	}
 }
 
-void IOrderDelegateInterface::AddPlayerHealthDelegate(IOrderInterface* newDelegate)
+void IOrderDelegateInterface::AddOrderDelegate(IOrderInterface* newDelegate)
 {
 	OrderDelegates.AddUnique(newDelegate);
 }
 
-void IOrderDelegateInterface::RemovePlayerHealthDelegate(IOrderInterface* removeDelegate)
+void IOrderDelegateInterface::RemoveOrderDelegate(IOrderInterface* removeDelegate)
 {
 	OrderDelegates.Remove(removeDelegate);
 }

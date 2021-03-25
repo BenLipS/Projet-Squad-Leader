@@ -166,7 +166,9 @@ void ASoldierPlayerController::OnSquadChanged_Implementation(const TArray<FSoldi
 {
 	SquadManagerData.OnSquadDataChanged(newValue);
 	if (ASL_HUD* CurrentHUD = GetHUD<ASL_HUD>(); CurrentHUD)
+	{
 		CurrentHUD->OnSquadChanged(newValue);
+	}
 }
 
 void ASoldierPlayerController::OnSquadMemberHealthChanged_Implementation(int index, float newHealth)

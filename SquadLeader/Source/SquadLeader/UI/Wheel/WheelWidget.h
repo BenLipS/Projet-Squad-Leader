@@ -21,8 +21,7 @@ class SQUADLEADER_API UWheelWidget : public USL_UserWidget, public IOrderInterfa
 
 public:
 	UWheelWidget(const FObjectInitializer& ObjectInitializer);
-	
-	//virtual void PostInitProperties() override;
+	void SetupDelegateToObject(UObject* ObjectIn) override;
 
 protected:
 	virtual void SynchronizeProperties() override;
@@ -69,13 +68,14 @@ protected:
 public:
 	const TArray<class UWheelWidgetElement*>& GetItems();
 
-	void AddToViewport(int32 ZOrder = 0);
+	void AddToViewport(int32 ZOrder = 0) override;
 	void RemoveFromViewport();
-	
-
-	void OnOrderInputPressed() override;
-	void OnOrderInputReleased() override;
 
 protected:
 	virtual int32 NativePaint(const FPaintArgs& Args, const FGeometry& AllottedGeometry, const FSlateRect& MyCullingRect, FSlateWindowElementList& OutDrawElements, int32 LayerId, const FWidgetStyle& InWidgetStyle, bool bParentEnabled) const;
+
+	//-----IOrderInterface-----
+public:
+	void OnOrderInputPressed() override;
+	void OnOrderInputReleased() override;
 };

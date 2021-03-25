@@ -32,7 +32,7 @@ protected:
 	TArray<USL_UserWidget*> WidgetList;
 
 public:
-	ASL_HUD() = default;
+	ASL_HUD();
 
 protected:
 	virtual void BeginPlay() override;

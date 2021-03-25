@@ -7,8 +7,13 @@
 #include "../Soldiers/Players/SoldierPlayerController.h"
 #include "../Soldiers/Players/SoldierPlayerState.h"
 
+ASL_HUD::ASL_HUD()
+{
+}
+
 void ASL_HUD::BeginPlay()
 {
+	Super::BeginPlay();
 	for (TSubclassOf<USL_UserWidget> WidgetClass : WidgetClassList)
 	{
 		if (WidgetClass)
@@ -52,8 +57,7 @@ void ASL_HUD::SetPlayerStateLink()
 
 void ASL_HUD::SetAIStateLink()
 {
-	ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(GetOwningPlayerController());
-	if (PC)
+	if (ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(GetOwningPlayerController()); PC)
 	{
 		PC->BroadCastManagerData();
 	}

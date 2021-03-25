@@ -7,6 +7,8 @@
 
 #include "../../Soldiers/Players/SoldierPlayerController.h"
 
+#include "../Interface/OrderDelegateInterface.h"
+
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -88,6 +90,7 @@ void UWheelWidget::OnOrderInputPressed()
 	{
 		PC->SetShowMouseCursor(true);
 		PC->ClientIgnoreMoveInput(true);
+		PC->ClientIgnoreLookInput(true);
 
 		FVector2D Center = UWidgetLayoutLibrary::GetViewportSize(GetWorld()) / 2.0f;
 		PC->SetMouseLocation(Center.X, Center.Y);
@@ -102,6 +105,7 @@ void UWheelWidget::OnOrderInputReleased()
 	{
 		PC->SetShowMouseCursor(false);
 		PC->ClientIgnoreMoveInput(false);
+		PC->ClientIgnoreLookInput(false);
 	}
 		
 
@@ -195,4 +199,12 @@ int32 UWheelWidget::NativePaint(const FPaintArgs& Args, const FGeometry& Allotte
 	}
 
 	return Super::NativePaint(Args, AllottedGeometry, MyCullingRect, OutDrawElements, LayerId, InWidgetStyle, bParentEnabled);
+}
+
+void UWheelWidget::SetupDelegateToObject(UObject* ObjectIn)
+{
+	if (IOrderDelegateInterface* OrderDelegateInterface = Cast<IOrderDelegateInterface>(ObjectIn); OrderDelegateInterface)
+	{
+		OrderDelegateInterface->AddOrderDelegate(this);
+	}
 }
