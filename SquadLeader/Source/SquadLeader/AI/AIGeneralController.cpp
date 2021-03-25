@@ -31,7 +31,6 @@ AAIGeneralController::AAIGeneralController(FObjectInitializer const& object_init
 	setup_perception_system();
 	//m_destination = FVector(11410.f, 2950.f, 0.f);
 	m_destination = FVector(5000.f, 5000.f, 0.f);
-
 }
 
 void AAIGeneralController::BeginPlay() {
@@ -39,7 +38,8 @@ void AAIGeneralController::BeginPlay() {
 	RunBehaviorTree(m_behaviorTree);
 	Init();
 	blackboard->SetValueAsObject("ControlArea", m_mission->GetControlArea());
-	blackboard->SetValueAsVector("VectorLocation", m_mission->GetControlArea()->GetActorLocation());
+	ObjectifLocation = m_mission->GetControlArea()->GetActorLocation();
+	blackboard->SetValueAsVector("VectorLocation", ObjectifLocation);
 	SetState(AIBasicState::Moving);
 }
 
