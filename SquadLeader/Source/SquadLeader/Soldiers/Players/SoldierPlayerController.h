@@ -8,6 +8,7 @@
 #include "../Interface/Teamable.h"
 #include "../../AI/AISquadManager.h"
 #include "../AIs/SoldierAI.h"
+#include "../../AI/Mission.h"
 #include "SoldierPlayerController.generated.h"
 
 UCLASS()
@@ -109,6 +110,10 @@ public:
 	UFUNCTION(Client, Reliable)
 	void OnSquadMemberMaxShieldChanged(int index, float newMaxShield);
 	void OnSquadMemberMaxShieldChanged_Implementation(int index, float newMaxShield);
+
+	UFUNCTION(Server, Reliable)
+	void OnOrderGiven(MissionType Order, FVector Pos);
+	void OnOrderGiven_Implementation(MissionType Order, FVector Pos);
 
 	UFUNCTION()
 	void BroadCastManagerData();

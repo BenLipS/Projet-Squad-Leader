@@ -20,6 +20,9 @@ class SQUADLEADER_API AControlAreaManager : public AInfo, public IPreInitable
 public:
 	// Sets default values for this actor's properties
 	AControlAreaManager();
+protected:
+	UPROPERTY(VisibleAnywhere, Replicated, Category = "ControlList")
+		TArray <AControlArea*> ControlAreaList;  // private because it must not be edited elsewhere
 
 public:
 	// Pre init launch by the gameMode before the BeginPlay() function
@@ -45,8 +48,4 @@ public:
 	
 	UFUNCTION()
 	ASoldierTeam* GetTeamWithAllControl();
-
-protected:
-	UPROPERTY(VisibleAnywhere, Replicated, Category = "ControlList")
-	TArray <AControlArea*> ControlAreaList;  // private because it must not be edited elsewhere
 };
