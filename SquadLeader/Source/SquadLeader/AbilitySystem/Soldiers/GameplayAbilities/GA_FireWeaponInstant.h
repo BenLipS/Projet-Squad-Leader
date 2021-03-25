@@ -26,15 +26,19 @@ protected:
 
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* OwnerInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 
+	void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled);
+
+public:
 	virtual void CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateCancelAbility) override;
 
 protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Ability")
-	TSubclassOf<UGameplayEffect> GE_Damage;
+	TSubclassOf<UGameplayEffect> GE_DamageClass;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Ability")
-	TSubclassOf<UGE_StateFiring> GE_FiringState;
+	TSubclassOf<UGE_StateFiring> GE_FiringStateClass;
 
+	// TODO: Make a fname variable to change the type of collision to detect
 	//// CollisionChannel the weapon should detect
 	//UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Collision")
 	//TEnumAsByte<ECollisionChannel> TraceProfile;
@@ -43,5 +47,4 @@ protected:
 	USL_ServerWaitForClientTargetData* ServerWaitForClientTargetDataTask;
 	ASL_Weapon* SourceWeapon;
 	float TimeOfLastShoot;
-
 };

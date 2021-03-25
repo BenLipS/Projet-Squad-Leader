@@ -68,6 +68,13 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Ability System")
 	FGameplayTag FireMode;
 
+public:
+	FGameplayTag GetFireMode() const noexcept;
+
+	static FGameplayTag FireModeAutomaticTag;
+	static FGameplayTag FireModeSemiAutoTag;
+
+protected:
 	// Cache tags
 	FGameplayTag WeaponAbilityTag;
 	FGameplayTag WeaponIsFiringTag;

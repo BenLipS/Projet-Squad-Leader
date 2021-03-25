@@ -9,6 +9,9 @@
 #include "../Soldiers/Players/SoldierPlayerController.h"
 #include "../UI/PlayerHUD.h"
 
+FGameplayTag ASL_Weapon::FireModeAutomaticTag = FGameplayTag::RequestGameplayTag(FName("Weapon.FireMode.Automatic"));
+FGameplayTag ASL_Weapon::FireModeSemiAutoTag = FGameplayTag::RequestGameplayTag(FName("Weapon.FireMode.SemiAuto"));
+
 ASL_Weapon::ASL_Weapon() :
 	Damage{ 10.f },
 	FieldOfViewAim {50.f},
@@ -132,8 +135,13 @@ float ASL_Weapon::GetFieldOfViewAim() const noexcept
 
 int32 ASL_Weapon::GetAbilityLevel(ESoldierAbilityInputID _AbilityID)
 {
-	// All abilities for now are level 1
+	// TODO review this - All abilities for now are level 1
 	return 1;
+}
+
+FGameplayTag ASL_Weapon::GetFireMode() const noexcept
+{
+	return FireMode;
 }
 
 float ASL_Weapon::GetTimeBetweenShots() const noexcept
