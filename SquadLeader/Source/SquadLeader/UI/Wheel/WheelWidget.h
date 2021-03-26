@@ -3,7 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "../SL_UserWidget.h"
+#include "../Interface/OrderInterface.h"
+
 #include "Components/Image.h"
 #include "Components/SizeBox.h"
 #include "WheelWidget.generated.h"
@@ -12,14 +15,13 @@
  * 
  */
 UCLASS()
-class SQUADLEADER_API UWheelWidget : public USL_UserWidget
+class SQUADLEADER_API UWheelWidget : public USL_UserWidget, public IOrderInterface
 {
 	GENERATED_BODY()
 
 public:
 	UWheelWidget(const FObjectInitializer& ObjectInitializer);
-	
-	//virtual void PostInitProperties() override;
+	void SetupDelegateToObject(UObject* ObjectIn) override;
 
 protected:
 	virtual void SynchronizeProperties() override;
@@ -66,13 +68,14 @@ protected:
 public:
 	const TArray<class UWheelWidgetElement*>& GetItems();
 
-	void AddToViewport(int32 ZOrder = 0);
+	void AddToViewport(int32 ZOrder = 0) override;
 	void RemoveFromViewport();
-	
-
-	void OnInputPressed();
-	void OnInputReleased();
 
 protected:
 	virtual int32 NativePaint(const FPaintArgs& Args, const FGeometry& AllottedGeometry, const FSlateRect& MyCullingRect, FSlateWindowElementList& OutDrawElements, int32 LayerId, const FWidgetStyle& InWidgetStyle, bool bParentEnabled) const;
+
+	//-----IOrderInterface-----
+public:
+	void OnOrderInputPressed() override;
+	void OnOrderInputReleased() override;
 };

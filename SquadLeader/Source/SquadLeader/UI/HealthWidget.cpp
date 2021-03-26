@@ -7,7 +7,15 @@ UHealthWidget::UHealthWidget(const FObjectInitializer& ObjectInitializer) : USL_
 {
 }
 
-void UHealthWidget::OnHealthChanged(float newValue)
+void UHealthWidget::SetupDelegateToObject(UObject* ObjectIn)
+{
+	if (IPlayerHealthDelegateInterface* PlayerHealthDelegateInterface = Cast<IPlayerHealthDelegateInterface>(ObjectIn); PlayerHealthDelegateInterface)
+	{
+		PlayerHealthDelegateInterface->AddPlayerHealthDelegate(this);
+	}
+}
+
+void UHealthWidget::OnPlayerHealthChanged(float newValue)
 {
 	/*if (newValue > MaxHealth)
 		newValue = MaxHealth;*/
@@ -16,7 +24,7 @@ void UHealthWidget::OnHealthChanged(float newValue)
 	TextHP->SetText(FText::FromString(FString::SanitizeFloat(Health,0) + "/" + FString::SanitizeFloat(MaxHealth,0) + "HP"));
 }
 
-void UHealthWidget::OnMaxHealthChanged(float newValue)
+void UHealthWidget::OnPlayerMaxHealthChanged(float newValue)
 {
 	/*if (newValue < Health)
 		Health = newValue;*/

@@ -70,8 +70,9 @@ void AAIGeneralController::Think() {
 void AAIGeneralController::Act() {
 	switch (m_state) {
 	case AIBasicState::Attacking:
-		TooClose();
-		TooFar();
+		UpdateShootingPosition();
+		//TooClose();
+		//TooFar();
 		break;
 	case AIBasicState::Patroling:
 		break;
@@ -259,37 +260,49 @@ void AAIGeneralController::Run(ASoldierAI* _soldier, ASoldier* _soldier_enemy) {
 	}
 }
 
-void AAIGeneralController::TooClose() {
-	ASoldier* _FocusEnemy = Cast<ASoldier>(blackboard->GetValueAsObject("FocusActor"));
-	if (_FocusEnemy) {
-		float _distance = FVector::Dist(GetPawn()->GetActorLocation(), _FocusEnemy->GetActorLocation());
+//void AAIGeneralController::TooClose() {
+//	ASoldier* _FocusEnemy = Cast<ASoldier>(blackboard->GetValueAsObject("FocusActor"));
+//	if (_FocusEnemy) {
+//		float _distance = FVector::Dist(GetPawn()->GetActorLocation(), _FocusEnemy->GetActorLocation());
+//
+//		if (_distance < m_distanceShootAndStop - 100.f) {
+//			blackboard->SetValueAsBool("need_GoBackward", true);
+//			FVector _DestinationToGo;
+//			float _d = m_distanceShootAndStop - _distance;
+//			FVector _unitaire = _FocusEnemy->GetActorForwardVector();
+//			_DestinationToGo = _unitaire * _d + GetPawn()->GetActorLocation();
+//			blackboard->SetValueAsVector("VectorLocation", _DestinationToGo);
+//		}
+//		else {
+//			blackboard->SetValueAsBool("need_GoBackward", false);
+//			blackboard->ClearValue("VectorLocation");
+//		}
+//	}
+//}
+//void AAIGeneralController::TooFar() {
+//	ASoldier* _FocusEnemy = Cast<ASoldier>(blackboard->GetValueAsObject("FocusActor"));
+//	if (_FocusEnemy) {
+//		float _distance = FVector::Dist(GetPawn()->GetActorLocation(), _FocusEnemy->GetActorLocation());
+//
+//		if (_distance > m_distanceShootAndStop + 100.f) {
+//			blackboard->SetValueAsBool("need_GoForward", true);
+//		}
+//		else {
+//			blackboard->SetValueAsBool("need_GoForward", false);
+//		}
+//	}
+//}
 
-		if (_distance < m_distanceShootAndStop - 100.f) {
-			blackboard->SetValueAsBool("need_GoBackward", true);
-			FVector _DestinationToGo;
-			float _d = m_distanceShootAndStop - _distance;
-			FVector _unitaire = _FocusEnemy->GetActorForwardVector();
-			_DestinationToGo = _unitaire * _d + GetPawn()->GetActorLocation();
-			blackboard->SetValueAsVector("VectorLocation", _DestinationToGo);
-		}
-		else {
-			blackboard->SetValueAsBool("need_GoBackward", false);
-			blackboard->ClearValue("VectorLocation");
-		}
-	}
-}
-void AAIGeneralController::TooFar() {
+void AAIGeneralController::UpdateShootingPosition()
+{
 	ASoldier* _FocusEnemy = Cast<ASoldier>(blackboard->GetValueAsObject("FocusActor"));
-	if (_FocusEnemy) {
-		float _distance = FVector::Dist(GetPawn()->GetActorLocation(), _FocusEnemy->GetActorLocation());
+	FVector SoldierLocation = GetPawn()->GetActorLocation();
+	FVector EnemyPosition = _FocusEnemy->GetActorLocation();
+	FVector Distance = SoldierLocation - EnemyPosition;
 
-		if (_distance > m_distanceShootAndStop + 100.f) {
-			blackboard->SetValueAsBool("need_GoForward", true);
-		}
-		else {
-			blackboard->SetValueAsBool("need_GoForward", false);
-		}
-	}
+	FVector NewShootingPosition = EnemyPosition + Distance.GetSafeNormal() * m_distanceShootAndStop;
+	//DrawDebugPoint(GetWorld(), NewShootingPosition, 32, FColor::Cyan);
+	blackboard->SetValueAsVector("ShootingPosition", NewShootingPosition);
 }
 
 void AAIGeneralController::UpdateSeenSoldier() {
@@ -451,8 +464,8 @@ void AAIGeneralController::SetPatrolPoint()
 
 	UNavigationSystemV1* navSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
 
-	FVector startLocation = ObjectifLocation;
-	FVector endLocation = ObjectifLocation + PatrolPos;
+	FVector startLocation = ObjectifLocation + 100.f;
+	FVector endLocation = ObjectifLocation + 100.f + PatrolPos;
 
 	if (navSys->NavigationRaycast(GetWorld(), startLocation, endLocation, HitLocation))
 		PatrolPos = HitLocation;
