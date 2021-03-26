@@ -38,6 +38,7 @@ void UFlockingComponent::ResetVectors()
 	SeparationVector = FVector::ZeroVector;
 	ObjectifVector = FVector::ZeroVector;
 	WallAvoidanceVector = FVector::ZeroVector;
+	ShootingPositionVector = FVector::ZeroVector;
 }
 
 void UFlockingComponent::UpdateNeighbourhood()
@@ -121,6 +122,23 @@ void UFlockingComponent::UpdateObjectifVector()
 	ObjectifVector = ObjectifVector.GetSafeNormal(DefaultNormalizeVectorTolerance);
 }
 
+void UFlockingComponent::UpdateShootingPositionVector()
+{
+	FVector SoldierLocation = Cast<ASoldier>(Cast<AAIGeneralController>(GetOwner())->GetPawn())->GetLocation();
+	FVector IdealShootingPosition = Cast<AAIGeneralController>(GetOwner())->get_blackboard()->GetValueAsVector("ShootingPosition");
+	UNavigationSystemV1* navSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
+
+	FVector HitLocation{};
+
+	if (navSys->NavigationRaycast(GetWorld(), SoldierLocation, IdealShootingPosition, HitLocation)) {
+		ShootingPositionVector = HitLocation - SoldierLocation;
+	}
+	else {
+		ShootingPositionVector = IdealShootingPosition - SoldierLocation;
+	}
+	DrawDebugPoint(GetWorld(), SoldierLocation + ShootingPositionVector, 32, FColor::Cyan);
+}
+
 void UFlockingComponent::UpdateMovementVector()
 {
 
@@ -134,12 +152,16 @@ void UFlockingComponent::UpdateMovementVector()
 	WallAvoidanceVector.Z = 0;
 	ObjectifVector = ObjectifVector.GetSafeNormal(DefaultNormalizeVectorTolerance);
 	ObjectifVector.Z = 0;
+	ShootingPositionVector = ShootingPositionVector.GetSafeNormal(DefaultNormalizeVectorTolerance);
+	ShootingPositionVector.Z = 0;
 
 	MovementVector = AlignementVector * AlignementWeight
 		+ CohesionVector * CohesionWeight
 		+ SeparationVector * SeparationWeight
 		+ WallAvoidanceVector * WallAvoidanceWeight
-		+ ObjectifVector * ObjectifWeight;
+		+ ObjectifVector * ObjectifWeight
+		+ ShootingPositionVector * ShootingPositionWeight;
+
 	MovementVector = MovementVector.GetSafeNormal(DefaultNormalizeVectorTolerance);
 	MovementVector.Z = 0;
 }
@@ -198,7 +220,12 @@ void UFlockingComponent::UpdateFlockingPosition(float DeltaSeconds)
 
 	UpdateWallAvoidanceVector();
 
-	UpdateObjectifVector();
+	if (Cast<AAIGeneralController>(GetOwner())->get_blackboard()->GetValueAsBool("is_attacking")) {
+		UpdateShootingPositionVector();
+	}
+	else {
+		UpdateObjectifVector();
+	}
 
 	UpdateMovementVector();
 
@@ -210,11 +237,13 @@ void UFlockingComponent::UpdateFlockingPosition(float DeltaSeconds)
 
 	if (IsFlockingPositionValid()) {
 		//Flocking Location Set in IsFlockingPositionValid()
-		//Cast<AAIGeneralController>(GetOwner())->get_blackboard()->SetValueAsVector("FlockingLocation", Cast<AAIGeneralController>(GetOwner())->GetPawn()->GetActorLocation() + MovementVector);
 	}
-	else {
+	else if(!Cast<AAIGeneralController>(GetOwner())->get_blackboard()->GetValueAsBool("is_attacking")){
 		FVector RealObjectifLocation = Cast<AAIGeneralController>(GetOwner())->GetObjectifLocation();
 		Cast<AAIGeneralController>(GetOwner())->get_blackboard()->SetValueAsVector("FlockingLocation", RealObjectifLocation);
+	}
+	else {
+		Cast<AAIGeneralController>(GetOwner())->get_blackboard()->SetValueAsVector("FlockingLocation", Cast<AAIGeneralController>(GetOwner())->get_blackboard()->GetValueAsVector("ShootingPosition"));
 	}
 
 	if(DoDrawDebug)DrawDebug();

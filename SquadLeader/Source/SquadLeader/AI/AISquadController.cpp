@@ -77,7 +77,7 @@ void AAISquadController::Init()
 
 EPathFollowingRequestResult::Type AAISquadController::FollowFormation() {
 	GetValidFormationPos();
-	EPathFollowingRequestResult::Type _movetoResult = MoveToLocation(blackboard->GetValueAsVector("FormationLocation"), 5.f);
+	EPathFollowingRequestResult::Type _movetoResult = MoveToLocation(blackboard->GetValueAsVector("FormationLocation"), 50.f);
 	DrawDebugPoint(GetWorld(), blackboard->GetValueAsVector("FormationLocation"), 12, FColor::Purple);
 	if ((blackboard->GetValueAsVector("FormationLocation") - GetPawn()->GetActorLocation()).Size() >= RuningDistanceForFormation && !RunToFormation) {
 		Cast<ASoldierAI>(GetPawn())->ActivateAbilityRun();

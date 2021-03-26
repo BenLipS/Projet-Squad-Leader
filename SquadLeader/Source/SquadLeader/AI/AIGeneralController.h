@@ -53,6 +53,9 @@ protected:
 		TSubclassOf<ASoldierTeam> Team = nullptr;  // only server can replicate it
 	UPROPERTY()
 	FVector ObjectifLocation{ 1000.f, 1000.f, 10.f };
+
+	UPROPERTY()
+	FVector TempObjectifLocation{ 1000.f, 1000.f, 10.f };
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Flocking Behaviour")
 	TSubclassOf<UFlockingComponent> ClassFlockingComponent;
@@ -63,7 +66,14 @@ public:
 	UFUNCTION(BlueprintCallable)
 		FVector GetObjectifLocation() { return ObjectifLocation + 100; };
 	UFUNCTION(BlueprintCallable)
+		FVector GetRealObjectifLocation() { return ObjectifLocation; };
+	UFUNCTION(BlueprintCallable)
 		void SetObjectifLocation(FVector _Location) { ObjectifLocation = _Location; };
+
+	UFUNCTION(BlueprintCallable)
+		FVector GetTempObjectifLocation() { return TempObjectifLocation; };
+	UFUNCTION(BlueprintCallable)
+		void SetTempObjectifLocation(FVector _Location) { TempObjectifLocation = _Location; };
 
 	/* For BT Task  */
 	UFUNCTION(BlueprintCallable, Category = "Flocking Behaviour")
@@ -203,23 +213,26 @@ private:
 	UFUNCTION()
 		void Run(ASoldierAI* _soldier, ASoldier* _soldier_enemy);
 
-	/*
-	* Calculate the point where the AI is 
-	* in a good range 
-	* if the enemy is too close.
-	* This method is called only when the AI is in the Attack Behavior
-	*/
-	UFUNCTION()
-		void TooClose();
+	///*
+	//* Calculate the point where the AI is 
+	//* in a good range 
+	//* if the enemy is too close.
+	//* This method is called only when the AI is in the Attack Behavior
+	//*/
+	//UFUNCTION()
+	//	void TooClose();
 
-	/*
-	* Calculate the point where the AI is
-	* in a good range
-	* if the enemy is too far.
-	* This method is called only when the AI is in the Attack Behavior
-	*/	
+	///*
+	//* Calculate the point where the AI is
+	//* in a good range
+	//* if the enemy is too far.
+	//* This method is called only when the AI is in the Attack Behavior
+	//*/	
+	//UFUNCTION()
+	//	void TooFar();
+
 	UFUNCTION()
-		void TooFar();
+		void UpdateShootingPosition();
 
 	/*
 	* Make all in place for the state Attacking
