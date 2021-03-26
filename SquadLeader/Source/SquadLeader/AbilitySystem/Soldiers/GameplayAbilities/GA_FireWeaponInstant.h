@@ -23,6 +23,7 @@ public:
 protected:
 	void ApplyDamagesAndHits(const FGameplayAbilityTargetDataHandle& _Data);
 	void ReloadWeapon();
+	void ConfigLineTrace();
 
 	virtual bool CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags = nullptr, const FGameplayTagContainer* TargetTags = nullptr, OUT FGameplayTagContainer* OptionalRelevantTags = nullptr) const override;
 
@@ -41,5 +42,6 @@ protected:
 	USL_ServerWaitForClientTargetData* ServerWaitForClientTargetDataTask;
 	class ASL_Weapon* SourceWeapon;
 	class ASoldier* SourceSoldier;
+	class ASL_LineTrace* LineTrace;
 	float TimeOfLastShoot;
 };

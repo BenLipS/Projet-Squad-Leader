@@ -29,17 +29,16 @@ bool UGA_FireWeaponInstant::CanActivateAbility(const FGameplayAbilitySpecHandle 
 
 void UGA_FireWeaponInstant::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
-	SourceSoldier = Cast<ASoldier>(ActorInfo->AvatarActor);
-	SourceWeapon = Cast<ASL_Weapon>(SourceSoldier->GetCurrentWeapon());
-	ASL_LineTrace* LineTrace = SourceWeapon->GetLineTraceTargetActor();
-
-	if (!CommitAbility(Handle, ActorInfo, ActivationInfo) || !LineTrace)
+	if (!CommitAbility(Handle, ActorInfo, ActivationInfo))
 	{
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
 		return;
 	}
 
-	LineTrace->ResetSpread(); // Spread is only reseted here - Continuous fire won't reset then
+	SourceSoldier = Cast<ASoldier>(ActorInfo->AvatarActor);
+	SourceWeapon = Cast<ASL_Weapon>(SourceSoldier->GetCurrentWeapon());
+
+	ConfigLineTrace();
 
 	ServerWaitForClientTargetDataTask = USL_ServerWaitForClientTargetData::ServerWaitForClientTargetData(this, NAME_None, false);
 	ServerWaitForClientTargetDataTask->ValidData.AddDynamic(this, &UGA_FireWeaponInstant::HandleTargetData);
@@ -52,12 +51,18 @@ void UGA_FireWeaponInstant::EndAbility(const FGameplayAbilitySpecHandle Handle, 
 {
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 
-	if (ServerWaitForClientTargetDataTask)
+	if (ServerWaitForClientTargetDataTask && ServerWaitForClientTargetDataTask->IsActive())
 		ServerWaitForClientTargetDataTask->EndTask();
 }
 
 void UGA_FireWeaponInstant::FireBullet()
 {
+	if (APlayerController* PC = CurrentActorInfo->PlayerController.Get(); PC)
+	{
+		if (!PC->IsLocalPlayerController())
+			return;
+	}
+
 	// Too soon to shoot or is reloading
 	if (FMath::Abs(UGameplayStatics::GetTimeSeconds(GetWorld())- TimeOfLastShoot) < SourceWeapon->GetTimeBetweenShots()
 		|| SourceSoldier->GetAbilitySystemComponent()->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("State.ReloadingWeapon"))))
@@ -70,43 +75,18 @@ void UGA_FireWeaponInstant::FireBullet()
 		return;
 	}
 
-	bool bShouldProduceTargetDataOnServer = true;
-
-	if (APlayerController* PC = CurrentActorInfo->PlayerController.Get(); PC)
-	{
-		if (!PC->IsLocalPlayerController())
-			return;
-
-		bShouldProduceTargetDataOnServer = false;
-	}
-	// else We assume the controller is an AIController
-
-	// Prepare line tracing - TODO: Perhaps some of these configuration could be once at the activation only
+	// Update line tracing
 	FGameplayAbilityTargetingLocationInfo TraceStartLocation;
 	TraceStartLocation.LiteralTransform = SourceWeapon->GetOwner()->GetActorTransform();
 
-	ASL_LineTrace* LineTrace = SourceWeapon->GetLineTraceTargetActor();
-
 	LineTrace->SetStartLocation(TraceStartLocation);
-	LineTrace->TraceProfile = FCollisionProfileName{ SourceWeapon->CollisionProfileName };
-	LineTrace->bIgnoreBlockingHits = false;
-	LineTrace->SetShouldProduceTargetDataOnServer(bShouldProduceTargetDataOnServer);
-	LineTrace->bUsePersistentHitResults = false;
-	LineTrace->bTraceAffectsAimPitch = true;
-	LineTrace->bUseAimingSpreadMod = false;
-	LineTrace->MaxRange = SourceWeapon->GetMaxRange();
-	LineTrace->BaseSpread = SourceWeapon->GetBaseSpread();
-	LineTrace->TargetingSpreadIncrement = SourceWeapon->GetTargetingSpreadIncrement();
-	LineTrace->TargetingSpreadMax = SourceWeapon->GetTargetingSpreadMax();
 
-#if ENABLE_DRAW_DEBUG
-	LineTrace->bDebug = SourceWeapon->bDebugTrace;
-#endif
-
+	// Wait target data
 	USL_WaitTargetDataUsingActor* TaskWaitTarget = USL_WaitTargetDataUsingActor::WaitTargetDataWithReusableActor(this, NAME_None, EGameplayTargetingConfirmation::Instant, LineTrace, true);
 	TaskWaitTarget->ValidData.AddDynamic(this, &UGA_FireWeaponInstant::HandleTargetData);
 	TaskWaitTarget->ReadyForActivation();
 
+	// Wait for the next fire
 	UAbilityTask_WaitDelay* TaskWaitDelay = UAbilityTask_WaitDelay::WaitDelay(this, SourceWeapon->GetTimeBetweenShots());
 	TaskWaitDelay->Activate();
 	TaskWaitDelay->OnFinish.AddDynamic(this, &UGA_FireWeaponInstant::FireBullet);
@@ -151,5 +131,30 @@ void UGA_FireWeaponInstant::ApplyDamagesAndHits(const FGameplayAbilityTargetData
 void UGA_FireWeaponInstant::ReloadWeapon()
 {
 	SourceSoldier->ActivateAbility(ASoldier::SkillReloadWeaponTag);
-	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
+	CancelAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true);
+}
+
+void UGA_FireWeaponInstant::ConfigLineTrace()
+{
+	if (LineTrace = SourceWeapon->GetLineTraceTargetActor(); !LineTrace)
+	{
+		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
+		return;
+	}
+
+	LineTrace->ResetSpread(); // Spread is only reseted here - Continuous fire won't reset then
+	LineTrace->TraceProfile = FCollisionProfileName{ SourceWeapon->CollisionProfileName };
+	LineTrace->bIgnoreBlockingHits = false;
+	LineTrace->bUsePersistentHitResults = false;
+	LineTrace->bTraceAffectsAimPitch = true;
+	LineTrace->bUseAimingSpreadMod = false;
+	LineTrace->MaxRange = SourceWeapon->GetMaxRange();
+	LineTrace->BaseSpread = SourceWeapon->GetBaseSpread();
+	LineTrace->TargetingSpreadIncrement = SourceWeapon->GetTargetingSpreadIncrement();
+	LineTrace->TargetingSpreadMax = SourceWeapon->GetTargetingSpreadMax();
+	LineTrace->SetShouldProduceTargetDataOnServer(!CurrentActorInfo->PlayerController.Get()); // Produce Target Data On Server only if the controller is an AI
+
+#if ENABLE_DRAW_DEBUG
+	LineTrace->bDebug = SourceWeapon->bDebugTrace;
+#endif
 }

@@ -38,6 +38,12 @@ void UGA_FireWeapon::ActivateAbility(const FGameplayAbilitySpecHandle Handle, co
 	InstantAbilityHandle = ASC->FindAbilitySpecHandleForClass(GA_FireWeaponInstantClass, SourceWeapon);
 	GA_FireWeaponInstantInstance = Cast<UGA_FireWeaponInstant>(USL_BlueprintFunctionLibrary::GetPrimaryAbilityInstanceFromHandle(ASC, InstantAbilityHandle));
 
+	if (!GA_FireWeaponInstantInstance)
+	{
+		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
+		return;
+	}
+
 	if (SourceWeapon->HasAmmo() || SourceWeapon->HasInfiniteAmmo())
 		HandleFire();
 	else
@@ -62,11 +68,6 @@ void UGA_FireWeapon::CancelAbility(const FGameplayAbilitySpecHandle Handle, cons
 	GA_FireWeaponInstantInstance->CancelAbility(InstantAbilityHandle, ActorInfo, ActivationInfo, true);
 }
 
-void UGA_FireWeapon::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
-{
-	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
-}
-
 void UGA_FireWeapon::HandleFire()
 {
 	if (SourceWeapon->GetFireMode() == ASL_Weapon::FireModeSemiAutoTag)
@@ -77,12 +78,6 @@ void UGA_FireWeapon::HandleFire()
 	else // if (SourceWeapon->GetFireMode() == ASL_Weapon::FireModeAutomaticTag)
 	{
 		if (!BatchRPCTryActivateAbility(InstantAbilityHandle, false))
-		{
-			EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
-			return;
-		}
-
-		if (!GA_FireWeaponInstantInstance)
 		{
 			EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
 			return;

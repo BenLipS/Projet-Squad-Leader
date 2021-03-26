@@ -36,7 +36,7 @@ bool UGA_ReloadWeapon::CanActivateAbility(const FGameplayAbilitySpecHandle Handl
 	
 	if (SourceSoldier)
 	{
-		ASL_Weapon* Weapon = Cast<ASL_Weapon>(SourceSoldier->GetCurrentWeapon());
+		const ASL_Weapon* Weapon = Cast<ASL_Weapon>(SourceSoldier->GetCurrentWeapon());
 		return Weapon && !Weapon->IsFullAmmo();
 	}
 	return false;
