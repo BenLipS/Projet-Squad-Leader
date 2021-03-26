@@ -2,7 +2,7 @@
 #include "../Soldiers/Soldier.h"
 #include "../Soldiers/Players/SoldierPlayer.h"
 #include "../Soldiers/Players/SoldierPlayerController.h"
-#include "../UI/PlayerHUD.h"
+#include "../UI/SL_HUD.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystemComponent.h"
 
@@ -50,7 +50,7 @@ void AWeapon::SetAmmo(uint8 newAmmo)
 	{
 		if (ASoldierPlayerController* PC = SP->GetController<ASoldierPlayerController>(); PC)
 		{
-			if (APlayerHUD* HUD = PC->GetHUD<APlayerHUD>(); HUD)
+			if (ASL_HUD* HUD = PC->GetHUD<ASL_HUD>(); HUD)
 			{
 				HUD->OnAmmoChanged(newAmmo);
 			}
@@ -65,7 +65,7 @@ void AWeapon::SetMaxAmmo(uint8 newMaxAmmo)
 	{
 		if (ASoldierPlayerController* PC = SP->GetController<ASoldierPlayerController>(); PC)
 		{
-			if (APlayerHUD* HUD = PC->GetHUD<APlayerHUD>(); HUD)
+			if (ASL_HUD* HUD = PC->GetHUD<ASL_HUD>(); HUD)
 			{
 				HUD->OnMaxAmmoChanged(newMaxAmmo);
 			}
