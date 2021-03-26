@@ -87,7 +87,7 @@ void AAIBasicManager::ChooseControlArea() {
 		for (int i = 0; i != nbr_unit_per_controlArea && _index_player < nbr_unite; ++i) {
 			UCaptureMission* _mission = Cast<UCaptureMission>(NewObject<UCaptureMission>(this, UCaptureMission::StaticClass()));
 			_mission->InitCaptureMission(-1, MissionPriority::eBASIC, m_controlAreaManager->GetControlArea()[_index_control_area]);
-			AIBasicList[_index_player]->SetMission(_mission);
+			AIBasicList[_index_player]->SetMission<UCaptureMission*>(_mission);
 			_index_player++;
 		}
 		_index_control_area++;

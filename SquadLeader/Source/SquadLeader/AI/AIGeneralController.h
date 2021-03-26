@@ -8,6 +8,7 @@
 #include "../Soldiers/AIs/SoldierAI.h"
 #include "Perception/AIPerceptiontypes.h"
 #include "Mission/CaptureMission.h"
+#include "Mission/DefendMission.h"
 #include "Misc/TVariant.h"
 #include "../Soldiers/Interface/Teamable.h"
 #include "AIGeneralController.generated.h"
@@ -23,6 +24,7 @@ enum AIBasicState {
 	Patroling UMETA(DisplayName = "Patroling"),
 	Capturing UMETA(DisplayName = "Capturing"),
 	Search UMETA(DisplayName = "Searching"),
+	Defend UMETA(DisplayName = "Defending"),
 	Moving UMETA(DisplayName = "Moving"),
 };
 
@@ -37,6 +39,16 @@ enum ResultState {
 	InProgress UMETA(DisplayName = "InProgress"),
 };
 
+USTRUCT()
+struct SQUADLEADER_API Fhome_variant {
+	GENERATED_USTRUCT_BODY()
+
+	Fhome_variant() = default;
+
+	auto operator()(UCaptureMission*)const { GEngine->AddOnScreenDebugMessage(40, 10.f, FColor::Yellow, TEXT("Mission de type UCaptureMission")); }
+	auto operator()(UDefendMission*)const { GEngine->AddOnScreenDebugMessage(40, 10.f, FColor::Yellow, TEXT("Mission de type UDefendMission")); }
+};
+
 
 UCLASS()
 class SQUADLEADER_API AAIGeneralController : public AAIController, public ITeamable
@@ -44,6 +56,13 @@ class SQUADLEADER_API AAIGeneralController : public AAIController, public ITeama
 	GENERATED_BODY()
 
 public:
+
+	/*
+	* Definition of type
+	*/
+	using type_mission = TVariant<UCaptureMission*, UDefendMission*> ;
+	using m_heap_missions = TArray<type_mission>;
+
 
 
 	AAIGeneralController(FObjectInitializer const& object_initializer = FObjectInitializer::Get());
@@ -372,18 +391,21 @@ public:
 	virtual FVector GetRespawnPoint() { return FVector(0.f, 0.f, 1500.f); }  // function overide in in each controller
 
 public:	//Mission
+	template<class T>
+	void SetMission(T _mission);
 
-	void SetMission(UCaptureMission* _Mission);
 
-	UCaptureMission* GetMission();
+	auto GetMission();
 
 protected:
-	UPROPERTY()
-	UMission* Mission;
 
-	UPROPERTY()
-		UCaptureMission* m_mission;
+	/*
+	* variables for the mission system
+	* represent a heap of mission
+	*/
+	type_mission m_mission_type;
 
-	UPROPERTY()
-		bool first_tick = true;
+	m_heap_missions m_missions;
+
+	
 };

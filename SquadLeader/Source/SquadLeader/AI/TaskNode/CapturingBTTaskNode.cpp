@@ -1,8 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "../../AI/AIGeneralController.h"
 #include "CapturingBTTaskNode.h"
+#include "../../AI/AIGeneralController.h"
 
 UCapturingBTTaskNode::UCapturingBTTaskNode() {
 	NodeName = "Capturing a ControlArea";
@@ -24,9 +24,10 @@ void UCapturingBTTaskNode::TickTask(class UBehaviorTreeComponent& OwnerComp, uin
 	ResultState result = m_ai->Capturing();
 	if (result == ResultState::Success)
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
-	if (result == ResultState::InProgress)
+	else if (result == ResultState::Failed)
 		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
-	FinishLatentTask(OwnerComp, EBTNodeResult::InProgress);
+	else
+		FinishLatentTask(OwnerComp, EBTNodeResult::InProgress);
 }
 
 FString UCapturingBTTaskNode::GetStaticDescription() const {

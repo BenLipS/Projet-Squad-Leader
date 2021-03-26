@@ -37,10 +37,12 @@ void AAIGeneralController::BeginPlay() {
 	Super::BeginPlay();
 	RunBehaviorTree(m_behaviorTree);
 	Init();
-	blackboard->SetValueAsObject("ControlArea", m_mission->GetControlArea());
+	
+	
+	/*blackboard->SetValueAsObject("ControlArea", m_mission->GetControlArea());
 	ObjectifLocation = m_mission->GetControlArea()->GetActorLocation();
 	blackboard->SetValueAsVector("VectorLocation", ObjectifLocation);
-	SetState(AIBasicState::Moving);
+	SetState(AIBasicState::Moving);*/
 }
 
 void AAIGeneralController::Init() {
@@ -331,14 +333,18 @@ void AAIGeneralController::UpdateSeenSoldier() {
 	}
 }
 
-void AAIGeneralController::SetMission(UCaptureMission* _Mission)
+template <class T>
+void AAIGeneralController::SetMission(T _mission)
 {
-	m_mission = _Mission;
+	m_mission_type.Emplace<T>(_mission);
+	UDefendMission* m_mission_defend{};
+	m_mission_type.Emplace<UDefendMission*>(m_mission_defend);
+	Visit(Fhome_variant{}, m_mission_type);
 }
 
-auto AAIGeneralController::GetMission()-> UCaptureMission*
+auto AAIGeneralController::GetMission()
 {
-	return m_mission;
+	return 12;
 }
 
 void AAIGeneralController::Die() {
@@ -369,8 +375,6 @@ void AAIGeneralController::ResetBlackBoard()
 	blackboard->SetValueAsBool("need_GoBackward", false);
 	blackboard->SetValueAsBool("need_GoForward", false);
 	blackboard->SetValueAsObject("FocusActor", NULL);
-	blackboard->SetValueAsObject("ControlArea", NULL);
-	tick_value = 0;
 }
 
 /*
@@ -507,13 +511,15 @@ ResultState AAIGeneralController::Capturing() {
 	if (m_state != AIBasicState::Capturing)
 		return ResultState::Failed;
 	AControlArea* control_area = Cast<AControlArea>(blackboard->GetValueAsObject("ControlArea"));
-	if (auto value = control_area->TeamData.Find(Team); control_area) {
-		if ((*value)->controlValue == control_area->maxControlValue) {
-			SetState(AIBasicState::Patroling);
-			return ResultState::Success;
+	if (control_area) {
+		if (auto value = control_area->TeamData.Find(Team)) {
+			if ((*value)->controlValue >= control_area->maxControlValue) {
+				SetState(AIBasicState::Patroling);
+				return ResultState::Success;
+			}
+			else
+				return ResultState::InProgress;
 		}
-		else
-			return ResultState::InProgress;
 	}
 	return ResultState::Failed;
 
