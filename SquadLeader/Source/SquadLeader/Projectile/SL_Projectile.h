@@ -45,6 +45,12 @@ protected:
 	float Bounciness = 0.3f;
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Projectile")
+	float YawAngle = 0.f;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Projectile")
+	float PitchAngle = 0.f;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Projectile")
 	ContactPolicy OnContactPolicy;
 
 	// AreaEffect to apply on contact/explosion

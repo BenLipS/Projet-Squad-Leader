@@ -752,3 +752,15 @@ void ASoldier::ShowImpactHitEffect()
 {
 	UParticleSystemComponent* LaserParticle = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactHitFX, GetActorLocation(), FRotator(), ImpactHitFXScale);
 }
+
+FVector ASoldier::GetLookingDirection()
+{
+	if (CurrentCameraComponent)
+	{
+		return CurrentCameraComponent->GetForwardVector();
+	}
+	else
+	{
+		return GetActorForwardVector();
+	}
+}

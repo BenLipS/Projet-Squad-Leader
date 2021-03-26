@@ -370,4 +370,8 @@ protected:
 public:
 	UFUNCTION()
 	void ShowImpactHitEffect();
+
+	// Projectile forwardVector to launch from
+	UFUNCTION()
+	virtual FVector GetLookingDirection();
 };

@@ -82,10 +82,11 @@ void ASL_Projectile::DeleteProjectile()
 
 void ASL_Projectile::InitVelocity()
 {
-
+	FVector test = FVector(1, 0, 0);
+	test.RotateAngleAxis(PitchAngle, );
 	ASoldier* soldier = Cast<ASoldier>(GetOwner());
 	if (soldier) {
-		ProjectileMovement->Velocity = soldier->CurrentCameraComponent->GetForwardVector() * ProjectileMovement->InitialSpeed;
+		ProjectileMovement->Velocity = soldier->GetLookingDirection() * ProjectileMovement->InitialSpeed;
 	}
 	else if (GetOwner()) {
 		ProjectileMovement->Velocity = GetOwner()->GetActorForwardVector() * ProjectileMovement->InitialSpeed;
