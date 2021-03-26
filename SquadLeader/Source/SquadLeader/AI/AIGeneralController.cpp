@@ -464,8 +464,8 @@ void AAIGeneralController::SetPatrolPoint()
 
 	UNavigationSystemV1* navSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
 
-	FVector startLocation = ObjectifLocation;
-	FVector endLocation = ObjectifLocation + PatrolPos;
+	FVector startLocation = ObjectifLocation + 100.f;
+	FVector endLocation = ObjectifLocation + 100.f + PatrolPos;
 
 	if (navSys->NavigationRaycast(GetWorld(), startLocation, endLocation, HitLocation))
 		PatrolPos = HitLocation;

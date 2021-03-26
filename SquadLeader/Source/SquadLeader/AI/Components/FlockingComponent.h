@@ -79,6 +79,9 @@ protected:
 	UPROPERTY()
 		FVector PreviousMovementVector{ 0.f, 0.f, 0.f };
 
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Flocking Behaviour")
+	//	float SeparationRange = 400.f;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Flocking Behaviour")
 		float DefaultNormalizeVectorTolerance = 0.0001f;
 
