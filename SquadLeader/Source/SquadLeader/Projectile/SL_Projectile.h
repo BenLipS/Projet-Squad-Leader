@@ -44,6 +44,10 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Projectile")
 	float Bounciness = 0.3f;
 
+	//How much the projectile will be launched in Z axis (grenade useful)
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Projectile")
+	float ZOffset = 0.f;
+
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Projectile")
 	ContactPolicy OnContactPolicy;
 
