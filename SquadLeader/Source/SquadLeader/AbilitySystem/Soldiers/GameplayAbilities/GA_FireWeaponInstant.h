@@ -21,7 +21,8 @@ public:
 	void HandleTargetData(const FGameplayAbilityTargetDataHandle& _Data);
 
 protected:
-	void ApplyDamagesAndHits(const FGameplayAbilityTargetDataHandle& _Data);
+	void ApplyEffectsToSource();
+	void ApplyDamages(const FGameplayAbilityTargetDataHandle& _Data, UAbilitySystemComponent* _TargetASC);
 	void ReloadWeapon();
 	void ConfigLineTrace();
 
