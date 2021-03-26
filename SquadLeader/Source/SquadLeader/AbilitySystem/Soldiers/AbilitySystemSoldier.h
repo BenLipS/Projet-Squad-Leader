@@ -14,6 +14,8 @@ public:
 
 	bool bStartupEffectsApplied = false;
 
+	virtual bool ShouldDoServerAbilityRPCBatch() const override { return true; }
+
 	UFUNCTION(BlueprintCallable, Category = "Abilities")
 	virtual bool BatchRPCTryActivateAbility(FGameplayAbilitySpecHandle _InAbilityHandle, bool _EndAbilityImmediately);
 
