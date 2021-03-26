@@ -214,6 +214,19 @@ bool ASL_Weapon::HasAmmo() const noexcept
 void ASL_Weapon::ReloadWeapon()
 {
 	SetCurrentAmmo(MaxAmmo);
+	
+	if (GetLocalRole() != ROLE_Authority)
+		ServerReloadWeapon();
+}
+
+void ASL_Weapon::ServerReloadWeapon_Implementation()
+{
+	ReloadWeapon();
+}
+
+bool ASL_Weapon::ServerReloadWeapon_Validate()
+{
+	return true;
 }
 
 void ASL_Weapon::SetHasInfiniteAmmo(const bool _hasInfiniteAmmo)

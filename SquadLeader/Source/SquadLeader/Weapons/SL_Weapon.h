@@ -145,6 +145,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Stats|Ammo")
 	void ReloadWeapon();
 
+	UFUNCTION(Reliable, Server, WithValidation)
+	void ServerReloadWeapon();
+	void ServerReloadWeapon_Implementation();
+	bool ServerReloadWeapon_Validate();
+
 	UFUNCTION(BlueprintCallable, Category = "Stats|Ammo")
 	void SetHasInfiniteAmmo(const bool _hasInfiniteAmmo);
 
