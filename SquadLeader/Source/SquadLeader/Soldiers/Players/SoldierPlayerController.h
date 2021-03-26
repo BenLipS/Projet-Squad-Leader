@@ -117,4 +117,14 @@ public:
 
 	UFUNCTION()
 	void BroadCastManagerData();
+
+	//-----ABILITY WALLVISION-----
+
+	UFUNCTION(Client, Reliable)
+	void OnWallVisionActivate();
+	void OnWallVisionActivate_Implementation();
+
+	UFUNCTION(Client, Reliable)
+	void OnWallVisionDeactivate();
+	void OnWallVisionDeactivate_Implementation();
 };
