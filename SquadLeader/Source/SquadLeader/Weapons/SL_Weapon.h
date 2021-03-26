@@ -108,10 +108,10 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Replicated, Category = "Stats|Ammo")
 	float TimeBetweenShots;
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, ReplicatedUsing = OnRep_Ammo, Category = "Stats|Ammo")
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Replicated/*Using = OnRep_Ammo*/, Category = "Stats|Ammo")
 	int32 CurrentAmmo;
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, ReplicatedUsing = OnRep_MaxAmmo, Category = "Stats|Ammo")
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Replicated/*Using = OnRep_MaxAmmo*/, Category = "Stats|Ammo")
 	int32 MaxAmmo;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Stats|Ammo")
@@ -131,13 +131,25 @@ public:
 	bool IsFullAmmo() const noexcept;
 
 	UFUNCTION(BlueprintCallable, Category = "Stats|Ammo")
-	virtual void SetAmmo(const int32 _NewAmmo);
+	void SetCurrentAmmo(const int32 _NewAmmo);
 
 	UFUNCTION(BlueprintCallable, Category = "Stats|Ammo")
-	virtual void SetMaxAmmo(const int32 _NewMaxAmmo);
+	void DecrementAmmo();
 
 	UFUNCTION(BlueprintCallable, Category = "Stats|Ammo")
-	bool HasInfiniteAmmo() const;
+	void SetMaxAmmo(const int32 _NewMaxAmmo);
+
+	UFUNCTION(BlueprintCallable, Category = "Stats|Ammo")
+	bool HasAmmo() const noexcept;
+
+	UFUNCTION(BlueprintCallable, Category = "Stats|Ammo")
+	void ReloadWeapon();
+
+	UFUNCTION(BlueprintCallable, Category = "Stats|Ammo")
+	void SetHasInfiniteAmmo(const bool _hasInfiniteAmmo);
+
+	UFUNCTION(BlueprintCallable, Category = "Stats|Ammo")
+	bool HasInfiniteAmmo() const noexcept;
 
 	UFUNCTION()
 	virtual void OnRep_Ammo(int32 _OldPrimaryClipAmmo);

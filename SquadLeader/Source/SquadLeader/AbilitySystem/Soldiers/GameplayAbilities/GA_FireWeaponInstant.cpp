@@ -1,4 +1,5 @@
 #include "GA_FireWeaponInstant.h"
+#include "SquadLeader/Weapons/SL_Weapon.h"
 #include "SquadLeader/Soldiers/Soldier.h"
 #include "SquadLeader/AbilitySystem/Soldiers/AbilityTasks/SL_WaitTargetDataUsingActor.h"
 #include "SquadLeader/AbilitySystem/Soldiers/Trace/SL_LineTrace.h"
@@ -6,23 +7,29 @@
 #include "Engine/CollisionProfile.h"
 #include "Abilities/Tasks/AbilityTask_WaitDelay.h"
 
-UGA_FireWeaponInstant::UGA_FireWeaponInstant() : ServerWaitForClientTargetDataTask{ nullptr }, SourceWeapon{ nullptr }, TimeOfLastShoot{ -9999.f }
+UGA_FireWeaponInstant::UGA_FireWeaponInstant() :
+ServerWaitForClientTargetDataTask{ nullptr },
+SourceWeapon{ nullptr },
+SourceSoldier { nullptr },
+TimeOfLastShoot{ -9999.f }
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 
 	AbilityInputID = ESoldierAbilityInputID::None;
 	AbilityID = ESoldierAbilityInputID::None;
+
+	ActivationBlockedTags.AddTag(FGameplayTag::RequestGameplayTag(FName("State.ReloadingWeapon")));
 }
 
 bool UGA_FireWeaponInstant::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, OUT FGameplayTagContainer* OptionalRelevantTags) const
 {
-	ASoldier* SourceSoldier = Cast<ASoldier>(ActorInfo->AvatarActor);
-	return SourceSoldier && Cast<ASL_Weapon>(SourceSoldier->GetCurrentWeapon());
+	ASoldier* Soldier = Cast<ASoldier>(ActorInfo->AvatarActor);
+	return Soldier && Cast<ASL_Weapon>(Soldier->GetCurrentWeapon());
 }
 
 void UGA_FireWeaponInstant::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
-	ASoldier* SourceSoldier = Cast<ASoldier>(ActorInfo->AvatarActor);
+	SourceSoldier = Cast<ASoldier>(ActorInfo->AvatarActor);
 	SourceWeapon = Cast<ASL_Weapon>(SourceSoldier->GetCurrentWeapon());
 	ASL_LineTrace* LineTrace = SourceWeapon->GetLineTraceTargetActor();
 
@@ -32,7 +39,7 @@ void UGA_FireWeaponInstant::ActivateAbility(const FGameplayAbilitySpecHandle Han
 		return;
 	}
 
-	LineTrace->ResetSpread(); // Spread is only reseted here - Hence continuous fire won't reset
+	LineTrace->ResetSpread(); // Spread is only reseted here - Continuous fire won't reset then
 
 	ServerWaitForClientTargetDataTask = USL_ServerWaitForClientTargetData::ServerWaitForClientTargetData(this, NAME_None, false);
 	ServerWaitForClientTargetDataTask->ValidData.AddDynamic(this, &UGA_FireWeaponInstant::HandleTargetData);
@@ -49,15 +56,19 @@ void UGA_FireWeaponInstant::EndAbility(const FGameplayAbilitySpecHandle Handle, 
 		ServerWaitForClientTargetDataTask->EndTask();
 }
 
-void UGA_FireWeaponInstant::CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateCancelAbility)
-{
-	Super::CancelAbility(Handle, ActorInfo, ActivationInfo, bReplicateCancelAbility);
-}
-
 void UGA_FireWeaponInstant::FireBullet()
 {
-	if (!SourceWeapon || FMath::Abs(UGameplayStatics::GetTimeSeconds(GetWorld())- TimeOfLastShoot) < SourceWeapon->GetTimeBetweenShots())
+	// Too soon to shoot or is reloading
+	if (FMath::Abs(UGameplayStatics::GetTimeSeconds(GetWorld())- TimeOfLastShoot) < SourceWeapon->GetTimeBetweenShots()
+		|| SourceSoldier->GetAbilitySystemComponent()->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("State.ReloadingWeapon"))))
 		return;
+
+	// Need to reload
+	if (!SourceWeapon->HasAmmo() && !SourceWeapon->HasInfiniteAmmo())
+	{
+		ReloadWeapon();
+		return;
+	}
 
 	bool bShouldProduceTargetDataOnServer = true;
 
@@ -70,8 +81,7 @@ void UGA_FireWeaponInstant::FireBullet()
 	}
 	// else We assume the controller is an AIController
 
-	// CHeckcost ability and cancel if necessqry
-
+	// Prepare line tracing - TODO: Perhaps some of these configuration could be once at the activation only
 	FGameplayAbilityTargetingLocationInfo TraceStartLocation;
 	TraceStartLocation.LiteralTransform = SourceWeapon->GetOwner()->GetActorTransform();
 
@@ -97,31 +107,30 @@ void UGA_FireWeaponInstant::FireBullet()
 	TaskWaitTarget->ValidData.AddDynamic(this, &UGA_FireWeaponInstant::HandleTargetData);
 	TaskWaitTarget->ReadyForActivation();
 
-	TimeOfLastShoot = UGameplayStatics::GetTimeSeconds(GetWorld());
-
 	UAbilityTask_WaitDelay* TaskWaitDelay = UAbilityTask_WaitDelay::WaitDelay(this, SourceWeapon->GetTimeBetweenShots());
 	TaskWaitDelay->Activate();
 	TaskWaitDelay->OnFinish.AddDynamic(this, &UGA_FireWeaponInstant::FireBullet);
+
+	TimeOfLastShoot = UGameplayStatics::GetTimeSeconds(GetWorld());
 }
 
 void UGA_FireWeaponInstant::HandleTargetData(const FGameplayAbilityTargetDataHandle& _Data)
 {
-	ASoldier* SourceSoldier = Cast<ASoldier>(CurrentActorInfo->AvatarActor);
-
-	// TODO: Remove one bullet
+	SourceWeapon->DecrementAmmo();
 
 	if (UAnimMontage* FireMontage = SourceSoldier->WeaponFireMontage; FireMontage)
 		SourceSoldier->PlayAnimMontage(FireMontage);
 
 	// Apply is firing state to shooter - TODO: also add is fighting
+	// TODO: Make a function ApplyEffectsToSelf
+	// TODO: Make a function ApplyEffectsToTargets
 	FGameplayEffectSpecHandle FiringEffectSpecHandle = MakeOutgoingGameplayEffectSpec(GE_FiringStateClass, GetAbilityLevel());
 	SourceSoldier->GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*FiringEffectSpecHandle.Data.Get());
 
-	// Apply damages
-	ApplyDamagesAndHits(_Data, SourceSoldier);
+	ApplyDamagesAndHits(_Data);
 }
 
-void UGA_FireWeaponInstant::ApplyDamagesAndHits(const FGameplayAbilityTargetDataHandle& _Data, ASoldier* _SourceSoldier)
+void UGA_FireWeaponInstant::ApplyDamagesAndHits(const FGameplayAbilityTargetDataHandle& _Data)
 {
 	FGameplayEffectSpecHandle DamageEffectSpecHandle = MakeOutgoingGameplayEffectSpec(GE_DamageClass, GetAbilityLevel());
 	DamageEffectSpecHandle.Data->SetSetByCallerMagnitude(FGameplayTag::RequestGameplayTag(FName("Data.Damage")), SourceWeapon->GetWeaponDamage());
@@ -130,11 +139,17 @@ void UGA_FireWeaponInstant::ApplyDamagesAndHits(const FGameplayAbilityTargetData
 	{
 		if (ASoldier* TargetSoldier = Cast<ASoldier>(Actor); TargetSoldier && TargetSoldier->GetAbilitySystemComponent())
 		{
-			if (TargetSoldier->GetTeam() != _SourceSoldier->GetTeam())
-				_SourceSoldier->GetAbilitySystemComponent()->ApplyGameplayEffectSpecToTarget(*DamageEffectSpecHandle.Data.Get(), TargetSoldier->GetAbilitySystemComponent());
+			if (TargetSoldier->GetTeam() != SourceSoldier->GetTeam())
+				SourceSoldier->GetAbilitySystemComponent()->ApplyGameplayEffectSpecToTarget(*DamageEffectSpecHandle.Data.Get(), TargetSoldier->GetAbilitySystemComponent());
 		}
 	}
 
 	FGameplayEffectContextHandle EffectContext = DamageEffectSpecHandle.Data->GetEffectContext();
 	EffectContext.AddHitResult(*_Data.Get(0)->GetHitResult());
+}
+
+void UGA_FireWeaponInstant::ReloadWeapon()
+{
+	SourceSoldier->ActivateAbility(ASoldier::SkillReloadWeaponTag);
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
 }

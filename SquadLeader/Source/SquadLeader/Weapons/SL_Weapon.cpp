@@ -80,6 +80,9 @@ void ASL_Weapon::SetOwningCharacter(ASoldier* _InOwningCharacter)
 
 void ASL_Weapon::ResetWeapon()
 {
+	// Force HUD Update
+	SetMaxAmmo(MaxAmmo);
+	SetCurrentAmmo(MaxAmmo);
 }
 
 UAbilitySystemComponent* ASL_Weapon::GetAbilitySystemComponent() const
@@ -169,7 +172,7 @@ bool ASL_Weapon::IsFullAmmo() const noexcept
 	return CurrentAmmo == MaxAmmo;
 }
 
-void ASL_Weapon::SetAmmo(const int32 _NewAmmo)
+void ASL_Weapon::SetCurrentAmmo(const int32 _NewAmmo)
 {
 	CurrentAmmo = _NewAmmo;
 
@@ -181,6 +184,12 @@ void ASL_Weapon::SetAmmo(const int32 _NewAmmo)
 				HUD->OnAmmoChanged(CurrentAmmo);
 		}
 	}
+}
+
+void ASL_Weapon::DecrementAmmo()
+{
+	if (!bInfiniteAmmo)
+		SetCurrentAmmo(CurrentAmmo - 1);
 }
 
 void ASL_Weapon::SetMaxAmmo(const int32 _NewMaxAmmo)
@@ -197,7 +206,22 @@ void ASL_Weapon::SetMaxAmmo(const int32 _NewMaxAmmo)
 	}
 }
 
-bool ASL_Weapon::HasInfiniteAmmo() const
+bool ASL_Weapon::HasAmmo() const noexcept
+{
+	return CurrentAmmo > 0;
+}
+
+void ASL_Weapon::ReloadWeapon()
+{
+	SetCurrentAmmo(MaxAmmo);
+}
+
+void ASL_Weapon::SetHasInfiniteAmmo(const bool _hasInfiniteAmmo)
+{
+	bInfiniteAmmo = _hasInfiniteAmmo;
+}
+
+bool ASL_Weapon::HasInfiniteAmmo() const noexcept
 {
 	return bInfiniteAmmo;
 }
