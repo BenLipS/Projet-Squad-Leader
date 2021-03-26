@@ -3,6 +3,8 @@
 #include "Components/CapsuleComponent.h"
 #include "EngineUtils.h"
 #include "../SquadLeaderGameModeBase.h"
+#include "../SquadLeaderGameInstance.h"
+#include "../AI/InfluenceMap/InfluenceMapGrid.h"
 #include "../AbilitySystem/Soldiers/GameplayAbilitySoldier.h"
 #include "../AbilitySystem/Soldiers/GameplayEffects/States/GE_StateDead.h"
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
@@ -105,6 +107,29 @@ void ASoldier::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifeti
 void ASoldier::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	auto gameinstance = Cast<USquadLeaderGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+
+	if (GetTeam() && gameinstance->InfluenceMap) {
+		FGridPackage m_package;
+		m_package.m_location_on_map = GetActorLocation();
+
+		ASoldierTeam* team_ = Cast<ASoldierTeam>(GetTeam()->GetDefaultObject());
+		if (team_) {
+			switch (team_->Id) {
+			case 1:
+				m_package.team_value = 1;
+				break;
+			case 2:
+				m_package.team_value = 2;
+				break;
+			default:
+				break;
+			}
+		}
+
+		m_package.m_type = Type::Soldier;
+		gameinstance->InfluenceMap->ReceivedMessage(m_package);
+	}	
 }
 
 void ASoldier::InitCameras()

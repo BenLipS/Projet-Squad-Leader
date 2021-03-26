@@ -3,10 +3,12 @@
 
 #include "InfluenceMapGrid.h"
 #include "NavigationSystem.h"
-#include "NavigationPath.h"/*
-#include "../../Thread/MyThreadManager.h"*/
+#include "NavigationPath.h"
 #include "../../SquadLeaderGameModeBase.h"
 #include "../../Soldiers/Soldier.h"
+#include "Templates/Function.h"
+#include "EngineUtils.h"
+
 
 AInfluenceMapGrid::AInfluenceMapGrid() {
 	//Set this AInfo to be call every Tick. 
@@ -20,22 +22,22 @@ void AInfluenceMapGrid::BeginPlay() {
 		m_neighboors.Init(FNeighboor(), nbr_tile);
 		FindNeighboor();
 	}
-
-	/*m_ThreadManager = NewObject<UMyThreadManager>();*/
 }
 
 void AInfluenceMapGrid::Tick(float DeltaSeconds) {
 	Super::Tick(DeltaSeconds);
-	/*if (GEngine)
-		GEngine->AddOnScreenDebugMessage(100, 1.f, FColor::Black, TEXT("HELLO, i'm the new InfluenceMap :)"));*/
 	if (GetLocalRole() == ROLE_Authority) {
 		//DrawGrid();
-		ResetGrid();
-		UpdateGrid();
+		{
+			const double startTime = FPlatformTime::Seconds();
 
+			// code de la fonction
+			UpdateGrid();
+			const double endTime = FPlatformTime::Seconds();
+			const double elapsedTime = endTime - startTime;
+			GEngine->AddOnScreenDebugMessage(20, 2.f, FColor::Green, FString::Printf(TEXT("Exécution a duré % .0fms."), elapsedTime * 1000));
+		}
 		value_tick++;
-		/*if (value_tick > 1000)
-			m_ThreadManager->StartProcess()*/;
 	}
 }
 
@@ -61,25 +63,28 @@ bool AInfluenceMapGrid::IsValid(FVector _location) const {
 
 void AInfluenceMapGrid::DrawGrid() const {
 	for (FTileBase _tile : m_influencemap) {
-		if(_tile.m_team == 1)
-			DrawDebugSolidBox(GetWorld(),_tile.m_location, FVector(95.f, 95.f,10.f), FColor(0, 0, 255 * _tile.m_value));
+		if (_tile.m_team == 1)
+			DrawDebugSolidBox(GetWorld(), _tile.m_location, FVector(95.f, 95.f, 10.f), FColor(0, 0, 255 * _tile.m_value));
 		else if (_tile.m_team == 2)
 			DrawDebugSolidBox(GetWorld(), _tile.m_location, FVector(95.f, 95.f, 10.f), FColor(255 * _tile.m_value, 0, 0));
+		
 	/*	else
 			DrawDebugSolidBox(GetWorld(), _tile.m_location, FVector(95.f, 95.f, 10.f), FColor(0, 255, 0));*/
 	}
 }
 
-void AInfluenceMapGrid::ResetGrid() noexcept {
-	for (FTileBase& _tile : m_influencemap) {
-		_tile.m_value = 0.f;
-		_tile.m_team = -1;
-	}
-}
-
 void AInfluenceMapGrid::UpdateGrid() noexcept {
-	UpdatePlayers();
-	UpdateControlArea();
+
+	for (int32 index = m_index_update.Num() - 1; index >= 0; --index) {
+		int index_tile = m_index_update[index];
+		if (m_influencemap[index_tile].m_value >= 0.05f)
+			m_influencemap[index_tile].m_value -= 0.05f;
+		else {
+			m_influencemap[index_tile].m_team = -1;
+			m_influencemap[index_tile].in_update = false;
+		}
+	}
+	m_index_update.RemoveAll([&](const int index) { return !m_influencemap[index].in_update; });
 }
 
 int AInfluenceMapGrid::FindTileIndex(FVector _location) const noexcept {
@@ -130,63 +135,75 @@ void AInfluenceMapGrid::FindNeighboor()noexcept {
 		Neighboors(i);
 }
 
-void AInfluenceMapGrid::Influence(int index, int start_index, int source_index, int distance) noexcept {
+void AInfluenceMapGrid::InfluenceSoldier(int index, int start_index, int source_index, int distance) noexcept {
 	float value = m_influencemap[source_index].m_value / FMath::Sqrt(1.f + distance);
 
-	if (distance > 5)
+	if (distance > 10)
 		return;
 
 	for (int neighboor : m_neighboors[index].m_neighboor) {
 		if (neighboor != start_index && m_influencemap[neighboor].m_value <= value) {
-			/*if(m_influencemap[neighboor].m_value + value > 0.7f)
-				m_influencemap[neighboor].m_value = 0.7f;
-			else
-				m_influencemap[neighboor].m_value += value;*/
+			UpdateTile(neighboor, value, m_influencemap[index].m_team, Type::Soldier);
+			InfluenceSoldier(neighboor, index, source_index, distance + 1);
+		}
+	}
+}
+
+void AInfluenceMapGrid::InfluenceControlArea(int index, int start_index, int source_index, int distance, int value) noexcept {
+	if (distance > 10)
+		return;
+
+	for (int neighboor : m_neighboors[index].m_neighboor) {
+		if (neighboor != start_index && m_influencemap[neighboor].m_value <= value) {
 			m_influencemap[neighboor].m_value = value;
 			m_influencemap[neighboor].m_team = m_influencemap[index].m_team;
-			Influence(neighboor, index, source_index, distance + 1);
+			m_influencemap[neighboor].m_type = Type::ControlArea;
+			InfluenceControlArea(neighboor, index, source_index, distance + 1, value);
 		}
 	}
 }
 
-void AInfluenceMapGrid::UpdatePlayers() noexcept {
-	int team = 1;
-	auto gamemode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
-	for (TSubclassOf<ASoldierTeam> _team : gamemode->SoldierTeamCollection) {
-
-		ASoldierTeam* _teamclass = Cast<ASoldierTeam>(_team->GetDefaultObject());
-
-		for (ASoldier* _soldier : _teamclass->soldierList) {
-
-			int index_tile = FindTileIndex(_soldier->GetLocation());
-			if (index_tile != -1) {
-				m_influencemap[index_tile].m_value = 0.7f;
-				m_influencemap[index_tile].m_team = team;
-				Influence(index_tile, index_tile, index_tile, 1);
-			}
+void AInfluenceMapGrid::ReceivedMessage(FGridPackage _message) {
+	int index_tile = FindTileIndex(_message.m_location_on_map);
+	if (index_tile != -1) {
+	
+		switch (_message.m_type) {
+		case Type::Soldier:
+			UpdateTile(index_tile, 0.7f, _message.team_value, _message.m_type);
+			InfluenceSoldier(index_tile, index_tile, index_tile, 1);
+			break;
+		case Type::ControlArea:
+			m_influencemap[index_tile].m_value = 1.0f;
+			m_influencemap[index_tile].m_team = _message.team_value;
+			m_influencemap[index_tile].m_type = Type::ControlArea;
+			InfluenceControlArea(index_tile, index_tile, index_tile, 1, 1.0f);
+			break;
+		case Type::Projectile:
+			m_influencemap[index_tile].m_value = 0.3f;
+			break;
+		default:
+			break;
 		}
-
-		team = 2;
 	}
 }
 
-void AInfluenceMapGrid::UpdateControlArea() noexcept {
-	auto gamemode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
-	AControlAreaManager* controlareamanager = Cast<AControlAreaManager>(gamemode->ControlAreaManager->GetDefaultObject());
+void AInfluenceMapGrid::TimeFunction() {
+	const double startTime = FPlatformTime::Seconds();
 
-	for (int i = 0; i != controlareamanager->GetControlArea().Num(); ++i) {
-		AControlArea* _controlArea = Cast<AControlArea>(controlareamanager->GetControlArea()[i]);
-		if (_controlArea->isTakenBy) {
-			int index_tile = FindTileIndex(controlareamanager->GetControlArea()[i]->GetActorLocation());
-			if (index_tile != -1) {
-				m_influencemap[index_tile].m_value = 1.f;
-				ASoldierTeam* _soldierTeam = Cast<ASoldierTeam>(_controlArea->isTakenBy->GetDefaultObject());
-				if (_soldierTeam->TeamName == "Team1")
-					m_influencemap[index_tile].m_team = 1;
-				else 
-					m_influencemap[index_tile].m_team = 2;
-				Influence(index_tile, index_tile, index_tile, 1);
-			}
-		}
+	// code de la fonction
+
+	const double endTime = FPlatformTime::Seconds();
+	const double elapsedTime = endTime - startTime;
+}
+
+void AInfluenceMapGrid::UpdateTile(int index, float value, int team, Type type) noexcept {
+	if(value > m_influencemap[index].m_value)
+		m_influencemap[index].m_value = value;
+	
+	if (!m_influencemap[index].in_update) {
+		m_index_update.Add(index);
+		m_influencemap[index].in_update = true;
 	}
+	m_influencemap[index].m_team = team;
+	m_influencemap[index].m_type = type;
 }
