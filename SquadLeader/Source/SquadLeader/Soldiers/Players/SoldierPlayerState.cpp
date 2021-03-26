@@ -1,6 +1,5 @@
 #include "SoldierPlayerState.h"
 #include "SoldierPlayerController.h"
-#include "../../UI/PlayerHUD.h"
 
 ASoldierPlayerState::ASoldierPlayerState()
 {

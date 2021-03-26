@@ -2,9 +2,18 @@
 
 
 #include "AmmoWidget.h"
+#include "Interface/WeaponDelegateInterface.h"
 
 UAmmoWidget::UAmmoWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
+}
+
+void UAmmoWidget::SetupDelegateToObject(UObject* ObjectIn)
+{
+	if (IWeaponDelegateInterface* WeaponDelegateInterface = Cast<IWeaponDelegateInterface>(ObjectIn); WeaponDelegateInterface)
+	{
+		WeaponDelegateInterface->AddWeaponDelegate(this);
+	}
 }
 
 void UAmmoWidget::OnAmmoChanged(uint8 newValue)
