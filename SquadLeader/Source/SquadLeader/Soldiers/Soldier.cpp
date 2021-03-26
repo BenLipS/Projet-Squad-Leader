@@ -391,21 +391,29 @@ bool ASoldier::ActivateAbilities(const FGameplayTagContainer& _TagContainer)
 
 bool ASoldier::ActivateAbility(const FGameplayTag& _Tag)
 {
-	FGameplayTagContainer TagContainer;
-	TagContainer.AddTag(_Tag);
-	return AbilitySystemComponent->TryActivateAbilitiesByTag(TagContainer);
+	if (AbilitySystemComponent)
+	{
+		FGameplayTagContainer TagContainer;
+		TagContainer.AddTag(_Tag);
+		return AbilitySystemComponent->TryActivateAbilitiesByTag(TagContainer);
+	}
+	return false;
 }
 
 void ASoldier::CancelAbilities(const FGameplayTagContainer& _TagContainer)
 {
-	AbilitySystemComponent->CancelAbilities(&_TagContainer);
+	if (AbilitySystemComponent)
+		AbilitySystemComponent->CancelAbilities(&_TagContainer);
 }
 
 void ASoldier::CancelAbility(const FGameplayTag& _Tag)
 {
-	FGameplayTagContainer TagContainer;
-	TagContainer.AddTag(_Tag);
-	AbilitySystemComponent->CancelAbilities(&TagContainer);
+	if (AbilitySystemComponent)
+	{
+		FGameplayTagContainer TagContainer;
+		TagContainer.AddTag(_Tag);
+		AbilitySystemComponent->CancelAbilities(&TagContainer);
+	}
 }
 
 
