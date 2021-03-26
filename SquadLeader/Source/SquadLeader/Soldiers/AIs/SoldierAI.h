@@ -67,9 +67,10 @@ protected:
 
 	virtual void BeginPlay() override;
 
-	virtual FVector GetLookingAtPosition() override;
-
 	FVector LookingAtPosition;
+
+public:
+	virtual FVector GetLookingAtPosition() override;
 
 //////////////// Teamable
 public:

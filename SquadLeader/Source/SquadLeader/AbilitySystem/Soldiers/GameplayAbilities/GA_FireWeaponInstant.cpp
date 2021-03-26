@@ -124,7 +124,7 @@ void UGA_FireWeaponInstant::ApplyDamages(const FGameplayAbilityTargetDataHandle&
 	FGameplayEffectSpecHandle DamageEffectSpecHandle = MakeOutgoingGameplayEffectSpec(GE_DamageClass, GetAbilityLevel());
 	DamageEffectSpecHandle.Data->SetSetByCallerMagnitude(FGameplayTag::RequestGameplayTag(FName("Data.Damage")), SourceWeapon->GetWeaponDamage());
 
-	//if (TargetSoldier->GetTeam() != SourceSoldier->GetTeam())
+	if (TargetSoldier->GetTeam() != SourceSoldier->GetTeam())
 	SourceSoldier->GetAbilitySystemComponent()->ApplyGameplayEffectSpecToTarget(*DamageEffectSpecHandle.Data.Get(), _TargetASC);
 
 	FGameplayEffectContextHandle EffectContext = DamageEffectSpecHandle.Data->GetEffectContext();

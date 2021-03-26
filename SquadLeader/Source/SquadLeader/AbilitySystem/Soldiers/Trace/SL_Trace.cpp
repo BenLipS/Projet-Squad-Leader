@@ -5,6 +5,7 @@
 #include "DrawDebugHelpers.h"
 #include "GameFramework/PlayerController.h"
 #include "GameplayAbilitySpec.h"
+#include "SquadLeader/Soldiers/AIs/SoldierAI.h"
 
 ASL_Trace::ASL_Trace()
 {
@@ -363,7 +364,10 @@ TArray<FHitResult> ASL_Trace::PerformTrace(AActor* InSourceActor)
 
 	for (int32 TraceIndex = 0; TraceIndex < NumberOfTraces; TraceIndex++)
 	{
-		AimWithPlayerController(InSourceActor, Params, TraceStart, TraceEnd);		//Effective on server and launching client only
+		if (ASoldierAI* Soldier = Cast<ASoldierAI>(InSourceActor); Soldier)
+			TraceEnd = Soldier->GetLookingAtPosition();
+		else
+			AimWithPlayerController(InSourceActor, Params, TraceStart, TraceEnd); //Effective on server and launching client only
 
 		// ------------------------------------------------------
 
