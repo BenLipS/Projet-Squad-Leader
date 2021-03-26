@@ -50,9 +50,13 @@ public:
 //////////////// Teamable
 protected:
 	UPROPERTY(Replicated)
-		TSubclassOf<ASoldierTeam> Team = nullptr;  // only server can replicate it
+	ASoldierTeam* Team = nullptr;  // only server can replicate it
+	
 	UPROPERTY()
 	FVector ObjectifLocation{ 1000.f, 1000.f, 10.f };
+
+	UPROPERTY()
+	FVector TempObjectifLocation{ 1000.f, 1000.f, 10.f };
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Flocking Behaviour")
 	TSubclassOf<UFlockingComponent> ClassFlockingComponent;
@@ -62,10 +66,22 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		FVector GetObjectifLocation() { return ObjectifLocation + 100; };
+	UFUNCTION(BlueprintCallable)
+		FVector GetRealObjectifLocation() { return ObjectifLocation; };
+	UFUNCTION(BlueprintCallable)
+		void SetObjectifLocation(FVector _Location) { ObjectifLocation = _Location; };
+
+	UFUNCTION(BlueprintCallable)
+		FVector GetTempObjectifLocation() { return TempObjectifLocation; };
+	UFUNCTION(BlueprintCallable)
+		void SetTempObjectifLocation(FVector _Location) { TempObjectifLocation = _Location; };
 
 	/* For BT Task  */
 	UFUNCTION(BlueprintCallable, Category = "Flocking Behaviour")
 		EPathFollowingRequestResult::Type FollowFlocking();
+
+	UFUNCTION(BlueprintCallable, Category = "Flocking Behaviour")
+		void SetPatrolPoint();
 
 	/*
 	* When doing the flocking we'll check if the AI
@@ -77,8 +93,8 @@ public:
 		ResultState ArriveAtDestination();
 
 
-	virtual TSubclassOf<ASoldierTeam> GetTeam() override;
-	virtual bool SetTeam(TSubclassOf<ASoldierTeam> _Team) override;
+	virtual ASoldierTeam* GetTeam() override;
+	virtual bool SetTeam(ASoldierTeam* _Team) override;
 
 
 	UFUNCTION()
@@ -114,6 +130,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "SquadLeader")
 		EPathFollowingRequestResult::Type MoveToSearchEnemy();
 
+	UPROPERTY(BlueprintReadWrite, Category = "Defense")
+	int HalfRadiusPatrol = 1600;
+
 	/*
 	* End the search of the enemy
 	* rest the state to the old one
@@ -138,7 +157,7 @@ public:
 
 	virtual void Respawn();
 
-	virtual void ResetBlackBoard() const;
+	virtual void ResetBlackBoard();
 
 	/*
 	* Set the state of an AI
@@ -195,23 +214,26 @@ private:
 	UFUNCTION()
 		void Run(ASoldierAI* _soldier, ASoldier* _soldier_enemy);
 
-	/*
-	* Calculate the point where the AI is 
-	* in a good range 
-	* if the enemy is too close.
-	* This method is called only when the AI is in the Attack Behavior
-	*/
-	UFUNCTION()
-		void TooClose();
+	///*
+	//* Calculate the point where the AI is 
+	//* in a good range 
+	//* if the enemy is too close.
+	//* This method is called only when the AI is in the Attack Behavior
+	//*/
+	//UFUNCTION()
+	//	void TooClose();
 
-	/*
-	* Calculate the point where the AI is
-	* in a good range
-	* if the enemy is too far.
-	* This method is called only when the AI is in the Attack Behavior
-	*/	
+	///*
+	//* Calculate the point where the AI is
+	//* in a good range
+	//* if the enemy is too far.
+	//* This method is called only when the AI is in the Attack Behavior
+	//*/	
+	//UFUNCTION()
+	//	void TooFar();
+
 	UFUNCTION()
-		void TooFar();
+		void UpdateShootingPosition();
 
 	/*
 	* Make all in place for the state Attacking
@@ -264,7 +286,21 @@ private:
 	UPROPERTY()
 	FVector m_destination;
 
+	UPROPERTY()
+		int tick_value = 0;
+
+	UPROPERTY()
+		int max_tick = 2;
+
 public:
+	UPROPERTY()
+	bool StopCurrentBehavior = false;
+	UPROPERTY()
+	bool HasStopCurrentBehavior = false;
+
+	UFUNCTION()
+		void CheckIfNeedToStopCurrentBehavior();
+
 	TArray<ASoldier*> GetSeenSoldier() { return SeenSoldier; }
 	/*
 	* The distance from where we can walk and shoot the enemy

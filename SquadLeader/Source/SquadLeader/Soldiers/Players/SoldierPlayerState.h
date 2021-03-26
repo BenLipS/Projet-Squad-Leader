@@ -33,10 +33,10 @@ private:
 //////////////// Teamable
 protected:
 	UPROPERTY(Replicated)
-		TSubclassOf<ASoldierTeam> Team = nullptr;  // only server can replicate it
+		ASoldierTeam* Team = nullptr;  // only server can replicate it
 public:
-	virtual TSubclassOf<ASoldierTeam> GetTeam() override;
-	virtual bool SetTeam(TSubclassOf<ASoldierTeam> _Team) override;
+	virtual ASoldierTeam* GetTeam() override;
+	virtual bool SetTeam(ASoldierTeam* _Team) override;
 
 //////////////// Ability System
 protected:

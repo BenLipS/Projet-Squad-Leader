@@ -19,7 +19,7 @@ void AAISquadManager::BeginPlay()
 	Super::BeginPlay();
 }
 
-void AAISquadManager::Init(TSubclassOf<ASoldierTeam> _Team, ASoldierPlayer* _Player)
+void AAISquadManager::Init(ASoldierTeam* _Team, ASoldierPlayer* _Player)
 {
 	Team = _Team;
 	Leader = _Player;
@@ -135,8 +135,10 @@ void AAISquadManager::UpdateMission(const MissionType _MissionType, const FVecto
 
 	for (AAISquadController* AISquad : AISquadList) {
 		AISquad->SetMission(Mission);
+		AISquad->SetObjectifLocation(_Location);
+		AISquad->StopCurrentBehavior = true;
 		if(Mission->Type == MissionType::Formation){
-			AISquad->get_blackboard()->SetValueAsBool("IsInFormation", true);
+			AISquad->FormationState();
 			AISquad->get_blackboard()->SetValueAsBool("HasOrder", false);
 		}
 		else if (Mission->Type != MissionType::None) {
@@ -164,7 +166,7 @@ void AAISquadManager::UpdateMission(const MissionType _MissionType, const FVecto
 }
 
 // temp include, need to be replace by more robust code
-void AAISquadManager::UpdateSquadTeam(TSubclassOf<ASoldierTeam> _NewTeam)
+void AAISquadManager::UpdateSquadTeam(ASoldierTeam* _NewTeam)
 {
 	Team = _NewTeam;
 	for (auto SquadIA : AISquadList) {

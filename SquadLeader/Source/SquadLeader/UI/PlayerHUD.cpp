@@ -17,7 +17,7 @@
 #include "../Soldiers/Players/SoldierPlayerController.h"
 #include "../Soldiers/Players/SoldierPlayerState.h"
 #include "../Soldiers/Players/SoldierPlayer.h"
-
+/*
 APlayerHUD::APlayerHUD()
 {
 }
@@ -221,3 +221,4 @@ void APlayerHUD::OnOrderInputReleased()
 		WheelWidget->OnInputReleased();
 	}
 }
+*/

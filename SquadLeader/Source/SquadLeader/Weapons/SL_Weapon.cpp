@@ -7,7 +7,7 @@
 #include "../Soldiers/Soldier.h"
 #include "../Soldiers/Players/SoldierPlayer.h"
 #include "../Soldiers/Players/SoldierPlayerController.h"
-#include "../UI/PlayerHUD.h"
+#include "../UI/SL_HUD.h"
 
 FGameplayTag ASL_Weapon::FireModeAutomaticTag = FGameplayTag::RequestGameplayTag(FName("Weapon.FireMode.Automatic"));
 FGameplayTag ASL_Weapon::FireModeSemiAutoTag = FGameplayTag::RequestGameplayTag(FName("Weapon.FireMode.SemiAuto"));
@@ -180,7 +180,7 @@ void ASL_Weapon::SetCurrentAmmo(const int32 _NewAmmo)
 	{
 		if (ASoldierPlayerController* PC = SP->GetController<ASoldierPlayerController>(); PC)
 		{
-			if (APlayerHUD* HUD = PC->GetHUD<APlayerHUD>(); HUD)
+			if (ASL_HUD* HUD = PC->GetHUD<ASL_HUD>(); HUD)
 				HUD->OnAmmoChanged(CurrentAmmo);
 		}
 	}
@@ -200,7 +200,7 @@ void ASL_Weapon::SetMaxAmmo(const int32 _NewMaxAmmo)
 	{
 		if (ASoldierPlayerController* PC = SP->GetController<ASoldierPlayerController>(); PC)
 		{
-			if (APlayerHUD* HUD = PC->GetHUD<APlayerHUD>(); HUD)
+			if (ASL_HUD* HUD = PC->GetHUD<ASL_HUD>(); HUD)
 				HUD->OnMaxAmmoChanged(MaxAmmo);
 		}
 	}
