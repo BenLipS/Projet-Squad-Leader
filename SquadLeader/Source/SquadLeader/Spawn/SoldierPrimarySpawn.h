@@ -38,13 +38,14 @@ protected:
 protected: // Owner part
 	// Server call
 	UFUNCTION(Reliable, Server, WithValidation)
-		void ServerChangeTeamOwner(TSubclassOf<ASoldierTeam> _teamOwner);
+		void ServerChangeTeamOwner(ASoldierTeam* _teamOwner);
 	UFUNCTION()
 		void OnRep_ChangeTeamOwner();
-	TSubclassOf<ASoldierTeam> previousTeamOwner = nullptr;// buffer to know the last owner
+	ASoldierTeam* previousTeamOwner = nullptr;// buffer to know the last owner
+
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "SpawnCondition")
-		TSubclassOf<ASoldierTeam> teamOwner = nullptr;
+		ASoldierTeam* teamOwner = nullptr;
 	UFUNCTION()
 		void UpdateTeamOwner();
 };

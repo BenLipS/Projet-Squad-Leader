@@ -67,7 +67,7 @@ FVector ASoldierAI::lookingAtPosition()
 }
 
 
-TSubclassOf<ASoldierTeam> ASoldierAI::GetTeam()
+ASoldierTeam* ASoldierAI::GetTeam()
 {
 	if (auto AIController = Cast<AAIGeneralController>(GetController()); AIController) {
 		return AIController->GetTeam();
@@ -75,7 +75,7 @@ TSubclassOf<ASoldierTeam> ASoldierAI::GetTeam()
 	return nullptr; // else return default
 }
 
-bool ASoldierAI::SetTeam(TSubclassOf<ASoldierTeam> _Team)
+bool ASoldierAI::SetTeam(ASoldierTeam* _Team)
 {
 	if (auto AIController = Cast<AAIGeneralController>(GetController()); AIController) {
 		return AIController->SetTeam(_Team);
