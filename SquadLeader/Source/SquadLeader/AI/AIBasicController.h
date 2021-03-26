@@ -14,7 +14,7 @@ UCLASS()
 class SQUADLEADER_API AAIBasicController : public AAIGeneralController
 {
 	GENERATED_BODY()
-
+public:
 	AAIBasicController();
 
 protected:

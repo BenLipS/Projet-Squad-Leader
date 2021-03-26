@@ -166,8 +166,8 @@ public:
 protected:
 	/*Set-up the BehaviorTree at the construction*/
 	virtual void setup_BehaviorTree();
-private:
 
+protected:
 	/*
 	* The next two method are part of the 
 	* SENS-THINK-ACT
@@ -279,7 +279,7 @@ protected:
 	UPROPERTY()
 		int m_old_state;
 
-private:
+protected:
 	class UAISenseConfig_Sight* sight_config;
 
 	UPROPERTY()
