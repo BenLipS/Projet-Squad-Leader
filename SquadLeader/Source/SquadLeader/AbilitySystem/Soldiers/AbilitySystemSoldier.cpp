@@ -23,19 +23,25 @@ bool UAbilitySystemSoldier::BatchRPCTryActivateAbility(FGameplayAbilitySpecHandl
 	return AbilityActivated;
 }
 
-FGameplayAbilitySpecHandle UAbilitySystemSoldier::FindAbilitySpecHandleForClass(TSubclassOf<UGameplayAbility> AbilityClass, UObject* OptionalSourceObject)
+FGameplayAbilitySpecHandle UAbilitySystemSoldier::FindAbilitySpecHandleForClass(TSubclassOf<UGameplayAbility> _AbilityClass, UObject* _OptionalSourceObject)
 {
 	ABILITYLIST_SCOPE_LOCK();
 	for (FGameplayAbilitySpec& Spec : ActivatableAbilities.Items)
 	{
 		TSubclassOf<UGameplayAbility> SpecAbilityClass = Spec.Ability->GetClass();
-		if (SpecAbilityClass == AbilityClass)
+		if (SpecAbilityClass == _AbilityClass)
 		{
-			if (!OptionalSourceObject || (OptionalSourceObject && Spec.SourceObject == OptionalSourceObject))
+			if (!_OptionalSourceObject || (_OptionalSourceObject && Spec.SourceObject == _OptionalSourceObject))
 			{
 				return Spec.Handle;
 			}
 		}
 	}
 	return FGameplayAbilitySpecHandle();
+}
+
+UGameplayAbilitySoldier* UAbilitySystemSoldier::GetPrimaryAbilityInstanceFromHandle(FGameplayAbilitySpecHandle _Handle)
+{
+	FGameplayAbilitySpec* AbilitySpec = FindAbilitySpecFromHandle(_Handle);
+	return AbilitySpec ? Cast<UGameplayAbilitySoldier>(AbilitySpec->GetPrimaryInstance()) : nullptr;
 }

@@ -3,7 +3,6 @@
 #include "../AbilitySystemSoldier.h"
 #include "GA_FireWeaponInstant.h"
 #include "Abilities/Tasks/AbilityTask_WaitDelay.h"
-#include "SquadLeader/SL_BlueprintFunctionLibrary.h" // TODO Should we develop an utility librairy or do these functions in ASC ?
 
 UGA_FireWeapon::UGA_FireWeapon()
 {
@@ -37,7 +36,7 @@ void UGA_FireWeapon::ActivateAbility(const FGameplayAbilitySpecHandle Handle, co
 	}
 
 	InstantAbilityHandle = ASC->FindAbilitySpecHandleForClass(GA_FireWeaponInstantClass, SourceWeapon);
-	GA_FireWeaponInstantInstance = Cast<UGA_FireWeaponInstant>(USL_BlueprintFunctionLibrary::GetPrimaryAbilityInstanceFromHandle(ASC, InstantAbilityHandle));
+	GA_FireWeaponInstantInstance = Cast<UGA_FireWeaponInstant>(ASC->GetPrimaryAbilityInstanceFromHandle(InstantAbilityHandle));
 
 	if (!GA_FireWeaponInstantInstance)
 	{

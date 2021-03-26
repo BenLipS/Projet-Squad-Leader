@@ -23,9 +23,6 @@ public:
 	* GameplayAbility
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Ability")
-	static UGameplayAbilitySoldier* GetPrimaryAbilityInstanceFromHandle(UAbilitySystemComponent* AbilitySystemComponent, FGameplayAbilitySpecHandle Handle);
-
-	UFUNCTION(BlueprintCallable, Category = "Ability")
 	static UGameplayAbilitySoldier* GetPrimaryAbilityInstanceFromClass(UAbilitySystemComponent* AbilitySystemComponent, TSubclassOf<UGameplayAbility> InAbilityClass);
 
 	UFUNCTION(BlueprintCallable, Category = "Ability")

@@ -28,20 +28,6 @@ FString USL_BlueprintFunctionLibrary::GetPlayerEditorWindowRole(UWorld* World)
 	return Prefix;
 }
 
-UGameplayAbilitySoldier* USL_BlueprintFunctionLibrary::GetPrimaryAbilityInstanceFromHandle(UAbilitySystemComponent* AbilitySystemComponent, FGameplayAbilitySpecHandle Handle)
-{
-	if (AbilitySystemComponent)
-	{
-		FGameplayAbilitySpec* AbilitySpec = AbilitySystemComponent->FindAbilitySpecFromHandle(Handle);
-		if (AbilitySpec)
-		{
-			return Cast<UGameplayAbilitySoldier>(AbilitySpec->GetPrimaryInstance());
-		}
-	}
-
-	return nullptr;
-}
-
 UGameplayAbilitySoldier* USL_BlueprintFunctionLibrary::GetPrimaryAbilityInstanceFromClass(UAbilitySystemComponent* AbilitySystemComponent, TSubclassOf<UGameplayAbility> InAbilityClass)
 {
 	if (AbilitySystemComponent)
