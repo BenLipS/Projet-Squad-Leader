@@ -1,5 +1,5 @@
 #include "GameplayAbilitySoldier.h"
-#include "AbilitySystemComponent.h"
+#include "AbilitySystemSoldier.h"
 
 UGameplayAbilitySoldier::UGameplayAbilitySoldier()
 {
@@ -9,6 +9,17 @@ UGameplayAbilitySoldier::UGameplayAbilitySoldier()
 	// Default tags that block this ability from activating
 	ActivationBlockedTags.AddTag(FGameplayTag::RequestGameplayTag(FName("State.Dead")));
 	ActivationBlockedTags.AddTag(FGameplayTag::RequestGameplayTag(FName("State.Debuff.Stun")));
+}
+
+bool UGameplayAbilitySoldier::BatchRPCTryActivateAbility(FGameplayAbilitySpecHandle _InAbilityHandle, const bool _EndAbilityImmediately)
+{
+	UAbilitySystemSoldier* ASC = Cast<UAbilitySystemSoldier>(GetAbilitySystemComponentFromActorInfo());
+	return ASC && ASC->BatchRPCTryActivateAbility(_InAbilityHandle, _EndAbilityImmediately);
+}
+void UGameplayAbilitySoldier::ExternalEndAbility()
+{
+	check(CurrentActorInfo);
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }
 
 void UGameplayAbilitySoldier::OnAvatarSet(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec)

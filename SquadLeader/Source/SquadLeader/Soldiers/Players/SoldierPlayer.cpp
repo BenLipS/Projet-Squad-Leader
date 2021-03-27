@@ -28,7 +28,6 @@ void ASoldierPlayer::PossessedBy(AController* _newController)
 {
 	Super::PossessedBy(_newController);
 	SetAbilitySystemComponent();
-	InitWeapons();
 
 	/*Init Squad Manager for this Player*/
 
@@ -50,7 +49,6 @@ void ASoldierPlayer::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();
 	SetAbilitySystemComponent();
-	InitWeapons();
 
 	//-----HUD-----
 	if (ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(GetController()); PC)

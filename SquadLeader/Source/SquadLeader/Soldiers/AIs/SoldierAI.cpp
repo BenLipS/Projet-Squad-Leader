@@ -58,14 +58,12 @@ void ASoldierAI::BeginPlay()
 	InitializeAttributes();
 	InitializeAbilities();
 	AddStartupEffects();
-	InitWeapons();
 }
 
-FVector ASoldierAI::lookingAtPosition()
+FVector ASoldierAI::GetLookingAtPosition()
 {
 	return LookingAtPosition;
 }
-
 
 ASoldierTeam* ASoldierAI::GetTeam()
 {
