@@ -40,7 +40,7 @@ void AAIBasicManager::Init(ASoldierTeam* _Team)
 	
 	// calculate information for placement
 	TArray<ASoldierSpawn*> spawnList = Team->GetUsableSpawnPoints();
-	int NbAIToSpawn = Team.GetDefaultObject()->NbAIBasicAssault + Team.GetDefaultObject()->NbAIBasicHeavy;
+	int NbAIToSpawn = Team->NbAIBasicAssault + Team->NbAIBasicHeavy;
 	int maxNumberBySpawn = ceil((NbAIToSpawn+0.0) / spawnList.Num());
 		
 	for (int spawnLoop = 0; spawnLoop < NbAIToSpawn; spawnLoop++) {
@@ -50,9 +50,9 @@ void AAIBasicManager::Init(ASoldierTeam* _Team)
 		LocationAI.SetLocation(CalculOffSetForInitSpawn(spawnpoint, maxNumberBySpawn, spawnLoop));
 		ASoldierAI* BasicAI = GetWorld()->SpawnActorDeferred<ASoldierAI>(Team->GetClassBasicAI(), LocationAI, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 		if(spawnLoop < Team->NbAIBasicAssault)
-			BasicAI = GetWorld()->SpawnActorDeferred<ASoldierAI>(Team.GetDefaultObject()->GetClassBasicAIAssault(), LocationAI, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+			BasicAI = GetWorld()->SpawnActorDeferred<ASoldierAI>(Team->GetClassBasicAIAssault(), LocationAI, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 		else
-			BasicAI = GetWorld()->SpawnActorDeferred<ASoldierAI>(Team.GetDefaultObject()->GetClassBasicAIHeavy(), LocationAI, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+			BasicAI = GetWorld()->SpawnActorDeferred<ASoldierAI>(Team->GetClassBasicAIHeavy(), LocationAI, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 		if (BasicAI) {
 			BasicAI->SpawnDefaultController();
 			BasicAI->SetTeam(Team);
