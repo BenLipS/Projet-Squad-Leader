@@ -92,6 +92,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Abilities")
 	void CancelAbilityRun();
 
+	// LaunchGrenade
+	UFUNCTION(BlueprintCallable, Category = "Abilities")
+		bool ActivateAbilityLaunchGrenade();
+
 	UFUNCTION(BlueprintCallable, Category = "Shoot")
 	void SetLookingAtPosition(const FVector& _LookingAtPosition);
 

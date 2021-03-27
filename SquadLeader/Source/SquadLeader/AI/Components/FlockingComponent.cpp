@@ -53,26 +53,28 @@ void UFlockingComponent::UpdateNeighbourhood()
 void UFlockingComponent::UpdateCohesionVector()
 {
 	FVector SoldierLocation = Cast<ASoldier>(Cast<AAIGeneralController>(GetOwner())->GetPawn())->GetLocation();
+	FVector CohesionComponent = FVector::ZeroVector;
 	for (AAIGeneralController* Boid : SeenBoids)
 	{
 		if (Cast<AAIGeneralController>(GetOwner())->GetObjectifLocation() == Boid->GetObjectifLocation()) {
 			/* Cohesion throught pathfinding and not absolute*/
-			UNavigationSystemV1* navSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
-			UNavigationPath* path = navSys->FindPathToLocationSynchronously(GetWorld(), SoldierLocation, Boid->GetPawn()->GetActorLocation(), NULL);
-
-			FVector CohesionLocalDir;
-			if (path->PathPoints.Num() > 2)
-				CohesionLocalDir = path->PathPoints[1];
-			else
-				CohesionLocalDir = Boid->GetPawn()->GetActorLocation();
-
-			//DrawDebugPoint(GetWorld(), CohesionLocalDir, 10, FColor::Red);
-
-			CohesionVector += CohesionLocalDir.GetSafeNormal(DefaultNormalizeVectorTolerance) * Boid->GetPawn()->GetActorLocation().Size() - SoldierLocation;
+			CohesionComponent += Boid->GetPawn()->GetActorLocation() - SoldierLocation;
 		}
 	}
 
-	CohesionVector = (CohesionVector / SeenBoids.Num()) / 100;
+	UNavigationSystemV1* navSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
+	UNavigationPath* path = navSys->FindPathToLocationSynchronously(GetWorld(), SoldierLocation, SoldierLocation + CohesionComponent, NULL);
+
+	FVector CohesionLocalDir;
+	if (path->PathPoints.Num() > 2) {
+		CohesionLocalDir = path->PathPoints[1] - SoldierLocation;
+		//DrawDebugPoint(GetWorld(), CohesionLocalDir, 32, FColor::Blue);
+		//DrawDebugPoint(GetWorld(), SoldierLocation, 32, FColor::Red);
+	}
+	else
+		CohesionLocalDir = CohesionComponent;
+
+	CohesionVector = (CohesionLocalDir.GetSafeNormal(DefaultNormalizeVectorTolerance) * CohesionComponent.Size() / SeenBoids.Num()) / 100;
 }
 
 void UFlockingComponent::UpdateAlignementVector()
@@ -235,9 +237,9 @@ void UFlockingComponent::UpdateFlockingPosition(float DeltaSeconds)
 
 	UpdateNeighbourhood();
 
-	UpdateAlignementVector();
-
 	if (SeenBoids.Num() > 0) { //because this involve /0
+		UpdateAlignementVector();
+
 		UpdateCohesionVector();
 
 		UpdateSeparationVector();

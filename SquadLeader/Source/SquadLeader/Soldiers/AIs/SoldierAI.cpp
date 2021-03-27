@@ -114,6 +114,11 @@ void ASoldierAI::CancelAbilityRun()
 	CancelAbility(ASoldier::SkillRunTag);
 }
 
+bool ASoldierAI::ActivateAbilityLaunchGrenade()
+{
+	return ActivateAbility(ASoldier::SkillGrenadeTag);
+}
+
 FVector ASoldierAI::GetRespawnPoint()
 {
 	if (auto AIController = Cast<AAIGeneralController>(GetController()); AIController) {

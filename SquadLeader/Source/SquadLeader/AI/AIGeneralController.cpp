@@ -161,6 +161,19 @@ void AAIGeneralController::setup_BehaviorTree() {
 		m_behaviorTree = obj.Object;
 }
 
+ResultState AAIGeneralController::LaunchGrenade()
+{
+	ResultState result = ResultState::Failed;
+	if (ASoldierAI* soldier = Cast<ASoldierAI>(GetPawn()); soldier && GetFocusActor() && m_state == AIBasicState::Attacking)
+	{
+		FVector LaunchGoal = GetFocusActor()->GetTargetLocation();
+
+		if(soldier->ActivateAbilityLaunchGrenade())
+			result = ResultState::Success;
+	}
+	return result;
+}
+
 UBlackboardComponent* AAIGeneralController::get_blackboard() const
 {
 	return blackboard;
