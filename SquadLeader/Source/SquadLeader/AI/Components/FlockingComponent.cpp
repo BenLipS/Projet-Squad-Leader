@@ -204,7 +204,7 @@ void UFlockingComponent::UpdateWallAvoidanceVector()
 			if(Separation.Size()>0)WallAvoidanceVector += Separation.GetSafeNormal(DefaultNormalizeVectorTolerance) / FMath::Abs(Separation.Size() - BoidPhysicalRadius);
 			NbOfHit++;
 		}
-		DrawDebugLine(GetWorld(), SoldierLocation, SoldierLocation + Offset, FColor::Purple);
+		//DrawDebugLine(GetWorld(), SoldierLocation, SoldierLocation + Offset, FColor::Purple);
 	}
 
 	const FVector WallAvoidanceForceComponent = WallAvoidanceVector * 50;
