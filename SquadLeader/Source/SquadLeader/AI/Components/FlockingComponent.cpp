@@ -192,7 +192,7 @@ void UFlockingComponent::UpdateWallAvoidanceVector()
 	FVector SoldierLocation = Cast<ASoldier>(Cast<AAIGeneralController>(GetOwner())->GetPawn())->GetLocation();
 	UNavigationSystemV1* navSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
 
-	FVector Offset = { RadiusForWallAvoidance, 0.f, 0.f };
+	FVector Offset = Cast<ASoldier>(Cast<AAIGeneralController>(GetOwner())->GetPawn())->GetActorForwardVector().GetSafeNormal() * RadiusForWallAvoidance;//{ RadiusForWallAvoidance, 0.f, 0.f };
 	FVector HitLocation{};
 	float AnglePerRay = 360.f / NumberOfRayForWallAvoidance;
 	int NbOfHit = 0;
@@ -204,7 +204,7 @@ void UFlockingComponent::UpdateWallAvoidanceVector()
 			if(Separation.Size()>0)WallAvoidanceVector += Separation.GetSafeNormal(DefaultNormalizeVectorTolerance) / FMath::Abs(Separation.Size() - BoidPhysicalRadius);
 			NbOfHit++;
 		}
-		///DrawDebugLine(GetWorld(), SoldierLocation, SoldierLocation + Offset, FColor::Purple);
+		DrawDebugLine(GetWorld(), SoldierLocation, SoldierLocation + Offset, FColor::Purple);
 	}
 
 	const FVector WallAvoidanceForceComponent = WallAvoidanceVector * 50;
