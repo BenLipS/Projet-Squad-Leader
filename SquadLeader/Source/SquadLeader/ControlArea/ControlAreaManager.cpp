@@ -2,6 +2,7 @@
 
 
 #include "ControlAreaManager.h"
+#include "../GameState/SquadLeaderGameState.h"
 #include "../SquadLeaderGameModeBase.h"
 
 
@@ -10,6 +11,18 @@ AControlAreaManager::AControlAreaManager()
 	bReplicates = true;
 }
 
+
+void AControlAreaManager::PreInitialisation()
+{
+	if (auto GS = GetWorld()->GetGameState<ASquadLeaderGameState>(); GS) {
+		GS->SetControlAreaManager(this);
+	}
+}
+
+int AControlAreaManager::getpriority()
+{
+	return 1;
+}
 
 void AControlAreaManager::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
@@ -29,7 +42,7 @@ void AControlAreaManager::CleanControlAreaList()
 }
 
 
-TArray<AControlArea*> AControlAreaManager::GetAreaControlledByTeam(TSubclassOf<ASoldierTeam> _Team)
+TArray<AControlArea*> AControlAreaManager::GetAreaControlledByTeam(ASoldierTeam* _Team)
 {
 	TArray<AControlArea*> selection;
 	for (auto element : ControlAreaList) {
@@ -41,28 +54,30 @@ TArray<AControlArea*> AControlAreaManager::GetAreaControlledByTeam(TSubclassOf<A
 }
 
 
-TSubclassOf<ASoldierTeam> AControlAreaManager::GetTeamWithMostControl()  // to try with UI
+ASoldierTeam* AControlAreaManager::GetTeamWithMostControl()  // to try with UI
 {
-	if (auto gameMode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode()); gameMode) {  // only for the server
-		int nbControleAreaToObtain = ControlAreaList.Num() - (ControlAreaList.Num() / 2); /*TODO: use teams politic here*/
-		for (TSubclassOf<ASoldierTeam> team : gameMode->SoldierTeamCollection) {
-			if (GetAreaControlledByTeam(team).Num() >= nbControleAreaToObtain) {
-				return team;
+	if (GetLocalRole() == ROLE_Authority) {  // only for the server
+		if (auto GS = GetWorld()->GetGameState<ASquadLeaderGameState>(); GS) {
+			int nbControleAreaToObtain = ControlAreaList.Num() - (ControlAreaList.Num() / 2); /*TODO: use teams politic here*/
+			for (ASoldierTeam* team : GS->GetSoldierTeamCollection()) {
+				if (GetAreaControlledByTeam(team).Num() >= nbControleAreaToObtain) {
+					return team;
+				}
 			}
 		}
 	}
-	return TSubclassOf<ASoldierTeam>();
+	return nullptr;
 }
 
-TSubclassOf<ASoldierTeam> AControlAreaManager::GetTeamWithAllControl()
+ASoldierTeam* AControlAreaManager::GetTeamWithAllControl()
 {
 	if (ControlAreaList.Num() > 0) {
 		for (auto element : ControlAreaList) {
 			if (element->isTakenBy != ControlAreaList[0]->isTakenBy) {
-				return TSubclassOf<ASoldierTeam>();
+				return nullptr;
 			}
 		}
 		return ControlAreaList[0]->isTakenBy;
 	}
-	return TSubclassOf<ASoldierTeam>();
+	return nullptr;
 }

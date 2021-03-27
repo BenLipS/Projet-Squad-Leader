@@ -20,7 +20,7 @@ public:
 	AAIBasicManager();
 
 	UFUNCTION()
-	void Init(TSubclassOf<ASoldierTeam> _Team);
+	void Init(ASoldierTeam* _Team);
 
 	virtual void Tick(float DeltaSeconds) override;
 
@@ -31,7 +31,7 @@ public:
 	TArray<AAIBasicController*> AIBasicList;
 
 	UPROPERTY()
-	TSubclassOf<ASoldierTeam> Team;
+	ASoldierTeam* Team;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	FVector InitSpawnDiameter = FVector{ 500.f, 0.f, 0.f };

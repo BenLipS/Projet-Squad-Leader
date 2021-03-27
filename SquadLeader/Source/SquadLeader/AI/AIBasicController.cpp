@@ -14,7 +14,7 @@
 #include "Math/Vector.h"
 #include "GenericPlatform/GenericPlatformMath.h"
 #include "DrawDebugHelpers.h"
-#include "../SquadLeaderGameInstance.h"
+#include "../SquadLeaderGameModeBase.h"
 #include "../Spawn/SoldierSpawn.h"
 #include "Mission.h"
 
@@ -27,7 +27,7 @@ AAIBasicController::AAIBasicController()
 
 void AAIBasicController::BeginPlay() {
 	Super::BeginPlay();
-	Cast<USquadLeaderGameInstance>(GetGameInstance())->AddAIBasicToManager(this);
+	Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode())->AddAIBasicToManager(this);
 }
 
 void AAIBasicController::UpdateMission()
@@ -53,7 +53,7 @@ FVector AAIBasicController::GetRespawnPoint()  // TODO : Change this function to
 {
 	if (ASoldier* soldier = Cast<ASoldier>(GetPawn()); soldier) {
 		if (soldier->GetTeam()) {
-			auto AvailableSpawnPoints = soldier->GetTeam().GetDefaultObject()->GetUsableSpawnPoints();
+			auto AvailableSpawnPoints = soldier->GetTeam()->GetUsableSpawnPoints();
 			if (AvailableSpawnPoints.Num() > 0) {
 
 				FVector OptimalPosition = AvailableSpawnPoints[0]->GetActorLocation();

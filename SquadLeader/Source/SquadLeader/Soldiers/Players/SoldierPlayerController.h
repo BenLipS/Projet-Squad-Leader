@@ -30,8 +30,8 @@ public:
 
 //////////////// Teamable
 public:
-	virtual TSubclassOf<ASoldierTeam> GetTeam() override;
-	virtual bool SetTeam(TSubclassOf<ASoldierTeam> _Team) override;
+	virtual ASoldierTeam* GetTeam() override;
+	virtual bool SetTeam(ASoldierTeam* _Team) override;
 
 // TODO: are the cameras necessary in controllers ?
 //////////////// Cameras

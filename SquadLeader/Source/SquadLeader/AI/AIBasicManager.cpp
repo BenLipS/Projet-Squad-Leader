@@ -4,7 +4,7 @@
 #include "AIBasicManager.h"
 #include "../SquadLeaderGameInstance.h"
 #include "../ControlArea/ControlArea.h"
-#include "../SquadLeaderGameModeBase.h"
+#include "../GameState/SquadLeaderGameState.h"
 #include "../AI/Mission.h"
 
 AAIBasicManager::AAIBasicManager() {
@@ -34,12 +34,12 @@ FVector AAIBasicManager::CalculOffSetForInitSpawn(ASoldierSpawn* spawnpoint, int
 	return LocSpawn + Offset;
 }
 
-void AAIBasicManager::Init(TSubclassOf<ASoldierTeam> _Team)
+void AAIBasicManager::Init(ASoldierTeam* _Team)
 {
 	Team = _Team;
 	
 	// calculate information for placement
-	TArray<ASoldierSpawn*> spawnList = Team.GetDefaultObject()->GetUsableSpawnPoints();
+	TArray<ASoldierSpawn*> spawnList = Team->GetUsableSpawnPoints();
 	int NbAIToSpawn = Team.GetDefaultObject()->NbAIBasicAssault + Team.GetDefaultObject()->NbAIBasicHeavy;
 	int maxNumberBySpawn = ceil((NbAIToSpawn+0.0) / spawnList.Num());
 		
@@ -48,13 +48,11 @@ void AAIBasicManager::Init(TSubclassOf<ASoldierTeam> _Team)
 
 		FTransform LocationAI{};
 		LocationAI.SetLocation(CalculOffSetForInitSpawn(spawnpoint, maxNumberBySpawn, spawnLoop));
-		ASoldierAI* BasicAI;
-
-		if(spawnLoop < Team.GetDefaultObject()->NbAIBasicAssault)
+		ASoldierAI* BasicAI = GetWorld()->SpawnActorDeferred<ASoldierAI>(Team->GetClassBasicAI(), LocationAI, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+		if(spawnLoop < Team->NbAIBasicAssault)
 			BasicAI = GetWorld()->SpawnActorDeferred<ASoldierAI>(Team.GetDefaultObject()->GetClassBasicAIAssault(), LocationAI, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 		else
 			BasicAI = GetWorld()->SpawnActorDeferred<ASoldierAI>(Team.GetDefaultObject()->GetClassBasicAIHeavy(), LocationAI, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
-
 		if (BasicAI) {
 			BasicAI->SpawnDefaultController();
 			BasicAI->SetTeam(Team);
@@ -75,8 +73,8 @@ void AAIBasicManager::Tick(float DeltaSeconds) {
 }
 
 void AAIBasicManager::InitValue() {
-	ASquadLeaderGameModeBase* _Gamemode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
-	m_controlAreaManager = Cast<AControlAreaManager>(_Gamemode->ControlAreaManager->GetDefaultObject());
+	auto GS = GetWorld()->GetGameState<ASquadLeaderGameState>();
+	m_controlAreaManager = GS->GetControlAreaManager();
 	if (m_controlAreaManager) {
 		nbr_controlArea = m_controlAreaManager->GetControlArea().Num();
 		nbr_unite = AIBasicList.Num();

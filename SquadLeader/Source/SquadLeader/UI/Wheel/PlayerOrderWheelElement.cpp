@@ -12,7 +12,7 @@ void UPlayerOrderWheelElement::OnitemSelected()
 	{
 		if (ASoldierPlayer* Player = PC->GetPawn<ASoldierPlayer>(); Player)
 		{
-			PC->OnOrderGiven(Order, Player->lookingAtPosition());
+			PC->OnOrderGiven(Order, Player->GetLookingAtPosition());
 		}
 	}
 }

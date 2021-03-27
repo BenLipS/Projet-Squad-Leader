@@ -14,7 +14,7 @@ UCLASS()
 class SQUADLEADER_API APlayerHUD : public AHUD
 {
 	GENERATED_BODY()
-
+/*
 //-----VALUES-----
 
 //-----WIDGETS-----
@@ -52,7 +52,7 @@ protected:
 
 public:
 	/*Initialize all data from Owner controller PlayerState,
-	should be called when changing player controller to relink datas*/
+	should be called when changing player controller to relink datas
 	void SetPlayerStateLink();
 
 	void SetAIStateLink();
@@ -100,5 +100,5 @@ public:
 	void OnOrderInputPressed();
 
 	UFUNCTION()
-	void OnOrderInputReleased();
+	void OnOrderInputReleased();*/
 };

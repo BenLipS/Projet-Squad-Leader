@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Info.h"
+#include "../Interface/PreInitable.h"
 #include "ControlArea.h"
 #include "../Soldiers/SoldierTeam.h"
 #include "ControlAreaManager.generated.h"
@@ -12,13 +13,21 @@
  * 
  */
 UCLASS(Blueprintable)
-class SQUADLEADER_API AControlAreaManager : public AInfo
+class SQUADLEADER_API AControlAreaManager : public AInfo, public IPreInitable
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this actor's properties
 	AControlAreaManager();
+protected:
+	UPROPERTY(VisibleAnywhere, Replicated, Category = "ControlList")
+		TArray <AControlArea*> ControlAreaList;  // private because it must not be edited elsewhere
+
+public:
+	// Pre init launch by the gameMode before the BeginPlay() function
+	virtual void PreInitialisation() override;
+	virtual int getpriority() override;
 	
 public:
 	// for replication purpose
@@ -32,15 +41,11 @@ public:
 	void CleanControlAreaList();
 
 	UFUNCTION()
-	TArray <AControlArea*> GetAreaControlledByTeam(TSubclassOf<ASoldierTeam> _Team);
+	TArray <AControlArea*> GetAreaControlledByTeam(ASoldierTeam* _Team);
 
 	UFUNCTION()
-	TSubclassOf<ASoldierTeam> GetTeamWithMostControl();
+	ASoldierTeam* GetTeamWithMostControl();
 	
 	UFUNCTION()
-	TSubclassOf<ASoldierTeam> GetTeamWithAllControl();
-
-protected:
-	UPROPERTY(VisibleAnywhere, Replicated, Category = "ControlList")
-	TArray <AControlArea*> ControlAreaList;  // private because it must not be edited elsewhere
+	ASoldierTeam* GetTeamWithAllControl();
 };

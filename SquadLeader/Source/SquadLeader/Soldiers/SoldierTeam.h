@@ -7,6 +7,7 @@ class ASoldierSpawn;
 
 #include "CoreMinimal.h"
 #include "GameFramework/Info.h"
+#include "../Interface/PreInitable.h"
 //#include "Soldier.h"
 //#include "../ControlArea/ControlArea.h"
 #include "SoldierTeam.generated.h"
@@ -16,12 +17,16 @@ class ASoldierSpawn;
  * 
  */
 UCLASS(Blueprintable)
-class SQUADLEADER_API ASoldierTeam : public AInfo
+class SQUADLEADER_API ASoldierTeam : public AInfo, public IPreInitable
 {
 	GENERATED_BODY()
 
 public:
 	ASoldierTeam();
+
+	// Pre init launch by the gameMode before the BeginPlay() function
+	virtual void PreInitialisation() override;
+	virtual int getpriority() override;
 
 protected:
 	virtual void BeginPlay() override;
@@ -77,7 +82,7 @@ public:
 
 
 protected: // Spawn points
-	UPROPERTY(EditAnywhere, Replicated, Category = "SpawnPoints")
+	UPROPERTY(VisibleAnywhere, Replicated, Category = "SpawnPoints")
 		TArray<ASoldierSpawn*> mainSpawnPoints;
 public:
 	UFUNCTION(BlueprintCallable, Category = "SpawnPoints")
@@ -91,7 +96,7 @@ public:
 
 
 protected:  // Tickets
-	UPROPERTY(EditDefaultsOnly, Replicated, Category = "Tickets")
+	UPROPERTY(EditAnywhere, Replicated, Category = "Tickets")
 		int Tickets = 5;  // default value, must be changed in blueprint
 public:
 	UFUNCTION(BlueprintCallable, Category = "Tickets")
