@@ -149,7 +149,6 @@ void UGA_FireWeaponInstant::ConfigLineTrace()
 	LineTrace->TraceProfile = FCollisionProfileName{ SourceWeapon->CollisionProfileName };
 	LineTrace->bIgnoreBlockingHits = false;
 	LineTrace->bUsePersistentHitResults = false;
-	LineTrace->bTraceAffectsAimPitch = true;
 	LineTrace->bUseAimingSpreadMod = false;
 	LineTrace->MaxRange = SourceWeapon->GetMaxRange();
 	LineTrace->BaseSpread = SourceWeapon->GetBaseSpread();

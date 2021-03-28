@@ -268,7 +268,7 @@ public:
 	virtual void Turn(const float _Val);
 
 	UFUNCTION(BlueprintCallable, Category = "Movement")
-	virtual FVector GetLookingAtPosition();
+	virtual FVector GetLookingAtPosition(const float _MaxRange = 99999.f) const;
 
 	// Run
 	UFUNCTION(BlueprintCallable, Category = "Movement")

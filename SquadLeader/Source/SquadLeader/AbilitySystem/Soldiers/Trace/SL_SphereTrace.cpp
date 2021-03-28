@@ -45,8 +45,6 @@ void ASL_SphereTrace::Configure(
 	ShouldProduceTargetDataOnServer = bInShouldProduceTargetDataOnServer;
 	bUsePersistentHitResults = bInUsePersistentHitResults;
 	bDebug = bInDebug;
-	bTraceAffectsAimPitch = bInTraceAffectsAimPitch;
-	bTraceFromPlayerViewPoint = bInTraceFromPlayerViewPoint;
 	bUseAimingSpreadMod = bInUseAimingSpreadMod;
 	MaxRange = InMaxRange;
 	TraceSphereRadius = InTraceSphereRadius;
@@ -105,7 +103,7 @@ void ASL_SphereTrace::ShowDebugTrace(TArray<FHitResult>& HitResults, EDrawDebugT
 	{
 		FVector ViewStart = StartLocation.GetTargetingTransform().GetLocation();
 		FRotator ViewRot;
-		if (MasterPC && bTraceFromPlayerViewPoint)
+		if (MasterPC)
 		{
 			MasterPC->GetPlayerViewPoint(ViewStart, ViewRot);
 		}

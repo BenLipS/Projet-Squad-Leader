@@ -24,6 +24,10 @@ class SQUADLEADER_API ASL_Trace : public AGameplayAbilityTargetActor
 public:
     ASL_Trace();
 
+	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	virtual void Tick(float DeltaSeconds) override;
+
 	// Base targeting spread (degrees)
 	UPROPERTY(BlueprintReadWrite, Category = "Accuracy")
 	float BaseSpread;
@@ -58,10 +62,6 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, config, meta = (ExposeOnSpawn = true), Category = "Trace")
 	FCollisionProfileName TraceProfile;
 
-	// Does the trace affect the aiming pitch
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (ExposeOnSpawn = true), Category = "Trace")
-	bool bTraceAffectsAimPitch;
-
 	// Maximum hit results to return per trace. 0 just returns the trace end point.
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (ExposeOnSpawn = true), Category = "Trace")
 	int32 MaxHitResultsPerTrace;
@@ -74,9 +74,6 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (ExposeOnSpawn = true), Category = "Trace")
 	bool bIgnoreBlockingHits;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (ExposeOnSpawn = true), Category = "Trace")
-	bool bTraceFromPlayerViewPoint;
-
 	// HitResults will persist until Confirmation/Cancellation or until a new HitResult takes its place
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (ExposeOnSpawn = true), Category = "Trace")
 	bool bUsePersistentHitResults;
@@ -86,15 +83,12 @@ public:
 
 	virtual float GetCurrentSpread() const;
 
-	// Expose to Blueprint
 	UFUNCTION(BlueprintCallable)
 	void SetStartLocation(const FGameplayAbilityTargetingLocationInfo& InStartLocation);
 
-	// Expose to Blueprint
 	UFUNCTION(BlueprintCallable)
 	virtual void SetShouldProduceTargetDataOnServer(bool bInShouldProduceTargetDataOnServer);
 
-	// Expose to Blueprint
 	UFUNCTION(BlueprintCallable)
 	void SetDestroyOnConfirmation(bool bInDestroyOnConfirmation = false);
 
@@ -103,12 +97,6 @@ public:
 	virtual void ConfirmTargetingAndContinue() override;
 
 	virtual void CancelTargeting() override;
-
-	virtual void BeginPlay() override;
-
-	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-
-	virtual void Tick(float DeltaSeconds) override;
 
 	// Traces as normal, but will manually filter all hit actors
 	virtual void LineTraceWithFilter(TArray<FHitResult>& OutHitResults, const UWorld* World, const FGameplayTargetDataFilterHandle FilterHandle, const FVector& Start, const FVector& End, FName ProfileName, const FCollisionQueryParams Params);
@@ -119,6 +107,8 @@ public:
 
 	virtual void StopTargeting();
 
+	FVector GenerateRandomFireTrajectory(const FVector& _Start, FVector&& _End) const;
+
 protected:
 	// Trace End point, useful for debug drawing
 	FVector CurrentTraceEnd;
@@ -127,7 +117,7 @@ protected:
 	TArray<FHitResult> PersistentHitResults;
 
 	virtual FGameplayAbilityTargetDataHandle MakeTargetData(const TArray<FHitResult>& HitResults) const;
-	virtual TArray<FHitResult> PerformTrace(AActor* InSourceActor);
+	virtual TArray<FHitResult> PerformTrace();
 
 	virtual void DoTrace(TArray<FHitResult>& HitResults, const UWorld* World, const FGameplayTargetDataFilterHandle FilterHandle, const FVector& Start, const FVector& End, FName ProfileName, const FCollisionQueryParams Params) PURE_VIRTUAL(ASL_Trace, return;);
 	virtual void ShowDebugTrace(TArray<FHitResult>& HitResults, EDrawDebugTrace::Type DrawDebugType, float Duration = 2.0f) PURE_VIRTUAL(ASL_Trace, return;);

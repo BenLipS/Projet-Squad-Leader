@@ -483,6 +483,31 @@ void ASoldier::Turn(const float _Val)
 	}
 }
 
+FVector ASoldier::GetLookingAtPosition(const float _MaxRange) const
+{
+	FCollisionQueryParams Params(SCENE_QUERY_STAT(AGSGATA_LineTrace), false);
+	Params.bReturnPhysicalMaterial = true;
+	Params.AddIgnoredActor(this);
+	Params.bIgnoreBlocks = false;
+
+	FVector ViewStart = GetActorLocation();
+	FRotator ViewRot = GetActorRotation();
+
+	if (APlayerController* PC = Cast<APlayerController>(GetController()); PC)
+		PC->GetPlayerViewPoint(ViewStart, ViewRot);
+
+	const FVector ViewDir = ViewRot.Vector();
+	FVector ViewEnd = ViewStart + (ViewDir * _MaxRange);
+
+	// Get first blocking hit
+	FHitResult HitResult;
+	GetWorld()->LineTraceSingleByChannel(HitResult, ViewStart, ViewEnd, ECC_Player, Params);
+
+	//::DrawDebugLine(GetWorld(), ViewStart, HitResult.bBlockingHit ? HitResult.Location : ViewEnd, FColor::Blue, false, 2.f);
+
+	return HitResult.bBlockingHit ? HitResult.Location : ViewEnd;
+}
+
 // TODO: For now, we directly change the move speed multiplier with a setter. This is should be changed 
 // through a GE. It should use the execalculation to consider all the buffs/debbufs
 bool ASoldier::StartRunning()
@@ -682,22 +707,6 @@ void ASoldier::ClientSyncCurrentWeapon_Implementation(ASL_Weapon* _InWeapon)
 bool ASoldier::ClientSyncCurrentWeapon_Validate(ASL_Weapon* _InWeapon)
 {
 	return true;
-}
-
-
-FVector ASoldier::GetLookingAtPosition()
-{
-	FHitResult OutHit;
-
-	FVector StartLocation = ThirdPersonCameraComponent->GetComponentTransform().GetLocation();
-	FVector ForwardVector = ThirdPersonCameraComponent->GetForwardVector();
-	FVector EndLocation = StartLocation + ForwardVector * 10000.f;
-
-	FCollisionQueryParams CollisionParams;
-	CollisionParams.AddIgnoredActor(this);
-
-	GetWorld()->LineTraceSingleByChannel(OutHit, StartLocation, EndLocation, ECollisionChannel::ECC_WorldStatic, CollisionParams);
-	return OutHit.bBlockingHit ? OutHit.Location : EndLocation;
 }
 
 int32 ASoldier::GetCharacterLevel() const
