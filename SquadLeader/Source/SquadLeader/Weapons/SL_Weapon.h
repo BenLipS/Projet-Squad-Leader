@@ -197,7 +197,6 @@ public:
 	bool bDebugTrace = true;
 
 //////////////// Traces
-	// TODO: Only have one generic trace that will be set from blueprint ?
 protected:
 	UPROPERTY()
 	ASL_LineTrace* LineTraceTargetActor;
