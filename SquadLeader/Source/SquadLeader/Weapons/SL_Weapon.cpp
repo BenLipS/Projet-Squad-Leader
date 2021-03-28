@@ -240,16 +240,6 @@ bool ASL_Weapon::HasInfiniteAmmo() const noexcept
 	return bInfiniteAmmo;
 }
 
-void ASL_Weapon::OnRep_Ammo(int32 _OldPrimaryClipAmmo)
-{
-	// TODO: Broadcast ?
-}
-
-void ASL_Weapon::OnRep_MaxAmmo(int32 _OldMaxPrimaryClipAmmo)
-{
-	// TODO: Broadcast ?
-}
-
 float ASL_Weapon::GetBaseSpread() const noexcept
 {
 	return BaseSpread;

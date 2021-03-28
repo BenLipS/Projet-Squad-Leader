@@ -108,10 +108,10 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Replicated, Category = "Stats|Ammo")
 	float TimeBetweenShots;
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Replicated/*Using = OnRep_Ammo*/, Category = "Stats|Ammo")
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Replicated, Category = "Stats|Ammo")
 	int32 CurrentAmmo;
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Replicated/*Using = OnRep_MaxAmmo*/, Category = "Stats|Ammo")
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Replicated, Category = "Stats|Ammo")
 	int32 MaxAmmo;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Stats|Ammo")
@@ -155,12 +155,6 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Stats|Ammo")
 	bool HasInfiniteAmmo() const noexcept;
-
-	UFUNCTION()
-	virtual void OnRep_Ammo(int32 _OldPrimaryClipAmmo);
-
-	UFUNCTION()
-	virtual void OnRep_MaxAmmo(int32 _OldMaxPrimaryClipAmmo);
 
 // Accuracy
 protected:
