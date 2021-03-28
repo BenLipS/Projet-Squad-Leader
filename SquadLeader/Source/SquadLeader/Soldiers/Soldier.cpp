@@ -206,9 +206,11 @@ void ASoldier::InitMovements()
 
 void ASoldier::ResetWeapons()
 {
-	// TODO complete here
-	//for (AWeapon* Weapon : Inventory)
-		//Weapon->Reset();
+	if (GetLocalRole() == ROLE_Authority || GetLocalRole() == ROLE_AutonomousProxy)
+	{
+		for (ASL_Weapon* Weapon : Inventory.Weapons)
+			Weapon->ResetWeapon();
+	}
 }
 
 void ASoldier::LockControls()
