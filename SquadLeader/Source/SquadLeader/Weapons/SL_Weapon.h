@@ -162,25 +162,35 @@ public:
 	UFUNCTION()
 	virtual void OnRep_MaxAmmo(int32 _OldMaxPrimaryClipAmmo);
 
-// Spread
+// Accuracy
 protected:
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Stats|Spread")
+	// Constant spread on fire. It defines the angle of the cone to randomly generate a fire
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Stats|Accuracy")
 	float BaseSpread;
 
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Stats|Spread")
+	// Multiplier of the final spread when aiming
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Stats|Accuracy")
+	float AimingSpreadMod;
+
+	// Increment this value to the final spread after a fire. This is accumulated for automatic weapon
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Stats|Accuracy")
 	float TargetingSpreadIncrement;
 
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Stats|Spread")
+	// Max increase of the spread.This works with TargetingSpreadIncrement
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Stats|Accuracy")
 	float TargetingSpreadMax;
 
 public:
-	UFUNCTION(BlueprintCallable, Category = "Stats|Spread")
+	UFUNCTION(BlueprintCallable, Category = "Stats|Accuracy")
 	float GetBaseSpread() const noexcept;
 
-	UFUNCTION(BlueprintCallable, Category = "Stats|Spread")
+	UFUNCTION(BlueprintCallable, Category = "Stats|Accuracy")
+	float GetAimingSpreadMod() const noexcept;
+
+	UFUNCTION(BlueprintCallable, Category = "Stats|Accuracy")
 	float GetTargetingSpreadIncrement() const noexcept;
 
-	UFUNCTION(BlueprintCallable, Category = "Stats|Spread")
+	UFUNCTION(BlueprintCallable, Category = "Stats|Accuracy")
 	float GetTargetingSpreadMax() const noexcept;
 
 // Collision

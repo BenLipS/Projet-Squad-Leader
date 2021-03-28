@@ -47,15 +47,6 @@ public:
 	// Current spread from continuous targeting
 	float CurrentTargetingSpread;
 
-	UPROPERTY(BlueprintReadWrite, Category = "Accuracy")
-	bool bUseAimingSpreadMod;
-
-	UPROPERTY(BlueprintReadWrite, Category = "Accuracy")
-	FGameplayTag AimingTag;
-
-	UPROPERTY(BlueprintReadWrite, Category = "Accuracy")
-	FGameplayTag AimingRemovalTag;
-
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (ExposeOnSpawn = true), Category = "Trace")
 	float MaxRange;
 
@@ -100,8 +91,6 @@ public:
 
 	// Traces as normal, but will manually filter all hit actors
 	virtual void LineTraceWithFilter(TArray<FHitResult>& OutHitResults, const UWorld* World, const FGameplayTargetDataFilterHandle FilterHandle, const FVector& Start, const FVector& End, FName ProfileName, const FCollisionQueryParams Params);
-
-	virtual void AimWithPlayerController(const AActor* InSourceActor, FCollisionQueryParams Params, const FVector& TraceStart, FVector& OutTraceEnd, bool bIgnorePitch = false);
 
 	virtual bool ClipCameraRayToAbilityRange(FVector CameraLocation, FVector CameraDirection, FVector AbilityCenter, float AbilityRange, FVector& ClippedPosition);
 

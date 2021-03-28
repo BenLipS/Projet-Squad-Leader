@@ -8,16 +8,15 @@
 #include "SquadLeader/Soldiers/Soldier.h"
 
 ASL_Trace::ASL_Trace():
-MaxHitResultsPerTrace{ 1 },
-NumberOfTraces{ 1 },
-bIgnoreBlockingHits{ false },
-MaxRange{ 999999.f },
-bUseAimingSpreadMod{ false },
 BaseSpread{ 0.f },
-AimingSpreadMod{ 0.f },
+AimingSpreadMod{ 1.f },
 TargetingSpreadIncrement{ 0.f },
 TargetingSpreadMax{ 0.f },
 CurrentTargetingSpread{ 0.f },
+MaxRange{ 999999.f },
+MaxHitResultsPerTrace{ 1 },
+NumberOfTraces{ 1 },
+bIgnoreBlockingHits{ false },
 bUsePersistentHitResults{ false }
 {
 	bDestroyOnConfirmation = false;
@@ -27,9 +26,8 @@ bUsePersistentHitResults{ false }
 
 void ASL_Trace::ResetSpread()
 {
-	bUseAimingSpreadMod = false;
 	BaseSpread = 0.0f;
-	AimingSpreadMod = 0.0f;
+	AimingSpreadMod = 1.0f;
 	TargetingSpreadIncrement = 0.0f;
 	TargetingSpreadMax = 0.0f;
 	CurrentTargetingSpread = 0.0f;
@@ -39,14 +37,10 @@ float ASL_Trace::GetCurrentSpread() const
 {
 	float FinalSpread = BaseSpread + CurrentTargetingSpread;
 
-	// TODO: Just have a test with hasmathcing tag which should be state.Aiming and bUseAimingSpreadMod. If true then FinalSpread *= AimingSpreadMod
-	if (bUseAimingSpreadMod && AimingTag.IsValid() && AimingRemovalTag.IsValid())
-	{
-		UAbilitySystemComponent* ASC = OwningAbility->GetCurrentActorInfo()->AbilitySystemComponent.Get();
-		if (ASC && (ASC->GetTagCount(AimingTag) > ASC->GetTagCount(AimingRemovalTag)))
-			FinalSpread *= AimingSpreadMod;
-	}
-
+	UAbilitySystemComponent* ASC = OwningAbility->GetCurrentActorInfo()->AbilitySystemComponent.Get();
+	
+	if (ASC && ASC->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("State.Aiming"))))
+		return FinalSpread * AimingSpreadMod;
 	return FinalSpread;
 }
 

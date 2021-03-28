@@ -149,9 +149,9 @@ void UGA_FireWeaponInstant::ConfigLineTrace()
 	LineTrace->TraceProfile = FCollisionProfileName{ SourceWeapon->CollisionProfileName };
 	LineTrace->bIgnoreBlockingHits = false;
 	LineTrace->bUsePersistentHitResults = false;
-	LineTrace->bUseAimingSpreadMod = false;
 	LineTrace->MaxRange = SourceWeapon->GetMaxRange();
 	LineTrace->BaseSpread = SourceWeapon->GetBaseSpread();
+	LineTrace->AimingSpreadMod = SourceWeapon->GetAimingSpreadMod();
 	LineTrace->TargetingSpreadIncrement = SourceWeapon->GetTargetingSpreadIncrement();
 	LineTrace->TargetingSpreadMax = SourceWeapon->GetTargetingSpreadMax();
 	LineTrace->SetShouldProduceTargetDataOnServer(!CurrentActorInfo->PlayerController.Get()); // Produce Target Data On Server only if the controller is an AI

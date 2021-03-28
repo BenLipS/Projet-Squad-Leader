@@ -21,6 +21,7 @@ ASL_Weapon::ASL_Weapon() :
 	MaxAmmo{ 50 },
 	bInfiniteAmmo{ false },
 	BaseSpread{ 0.f },
+	AimingSpreadMod{ 1.f },
 	TargetingSpreadIncrement{ 0.f },
 	TargetingSpreadMax{ 0.f },
 	CollisionProfileName{ FName{"Soldier"} }
@@ -252,6 +253,11 @@ void ASL_Weapon::OnRep_MaxAmmo(int32 _OldMaxPrimaryClipAmmo)
 float ASL_Weapon::GetBaseSpread() const noexcept
 {
 	return BaseSpread;
+}
+
+float ASL_Weapon::GetAimingSpreadMod() const noexcept
+{
+	return AimingSpreadMod;
 }
 
 float ASL_Weapon::GetTargetingSpreadIncrement() const noexcept
