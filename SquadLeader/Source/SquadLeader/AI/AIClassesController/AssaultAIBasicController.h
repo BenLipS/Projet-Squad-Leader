@@ -13,5 +13,7 @@ UCLASS()
 class SQUADLEADER_API AAssaultAIBasicController : public AAIBasicController
 {
 	GENERATED_BODY()
-	
+public:
+	UFUNCTION(BluePrintCallable, Category = "Comportement")
+		virtual void Tick(float DeltaSeconds) override;
 };

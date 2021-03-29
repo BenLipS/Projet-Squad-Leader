@@ -3,3 +3,8 @@
 
 #include "AssaultAIBasicController.h"
 
+void AAssaultAIBasicController::Tick(float DeltaSeconds) {
+	Super::Tick(DeltaSeconds);
+
+
+}
