@@ -23,26 +23,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Math/RandomStream.h"
 #include "../ControlArea/ControlArea.h"
-
-
-
-auto Fhome_variant::operator()(UCaptureMission* _mission)const
-{
-	GEngine->AddOnScreenDebugMessage(40, 10.f, FColor::Yellow, TEXT("Hello ! Mission de type UCaptureMission"));
-	_mission->SetState(MissionState::eRUNNING);
-	m_ai_controller->SetControlAreaBB(_mission->GetControlArea());
-}
-auto Fhome_variant::operator()(UDefendMission* _mission)const
-{
-	GEngine->AddOnScreenDebugMessage(40, 10.f, FColor::Yellow, TEXT("Mission de type UDefendMission"));
-	_mission->SetState(MissionState::eRUNNING);
-}
-auto Fhome_variant::operator()(UPatrolMission* _mission)const
-{
-	GEngine->AddOnScreenDebugMessage(50, 10.f, FColor::Blue, TEXT("Mission de type UPatrolMission"));
-	_mission->SetState(MissionState::eRUNNING);
-	m_ai_controller->SetObjectifLocation(m_ai_controller->GetPawn()->GetActorLocation());
-}
+#include "Mission/MissionList.h"
 
 AAIGeneralController::AAIGeneralController(FObjectInitializer const& object_initializer)
 {
@@ -50,8 +31,6 @@ AAIGeneralController::AAIGeneralController(FObjectInitializer const& object_init
 	setup_perception_system();
 	//m_destination = FVector(11410.f, 2950.f, 0.f);
 	m_destination = FVector(5000.f, 5000.f, 0.f);
-	m_variant = Fhome_variant{};
-	m_variant.m_ai_controller = this;
 }
 
 void AAIGeneralController::BeginPlay() {
@@ -73,7 +52,13 @@ void AAIGeneralController::Init() {
 	m_state = AIBasicState::Moving;
 	m_old_state = m_state;
 	blackboard->SetValueAsBool("is_moving", true);
+	if (m_missionList == nullptr)
+		InitMissionList();
+}
 
+void AAIGeneralController::InitMissionList() {
+	m_missionList = NewObject<UMissionList>(this, UMissionList::StaticClass());
+	m_missionList->Init(this);
 }
 
 void AAIGeneralController::Tick(float DeltaSeconds) {
@@ -99,7 +84,7 @@ void AAIGeneralController::Think() {
 	if (m_mission_changed) 
 	{
 		m_mission_changed = false;
-		Visit(m_variant, m_mission_type);
+		m_missionList->RunMission();
 	}
 	ChooseState();
 }
@@ -364,11 +349,13 @@ template <class T>
 void AAIGeneralController::SetMission(T _mission)
 {
 	//m_mission_type.Emplace<T>(_mission);
-	m_mission_type.Set<T>(_mission);
-	type_mission _mission_type{};
-	_mission_type.Set<T>(_mission);
-	m_missions.Add(_mission_type);
+	UMissionList::type_mission m_mission{};
+	m_mission.Emplace<T>(_mission);
 
+	if (m_missionList == nullptr)
+		InitMissionList();
+	
+	m_missionList->Add(m_mission);
 	m_mission_changed = true;
 }
 

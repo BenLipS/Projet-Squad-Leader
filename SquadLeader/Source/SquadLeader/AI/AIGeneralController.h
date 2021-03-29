@@ -7,10 +7,6 @@
 #include "../Soldiers/Soldier.h"
 #include "../Soldiers/AIs/SoldierAI.h"
 #include "Perception/AIPerceptiontypes.h"
-#include "Mission/CaptureMission.h"
-#include "Mission/DefendMission.h"
-#include "Mission/PatrolMission.h"
-#include "Misc/TVariant.h"
 #include "../Soldiers/Interface/Teamable.h"
 #include "AIGeneralController.generated.h"
 
@@ -41,35 +37,12 @@ enum ResultState {
 };
 
 
-USTRUCT()
-struct SQUADLEADER_API Fhome_variant {
-	GENERATED_USTRUCT_BODY()
-
-	class AAIGeneralController* m_ai_controller;
-
-	Fhome_variant() = default;
-	Fhome_variant(AAIGeneralController* _ai_controller) { m_ai_controller = _ai_controller; }
-
-	auto operator()(UCaptureMission* _mission)const;
-	auto operator()(UDefendMission* _mission)const;
-	auto operator()(UPatrolMission* _mission)const;
-};
-
-
 UCLASS()
 class SQUADLEADER_API AAIGeneralController : public AAIController, public ITeamable
 {
 	GENERATED_BODY()
 
 public:
-
-	/*
-	* Definition of type
-	*/
-	using type_mission = TVariant<UCaptureMission*, UDefendMission*, UPatrolMission*> ;
-	using m_heap_missions = TArray<type_mission>;
-
-
 
 	AAIGeneralController(FObjectInitializer const& object_initializer = FObjectInitializer::Get());
 	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
@@ -131,6 +104,9 @@ public:
 
 	UFUNCTION()
 		void Init();
+
+	UFUNCTION()
+		void InitMissionList();
 	
 	/*Move to a location, the location must be an AActor*/
 	UFUNCTION(BlueprintCallable, Category = "SquadLeader")
@@ -427,15 +403,8 @@ protected:
 	* variables for the mission system
 	* represent a heap of mission
 	*/
-
-	//represent on mission
-	type_mission m_mission_type;
-
-	//represent a heap of missions
-	m_heap_missions m_missions;
-
-	//the variant that we are using
-	Fhome_variant m_variant;
+	UPROPERTY()
+	class UMissionList* m_missionList;
 
 	bool m_mission_changed = false;
 };
