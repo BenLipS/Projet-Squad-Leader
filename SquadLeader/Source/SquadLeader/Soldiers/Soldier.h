@@ -366,8 +366,12 @@ public:
 	virtual void cycleBetweenTeam();
 
 //////////////// Teamable
-	virtual ASoldierTeam* GetTeam() override { return nullptr; };  // function overide in SoldierPlayer and Soldier AI
-	virtual bool SetTeam(ASoldierTeam* _Team) override { return false; };  // function overide in SoldierPlayer and Soldier AI
+protected:
+	UPROPERTY(replicated)
+		ASoldierTeam* Team;
+public:
+	virtual ASoldierTeam* GetTeam() override;
+	virtual bool SetTeam(ASoldierTeam* _Team) override;
 
 /////////////// Respawn
 public:

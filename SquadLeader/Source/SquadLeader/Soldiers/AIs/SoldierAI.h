@@ -72,10 +72,6 @@ protected:
 public:
 	virtual FVector GetLookingAtPosition() override;
 
-//////////////// Teamable
-public:
-	virtual ASoldierTeam* GetTeam() override;
-	virtual bool SetTeam(ASoldierTeam* _Team) override;
 
 //////////////// Abilities
 public:
