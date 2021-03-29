@@ -48,18 +48,22 @@ void AAIBasicManager::Init(ASoldierTeam* _Team)
 
 		FTransform LocationAI{};
 		LocationAI.SetLocation(CalculOffSetForInitSpawn(spawnpoint, maxNumberBySpawn, spawnLoop));
-		ASoldierAI* BasicAI = GetWorld()->SpawnActorDeferred<ASoldierAI>(Team->GetClassBasicAI(), LocationAI, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
-		if(spawnLoop < Team->NbAIBasicAssault)
+		ASoldierAI* BasicAI;
+		if (spawnLoop < Team->NbAIBasicAssault) {
 			BasicAI = GetWorld()->SpawnActorDeferred<ASoldierAI>(Team->GetClassBasicAIAssault(), LocationAI, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
-		else
-			BasicAI = GetWorld()->SpawnActorDeferred<ASoldierAI>(Team->GetClassBasicAIHeavy(), LocationAI, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+			GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Red, TEXT("Spawn Assault"));
+		}
+		else {
+			BasicAI = GetWorld()->SpawnActorDeferred<ASoldierAI>(Team->GetClassBasicAIHeavy(), LocationAI, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn); 
+			GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Red, TEXT("Spawn Heavy"));
+		}
 		if (BasicAI) {
 			BasicAI->SpawnDefaultController();
 			BasicAI->SetTeam(Team);
 			BasicAI->FinishSpawning(LocationAI);
-
+			GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Red, TEXT("Finish Spawn"));
 			AAIBasicController* AC = Cast<AAIBasicController>(BasicAI->GetController());
-			ensure(AC);
+			//ensure(AC);
 			AIBasicList.Add(AC);
 		}
 	}
