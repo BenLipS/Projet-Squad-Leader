@@ -266,7 +266,7 @@ void ASoldierPlayerController::OnWallVisionDeactivate_Implementation()
 	{
 		if (ASoldier* Soldier = Cast<ASoldier>(Actor); Soldier)
 		{
-			if (Soldier->GetTeam() != GetTeam())
+			if (Soldier->GetMesh()->bRenderCustomDepth)
 			{
 				Soldier->GetMesh()->SetRenderCustomDepth(false);
 			}
