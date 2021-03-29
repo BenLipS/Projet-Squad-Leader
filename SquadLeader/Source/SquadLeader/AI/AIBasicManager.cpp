@@ -5,6 +5,7 @@
 #include "../SquadLeaderGameInstance.h"
 #include "../ControlArea/ControlArea.h"
 #include "../AI/Mission/CaptureMission.h"
+#include "../AI/Mission/PatrolMission.h"
 
 AAIBasicManager::AAIBasicManager() {
 	PrimaryActorTick.bStartWithTickEnabled = true;
@@ -56,6 +57,11 @@ void AAIBasicManager::Init(TSubclassOf<ASoldierTeam> _Team)
 			AAIBasicController* AC = Cast<AAIBasicController>(BasicAI->GetController());
 			ensure(AC);
 			AIBasicList.Add(AC);
+
+			//Add the mission Patroling by default
+			UPatrolMission* _patrolMisssion = Cast<UPatrolMission>(NewObject<UPatrolMission>(this, UPatrolMission::StaticClass()));
+			_patrolMisssion->InitPatrolMission(1, MissionPriority::eBASIC);
+			AC->SetMission<UPatrolMission*>(_patrolMisssion);
 		}
 	}
 }

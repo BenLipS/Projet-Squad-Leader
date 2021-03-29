@@ -25,12 +25,33 @@
 #include "../ControlArea/ControlArea.h"
 
 
+
+auto Fhome_variant::operator()(UCaptureMission* _mission)const
+{
+	GEngine->AddOnScreenDebugMessage(40, 10.f, FColor::Yellow, TEXT("Hello ! Mission de type UCaptureMission"));
+	_mission->SetState(MissionState::eRUNNING);
+	m_ai_controller->SetControlAreaBB(_mission->GetControlArea());
+}
+auto Fhome_variant::operator()(UDefendMission* _mission)const
+{
+	GEngine->AddOnScreenDebugMessage(40, 10.f, FColor::Yellow, TEXT("Mission de type UDefendMission"));
+	_mission->SetState(MissionState::eRUNNING);
+}
+auto Fhome_variant::operator()(UPatrolMission* _mission)const
+{
+	GEngine->AddOnScreenDebugMessage(50, 10.f, FColor::Blue, TEXT("Mission de type UPatrolMission"));
+	_mission->SetState(MissionState::eRUNNING);
+	m_ai_controller->SetObjectifLocation(m_ai_controller->GetPawn()->GetActorLocation());
+}
+
 AAIGeneralController::AAIGeneralController(FObjectInitializer const& object_initializer)
 {
 	setup_BehaviorTree();
 	setup_perception_system();
 	//m_destination = FVector(11410.f, 2950.f, 0.f);
 	m_destination = FVector(5000.f, 5000.f, 0.f);
+	m_variant = Fhome_variant{};
+	m_variant.m_ai_controller = this;
 }
 
 void AAIGeneralController::BeginPlay() {
@@ -52,6 +73,7 @@ void AAIGeneralController::Init() {
 	m_state = AIBasicState::Moving;
 	m_old_state = m_state;
 	blackboard->SetValueAsBool("is_moving", true);
+
 }
 
 void AAIGeneralController::Tick(float DeltaSeconds) {
@@ -74,6 +96,11 @@ void AAIGeneralController::Sens() {
 }
 
 void AAIGeneralController::Think() {
+	if (m_mission_changed) 
+	{
+		m_mission_changed = false;
+		Visit(m_variant, m_mission_type);
+	}
 	ChooseState();
 }
 
@@ -336,10 +363,13 @@ void AAIGeneralController::UpdateSeenSoldier() {
 template <class T>
 void AAIGeneralController::SetMission(T _mission)
 {
-	m_mission_type.Emplace<T>(_mission);
-	UDefendMission* m_mission_defend{};
-	m_mission_type.Emplace<UDefendMission*>(m_mission_defend);
-	Visit(Fhome_variant{}, m_mission_type);
+	//m_mission_type.Emplace<T>(_mission);
+	m_mission_type.Set<T>(_mission);
+	type_mission _mission_type{};
+	_mission_type.Set<T>(_mission);
+	m_missions.Add(_mission_type);
+
+	m_mission_changed = true;
 }
 
 auto AAIGeneralController::GetMission()
@@ -377,6 +407,20 @@ void AAIGeneralController::ResetBlackBoard()
 	blackboard->SetValueAsObject("FocusActor", NULL);
 }
 
+void AAIGeneralController::SetControlAreaBB(AControlArea* _controlArea) {
+	blackboard->SetValueAsObject("ControlArea", _controlArea);
+	ObjectifLocation = _controlArea->GetActorLocation();
+	blackboard->SetValueAsVector("VectorLocation", ObjectifLocation);
+	SetState(AIBasicState::Moving);
+}
+
+void AAIGeneralController::SetObjectifLocation(FVector _location) noexcept 
+{
+	ObjectifLocation = _location;
+	blackboard->SetValueAsVector("VectorLocation", ObjectifLocation);
+	SetState(AIBasicState::Moving);
+}
+
 /*
 * 
 * Function for Node in the behavior tree
@@ -397,6 +441,7 @@ EPathFollowingRequestResult::Type AAIGeneralController::MoveToVectorLocation() {
 	//TO-DO : if follow an enemy be at the distance to shoot 
 	EPathFollowingRequestResult::Type _movetoResult = MoveToLocation(blackboard->GetValueAsVector("VectorLocation"), 50.f);
 	if (_movetoResult == EPathFollowingRequestResult::Type::AlreadyAtGoal) {
+		SetState(AIBasicState::Patroling);
 		blackboard->ClearValue("VectorLocation");
 		blackboard->ClearValue("need_GoBackward");
 	}
@@ -492,7 +537,7 @@ void AAIGeneralController::SetPatrolPoint()
 
 ResultState AAIGeneralController::ArriveAtDestination() {
 	if ( GetPawn() && FVector::Dist(GetPawn()->GetActorLocation(), GetObjectifLocation()) < 300.f) {
-		SetState(AIBasicState::Capturing);
+		SetState(AIBasicState::Patroling);
 		return ResultState::Success;
 	}
 	if (m_state == AIBasicState::Attacking)
@@ -510,11 +555,14 @@ ResultState AAIGeneralController::EndTheResearch() {
 ResultState AAIGeneralController::Capturing() {
 	if (m_state != AIBasicState::Capturing)
 		return ResultState::Failed;
+
 	AControlArea* control_area = Cast<AControlArea>(blackboard->GetValueAsObject("ControlArea"));
 	if (control_area) {
 		if (auto value = control_area->TeamData.Find(Team)) {
 			if ((*value)->controlValue >= control_area->maxControlValue) {
 				SetState(AIBasicState::Patroling);
+				//it'll depend of the mission
+				//SetState(AIBasicState::Capturing);
 				return ResultState::Success;
 			}
 			else

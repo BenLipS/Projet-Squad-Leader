@@ -9,6 +9,7 @@
 #include "Perception/AIPerceptiontypes.h"
 #include "Mission/CaptureMission.h"
 #include "Mission/DefendMission.h"
+#include "Mission/PatrolMission.h"
 #include "Misc/TVariant.h"
 #include "../Soldiers/Interface/Teamable.h"
 #include "AIGeneralController.generated.h"
@@ -39,14 +40,19 @@ enum ResultState {
 	InProgress UMETA(DisplayName = "InProgress"),
 };
 
+
 USTRUCT()
 struct SQUADLEADER_API Fhome_variant {
 	GENERATED_USTRUCT_BODY()
 
-	Fhome_variant() = default;
+	class AAIGeneralController* m_ai_controller;
 
-	auto operator()(UCaptureMission*)const { GEngine->AddOnScreenDebugMessage(40, 10.f, FColor::Yellow, TEXT("Mission de type UCaptureMission")); }
-	auto operator()(UDefendMission*)const { GEngine->AddOnScreenDebugMessage(40, 10.f, FColor::Yellow, TEXT("Mission de type UDefendMission")); }
+	Fhome_variant() = default;
+	Fhome_variant(AAIGeneralController* _ai_controller) { m_ai_controller = _ai_controller; }
+
+	auto operator()(UCaptureMission* _mission)const;
+	auto operator()(UDefendMission* _mission)const;
+	auto operator()(UPatrolMission* _mission)const;
 };
 
 
@@ -60,7 +66,7 @@ public:
 	/*
 	* Definition of type
 	*/
-	using type_mission = TVariant<UCaptureMission*, UDefendMission*> ;
+	using type_mission = TVariant<UCaptureMission*, UDefendMission*, UPatrolMission*> ;
 	using m_heap_missions = TArray<type_mission>;
 
 
@@ -83,8 +89,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		FVector GetObjectifLocation() { return ObjectifLocation + 100; };
-	UFUNCTION(BlueprintCallable)
-		void SetObjectifLocation(FVector _Location) { ObjectifLocation = _Location; };
+
 
 	/* For BT Task  */
 	UFUNCTION(BlueprintCallable, Category = "Flocking Behaviour")
@@ -391,11 +396,30 @@ public:
 	virtual FVector GetRespawnPoint() { return FVector(0.f, 0.f, 1500.f); }  // function overide in in each controller
 
 public:	//Mission
+
+	/*
+	* Set a mission of type T
+	*/
 	template<class T>
 	void SetMission(T _mission);
-
-
+	
+	/*
+	* Return the current mission that the NPC is running
+	*/
 	auto GetMission();
+
+	/*
+	* Set a control area as the destination for the AI
+	*/
+	UFUNCTION()
+		void SetControlAreaBB(AControlArea* _controlArea);
+
+	/*
+	* Set the Objectif Location of the AI
+	* And it'll set the state to moving
+	*/
+	UFUNCTION(BlueprintCallable)
+		void SetObjectifLocation(FVector _location) noexcept;
 
 protected:
 
@@ -403,9 +427,15 @@ protected:
 	* variables for the mission system
 	* represent a heap of mission
 	*/
+
+	//represent on mission
 	type_mission m_mission_type;
 
+	//represent a heap of missions
 	m_heap_missions m_missions;
 
-	
+	//the variant that we are using
+	Fhome_variant m_variant;
+
+	bool m_mission_changed = false;
 };

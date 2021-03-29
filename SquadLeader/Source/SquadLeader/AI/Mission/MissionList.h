@@ -4,8 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
-#include "../Mission.h"
+#include "CaptureMission.h"
+#include "DefendMission.h"
+#include "PatrolMission.h"
 #include "MissionList.generated.h"
+
 
 /**
  * This class represent the functionnality of a Mission Manager List
@@ -17,9 +20,11 @@ class SQUADLEADER_API UMissionList : public UObject
 	GENERATED_BODY()
 
 public:
+	using type_mission = TVariant<UCaptureMission*, UDefendMission*, UPatrolMission*>;
+	using array_mission_type = TArray<type_mission>;
+
 	UMissionList();
 
 protected:
-	TArray<UMission> m_missions;
-	
+	array_mission_type m_missions;
 };
