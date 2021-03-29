@@ -5,7 +5,9 @@
 #include "Components/SPhereComponent.h"
 #include "../AreaEffect/AreaEffect.h"
 #include "../Soldiers/Soldier.h"
+
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
 ASL_Projectile::ASL_Projectile()
@@ -91,8 +93,27 @@ void ASL_Projectile::InitVelocity()
 	else if (GetOwner()) {
 		ForwardVector = GetOwner()->GetActorForwardVector();
 	}
-	ForwardVector.Z += ZOffset * (1 - abs(ForwardVector.Z));
+	//Fixing radius to 1
 	ForwardVector.Normalize();
+
+	float Azimuth = UKismetMathLibrary::DegAcos(ForwardVector.Z);
+	float Inclination = UKismetMathLibrary::DegAtan2(ForwardVector.Y, ForwardVector.X);
+	
+	Azimuth += PitchAdjust;
+	if (Azimuth > 180.f)
+	{
+		Azimuth = 180.f;
+	}
+	else if (Azimuth < 0.f)
+	{
+		Azimuth = 0.f;
+	}
+
+	Inclination += YawAdjust;
+	Inclination = UKismetMathLibrary::GenericPercent_FloatFloat(Inclination, 360.f);
+
+	ForwardVector = FVector(UKismetMathLibrary::DegSin(Azimuth) * UKismetMathLibrary::DegCos(Inclination), UKismetMathLibrary::DegSin(Azimuth) * UKismetMathLibrary::DegSin(Inclination), UKismetMathLibrary::DegCos(Azimuth));
+
 	ProjectileMovement->Velocity =  ForwardVector * ProjectileMovement->InitialSpeed;
 }
 
