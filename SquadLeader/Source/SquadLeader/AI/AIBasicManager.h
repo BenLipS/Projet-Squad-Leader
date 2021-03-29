@@ -51,7 +51,7 @@ private:
 	* Happend only once at the beginning
 	*/
 	UFUNCTION()
-		void ChooseCOntrolArea();
+		void ChooseControlArea();
 
 private:
 
