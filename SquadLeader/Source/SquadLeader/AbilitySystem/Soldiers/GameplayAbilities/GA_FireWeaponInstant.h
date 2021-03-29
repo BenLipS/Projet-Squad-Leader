@@ -22,7 +22,7 @@ public:
 
 protected:
 	void ApplyEffectsToSource();
-	void ApplyDamages(const FGameplayAbilityTargetDataHandle& _Data, UAbilitySystemComponent* _TargetASC);
+	void ApplyDamages(const FGameplayAbilityTargetDataHandle& _Data, const FGameplayEffectSpecHandle& _DamageEffectSpecHandle, UAbilitySystemComponent* _TargetASC);
 	void ReloadWeapon();
 	void ConfigLineTrace();
 

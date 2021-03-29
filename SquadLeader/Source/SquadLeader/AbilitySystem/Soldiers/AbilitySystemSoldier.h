@@ -24,4 +24,14 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Abilities")
 	UGameplayAbilitySoldier* GetPrimaryAbilityInstanceFromHandle(FGameplayAbilitySpecHandle _Handle);
+
+	//////////////// GameplayCue
+	UFUNCTION(BlueprintCallable, Category = "GameplayCue", Meta = (AutoCreateRefTerm = "GameplayCueParameters", GameplayTagFilter = "GameplayCue"))
+	void ExecuteGameplayCueLocal(const FGameplayTag _GameplayCueTag, const FGameplayCueParameters& _GameplayCueParameters);
+
+	UFUNCTION(BlueprintCallable, Category = "GameplayCue", Meta = (AutoCreateRefTerm = "GameplayCueParameters", GameplayTagFilter = "GameplayCue"))
+	void AddGameplayCueLocal(const FGameplayTag _GameplayCueTag, const FGameplayCueParameters& _GameplayCueParameters);
+
+	UFUNCTION(BlueprintCallable, Category = "GameplayCue", Meta = (AutoCreateRefTerm = "GameplayCueParameters", GameplayTagFilter = "GameplayCue"))
+	void RemoveGameplayCueLocal(const FGameplayTag _GameplayCueTag, const FGameplayCueParameters& _GameplayCueParameters);
 };
