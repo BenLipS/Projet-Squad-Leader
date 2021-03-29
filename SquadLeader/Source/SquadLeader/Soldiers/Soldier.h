@@ -200,6 +200,7 @@ public:
 
 	virtual void Die();
 	virtual void Respawn();
+	virtual void OnReceiveDamage(const FVector& _ImpactPoint, const FVector& _SourcePoint);
 
 //////////////// Cameras
 public:

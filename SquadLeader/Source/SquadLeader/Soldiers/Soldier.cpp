@@ -785,6 +785,10 @@ void ASoldier::Respawn()
 	AbilitySystemComponent->RemoveActiveEffectsWithGrantedTags(EffectTagsToRemove);
 }
 
+void ASoldier::OnReceiveDamage(const FVector& _ImpactPoint, const FVector& _SourcePoint)
+{
+}
+
 void ASoldier::StartAiming()
 {
 	if (!CurrentWeapon)

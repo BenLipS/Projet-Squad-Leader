@@ -107,18 +107,20 @@ void UGA_FireWeaponInstant::HandleTargetData(const FGameplayAbilityTargetDataHan
 	FGameplayEffectSpecHandle DamageEffectSpecHandle = MakeOutgoingGameplayEffectSpec(GE_DamageClass, GetAbilityLevel());
 	DamageEffectSpecHandle.Data->SetSetByCallerMagnitude(FGameplayTag::RequestGameplayTag(FName("Data.Damage")), SourceWeapon->GetWeaponDamage());
 
-	for (TWeakObjectPtr<AActor> Actor : _Data.Get(0)->GetActors())
+	const FGameplayAbilityTargetData* Data = _Data.Get(0);
+
+	for (TWeakObjectPtr<AActor> Actor : Data->GetActors())
 	{
 		if (ASoldier* TargetSoldier = Cast<ASoldier>(Actor); TargetSoldier && TargetSoldier->GetAbilitySystemComponent())
 		{
 			ApplyDamages(_Data, DamageEffectSpecHandle, TargetSoldier->GetAbilitySystemComponent());
+			TargetSoldier->OnReceiveDamage(Data->GetHitResult()->ImpactPoint, Data->GetHitResult()->TraceStart);
 		}
 	}
 
 	FGameplayCueParameters GC_Parameters;
 	GC_Parameters.EffectContext = DamageEffectSpecHandle.Data->GetEffectContext();
 	GC_Parameters.Instigator = CurrentActorInfo->AvatarActor.Get();
-
 	K2_ExecuteGameplayCueWithParams(FGameplayTag::RequestGameplayTag(FName("GameplayCue.FireWeapon.Instant")), GC_Parameters);
 }
 
