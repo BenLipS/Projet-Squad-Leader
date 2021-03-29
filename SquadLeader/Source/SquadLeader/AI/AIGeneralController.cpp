@@ -90,24 +90,21 @@ void AAIGeneralController::GetLifetimeReplicatedProps(TArray< FLifetimeProperty 
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	// everyone
-	DOREPLIFETIME(AAIGeneralController, Team);
+	//DOREPLIFETIME(AAIGeneralController, var);
 }
 
 ASoldierTeam* AAIGeneralController::GetTeam()
 {
-	return Team;
+	if (auto soldier = Cast<ASoldier>(GetPawn()); soldier) {
+		return soldier->GetTeam();
+	}
+	return nullptr;
 }
 
 bool AAIGeneralController::SetTeam(ASoldierTeam* _Team)
 {
-	if (GetLocalRole() == ROLE_Authority) {  // only server can change team
-		if (Team)
-			Team->RemoveSoldierList(Cast<ASoldier>(GetPawn()));
-		if (_Team)
-			_Team->AddSoldierList(Cast<ASoldier>(GetPawn()));
-
-		Team = _Team;
-		return true;
+	if (auto soldier = Cast<ASoldier>(GetPawn()); soldier) {
+		return soldier->SetTeam(_Team);
 	}
 	return false;
 }

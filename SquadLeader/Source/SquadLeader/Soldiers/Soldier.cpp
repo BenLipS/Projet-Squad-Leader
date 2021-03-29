@@ -114,6 +114,7 @@ void ASoldier::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifeti
 
 	DOREPLIFETIME(ASoldier, Inventory);
 	DOREPLIFETIME(ASoldier, SyncControlRotation);
+	DOREPLIFETIME(ASoldier, Team);
 
 	// Only replicate CurrentWeapon to simulated clients and manually sync CurrentWeeapon with Owner when we're ready.
 	// This allows us to predict weapon changing.
@@ -861,6 +862,20 @@ void ASoldier::cycleBetweenTeam()
 		}
 	}
 	else ServerCycleBetweenTeam();
+}
+
+ASoldierTeam* ASoldier::GetTeam()
+{
+	return Team;
+}
+
+bool ASoldier::SetTeam(ASoldierTeam* _Team)
+{
+	if (GetLocalRole() == ROLE_Authority) {  // only the server is allowed to change the team of a player
+		Team = _Team;
+		return true;
+	}
+	return false;
 }
 
 void ASoldier::setup_stimulus() {

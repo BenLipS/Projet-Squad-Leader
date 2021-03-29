@@ -31,9 +31,6 @@ private:
 	void InitializeAttributeChangeCallbacks();
 
 //////////////// Teamable
-protected:
-	UPROPERTY(Replicated)
-		ASoldierTeam* Team = nullptr;  // only server can replicate it
 public:
 	virtual ASoldierTeam* GetTeam() override;
 	virtual bool SetTeam(ASoldierTeam* _Team) override;
