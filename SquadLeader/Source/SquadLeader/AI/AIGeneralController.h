@@ -148,6 +148,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Launch grenade")
 	ResultState LaunchGrenade();
 
+	UFUNCTION(BlueprintCallable, Category = "Launch heal")
+		ResultState LaunchHeal();
+
 	class UBlackboardComponent* get_blackboard() const;
 	
 	/*

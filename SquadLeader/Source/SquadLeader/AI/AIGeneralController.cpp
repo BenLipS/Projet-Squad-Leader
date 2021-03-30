@@ -167,9 +167,18 @@ ResultState AAIGeneralController::LaunchGrenade()
 	ResultState result = ResultState::Failed;
 	if (ASoldierAI* soldier = Cast<ASoldierAI>(GetPawn()); soldier && GetFocusActor() && m_state == AIBasicState::Attacking)
 	{
-		FVector LaunchGoal = GetFocusActor()->GetTargetLocation();
-
 		if(soldier->ActivateAbilityLaunchGrenade())
+			result = ResultState::Success;
+	}
+	return result;
+}
+
+ResultState AAIGeneralController::LaunchHeal()
+{
+	ResultState result = ResultState::Failed;
+	if (ASoldierAI* soldier = Cast<ASoldierAI>(GetPawn()); soldier)
+	{
+		if (soldier->ActivateAbilityLaunchHeal())
 			result = ResultState::Success;
 	}
 	return result;

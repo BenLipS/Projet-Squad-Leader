@@ -5,9 +5,16 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "DrawDebugHelpers.h"
 #include "GenericPlatform/GenericPlatformMath.h"
+#include "BehaviorTree/BehaviorTree.h"
+
+AAssaultAIBasicController::AAssaultAIBasicController() {
+	setup_BehaviorTree();
+}
 
 void AAssaultAIBasicController::Tick(float DeltaSeconds) {
+	Super::Tick(DeltaSeconds);
 
+	//TODO Make a function with that LaunchGrenade()
 	if (SeenEnemySoldier.Num() >= NUmberOfEnemyToLaunchAGrenade) {
 		FVector MeanEnmyPos = FVector::ZeroVector;
 		for (ASoldier* Enemy : SeenEnemySoldier) {
@@ -25,5 +32,11 @@ void AAssaultAIBasicController::Tick(float DeltaSeconds) {
 		Blackboard->SetValueAsBool("LaunchGrenade", true);
 	}
 	
-	Super::Tick(DeltaSeconds);
+}
+
+void AAssaultAIBasicController::setup_BehaviorTree()
+{
+	static ConstructorHelpers::FObjectFinder<UBehaviorTree> obj(TEXT("BehaviorTree'/Game/AI/AIBasic/BTForClasses/BT_AIBasic_Assault.BT_AIBasic_Assault'"));
+	if (obj.Succeeded())
+		m_behaviorTree = obj.Object;
 }

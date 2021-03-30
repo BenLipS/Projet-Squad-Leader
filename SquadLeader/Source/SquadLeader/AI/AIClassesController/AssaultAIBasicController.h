@@ -14,7 +14,11 @@ class SQUADLEADER_API AAssaultAIBasicController : public AAIBasicController
 {
 	GENERATED_BODY()
 public:
+	AAssaultAIBasicController();
+
 	virtual void Tick(float DeltaSeconds) override;
+
+	virtual void setup_BehaviorTree() override;
 
 	UPROPERTY(BlueprintReadWrite, Category = "Grenade")
 	int NUmberOfEnemyToLaunchAGrenade = 2;

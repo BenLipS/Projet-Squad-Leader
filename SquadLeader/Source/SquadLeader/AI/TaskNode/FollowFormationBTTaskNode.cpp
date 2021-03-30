@@ -28,7 +28,7 @@ void UFollowFormationBTTaskNode::TickTask(class UBehaviorTreeComponent& OwnerCom
 
 	EPathFollowingRequestResult::Type MoveToActorResult = AISquadController->FollowFormation();
 
-	if (MoveToActorResult == EPathFollowingRequestResult::AlreadyAtGoal && !AISquadController->get_blackboard()->GetValueAsBool("IsInFormation") || AISquadController->get_blackboard()->GetValueAsBool("HasOrder")) {
+	if (MoveToActorResult == EPathFollowingRequestResult::AlreadyAtGoal && !AISquadController->get_blackboard()->GetValueAsBool("IsInFormation") || AISquadController->get_blackboard()->GetValueAsBool("HasOrder") || AISquadController->StopCurrentBehavior) {
 		Cast<ASoldierAI>(AISquadController->GetPawn())->CancelAbilityRun();
 		AISquadController->RunToFormation = false;
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);

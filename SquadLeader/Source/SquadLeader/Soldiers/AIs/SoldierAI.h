@@ -97,6 +97,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Abilities")
 		bool ActivateAbilityLaunchGrenade();
 
+	// LaunchHeal
+	UFUNCTION(BlueprintCallable, Category = "Abilities")
+		bool ActivateAbilityLaunchHeal();
+
 	UFUNCTION(BlueprintCallable, Category = "Shoot")
 	void SetLookingAtPosition(const FVector& _LookingAtPosition);
 
