@@ -1,6 +1,6 @@
 #include "GE_StateFighting.h"
 #include "../../../../Soldiers/Soldier.h"
 
-UGE_StateFighting::UGE_StateFighting() : UGE_State(ASoldier::StateFightingTag, 10.f)
+UGE_StateFighting::UGE_StateFighting() : UGE_State(FGameplayTag::RequestGameplayTag(FName("State.Fighting")), 10.f)
 {
 }

@@ -133,7 +133,7 @@ void UGA_FireWeaponInstant::ApplyDamages(const FGameplayAbilityTargetDataHandle&
 
 void UGA_FireWeaponInstant::ReloadWeapon()
 {
-	SourceSoldier->ActivateAbility(ASoldier::SkillReloadWeaponTag);
+	SourceSoldier->ActivateAbility(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.ReloadWeapon")));
 	CancelAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true);
 }
 
