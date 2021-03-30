@@ -19,9 +19,9 @@ enum class MissionState : uint8{
 
 UENUM()
 enum class MissionPriority : uint8{ 
-	eURGENT,
+	eBASIC,
 	eMIDDLE,
-	eBASIC
+	eURGENT
 };
 
 UCLASS()

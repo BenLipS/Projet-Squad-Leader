@@ -547,9 +547,8 @@ ResultState AAIGeneralController::Capturing() {
 	if (control_area) {
 		if (auto value = control_area->TeamData.Find(Team)) {
 			if ((*value)->controlValue >= control_area->maxControlValue) {
-				SetState(AIBasicState::Patroling);
-				//it'll depend of the mission
-				//SetState(AIBasicState::Capturing);
+				m_missionList->EndMission();
+				m_mission_changed = true;
 				return ResultState::Success;
 			}
 			else

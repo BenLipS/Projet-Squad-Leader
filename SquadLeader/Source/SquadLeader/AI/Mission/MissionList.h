@@ -31,6 +31,26 @@ struct SQUADLEADER_API FMissionAction {
 };
 
 
+USTRUCT()
+struct SQUADLEADER_API FCompareMission {
+	GENERATED_USTRUCT_BODY()
+
+
+	FCompareMission() = default;
+
+	auto operator()(UCaptureMission* _mission_left, UDefendMission* _mission_right)const{ return _mission_left->GetPriority() > _mission_right->GetPriority(); }
+	auto operator()(UCaptureMission* _mission_left, UPatrolMission* _mission_right)const { return _mission_left->GetPriority() > _mission_right->GetPriority(); };
+	auto operator()(UCaptureMission* _mission_left, UCaptureMission* _mission_right)const { return _mission_left->GetPriority() > _mission_right->GetPriority(); };
+
+	auto operator()(UDefendMission* _mission_left, UDefendMission* _mission_right)const { return _mission_left->GetPriority() > _mission_right->GetPriority(); };
+	auto operator()(UDefendMission* _mission_left, UPatrolMission* _mission_right)const { return _mission_left->GetPriority() > _mission_right->GetPriority(); };
+	auto operator()(UDefendMission* _mission_left, UCaptureMission* _mission_right)const { return _mission_left->GetPriority() > _mission_right->GetPriority(); };
+	
+	auto operator()(UPatrolMission* _mission_left, UDefendMission* _mission_right)const { return _mission_left->GetPriority() > _mission_right->GetPriority(); };
+	auto operator()(UPatrolMission* _mission_left, UPatrolMission* _mission_right)const { return _mission_left->GetPriority() > _mission_right->GetPriority(); };
+	auto operator()(UPatrolMission* _mission_left, UCaptureMission* _mission_right)const { return _mission_left->GetPriority() > _mission_right->GetPriority(); };
+};
+
 
 
 UCLASS()
@@ -51,9 +71,10 @@ protected:
 	array_mission_type m_missions;
 
 	FMissionAction m_action;
+	FCompareMission m_compare;
 
 	UPROPERTY()
-	int m_id_current_mission = -1;
+	int m_index_current_mission = 0;
 
 
 public:
@@ -73,6 +94,8 @@ public:
 	* Return the current mission
 	*/
 	auto GetCurrentMission() const;
+
+	void EndMission();
 
 	UFUNCTION()
 		void RunMission();

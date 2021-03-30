@@ -30,20 +30,36 @@ UMissionList::UMissionList() : m_ai_controller{} {
 void UMissionList::Init(AAIGeneralController* _ai_controller) {
 	m_ai_controller = _ai_controller;
 	m_action = FMissionAction{ m_ai_controller };
+	m_compare = FCompareMission{};
 }
 
 void UMissionList::Add(type_mission _mission) {
 	if (m_missions.Num() <= 0)
 		m_missions.Add(_mission);
-	//for (int i = 0; i != m_missions.Num(); ++i) {
+	else {
+		for (int i = 0; i != m_missions.Num(); ++i) {
+			auto result = Visit(m_compare, _mission, m_missions[i]);
+			if (result) {
+				m_missions.Insert(_mission, i);
+				m_index_current_mission = i;
+				return;
+			}
+		}
+		m_missions.Add(_mission);
+	}
 
-	//}
 }
 
 auto UMissionList::GetCurrentMission() const {
-	return m_missions.Top();
+	return m_missions[m_index_current_mission];
 }
 
 void UMissionList::RunMission() {
-	Visit(m_action, m_missions.Top());
+	Visit(m_action, m_missions[m_index_current_mission]);
+}
+
+void UMissionList::EndMission() {
+	if (m_missions.Num() > 1) {
+		m_missions.RemoveAt(m_index_current_mission);
+	}
 }
