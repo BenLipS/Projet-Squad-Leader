@@ -70,12 +70,12 @@ void UGA_FireWeapon::CancelAbility(const FGameplayAbilitySpecHandle Handle, cons
 
 void UGA_FireWeapon::HandleFire()
 {
-	if (SourceWeapon->GetFireMode() == ASL_Weapon::FireModeSemiAutoTag)
+	if (SourceWeapon->GetFireMode() == FGameplayTag::RequestGameplayTag(FName("Weapon.FireMode.SemiAuto")))
 	{
 		BatchRPCTryActivateAbility(InstantAbilityHandle, true);
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 	}
-	else // if (SourceWeapon->GetFireMode() == ASL_Weapon::FireModeAutomaticTag)
+	else // if (SourceWeapon->GetFireMode() == FGameplayTag::RequestGameplayTag(FName("Weapon.FireMode.Automatic")))
 	{
 		if (!BatchRPCTryActivateAbility(InstantAbilityHandle, false))
 		{
