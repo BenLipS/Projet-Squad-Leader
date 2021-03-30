@@ -204,6 +204,9 @@ protected:
 	UFUNCTION()
 		void UpdateSeenSoldier();
 
+	UFUNCTION()
+		void UpdateSeenEnemySoldier();
+
 	/*
 	* After sorting the Actor we see we will choose the enemy to kill
 	* if there is one
@@ -270,6 +273,9 @@ protected:
 	UPROPERTY()
 	TArray<ASoldier*> SeenSoldier;
 
+	UPROPERTY()
+	TArray<ASoldier*> SeenEnemySoldier;
+
 	/*
 	* This here represent the state of an AI
 	*/
@@ -305,6 +311,8 @@ public:
 		void CheckIfNeedToStopCurrentBehavior();
 
 	TArray<ASoldier*> GetSeenSoldier() { return SeenSoldier; }
+
+	TArray<ASoldier*> GetSeenEnemySoldier() { return SeenEnemySoldier; }
 	/*
 	* The distance from where we can walk and shoot the enemy
 	*/
@@ -371,6 +379,13 @@ public:
 	*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Perception")
 		bool m_DetectNeutrals = true;
+
+
+	UPROPERTY()
+		float LaunchProjectileYawAdjust = 0.f;
+
+	UPROPERTY()
+		float LaunchProjectilePitchAdjust = -30.f;
 
 /////////// Respawn
 public:

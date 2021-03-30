@@ -147,19 +147,21 @@ void UFlockingComponent::UpdateShootingPositionVector()
 		ShootingPositionVector = IdealShootingPosition - SoldierLocation;
 	}
 	
-	UNavigationPath* path = navSys->FindPathToLocationSynchronously(GetWorld(), SoldierLocation, ShootingPositionVector, NULL);
+	UNavigationPath* path = navSys->FindPathToLocationSynchronously(GetWorld(), SoldierLocation, SoldierLocation + ShootingPositionVector, NULL);
 
 	FVector ShootingPositionLocalDir;
 	if (path) {
-		if (path->PathPoints.Num() > 1)
+		if (path->PathPoints.Num() > 1) {
 			ShootingPositionLocalDir = path->PathPoints[1];
+			//for (auto Point : path->PathPoints) {
+			//	DrawDebugPoint(GetWorld(), Point, 32, FColor::Cyan);
+			//}
+		}
 		else
 			ShootingPositionLocalDir = Cast<AAIGeneralController>(GetOwner())->get_blackboard()->GetValueAsVector("ShootingPosition");
 	}
 
 	ShootingPositionVector = ShootingPositionLocalDir - SoldierLocation;
-
-	//DrawDebugPoint(GetWorld(), SoldierLocation + ShootingPositionVector, 32, FColor::Cyan);
 }
 
 void UFlockingComponent::UpdateMovementVector()

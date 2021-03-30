@@ -14,6 +14,9 @@ EBTNodeResult::Type ULauchGrenadeBTTaskNode::ExecuteTask(UBehaviorTreeComponent&
 	AAIGeneralController* AIGeneralController = Cast<AAIGeneralController>(OwnerComp.GetOwner());
 
 	ResultState _result = AIGeneralController->LaunchGrenade();
+
+	AIGeneralController->get_blackboard()->SetValueAsBool("LaunchGrenade", false);
+
 	if (_result == ResultState::Success)
 		return EBTNodeResult::Succeeded;
 

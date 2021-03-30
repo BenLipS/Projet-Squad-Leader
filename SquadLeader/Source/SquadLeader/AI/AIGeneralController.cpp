@@ -60,6 +60,7 @@ void AAIGeneralController::Tick(float DeltaSeconds) {
 
 void AAIGeneralController::Sens() {
 	UpdateSeenSoldier();
+	UpdateSeenEnemySoldier();
 	FocusEnemy();
 }
 
@@ -330,6 +331,16 @@ void AAIGeneralController::UpdateSeenSoldier() {
 	}
 	for (auto& Elem : ActorToRemove) {
 		SeenSoldier.Remove(Elem);
+	}
+}
+
+void AAIGeneralController::UpdateSeenEnemySoldier()
+{
+	SeenEnemySoldier.Empty();
+	for (auto& Elem : SeenSoldier) {
+		if (Cast<ASoldier>(Elem)->GetTeam() != GetTeam()) {
+			SeenEnemySoldier.Add(Elem);
+		}
 	}
 }
 

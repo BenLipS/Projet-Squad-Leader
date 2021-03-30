@@ -5,6 +5,9 @@
 #include "Components/SPhereComponent.h"
 #include "../AreaEffect/AreaEffect.h"
 #include "../Soldiers/Soldier.h"
+#include "../Soldiers/AIs/SoldierAI.h"
+#include "../AI/AIClassesController/AssaultAIBasicController.h"
+#include "../AI/AIClassesController/AssaultAISquadController.h"
 
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -98,7 +101,15 @@ void ASL_Projectile::InitVelocity()
 
 	float Azimuth = UKismetMathLibrary::DegAcos(ForwardVector.Z);
 	float Inclination = UKismetMathLibrary::DegAtan2(ForwardVector.Y, ForwardVector.X);
-	
+
+	if (ASoldierAI* AISoldier = Cast<ASoldierAI>(GetOwner()); AISoldier) {
+		if (AAIGeneralController* AI = Cast<AAIGeneralController>(Cast<ASoldierAI>(GetOwner())->Controller); AI) {
+			PitchAdjust = AI->LaunchProjectilePitchAdjust;
+			YawAdjust = AI->LaunchProjectileYawAdjust;
+		}
+	}	
+
+
 	Azimuth += PitchAdjust;
 	if (Azimuth > 180.f)
 	{
