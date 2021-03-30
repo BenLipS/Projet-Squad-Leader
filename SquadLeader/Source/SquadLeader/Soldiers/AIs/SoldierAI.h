@@ -67,14 +67,11 @@ protected:
 
 	virtual void BeginPlay() override;
 
-	virtual FVector lookingAtPosition() override;
-
 	FVector LookingAtPosition;
 
-//////////////// Teamable
 public:
-	virtual TSubclassOf<ASoldierTeam> GetTeam() override;
-	virtual bool SetTeam(TSubclassOf<ASoldierTeam> _Team) override;
+	virtual FVector GetLookingAtPosition() override;
+
 
 //////////////// Abilities
 public:

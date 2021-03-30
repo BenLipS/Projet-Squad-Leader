@@ -62,10 +62,10 @@ public:
 	TSubclassOf<ASoldierAI> ClassAI;
 
 	UFUNCTION()
-	void Init(TSubclassOf<ASoldierTeam> _Team, ASoldierPlayer* _Player);
+	void Init(ASoldierTeam* _Team, ASoldierPlayer* _Player);
 	
 	UPROPERTY()
-	TSubclassOf<ASoldierTeam> Team;
+	ASoldierTeam* Team;
 
 	UPROPERTY()
 	ASoldierPlayer* Leader;
@@ -94,7 +94,7 @@ public:
 	void UpdateMission(const MissionType _MissionType, const FVector& _Location);
 
 	// temp function, need to be replace by more robust code
-	void UpdateSquadTeam(TSubclassOf<ASoldierTeam> _NewTeam);
+	void UpdateSquadTeam(ASoldierTeam* _NewTeam);
 
 	UFUNCTION()
 	void BroadCastSquadData();

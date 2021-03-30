@@ -42,9 +42,12 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Flocking Behaviour")
 		float ObjectifWeight{ 2.5f };
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Flocking Behaviour")
+		float ShootingPositionWeight{ 1.f };
+
 	/* less sacades but more unprecise the greater it gets*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Flocking Behaviour")
-		float MovementVectorScale{ 2.f };
+		float MovementVectorScale{ 300.f };
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Flocking Behaviour")
 		int NumberOfRayForWallAvoidance{ 4 };
@@ -68,10 +71,16 @@ protected:
 		FVector ObjectifVector{ 0.f, 0.f, 0.f };
 
 	UPROPERTY()
+		FVector ShootingPositionVector{ 0.f, 0.f, 0.f };
+
+	UPROPERTY()
 		FVector MovementVector{ 0.f, 0.f, 0.f };
 
 	UPROPERTY()
 		FVector PreviousMovementVector{ 0.f, 0.f, 0.f };
+
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Flocking Behaviour")
+	//	float SeparationRange = 400.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Flocking Behaviour")
 		float DefaultNormalizeVectorTolerance = 0.0001f;
@@ -91,7 +100,7 @@ protected:
 	UFUNCTION()
 		void UpdateNeighbourhood();
 
-	/*Update and normalize vectors*/
+	/*Update*/
 	UFUNCTION()
 		void UpdateCohesionVector();
 
@@ -103,6 +112,9 @@ protected:
 
 	UFUNCTION()
 		void UpdateObjectifVector();
+
+	UFUNCTION()
+		void UpdateShootingPositionVector();
 
 	UFUNCTION()
 		void UpdateMovementVector();

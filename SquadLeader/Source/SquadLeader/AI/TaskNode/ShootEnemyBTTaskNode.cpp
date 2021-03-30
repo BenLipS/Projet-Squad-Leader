@@ -35,6 +35,12 @@ void UShootEnemyBTTaskNode::TickTask(class UBehaviorTreeComponent& OwnerComp, ui
 	}
 	else if (_result == ResultState::Failed)
 		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+	if (_controller->StopCurrentBehavior) {
+		_controller->get_blackboard()->SetValueAsVector("EnemyLocation", FVector());
+		_controller->get_blackboard()->SetValueAsBool("is_attacking", false);
+		_controller->get_blackboard()->SetValueAsObject("FocusActor", NULL);
+		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+	}
 }
 
 /** Permet de définir une description pour la tâche. C'est ce texte qui

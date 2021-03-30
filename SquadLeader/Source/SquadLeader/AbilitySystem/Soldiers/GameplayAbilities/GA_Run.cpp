@@ -7,8 +7,8 @@ UGA_Run::UGA_Run()
 
 	AbilityInputID = ESoldierAbilityInputID::Run;
 	AbilityID = ESoldierAbilityInputID::None;
-	AbilityTags.AddTag(ASoldier::SkillRunTag);
-	ActivationOwnedTags.AddTag(ASoldier::StateRunningTag);
+	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Run")));
+	ActivationOwnedTags.AddTag(FGameplayTag::RequestGameplayTag(FName("State.Running")));
 }
 
 void UGA_Run::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
