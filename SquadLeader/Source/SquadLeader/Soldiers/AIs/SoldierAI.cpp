@@ -78,22 +78,22 @@ void ASoldierAI::SetLookingAtPosition(const FVector &_LookingAtPosition)
 
 bool ASoldierAI::ActivateAbilityFire()
 {
-	return ActivateAbility(ASoldier::SkillFireWeaponTag);
+	return ActivateAbility(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.FireWeapon")));
 }
 
 void ASoldierAI::CancelAbilityFire()
 {
-	CancelAbility(ASoldier::SkillFireWeaponTag);
+	CancelAbility(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.FireWeapon")));
 }
 
 bool ASoldierAI::ActivateAbilityRun()
 {
-	return ActivateAbility(ASoldier::SkillRunTag);
+	return ActivateAbility(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Run")));
 }
 
 void ASoldierAI::CancelAbilityRun()
 {
-	CancelAbility(ASoldier::SkillRunTag);
+	CancelAbility(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Run")));
 }
 
 FVector ASoldierAI::GetRespawnPoint()

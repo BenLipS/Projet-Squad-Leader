@@ -10,8 +10,8 @@ UGA_GiveOrder::UGA_GiveOrder()
 
 	AbilityInputID = ESoldierAbilityInputID::GiveOrder;
 	AbilityID = ESoldierAbilityInputID::None;
-	AbilityTags.AddTag(ASoldier::SkillGiveOrderTag);
-	ActivationOwnedTags.AddTag(ASoldier::StateGivingOrderTag);
+	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.GiveOrder")));
+	ActivationOwnedTags.AddTag(FGameplayTag::RequestGameplayTag(FName("State.GivingOrder")));
 }
 
 void UGA_GiveOrder::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)

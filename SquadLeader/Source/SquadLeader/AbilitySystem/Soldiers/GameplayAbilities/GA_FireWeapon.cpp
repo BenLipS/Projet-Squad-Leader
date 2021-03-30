@@ -10,7 +10,7 @@ UGA_FireWeapon::UGA_FireWeapon()
 
 	AbilityInputID = ESoldierAbilityInputID::BasicAttack;
 	AbilityID = ESoldierAbilityInputID::None;
-	AbilityTags.AddTag(ASoldier::SkillFireWeaponTag);
+	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.FireWeapon")));
 
 	ActivationOwnedTags.AddTag(FGameplayTag::RequestGameplayTag(FName("State.Firing")));
 	ActivationBlockedTags.AddTag(FGameplayTag::RequestGameplayTag(FName("State.ReloadingWeapon")));
@@ -92,7 +92,7 @@ void UGA_FireWeapon::HandleFire()
 void UGA_FireWeapon::ReloadWeapon()
 {
 	ASoldier* SourceSoldier = Cast<ASoldier>(CurrentActorInfo->AvatarActor);
-	SourceSoldier->ActivateAbility(ASoldier::SkillReloadWeaponTag);
+	SourceSoldier->ActivateAbility(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.ReloadWeapon")));
 
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
 }
