@@ -8,6 +8,7 @@
 #include "../../GameState/SquadLeaderGameState.h"
 #include "../Players/SoldierPlayer.h"
 #include "../../AI/AISquadManager.h"
+#include "SquadLeader/Weapons/SL_Weapon.h"
 
 ASoldierPlayerController::ASoldierPlayerController()
 {
@@ -254,4 +255,32 @@ void ASoldierPlayerController::BroadCastManagerData()
 {
 	if (ASL_HUD* CurrentHUD = GetHUD<ASL_HUD>(); CurrentHUD)
 		CurrentHUD->OnSquadChanged(SquadManagerData.SquadData);
+}
+
+void ASoldierPlayerController::Cheat_SuperSoldier()
+{
+	if (ASoldierPlayer* Soldier = GetPawn<ASoldierPlayer>(); Soldier)
+	{
+		const float badassValue = 9'999'999.f;
+
+		Soldier->GetAttributeSet()->SetMaxHealth(badassValue);
+		Soldier->GetAttributeSet()->SetHealth(badassValue);
+		Soldier->GetAttributeSet()->SetMaxShield(badassValue);
+		Soldier->GetAttributeSet()->SetShield(badassValue);
+		Soldier->GetAttributeSet()->SetMoveSpeedWalk(1000.f);
+		Soldier->GetAttributeSet()->SetMoveSpeedCrouch(1000.f);
+		
+		if (ASL_Weapon* Weapon = Soldier->GetCurrentWeapon(); Weapon)
+		{
+			Weapon->ReloadWeapon();
+			Weapon->SetWeaponDamage(badassValue);
+			Weapon->SetHasInfiniteAmmo(true);
+		}
+	}
+}
+
+void ASoldierPlayerController::Cheat_Die()
+{
+	if (ASoldierPlayer* Soldier = GetPawn<ASoldierPlayer>(); Soldier)
+		Soldier->GetAttributeSet()->SetHealth(0.f);
 }

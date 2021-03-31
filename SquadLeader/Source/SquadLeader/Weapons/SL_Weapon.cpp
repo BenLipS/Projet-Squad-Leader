@@ -137,6 +137,11 @@ float ASL_Weapon::GetWeaponDamage() const noexcept
 	return Damage;
 }
 
+void ASL_Weapon::SetWeaponDamage(const float _Damage) noexcept
+{
+	Damage = _Damage;
+}
+
 float ASL_Weapon::GetFieldOfViewAim() const noexcept
 {
 	return FieldOfViewAim;

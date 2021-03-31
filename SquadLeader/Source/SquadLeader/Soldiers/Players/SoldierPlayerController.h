@@ -117,4 +117,11 @@ public:
 
 	UFUNCTION()
 	void BroadCastManagerData();
+
+//////////////// Cheat
+	UFUNCTION(exec)
+	void Cheat_SuperSoldier();
+
+	UFUNCTION(exec)
+	void Cheat_Die();
 };

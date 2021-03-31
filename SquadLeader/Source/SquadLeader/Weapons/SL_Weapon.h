@@ -100,6 +100,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Stats|Ammo")
 	float GetWeaponDamage() const noexcept;
 
+	UFUNCTION(BlueprintCallable, Category = "Stats|Ammo")
+	void SetWeaponDamage(const float _Damage) noexcept;
+
 	UFUNCTION(BlueprintCallable, Category = "Stats")
 	float GetFieldOfViewAim() const noexcept;
 
