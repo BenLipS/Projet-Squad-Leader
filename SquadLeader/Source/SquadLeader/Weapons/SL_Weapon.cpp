@@ -163,6 +163,11 @@ float ASL_Weapon::GetTimeBetweenShots() const noexcept
 	return TimeBetweenShots;
 }
 
+void ASL_Weapon::SetTimeBetweenShots(const float _Time) noexcept
+{
+	TimeBetweenShots = _Time;
+}
+
 int32 ASL_Weapon::GetCurrentAmmo() const noexcept
 {
 	return CurrentAmmo;

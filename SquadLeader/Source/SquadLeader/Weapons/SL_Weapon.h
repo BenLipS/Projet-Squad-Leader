@@ -125,6 +125,9 @@ public:
 	float GetTimeBetweenShots() const noexcept;
 
 	UFUNCTION(BlueprintCallable, Category = "Stats|Ammo")
+	void SetTimeBetweenShots(const float _Time) noexcept;
+
+	UFUNCTION(BlueprintCallable, Category = "Stats|Ammo")
 	int32 GetCurrentAmmo() const noexcept;
 
 	UFUNCTION(BlueprintCallable, Category = "Stats|Ammo")
