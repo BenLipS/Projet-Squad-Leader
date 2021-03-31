@@ -22,10 +22,9 @@ class SQUADLEADER_API ASL_Trace : public AGameplayAbilityTargetActor
 	GENERATED_BODY()
 	
 public:
-    ASL_Trace();
+	ASL_Trace();
 
 	virtual void BeginPlay() override;
-	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	virtual void Tick(float DeltaSeconds) override;
 
 	// Base targeting spread (degrees)
@@ -52,10 +51,6 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, config, meta = (ExposeOnSpawn = true), Category = "Trace")
 	FCollisionProfileName TraceProfile;
-
-	// Maximum hit results to return per trace. 0 just returns the trace end point.
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (ExposeOnSpawn = true), Category = "Trace")
-	int32 MaxHitResultsPerTrace;
 
 	// Number of traces to perform at one time. Single bullet weapons like rilfes will only do one trace.
 	// Multi-bullet weapons like shotguns can do multiple traces. Not intended to be used with PersistentHits.
@@ -110,7 +105,4 @@ protected:
 
 	virtual void DoTrace(TArray<FHitResult>& HitResults, const UWorld* World, const FGameplayTargetDataFilterHandle FilterHandle, const FVector& Start, const FVector& End, FName ProfileName, const FCollisionQueryParams Params) PURE_VIRTUAL(ASL_Trace, return;);
 	virtual void ShowDebugTrace(TArray<FHitResult>& HitResults, EDrawDebugTrace::Type DrawDebugType, float Duration = 2.0f) PURE_VIRTUAL(ASL_Trace, return;);
-
-	virtual AGameplayAbilityWorldReticle* SpawnReticleActor(FVector Location, FRotator Rotation);
-	virtual void DestroyReticleActors();
 };

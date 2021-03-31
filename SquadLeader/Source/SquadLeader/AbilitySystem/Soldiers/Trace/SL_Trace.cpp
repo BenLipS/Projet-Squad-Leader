@@ -14,7 +14,6 @@ TargetingSpreadIncrement{ 0.f },
 TargetingSpreadMax{ 0.f },
 CurrentTargetingSpread{ 0.f },
 MaxRange{ 999999.f },
-MaxHitResultsPerTrace{ 1 },
 NumberOfTraces{ 1 },
 bIgnoreBlockingHits{ false },
 bUsePersistentHitResults{ false }
@@ -67,16 +66,6 @@ void ASL_Trace::StartTargeting(UGameplayAbility* Ability)
 
 	OwningAbility = Ability;
 	SourceActor = Ability->GetCurrentActorInfo()->AvatarActor.Get();
-
-	// This is a lazy way of emptying and repopulating the ReticleActors.
-	// We could come up with a solution that reuses them.
-	DestroyReticleActors();
-
-	if (ReticleClass)
-	{
-		for (int32 i = 0; i < MaxHitResultsPerTrace * NumberOfTraces; i++)
-			SpawnReticleActor(GetActorLocation(), GetActorRotation());
-	}
 
 	if (bUsePersistentHitResults)
 		PersistentHitResults.Empty();
@@ -131,13 +120,6 @@ void ASL_Trace::BeginPlay()
 	SetActorTickEnabled(false);
 }
 
-void ASL_Trace::EndPlay(const EEndPlayReason::Type EndPlayReason)
-{
-	DestroyReticleActors();
-
-	Super::EndPlay(EndPlayReason);
-}
-
 void ASL_Trace::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
@@ -159,27 +141,10 @@ void ASL_Trace::LineTraceWithFilter(TArray<FHitResult>& OutHitResults, const UWo
 {
 	check(World);
 
-	TArray<FHitResult> HitResults;
-	World->LineTraceMultiByProfile(HitResults, Start, End, ProfileName, Params);
+	FHitResult HitResult;
+	World->LineTraceSingleByProfile(HitResult, Start, End, ProfileName, Params);
 
-	TArray<FHitResult> FilteredHitResults;
-
-	// Start param could be player ViewPoint. We want HitResult to always display the StartLocation.
-	FVector TraceStart = StartLocation.GetTargetingTransform().GetLocation();
-
-	for (int32 HitIdx = 0; HitIdx < HitResults.Num(); ++HitIdx)
-	{
-		FHitResult& Hit = HitResults[HitIdx];
-
-		if (!Hit.Actor.IsValid() || FilterHandle.FilterPassesForActor(Hit.Actor))
-		{
-			Hit.TraceStart = TraceStart;
-			Hit.TraceEnd = End;
-
-			FilteredHitResults.Add(Hit);
-		}
-	}
-	OutHitResults = FilteredHitResults;
+	OutHitResults = { HitResult };
 	return;
 }
 
@@ -205,8 +170,6 @@ bool ASL_Trace::ClipCameraRayToAbilityRange(FVector CameraLocation, FVector Came
 void ASL_Trace::StopTargeting()
 {
 	SetActorTickEnabled(false);
-
-	DestroyReticleActors();
 
 	// Clear added callbacks
 	TargetDataReadyDelegate.Clear();
@@ -277,43 +240,10 @@ TArray<FHitResult> ASL_Trace::PerformTrace()
 		TArray<FHitResult> TraceHitResults;
 		DoTrace(TraceHitResults, SourceActor->GetWorld(), Filter, TraceStart, TraceEnd, TraceProfile.Name, Params);
 
-		// Remove extra hits to MaxHitResultsPerTrace
-		for (int32 i = 0; i < TraceHitResults.Num() - MaxHitResultsPerTrace; ++i)
-			TraceHitResults.Pop();
-
-		for (int32 j = TraceHitResults.Num() - 1; j >= 0; --j)
-		{
-			FHitResult& HitResult = TraceHitResults[j];
-
-			int32 ReticleIndex = TraceIndex * MaxHitResultsPerTrace + j;
-			if (ReticleIndex < ReticleActors.Num())
-			{
-				if (AGameplayAbilityWorldReticle* LocalReticleActor = ReticleActors[ReticleIndex].Get())
-				{
-					const bool bHitActor = HitResult.Actor != nullptr;
-
-					if (bHitActor && !HitResult.bBlockingHit)
-					{
-						LocalReticleActor->SetActorHiddenInGame(false);
-
-						const FVector ReticleLocation = (bHitActor && LocalReticleActor->bSnapToTargetedActor) ? HitResult.Actor->GetActorLocation() : HitResult.Location;
-
-						LocalReticleActor->SetActorLocation(ReticleLocation);
-						LocalReticleActor->SetIsTargetAnActor(bHitActor);
-					}
-					else
-					{
-						LocalReticleActor->SetActorHiddenInGame(true);
-					}
-				}
-			}
-		}
-
 		if (TraceHitResults.Num() < 1)
 		{
 			// If there were no hits, add a default HitResult at the end of the trace
 			FHitResult HitResult;
-			// Start param could be player ViewPoint. We want HitResult to always display the StartLocation.
 			HitResult.TraceStart = StartLocation.GetTargetingTransform().GetLocation();
 			HitResult.TraceEnd = TraceEnd;
 			HitResult.Location = TraceEnd;
@@ -323,45 +253,4 @@ TArray<FHitResult> ASL_Trace::PerformTrace()
 		ReturnHitResults.Append(TraceHitResults);
 	}
 	return ReturnHitResults;
-}
-
-AGameplayAbilityWorldReticle* ASL_Trace::SpawnReticleActor(FVector Location, FRotator Rotation)
-{
-	if (ReticleClass)
-	{
-		AGameplayAbilityWorldReticle* SpawnedReticleActor = GetWorld()->SpawnActor<AGameplayAbilityWorldReticle>(ReticleClass, Location, Rotation);
-		if (SpawnedReticleActor)
-		{
-			SpawnedReticleActor->InitializeReticle(this, MasterPC, ReticleParams);
-			SpawnedReticleActor->SetActorHiddenInGame(true);
-			ReticleActors.Add(SpawnedReticleActor);
-
-			// This is to catch cases of playing on a listen server where we are using a replicated reticle actor.
-			// (In a client controlled player, this would only run on the client and therefor never replicate. If it runs
-			// on a listen server, the reticle actor may replicate. We want consistancy between client/listen server players.
-			// Just saying 'make the reticle actor non replicated' isnt a good answer, since we want to mix and match reticle
-			// actors and there may be other targeting types that want to replicate the same reticle actor class).
-			if (!ShouldProduceTargetDataOnServer)
-			{
-				SpawnedReticleActor->SetReplicates(false);
-			}
-
-			return SpawnedReticleActor;
-		}
-	}
-
-	return nullptr;
-}
-
-void ASL_Trace::DestroyReticleActors()
-{
-	for (int32 i = ReticleActors.Num() - 1; i >= 0; i--)
-	{
-		if (ReticleActors[i].IsValid())
-		{
-			ReticleActors[i].Get()->Destroy();
-		}
-	}
-
-	ReticleActors.Empty();
 }
