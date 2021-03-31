@@ -15,5 +15,7 @@ class SQUADLEADER_API UNotificationWidgetElement : public USL_UserWidget, public
 {
 	GENERATED_BODY()
 	
+	//-----IUserObjectListEntry-----
+protected:
 	virtual void NativeOnListItemObjectSet(UObject* ListItemObject);
 };

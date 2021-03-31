@@ -17,7 +17,7 @@ class SQUADLEADER_API IWeaponDelegateInterface : public IWeaponInterface
 {
 	GENERATED_BODY()
 
-protected:
+private:
 	TArray<IWeaponInterface*> WeaponDelegates;
 
 public:

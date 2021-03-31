@@ -181,7 +181,10 @@ void ASL_Weapon::SetCurrentAmmo(const int32 _NewAmmo)
 		if (ASoldierPlayerController* PC = SP->GetController<ASoldierPlayerController>(); PC)
 		{
 			if (ASL_HUD* HUD = PC->GetHUD<ASL_HUD>(); HUD)
+			{
 				HUD->OnAmmoChanged(CurrentAmmo);
+				HUD->OnTextNotification_Received(FText::FromString(CurrentAmmo + " ammo left"));
+			}
 		}
 	}
 }

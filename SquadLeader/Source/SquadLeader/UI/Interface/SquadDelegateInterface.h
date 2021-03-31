@@ -22,8 +22,7 @@ class SQUADLEADER_API ISquadDelegateInterface : public ISquadInterface
 {
 	GENERATED_BODY()
 
-protected:
-	//TArray<TScriptInterface<IPlayerShieldInterface*>> Delegates;
+private:
 	TArray<ISquadInterface*> SquadDelegates;
 
 public:
