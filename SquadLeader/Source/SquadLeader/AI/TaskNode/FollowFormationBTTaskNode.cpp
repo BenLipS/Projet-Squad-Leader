@@ -18,26 +18,36 @@ EBTNodeResult::Type UFollowFormationBTTaskNode::ExecuteTask(UBehaviorTreeCompone
 	AAISquadController* AISquadController = Cast<AAISquadController>(OwnerComp.GetOwner());
 	// Appeler la fonctionUpdateNextTargetPoint qui contient la logique pour sélectionner
 	 // le prochain TargetPoint
+	HysteresisDoFollow = false;
 	AISquadController->FollowFormation();
+	AISquadController->FollowFlocking();
 	//Nous retournons Succeeded
 	return EBTNodeResult::InProgress;
 }
 
 void UFollowFormationBTTaskNode::TickTask(class UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) {
 	AAISquadController* AISquadController = Cast<AAISquadController>(OwnerComp.GetOwner());
+	
+	if ((AISquadController->get_blackboard()->GetValueAsVector("FormationLocation") - (Cast<AAISquadController>(OwnerComp.GetOwner())->GetPawn()->GetActorLocation())).Size() < AISquadController->StopHysteresisDistanceForFormation)
+		HysteresisDoFollow = false;
+	if ((AISquadController->get_blackboard()->GetValueAsVector("FormationLocation") - (Cast<AAISquadController>(OwnerComp.GetOwner())->GetPawn()->GetActorLocation())).Size() > AISquadController->HysteresisDistanceForFormation)
+		HysteresisDoFollow = true;
 
-	EPathFollowingRequestResult::Type MoveToActorResult = AISquadController->FollowFormation();
+	if (HysteresisDoFollow) {
+		AISquadController->FollowFormation();
+		EPathFollowingRequestResult::Type MoveToActorResult = AISquadController->FollowFlocking();
+	}
 
-	if (MoveToActorResult == EPathFollowingRequestResult::AlreadyAtGoal && !AISquadController->get_blackboard()->GetValueAsBool("IsInFormation") || AISquadController->get_blackboard()->GetValueAsBool("HasOrder") || AISquadController->StopCurrentBehavior) {
+	if (/*MoveToActorResult == EPathFollowingRequestResult::AlreadyAtGoal && */!AISquadController->get_blackboard()->GetValueAsBool("IsInFormation") || AISquadController->get_blackboard()->GetValueAsBool("HasOrder") || AISquadController->StopCurrentBehavior) {
 		Cast<ASoldierAI>(AISquadController->GetPawn())->CancelAbilityRun();
 		AISquadController->RunToFormation = false;
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	}
-	if (MoveToActorResult == EPathFollowingRequestResult::Failed) {
-		Cast<ASoldierAI>(AISquadController->GetPawn())->CancelAbilityRun();
-		AISquadController->RunToFormation = false;
-		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
-	}
+	//if (MoveToActorResult == EPathFollowingRequestResult::Failed) {
+	//	Cast<ASoldierAI>(AISquadController->GetPawn())->CancelAbilityRun();
+	//	AISquadController->RunToFormation = false;
+	//	FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+	//}
 
 }
 

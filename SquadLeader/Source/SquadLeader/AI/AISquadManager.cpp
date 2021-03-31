@@ -83,9 +83,9 @@ void AAISquadManager::Tick(float DeltaTime)
 {
 	//if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Black, FString::Printf(TEXT("Tick for: %s"), *Leader->GetName()));
 
-	if (Mission->Type == MissionType::Formation) {
-		UpdateFormation();
-	}
+	//if (Mission->Type == MissionType::Formation) {
+	UpdateFormation();
+	//}
 
 	Super::Tick(DeltaTime);
 		

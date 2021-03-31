@@ -21,11 +21,24 @@ protected:
 
 	bool GetValidFormationPos();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Formation Behaviour")
-	float RuningDistanceForFormation = 100.f;
+	UPROPERTY()
+	bool IsRunning = false;
+
+	UPROPERTY()
+	bool HysteresisDoRunningFormation = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Formation Behaviour")
-	float StopRuningDistanceForFormation = 50.f;
+	float HysteresisRunningDistanceForFormation = 500.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Formation Behaviour")
+	float StopHysteresisRunningDistanceForFormation = 300.f;
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Formation Behaviour")
+	float HysteresisDistanceForFormation = 300.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Formation Behaviour")
+	float StopHysteresisDistanceForFormation = 150.f;
 
 /////////// Respawn
 public:
@@ -46,7 +59,7 @@ public:
 public:
 	/* For BT Task  */
 	UFUNCTION(BlueprintCallable, Category = "Formation Behaviour")
-	EPathFollowingRequestResult::Type FollowFormation();
+	void FollowFormation();
 
 	virtual void Die() override;
 

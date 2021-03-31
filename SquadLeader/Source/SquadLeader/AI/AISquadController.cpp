@@ -75,21 +75,34 @@ void AAISquadController::Init()
 
 }
 
-EPathFollowingRequestResult::Type AAISquadController::FollowFormation() {
+void AAISquadController::FollowFormation() {
 	GetValidFormationPos();
-	EPathFollowingRequestResult::Type _movetoResult = MoveToLocation(blackboard->GetValueAsVector("FormationLocation"), 5.f);
+	//EPathFollowingRequestResult::Type _movetoResult = MoveToLocation(blackboard->GetValueAsVector("FormationLocation"), 5.f);
 	DrawDebugPoint(GetWorld(), blackboard->GetValueAsVector("FormationLocation"), 12, FColor::Purple);
-	if ((blackboard->GetValueAsVector("FormationLocation") - GetPawn()->GetActorLocation()).Size() >= RuningDistanceForFormation && !RunToFormation) {
+
+	if ((blackboard->GetValueAsVector("FormationLocation") - (GetPawn()->GetActorLocation())).Size() < StopHysteresisRunningDistanceForFormation)
+		HysteresisDoRunningFormation = false;
+	if ((blackboard->GetValueAsVector("FormationLocation") - (GetPawn()->GetActorLocation())).Size() > HysteresisRunningDistanceForFormation)
+		HysteresisDoRunningFormation = true;
+
+	if (HysteresisDoRunningFormation && !IsRunning) {
 		Cast<ASoldierAI>(GetPawn())->ActivateAbilityRun();
-		RunToFormation = true;
+		IsRunning = true;
 	}
-	else if ((blackboard->GetValueAsVector("FormationLocation") - GetPawn()->GetActorLocation()).Size() < StopRuningDistanceForFormation) {
-		DrawDebugPoint(GetWorld(), GetPawn()->GetActorLocation(), 32, FColor::Red);
+	else if ((blackboard->GetValueAsVector("FormationLocation") - (GetPawn()->GetActorLocation())).Size() <= StopHysteresisRunningDistanceForFormation){
 		Cast<ASoldierAI>(GetPawn())->CancelAbilityRun();
-		RunToFormation = false;
+		IsRunning = false;
 	}
 
-	return _movetoResult;
+	//if ((blackboard->GetValueAsVector("FormationLocation") - GetPawn()->GetActorLocation()).Size() >= RuningDistanceForFormation && !RunToFormation) {
+	//	Cast<ASoldierAI>(GetPawn())->ActivateAbilityRun();
+	//	RunToFormation = true;
+	//}
+	//else if ((blackboard->GetValueAsVector("FormationLocation") - GetPawn()->GetActorLocation()).Size() < StopRuningDistanceForFormation) {
+	//	DrawDebugPoint(GetWorld(), GetPawn()->GetActorLocation(), 32, FColor::Red);
+	//	Cast<ASoldierAI>(GetPawn())->CancelAbilityRun();
+	//	RunToFormation = false;
+	//}
 }
 
 void AAISquadController::Die() {

@@ -45,6 +45,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Flocking Behaviour")
 		float ShootingPositionWeight{ 1.f };
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Flocking Behaviour")
+		float FollowFormationWeight{ 1.f };
+
 	/* less sacades but more unprecise the greater it gets*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Flocking Behaviour")
 		float MovementVectorScale{ 300.f };
@@ -72,6 +75,9 @@ protected:
 
 	UPROPERTY()
 		FVector ShootingPositionVector{ 0.f, 0.f, 0.f };
+
+	UPROPERTY()
+		FVector FollowFormationVector{ 0.f, 0.f, 0.f };
 
 	UPROPERTY()
 		FVector MovementVector{ 0.f, 0.f, 0.f };
@@ -121,6 +127,9 @@ protected:
 
 	UFUNCTION()
 		void UpdateWallAvoidanceVector();
+
+	UFUNCTION()
+		void UpdateFollowFormationVector();
 
 	UFUNCTION()
 		void DrawDebug();

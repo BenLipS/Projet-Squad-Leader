@@ -3,6 +3,7 @@
 
 #include "FlockingComponent.h"
 #include "../AIGeneralController.h"
+#include "../AISquadController.h"
 #include "NavigationSystem.h"
 #include "DrawDebugHelpers.h"
 #include "BehaviorTree/BlackboardComponent.h"
@@ -39,6 +40,7 @@ void UFlockingComponent::ResetVectors()
 	ObjectifVector = FVector::ZeroVector;
 	WallAvoidanceVector = FVector::ZeroVector;
 	ShootingPositionVector = FVector::ZeroVector;
+	FollowFormationVector = FVector::ZeroVector;
 }
 
 void UFlockingComponent::UpdateNeighbourhood()
@@ -179,13 +181,16 @@ void UFlockingComponent::UpdateMovementVector()
 	ObjectifVector.Z = 0;
 	ShootingPositionVector = ShootingPositionVector.GetSafeNormal(DefaultNormalizeVectorTolerance);
 	ShootingPositionVector.Z = 0;
+	FollowFormationVector = FollowFormationVector.GetSafeNormal(DefaultNormalizeVectorTolerance);
+	FollowFormationVector.Z = 0;
 
 	MovementVector = AlignementVector * AlignementWeight
 		+ CohesionVector * CohesionWeight
 		+ SeparationVector * SeparationWeight
 		+ WallAvoidanceVector * WallAvoidanceWeight
 		+ ObjectifVector * ObjectifWeight
-		+ ShootingPositionVector * ShootingPositionWeight;
+		+ ShootingPositionVector * ShootingPositionWeight
+		+ FollowFormationVector * FollowFormationWeight;
 
 	MovementVector = MovementVector.GetSafeNormal(DefaultNormalizeVectorTolerance);
 	MovementVector.Z = 0;
@@ -216,6 +221,25 @@ void UFlockingComponent::UpdateWallAvoidanceVector()
 		WallAvoidanceVector += WallAvoidanceForceComponent + WallAvoidanceVector * (5 / NbOfHit);
 }
 
+void UFlockingComponent::UpdateFollowFormationVector()
+{
+	FVector FormationPos = Cast<AAISquadController>(GetOwner())->get_blackboard()->GetValueAsVector("FormationLocation");
+
+	FVector SoldierLocation = Cast<ASoldier>(Cast<AAIGeneralController>(GetOwner())->GetPawn())->GetLocation();
+	UNavigationSystemV1* navSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
+	UNavigationPath* path = navSys->FindPathToLocationSynchronously(GetWorld(), SoldierLocation, FormationPos, NULL);
+
+	FollowFormationVector = FormationPos;
+
+	FVector FormationLocalDir;
+	if (path) {
+		if (path->PathPoints.Num() > 1)
+			FollowFormationVector = path->PathPoints[1] - SoldierLocation;
+		else
+			FollowFormationVector = FormationPos;
+	}
+}
+
 void UFlockingComponent::DrawDebug()
 {
 	FVector SoldierLocation = Cast<ASoldier>(Cast<AAIGeneralController>(GetOwner())->GetPawn())->GetLocation();
@@ -227,6 +251,7 @@ void UFlockingComponent::DrawDebug()
 	DrawDebugLine(GetWorld(), SoldierLocation, SoldierLocation + ObjectifVector * ObjectifWeight * 200, FColor::Yellow, false, -1.f, '\000', 10); /*Objectif vector*/
 	DrawDebugLine(GetWorld(), SoldierLocation, SoldierLocation + WallAvoidanceVector * WallAvoidanceWeight * 200, FColor::Purple, false, -1.f, '\000', 10); /*Wall avoidance vector*/
 	DrawDebugLine(GetWorld(), SoldierLocation, SoldierLocation + ShootingPositionVector * ShootingPositionWeight * 200, FColor::Cyan, false, -1.f, '\000', 10); /*Wall avoidance vector*/
+	DrawDebugLine(GetWorld(), SoldierLocation, SoldierLocation + FollowFormationVector * FollowFormationWeight * 200, FColor::Emerald, false, -1.f, '\000', 10); /*FollowFlocking*/
 	DrawDebugLine(GetWorld(), SoldierLocation, SoldierLocation + MovementVector, FColor::Black); /*Movement vector*/
 	DrawDebugPoint(GetWorld(), Cast<AAIGeneralController>(GetOwner())->GetObjectifLocation(), 12, FColor::Purple);
 	DrawDebugPoint(GetWorld(), Cast<AAIGeneralController>(GetOwner())->get_blackboard()->GetValueAsVector("ShootingPosition"), 12, FColor::Cyan);
@@ -238,24 +263,31 @@ void UFlockingComponent::UpdateFlockingPosition(float DeltaSeconds)
 	ResetVectors();
 
 	UpdateNeighbourhood();
-
-	if (SeenBoids.Num() > 0) { //because this involve /0
-		UpdateAlignementVector();
-
-		UpdateCohesionVector();
-
-		UpdateSeparationVector();
-	}
-
-	UpdateWallAvoidanceVector();
-
-	if (Cast<AAIGeneralController>(GetOwner())->get_blackboard()->GetValueAsBool("is_attacking")) {
-		UpdateShootingPositionVector();
+	if (AAISquadController* AISquad = Cast<AAISquadController>(GetOwner()); AISquad && AISquad->get_blackboard()->GetValueAsBool("IsInFormation")) {
+		UpdateFollowFormationVector();
+		if (SeenBoids.Num() > 0) { //because this involve /0
+			UpdateSeparationVector();
+		}
+		UpdateWallAvoidanceVector();
 	}
 	else {
-		UpdateObjectifVector();
-	}
+		if (SeenBoids.Num() > 0) { //because this involve /0
+			UpdateAlignementVector();
 
+			UpdateCohesionVector();
+
+			UpdateSeparationVector();
+		}
+
+		UpdateWallAvoidanceVector();
+
+		if (Cast<AAIGeneralController>(GetOwner())->get_blackboard()->GetValueAsBool("is_attacking")) {
+			UpdateShootingPositionVector();
+		}
+		else {
+			UpdateObjectifVector();
+		}
+	}
 	UpdateMovementVector();
 
 	//TODO Check if the new movement vector is not too opposit to the previous one

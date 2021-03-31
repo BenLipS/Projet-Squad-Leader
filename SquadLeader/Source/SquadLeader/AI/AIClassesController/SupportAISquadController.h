@@ -9,7 +9,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(Blueprintable)
 class SQUADLEADER_API ASupportAISquadController : public AAISquadController
 {
 	GENERATED_BODY()
@@ -20,9 +20,9 @@ public:
 
 	virtual void setup_BehaviorTree() override;
 
-	UPROPERTY(BlueprintReadWrite, Category = "Heal")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Heal")
 	float RatioBeforeHeal = 0.6f;
 
-	UPROPERTY(BlueprintReadWrite, Category = "Heal")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Heal")
 	float SinglePlayerRatioBeforeHeal = 0.2f;
 };
