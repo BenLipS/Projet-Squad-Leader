@@ -316,6 +316,10 @@ void ASoldier::DeadTagChanged(const FGameplayTag _CallbackTag, int32 _NewCount)
 			UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 			AnimInstance->Montage_SetEndDelegate(Respawn_SoldierMontageEndedDelegate, RespawnMontage);
 		}
+		else
+		{
+			OnRespawnMontageCompleted(nullptr, false);
+		}
 	}
 }
 
