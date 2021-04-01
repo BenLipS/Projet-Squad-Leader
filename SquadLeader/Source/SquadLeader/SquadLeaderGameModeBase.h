@@ -24,6 +24,10 @@ public:
 	virtual void PreLogin(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage) override;
 	virtual void Logout(AController* Exiting) override;
 
+public:
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "GameData")
+		int NbMaxPlayer = 6;
+
 protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Respawn")
 		float RespawnDelay;

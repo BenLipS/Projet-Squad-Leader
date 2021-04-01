@@ -55,7 +55,7 @@ void ASquadLeaderGameModeBase::PreLogin(const FString& Options, const FString& A
 {
 	// Test if the max number of player is reached
 	auto AlreadyConnectedPlayerNumber = GameState->PlayerArray.Num();
-	if (AlreadyConnectedPlayerNumber < 6)
+	if (AlreadyConnectedPlayerNumber < NbMaxPlayer)
 	{
 
 		// Check if it is still time to log in (only on InitGameState)
