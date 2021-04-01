@@ -71,9 +71,6 @@ protected:
 public:
 	FGameplayTag GetFireMode() const noexcept;
 
-	static FGameplayTag FireModeAutomaticTag;
-	static FGameplayTag FireModeSemiAutoTag;
-
 protected:
 	// Cache tags
 	FGameplayTag WeaponAbilityTag;
@@ -100,6 +97,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Stats|Ammo")
 	float GetWeaponDamage() const noexcept;
 
+	UFUNCTION(BlueprintCallable, Category = "Stats|Ammo")
+	void SetWeaponDamage(const float _Damage) noexcept;
+
 	UFUNCTION(BlueprintCallable, Category = "Stats")
 	float GetFieldOfViewAim() const noexcept;
 
@@ -108,10 +108,10 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Replicated, Category = "Stats|Ammo")
 	float TimeBetweenShots;
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Replicated/*Using = OnRep_Ammo*/, Category = "Stats|Ammo")
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Replicated, Category = "Stats|Ammo")
 	int32 CurrentAmmo;
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Replicated/*Using = OnRep_MaxAmmo*/, Category = "Stats|Ammo")
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Replicated, Category = "Stats|Ammo")
 	int32 MaxAmmo;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Stats|Ammo")
@@ -120,6 +120,9 @@ protected:
 public:
 	UFUNCTION(BlueprintCallable, Category = "Stats|Ammo")
 	float GetTimeBetweenShots() const noexcept;
+
+	UFUNCTION(BlueprintCallable, Category = "Stats|Ammo")
+	void SetTimeBetweenShots(const float _Time) noexcept;
 
 	UFUNCTION(BlueprintCallable, Category = "Stats|Ammo")
 	int32 GetCurrentAmmo() const noexcept;
@@ -156,31 +159,35 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Stats|Ammo")
 	bool HasInfiniteAmmo() const noexcept;
 
-	UFUNCTION()
-	virtual void OnRep_Ammo(int32 _OldPrimaryClipAmmo);
-
-	UFUNCTION()
-	virtual void OnRep_MaxAmmo(int32 _OldMaxPrimaryClipAmmo);
-
-// Spread
+// Accuracy
 protected:
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Stats|Spread")
+	// Constant spread on fire. It defines the angle of the cone to randomly generate a fire
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Stats|Accuracy")
 	float BaseSpread;
 
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Stats|Spread")
+	// Multiplier of the final spread when aiming
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Stats|Accuracy")
+	float AimingSpreadMod;
+
+	// Increment this value to the final spread after a fire. This is accumulated for automatic weapon
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Stats|Accuracy")
 	float TargetingSpreadIncrement;
 
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Stats|Spread")
+	// Max increase of the spread.This works with TargetingSpreadIncrement
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Stats|Accuracy")
 	float TargetingSpreadMax;
 
 public:
-	UFUNCTION(BlueprintCallable, Category = "Stats|Spread")
+	UFUNCTION(BlueprintCallable, Category = "Stats|Accuracy")
 	float GetBaseSpread() const noexcept;
 
-	UFUNCTION(BlueprintCallable, Category = "Stats|Spread")
+	UFUNCTION(BlueprintCallable, Category = "Stats|Accuracy")
+	float GetAimingSpreadMod() const noexcept;
+
+	UFUNCTION(BlueprintCallable, Category = "Stats|Accuracy")
 	float GetTargetingSpreadIncrement() const noexcept;
 
-	UFUNCTION(BlueprintCallable, Category = "Stats|Spread")
+	UFUNCTION(BlueprintCallable, Category = "Stats|Accuracy")
 	float GetTargetingSpreadMax() const noexcept;
 
 // Collision
@@ -193,7 +200,6 @@ public:
 	bool bDebugTrace = true;
 
 //////////////// Traces
-	// TODO: Only have one generic trace that will be set from blueprint ?
 protected:
 	UPROPERTY()
 	ASL_LineTrace* LineTraceTargetActor;

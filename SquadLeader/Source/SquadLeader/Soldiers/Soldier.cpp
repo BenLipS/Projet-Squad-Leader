@@ -180,9 +180,11 @@ void ASoldier::InitMovements()
 
 void ASoldier::ResetWeapons()
 {
-	// TODO complete here
-	//for (AWeapon* Weapon : Inventory)
-		//Weapon->Reset();
+	if (GetLocalRole() == ROLE_Authority || GetLocalRole() == ROLE_AutonomousProxy)
+	{
+		for (ASL_Weapon* Weapon : Inventory.Weapons)
+			Weapon->ResetWeapon();
+	}
 }
 
 void ASoldier::LockControls()
@@ -316,6 +318,10 @@ void ASoldier::DeadTagChanged(const FGameplayTag _CallbackTag, int32 _NewCount)
 			UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 			AnimInstance->Montage_SetEndDelegate(Respawn_SoldierMontageEndedDelegate, RespawnMontage);
 		}
+		else
+		{
+			OnRespawnMontageCompleted(nullptr, false);
+		}
 	}
 }
 
@@ -416,6 +422,31 @@ void ASoldier::Turn(const float _Val)
 			SyncControlRotation = PlayerController->GetControlRotation();
 		}
 	}
+}
+
+FVector ASoldier::GetLookingAtPosition(const float _MaxRange) const
+{
+	FCollisionQueryParams Params(SCENE_QUERY_STAT(AGSGATA_LineTrace), false);
+	Params.bReturnPhysicalMaterial = true;
+	Params.AddIgnoredActor(this);
+	Params.bIgnoreBlocks = false;
+
+	FVector ViewStart = GetActorLocation();
+	FRotator ViewRot = GetActorRotation();
+
+	if (APlayerController* PC = Cast<APlayerController>(GetController()); PC)
+		PC->GetPlayerViewPoint(ViewStart, ViewRot);
+
+	const FVector ViewDir = ViewRot.Vector();
+	FVector ViewEnd = ViewStart + (ViewDir * _MaxRange);
+
+	// Get first blocking hit
+	FHitResult HitResult;
+	GetWorld()->LineTraceSingleByChannel(HitResult, ViewStart, ViewEnd, ECC_Player, Params);
+
+	//::DrawDebugLine(GetWorld(), ViewStart, HitResult.bBlockingHit ? HitResult.Location : ViewEnd, FColor::Blue, false, 2.f);
+
+	return HitResult.bBlockingHit ? HitResult.Location : ViewEnd;
 }
 
 // TODO: For now, we directly change the move speed multiplier with a setter. This is should be changed 
@@ -619,22 +650,6 @@ bool ASoldier::ClientSyncCurrentWeapon_Validate(ASL_Weapon* _InWeapon)
 	return true;
 }
 
-
-FVector ASoldier::GetLookingAtPosition()
-{
-	FHitResult OutHit;
-
-	FVector StartLocation = ThirdPersonCameraComponent->GetComponentTransform().GetLocation();
-	FVector ForwardVector = ThirdPersonCameraComponent->GetForwardVector();
-	FVector EndLocation = StartLocation + ForwardVector * 10000.f;
-
-	FCollisionQueryParams CollisionParams;
-	CollisionParams.AddIgnoredActor(this);
-
-	GetWorld()->LineTraceSingleByChannel(OutHit, StartLocation, EndLocation, ECollisionChannel::ECC_WorldStatic, CollisionParams);
-	return OutHit.bBlockingHit ? OutHit.Location : EndLocation;
-}
-
 int32 ASoldier::GetCharacterLevel() const
 {
 	if (AttributeSet)
@@ -707,6 +722,10 @@ void ASoldier::Respawn()
 	EffectTagsToRemove.AddTag(FGameplayTag::RequestGameplayTag(FName("State.Fighting"))); // Make sure all passive are available on respawn
 	EffectTagsToRemove.AddTag(FGameplayTag::RequestGameplayTag(FName("State.Dead")));
 	AbilitySystemComponent->RemoveActiveEffectsWithGrantedTags(EffectTagsToRemove);
+}
+
+void ASoldier::OnReceiveDamage(const FVector& _ImpactPoint, const FVector& _SourcePoint)
+{
 }
 
 void ASoldier::StartAiming()

@@ -19,7 +19,7 @@ void AControlAreaManager::PreInitialisation()
 	}
 }
 
-int AControlAreaManager::getpriority()
+int AControlAreaManager::GetPriority() const
 {
 	return 1;
 }

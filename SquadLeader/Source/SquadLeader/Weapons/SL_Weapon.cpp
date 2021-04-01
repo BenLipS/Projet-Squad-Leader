@@ -9,9 +9,6 @@
 #include "../Soldiers/Players/SoldierPlayerController.h"
 #include "../UI/SL_HUD.h"
 
-FGameplayTag ASL_Weapon::FireModeAutomaticTag = FGameplayTag::RequestGameplayTag(FName("Weapon.FireMode.Automatic"));
-FGameplayTag ASL_Weapon::FireModeSemiAutoTag = FGameplayTag::RequestGameplayTag(FName("Weapon.FireMode.SemiAuto"));
-
 ASL_Weapon::ASL_Weapon() :
 	Damage{ 10.f },
 	MaxRange{ 999'999.f },
@@ -21,6 +18,7 @@ ASL_Weapon::ASL_Weapon() :
 	MaxAmmo{ 50 },
 	bInfiniteAmmo{ false },
 	BaseSpread{ 0.f },
+	AimingSpreadMod{ 1.f },
 	TargetingSpreadIncrement{ 0.f },
 	TargetingSpreadMax{ 0.f },
 	CollisionProfileName{ FName{"Soldier"} }
@@ -136,6 +134,11 @@ float ASL_Weapon::GetWeaponDamage() const noexcept
 	return Damage;
 }
 
+void ASL_Weapon::SetWeaponDamage(const float _Damage) noexcept
+{
+	Damage = _Damage;
+}
+
 float ASL_Weapon::GetFieldOfViewAim() const noexcept
 {
 	return FieldOfViewAim;
@@ -155,6 +158,11 @@ FGameplayTag ASL_Weapon::GetFireMode() const noexcept
 float ASL_Weapon::GetTimeBetweenShots() const noexcept
 {
 	return TimeBetweenShots;
+}
+
+void ASL_Weapon::SetTimeBetweenShots(const float _Time) noexcept
+{
+	TimeBetweenShots = _Time;
 }
 
 int32 ASL_Weapon::GetCurrentAmmo() const noexcept
@@ -241,19 +249,14 @@ bool ASL_Weapon::HasInfiniteAmmo() const noexcept
 	return bInfiniteAmmo;
 }
 
-void ASL_Weapon::OnRep_Ammo(int32 _OldPrimaryClipAmmo)
-{
-	// TODO: Broadcast ?
-}
-
-void ASL_Weapon::OnRep_MaxAmmo(int32 _OldMaxPrimaryClipAmmo)
-{
-	// TODO: Broadcast ?
-}
-
 float ASL_Weapon::GetBaseSpread() const noexcept
 {
 	return BaseSpread;
+}
+
+float ASL_Weapon::GetAimingSpreadMod() const noexcept
+{
+	return AimingSpreadMod;
 }
 
 float ASL_Weapon::GetTargetingSpreadIncrement() const noexcept

@@ -20,7 +20,7 @@ void ASoldierTeam::PreInitialisation()
 	}
 }
 
-int ASoldierTeam::getpriority()
+int ASoldierTeam::GetPriority() const
 {
 	return 1;
 }
@@ -39,6 +39,7 @@ void ASoldierTeam::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	DOREPLIFETIME(ASoldierTeam, TeamName);
 	DOREPLIFETIME(ASoldierTeam, soldierList);
 	DOREPLIFETIME(ASoldierTeam, mainSpawnPoints);
+	DOREPLIFETIME(ASoldierTeam, Tickets);
 
 }
 
