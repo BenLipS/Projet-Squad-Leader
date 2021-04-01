@@ -58,29 +58,11 @@ void ASoldierAI::BeginPlay()
 	InitializeAttributes();
 	InitializeAbilities();
 	AddStartupEffects();
-	InitWeapons();
 }
 
-FVector ASoldierAI::lookingAtPosition()
+FVector ASoldierAI::GetLookingAtPosition(const float _MaxRange) const
 {
 	return LookingAtPosition;
-}
-
-
-TSubclassOf<ASoldierTeam> ASoldierAI::GetTeam()
-{
-	if (auto AIController = Cast<AAIGeneralController>(GetController()); AIController) {
-		return AIController->GetTeam();
-	}
-	return nullptr; // else return default
-}
-
-bool ASoldierAI::SetTeam(TSubclassOf<ASoldierTeam> _Team)
-{
-	if (auto AIController = Cast<AAIGeneralController>(GetController()); AIController) {
-		return AIController->SetTeam(_Team);
-	}
-	return false; // else return default
 }
 
 void ASoldierAI::SetLookingAtPosition(const FVector &_LookingAtPosition)
@@ -96,22 +78,22 @@ void ASoldierAI::SetLookingAtPosition(const FVector &_LookingAtPosition)
 
 bool ASoldierAI::ActivateAbilityFire()
 {
-	return ActivateAbility(ASoldier::SkillFireWeaponTag);
+	return ActivateAbility(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.FireWeapon")));
 }
 
 void ASoldierAI::CancelAbilityFire()
 {
-	CancelAbility(ASoldier::SkillFireWeaponTag);
+	CancelAbility(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.FireWeapon")));
 }
 
 bool ASoldierAI::ActivateAbilityRun()
 {
-	return ActivateAbility(ASoldier::SkillRunTag);
+	return ActivateAbility(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Run")));
 }
 
 void ASoldierAI::CancelAbilityRun()
 {
-	CancelAbility(ASoldier::SkillRunTag);
+	CancelAbility(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Run")));
 }
 
 FVector ASoldierAI::GetRespawnPoint()

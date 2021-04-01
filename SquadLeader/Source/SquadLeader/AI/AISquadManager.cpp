@@ -19,7 +19,7 @@ void AAISquadManager::BeginPlay()
 	Super::BeginPlay();
 }
 
-void AAISquadManager::Init(TSubclassOf<ASoldierTeam> _Team, ASoldierPlayer* _Player)
+void AAISquadManager::Init(ASoldierTeam* _Team, ASoldierPlayer* _Player)
 {
 	Team = _Team;
 	Leader = _Player;
@@ -166,7 +166,7 @@ void AAISquadManager::UpdateCircleFormation()
 //}
 
 // temp include, need to be replace by more robust code
-void AAISquadManager::UpdateSquadTeam(TSubclassOf<ASoldierTeam> _NewTeam)
+void AAISquadManager::UpdateSquadTeam(ASoldierTeam* _NewTeam)
 {
 	Team = _NewTeam;
 	for (auto SquadIA : AISquadList) {

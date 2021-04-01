@@ -49,7 +49,7 @@ public:
 		int controlValueToTake;
 public:
 	UPROPERTY(VisibleAnywhere, Replicated, Category = "IsTaken")
-		TSubclassOf<ASoldierTeam> isTakenBy;
+		ASoldierTeam* isTakenBy;
 
 
 	/**
@@ -75,7 +75,7 @@ protected:  // time value for calculation frequency
 
 public:
 	UPROPERTY(EditInstanceOnly, Category = "ControlData")
-		TMap<TSubclassOf<ASoldierTeam>, AControlAreaTeamStat*> TeamData;
+		TMap<ASoldierTeam*, AControlAreaTeamStat*> TeamData;
 
 protected:
 	UFUNCTION(Category = "ControlData")

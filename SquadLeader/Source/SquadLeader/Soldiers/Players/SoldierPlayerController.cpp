@@ -2,12 +2,13 @@
 #include "SoldierPlayerState.h"
 #include "../Soldier.h"
 #include "AbilitySystemComponent.h"
-#include "../../UI/PlayerHUD.h"
+#include "../../UI/SL_HUD.h"
 
 //TODO: rmove next include -> only use for the team init -> only use on temporary debug
-#include "../../SquadLeaderGameModeBase.h"
+#include "../../GameState/SquadLeaderGameState.h"
 #include "../Players/SoldierPlayer.h"
 #include "../../AI/AISquadManager.h"
+#include "SquadLeader/Weapons/SL_Weapon.h"
 
 ASoldierPlayerController::ASoldierPlayerController()
 {
@@ -29,10 +30,18 @@ void ASoldierPlayerController::CreateHUD_Implementation()
 		UE_LOG(LogTemp, Error, TEXT("%s() Missing HUDWidgetClass. Please fill in on the Blueprint of the PlayerController."), *FString(__FUNCTION__));
 		return;
 	}
-	APlayerHUD* CurrentPlayerHUD = GetHUD<APlayerHUD>();
-	if (CurrentPlayerHUD)
+	ASL_HUD* CurrentHUD = GetHUD<ASL_HUD>();
+	if (CurrentHUD)
 		return;
 	ClientSetHUD(HUDClass);
+	if (ASL_HUD* HUD = GetHUD<ASL_HUD>(); HUD)
+	{
+		if (InputComponent)
+		{
+			InputComponent->BindAction("GiveOrder", IE_Pressed, HUD, &ASL_HUD::OnOrderInputPressed);
+			InputComponent->BindAction("GiveOrder", IE_Released, HUD, &ASL_HUD::OnOrderInputReleased);
+		}
+	}
 }
 
 // Server only
@@ -44,8 +53,20 @@ void ASoldierPlayerController::OnPossess(APawn* InPawn)
 		PS->GetAbilitySystemComponent()->InitAbilityActorInfo(PS, InPawn);
 
 	//TODO: remove the team init -> only use on temporary debug
-	if (auto gameMode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode()); gameMode) {
-		SetTeam(gameMode->SoldierTeamCollection[0]);
+	if (auto GS = GetWorld()->GetGameState<ASquadLeaderGameState>(); GS) {
+
+		if (GS->GetSoldierTeamCollection().Num() == 0) {  // no team obtainable for now, we need to find one (used when playing as server or if no teams in the map)
+			ASoldierTeam* LastTeamObtainable = nullptr;
+			for (auto SceneActors : GetWorld()->PersistentLevel->Actors) {
+				if (auto SoldierTeam = Cast<ASoldierTeam>(SceneActors); SoldierTeam) {
+					LastTeamObtainable = SoldierTeam;
+				}
+			}
+			ensure(LastTeamObtainable);  // if trigger, please place a team in the map
+			SetTeam(LastTeamObtainable);
+		}
+		else SetTeam(GS->GetSoldierTeamCollection()[0]);
+		
 		if (auto soldier = Cast<ASoldierPlayer>(InPawn); soldier->GetSquadManager()) {
 			soldier->GetSquadManager()->UpdateSquadTeam(GetTeam());
 		}
@@ -64,10 +85,10 @@ void ASoldierPlayerController::OnRep_PlayerState()
 
 	// For edge cases where the PlayerState is repped before the Soldier is possessed.
 	CreateHUD();
-	if (APlayerHUD* CurrentPlayerHUD = GetHUD<APlayerHUD>())
+	if (ASL_HUD* CurrentHUD = GetHUD<ASL_HUD>())
 	{
-		CurrentPlayerHUD->SetPlayerStateLink();
-		CurrentPlayerHUD->SetAIStateLink();
+		CurrentHUD->SetPlayerStateLink();
+		CurrentHUD->SetAIStateLink();
 	}
 }
 
@@ -96,7 +117,7 @@ void ASoldierPlayerController::SetupInputComponent()
 	InputComponent->BindAction("ChangeTeam", IE_Released, this, &ASoldierPlayerController::OnChangeTeam);
 }
 
-TSubclassOf<ASoldierTeam> ASoldierPlayerController::GetTeam()
+ASoldierTeam* ASoldierPlayerController::GetTeam()
 {
 	if (auto SoldierState = Cast<ASoldierPlayerState>(PlayerState); SoldierState) {
 		return SoldierState->GetTeam();
@@ -104,7 +125,7 @@ TSubclassOf<ASoldierTeam> ASoldierPlayerController::GetTeam()
 	return nullptr;
 }
 
-bool ASoldierPlayerController::SetTeam(TSubclassOf<ASoldierTeam> _Team)
+bool ASoldierPlayerController::SetTeam(ASoldierTeam* _Team)
 {
 	if (auto SoldierState = Cast<ASoldierPlayerState>(PlayerState); SoldierState) {
 		return SoldierState->SetTeam(_Team);
@@ -157,8 +178,10 @@ void ASoldierPlayerController::ClientSendCommand_Implementation(const FString& C
 void ASoldierPlayerController::OnSquadChanged_Implementation(const TArray<FSoldierAIData>& newValue)
 {
 	SquadManagerData.OnSquadDataChanged(newValue);
-	if (APlayerHUD* CurrentPlayerHUD = GetHUD<APlayerHUD>(); CurrentPlayerHUD)
-		CurrentPlayerHUD->OnSquadChanged(newValue);
+	if (ASL_HUD* CurrentHUD = GetHUD<ASL_HUD>(); CurrentHUD)
+	{
+		CurrentHUD->OnSquadChanged(newValue);
+	}
 }
 
 void ASoldierPlayerController::OnSquadMemberHealthChanged_Implementation(int index, float newHealth)
@@ -167,9 +190,9 @@ void ASoldierPlayerController::OnSquadMemberHealthChanged_Implementation(int ind
 	{
 		SquadManagerData.SquadData[index].Health = newHealth;
 		//Appel au HUD
-		if (APlayerHUD* CurrentPlayerHUD = GetHUD<APlayerHUD>(); CurrentPlayerHUD)
+		if (ASL_HUD* CurrentHUD = GetHUD<ASL_HUD>(); CurrentHUD)
 		{
-			CurrentPlayerHUD->OnSquadHealthChanged(index, newHealth);
+			CurrentHUD->OnSquadHealthChanged(index, newHealth);
 		}
 	}
 	// Erreur syncronisation client / serveur
@@ -181,9 +204,9 @@ void ASoldierPlayerController::OnSquadMemberMaxHealthChanged_Implementation(int 
 	{
 		SquadManagerData.SquadData[index].MaxHealth = newMaxHealth;
 		//Appel au HUD
-		if (APlayerHUD* CurrentPlayerHUD = GetHUD<APlayerHUD>(); CurrentPlayerHUD)
+		if (ASL_HUD* CurrentHUD = GetHUD<ASL_HUD>(); CurrentHUD)
 		{
-			CurrentPlayerHUD->OnSquadMaxHealthChanged(index, newMaxHealth);
+			CurrentHUD->OnSquadMaxHealthChanged(index, newMaxHealth);
 		}
 	}
 	// Erreur syncronisation client / serveur
@@ -195,9 +218,9 @@ void ASoldierPlayerController::OnSquadMemberShieldChanged_Implementation(int ind
 	{
 		SquadManagerData.SquadData[index].Shield = newShield;
 		//Appel au HUD
-		if (APlayerHUD* CurrentPlayerHUD = GetHUD<APlayerHUD>(); CurrentPlayerHUD)
+		if (ASL_HUD* CurrentHUD = GetHUD<ASL_HUD>(); CurrentHUD)
 		{
-			CurrentPlayerHUD->OnSquadShieldChanged(index, newShield);
+			CurrentHUD->OnSquadShieldChanged(index, newShield);
 		}
 	}
 	// Erreur syncronisation client / serveur
@@ -209,16 +232,71 @@ void ASoldierPlayerController::OnSquadMemberMaxShieldChanged_Implementation(int 
 	{
 		SquadManagerData.SquadData[index].MaxShield = newMaxShield;
 		//Appel au HUD
-		if (APlayerHUD* CurrentPlayerHUD = GetHUD<APlayerHUD>(); CurrentPlayerHUD)
+		if (ASL_HUD* CurrentHUD = GetHUD<ASL_HUD>(); CurrentHUD)
 		{
-			CurrentPlayerHUD->OnSquadMaxShieldChanged(index, newMaxShield);
+			CurrentHUD->OnSquadMaxShieldChanged(index, newMaxShield);
 		}
 	}
 	// Erreur syncronisation client / serveur
 }
 
+void ASoldierPlayerController::OnOrderGiven_Implementation(MissionType Order, FVector Pos)
+{
+	if (ASoldierPlayer* Soldier = GetPawn<ASoldierPlayer>(); Soldier)
+	{
+		if (AAISquadManager* SquadManager = Soldier->GetSquadManager(); SquadManager)
+		{
+			SquadManager->UpdateMission(Order, Pos);
+		}
+	}
+}
+
 void ASoldierPlayerController::BroadCastManagerData()
 {
-	if (APlayerHUD* CurrentPlayerHUD = GetHUD<APlayerHUD>(); CurrentPlayerHUD)
-		CurrentPlayerHUD->OnSquadChanged(SquadManagerData.SquadData);
+	if (ASL_HUD* CurrentHUD = GetHUD<ASL_HUD>(); CurrentHUD)
+		CurrentHUD->OnSquadChanged(SquadManagerData.SquadData);
+}
+
+void ASoldierPlayerController::Cheat_SuperSoldier()
+{
+	if (GetLocalRole() < ROLE_Authority)
+		ServerCheat_SuperSoldier();
+
+	if (ASoldierPlayer* Soldier = GetPawn<ASoldierPlayer>(); Soldier)
+	{
+		const float badassValue = 9'999'999.f;
+
+		Soldier->GetAttributeSet()->SetMaxHealth(badassValue);
+		Soldier->GetAttributeSet()->SetHealth(badassValue);
+		Soldier->GetAttributeSet()->SetMaxShield(badassValue);
+		Soldier->GetAttributeSet()->SetShield(badassValue);
+		Soldier->GetAttributeSet()->SetMoveSpeedWalk(1000.f);
+		Soldier->GetAttributeSet()->SetMoveSpeedCrouch(1000.f);
+		
+		if (ASL_Weapon* Weapon = Soldier->GetCurrentWeapon(); Weapon)
+		{
+			Weapon->ReloadWeapon();
+			Weapon->SetWeaponDamage(badassValue);
+			Weapon->SetHasInfiniteAmmo(true);
+		}
+	}
+}
+
+void ASoldierPlayerController::ServerCheat_SuperSoldier_Implementation()
+{
+	Cheat_SuperSoldier();
+}
+
+void ASoldierPlayerController::Cheat_Die()
+{
+	if (GetLocalRole() < ROLE_Authority)
+		ServerCheat_Die();
+
+	if (ASoldierPlayer* Soldier = GetPawn<ASoldierPlayer>(); Soldier)
+		Soldier->GetAttributeSet()->SetHealth(0.f);
+}
+
+void ASoldierPlayerController::ServerCheat_Die_Implementation()
+{
+	Cheat_Die();
 }

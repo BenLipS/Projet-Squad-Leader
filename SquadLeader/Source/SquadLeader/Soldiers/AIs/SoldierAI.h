@@ -63,18 +63,15 @@ public:
 	FAIFloatChangedController OnMaxHealthChanged;
 	FAIFloatChangedController OnShieldChanged;
 	FAIFloatChangedController OnMaxShieldChanged;
+
 protected:
-
 	virtual void BeginPlay() override;
-
-	virtual FVector lookingAtPosition() override;
 
 	FVector LookingAtPosition;
 
-//////////////// Teamable
 public:
-	virtual TSubclassOf<ASoldierTeam> GetTeam() override;
-	virtual bool SetTeam(TSubclassOf<ASoldierTeam> _Team) override;
+	virtual FVector GetLookingAtPosition(const float _MaxRange = 99999.f) const override;
+
 
 //////////////// Abilities
 public:

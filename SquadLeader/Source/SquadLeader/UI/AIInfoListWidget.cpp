@@ -3,6 +3,7 @@
 #include "AIInfoListWidget.h"
 #include "AIInfoWidget.h"
 #include "../Soldiers/AIs/SoldierAI.h"
+#include "Interface/SquadDelegateInterface.h"
 
 
 UAIInfoListWidget::UAIInfoListWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer), AIInfoWidgetList()
@@ -57,5 +58,13 @@ void UAIInfoListWidget::OnSquadMaxShieldChanged(int index, float newMaxShield)
 	if (AIInfoWidgetList.IsValidIndex(index))
 	{
 		AIInfoWidgetList[index]->OnMaxShieldChanged(newMaxShield);
+	}
+}
+
+void UAIInfoListWidget::SetupDelegateToObject(UObject* ObjectIn)
+{
+	if (ISquadDelegateInterface* SquadDelegateInterface = Cast<ISquadDelegateInterface>(ObjectIn); SquadDelegateInterface)
+	{
+		SquadDelegateInterface->AddSquadDelegate(this);
 	}
 }

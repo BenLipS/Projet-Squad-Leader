@@ -7,12 +7,13 @@
 #include "Engine/Canvas.h"
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
+#include "Interface/PlayerShieldInterface.h"
 #include "ShieldWidget.generated.h"
 /**
  *
  */
 UCLASS()
-class SQUADLEADER_API UShieldWidget : public USL_UserWidget
+class SQUADLEADER_API UShieldWidget : public USL_UserWidget, public IPlayerShieldInterface
 {
 	GENERATED_BODY()
 
@@ -29,9 +30,11 @@ protected:
 public:
 	UShieldWidget(const FObjectInitializer& ObjectInitializer);
 
-	UFUNCTION(BlueprintCallable)
-	void OnShieldChanged(float newValue);
+	void SetupDelegateToObject(UObject* ObjectIn) override;
 
-	UFUNCTION(BlueprintCallable)
-	void OnMaxShieldChanged(float newValue);
+	//-----IPlayerShieldInterface-----
+
+	void OnPlayerShieldChanged(float newValue) override;
+
+	void OnPlayerMaxShieldChanged(float newValue) override;
 };

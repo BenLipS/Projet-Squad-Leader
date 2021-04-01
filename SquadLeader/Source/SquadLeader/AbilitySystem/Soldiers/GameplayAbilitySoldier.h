@@ -25,6 +25,14 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Ability")
 	bool ActivateAbilityOnGranted = false;
 
+	// Attempts to activate the given ability handle and batch all RPCs into one. This will only batch all RPCs that happen
+	// in one frame. Best case scenario we batch ActivateAbility, SendTargetData, and EndAbility into one RPC instead of three.
+	UFUNCTION(BlueprintCallable, Category = "Ability")
+	virtual bool BatchRPCTryActivateAbility(FGameplayAbilitySpecHandle _InAbilityHandle, const bool _EndAbilityImmediately);
+
+	// Same as calling K2_EndAbility. Meant for use with batching system to end the ability externally.
+	virtual void ExternalEndAbility();
+
 	// If an ability is marked as 'ActivateAbilityOnGranted', activate them immediately when given here
 	// Epic's comment: Projects may want to initiate passives or do other "BeginPlay" type of logic here.
 	virtual void OnAvatarSet(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec) override;

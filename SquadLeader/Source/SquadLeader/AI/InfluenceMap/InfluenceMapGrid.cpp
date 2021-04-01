@@ -4,10 +4,11 @@
 #include "InfluenceMapGrid.h"
 #include "NavigationSystem.h"
 #include "NavigationPath.h"
-#include "../../SquadLeaderGameModeBase.h"
+#include "../../GameState/SquadLeaderGameState.h"
 #include "../../Soldiers/Soldier.h"
 #include "Templates/Function.h"
 #include "EngineUtils.h"
+#include "../../ControlArea/ControlAreaManager.h"
 
 
 AInfluenceMapGrid::AInfluenceMapGrid() {
@@ -35,7 +36,7 @@ void AInfluenceMapGrid::Tick(float DeltaSeconds) {
 			UpdateGrid();
 			const double endTime = FPlatformTime::Seconds();
 			const double elapsedTime = endTime - startTime;
-			GEngine->AddOnScreenDebugMessage(20, 2.f, FColor::Green, FString::Printf(TEXT("Exécution a duré % .0fms."), elapsedTime * 1000));
+			GEngine->AddOnScreenDebugMessage(20, 2.f, FColor::Green, FString::Printf(TEXT("Ex?cution a dur? % .0fms."), elapsedTime * 1000));
 		}
 		value_tick++;
 	}
