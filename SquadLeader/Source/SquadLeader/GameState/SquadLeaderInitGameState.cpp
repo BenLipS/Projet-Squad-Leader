@@ -46,7 +46,7 @@ void ASquadLeaderInitGameState::InitActorInWorld()
 
 	//sort the list using priority
 	Algo::Sort(InitList, [](IPreInitable* a, IPreInitable* b) {
-		return a->getpriority() < b->getpriority();
+		return a->GetPriority() < b->GetPriority();
 		});
 
 	for (IPreInitable* Element:InitList) {

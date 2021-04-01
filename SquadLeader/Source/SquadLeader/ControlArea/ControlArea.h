@@ -33,7 +33,7 @@ public:
 
 	// Pre init launch by the gameMode before the BeginPlay() function
 	virtual void PreInitialisation() override;
-	virtual int getpriority() override;
+	virtual int GetPriority() const override;
 
 public:
 	/** Zone Collide */
