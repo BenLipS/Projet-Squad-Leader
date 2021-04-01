@@ -62,8 +62,7 @@ void ASquadLeaderInitGameState::InitActorInWorld()
 void ASquadLeaderInitGameState::PlaceActorInWorld() {
 	// Place ControlAreaManager in world
 	FTransform LocationTemp{ {0.f, -1000.f, 0.f}, {0.f,0.f,0.f} };
-	AControlAreaManager* CAM = GetWorld()->SpawnActorDeferred<AControlAreaManager>(AControlAreaManager::StaticClass(), LocationTemp, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
-	
-	ensure(CAM);
-	CAM->FinishSpawning(LocationTemp);
+	AControlAreaManager* CAM = GetWorld()->SpawnActor<AControlAreaManager>();
+
+	// more spawn if needed
 }
