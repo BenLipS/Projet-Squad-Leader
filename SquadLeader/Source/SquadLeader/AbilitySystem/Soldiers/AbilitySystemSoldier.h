@@ -25,7 +25,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Abilities")
 	UGameplayAbilitySoldier* GetPrimaryAbilityInstanceFromHandle(FGameplayAbilitySpecHandle _Handle);
 
-	//////////////// GameplayCue
+//////////////// GameplayCue
 	UFUNCTION(BlueprintCallable, Category = "GameplayCue", Meta = (AutoCreateRefTerm = "GameplayCueParameters", GameplayTagFilter = "GameplayCue"))
 	void ExecuteGameplayCueLocal(const FGameplayTag _GameplayCueTag, const FGameplayCueParameters& _GameplayCueParameters);
 
@@ -34,4 +34,17 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "GameplayCue", Meta = (AutoCreateRefTerm = "GameplayCueParameters", GameplayTagFilter = "GameplayCue"))
 	void RemoveGameplayCueLocal(const FGameplayTag _GameplayCueTag, const FGameplayCueParameters& _GameplayCueParameters);
+
+//////////////// Cooldowns
+	UFUNCTION(BlueprintCallable, Category = "Cooldowns")
+	bool GetCooldownRemainingForTags(const FGameplayTagContainer& _CooldownTags, float& _TimeRemaining);
+
+	UFUNCTION(BlueprintCallable, Category = "Cooldowns")
+	bool GetCooldownRemainingForTag(const FGameplayTag& _CooldownTags, float& _TimeRemaining);
+
+	UFUNCTION(BlueprintCallable, Category = "Cooldowns")
+	bool GetCooldownRemainingAndDurationForTags(const FGameplayTagContainer& _CooldownTags, float& _TimeRemaining, float& _CooldownDuration);
+
+	UFUNCTION(BlueprintCallable, Category = "Cooldowns")
+	bool GetCooldownRemainingAndDurationForTag(const FGameplayTag& _CooldownTags, float& _TimeRemaining, float& _CooldownDuration);
 };
