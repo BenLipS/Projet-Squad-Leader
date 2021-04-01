@@ -36,7 +36,6 @@ void URunToVectorLocationBTTaskNode::TickTask(class UBehaviorTreeComponent& Owne
 	FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	if (MoveToActorResult == EPathFollowingRequestResult::Failed)
 		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
-		*/
 }
 
 FString URunToVectorLocationBTTaskNode::GetStaticDescription() const {

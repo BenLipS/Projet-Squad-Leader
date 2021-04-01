@@ -18,6 +18,16 @@ enum class MissionState : uint8{
 };
 
 UENUM()
+enum class MissionType : uint8 {
+	eATTACK,
+	eDEFEND,
+	ePATROL,
+	eCAPTURE,
+	None,
+	Formation
+};
+
+UENUM()
 enum class MissionPriority : uint8{ 
 	eBASIC,
 	eMIDDLE,

@@ -90,8 +90,8 @@ public:
 	UPROPERTY()
 	UMission* Mission;
 
-	/*UFUNCTION(BlueprintCallable)
-	void UpdateMission(const MissionType _MissionType, const FVector& _Location);*/
+	UFUNCTION(BlueprintCallable)
+	void UpdateMission(const MissionType _MissionType, const FVector& _Location);
 
 	// temp function, need to be replace by more robust code
 	void UpdateSquadTeam(ASoldierTeam* _NewTeam);

@@ -6,6 +6,7 @@
 #include "../ControlArea/ControlArea.h"
 #include "../AI/Mission/CaptureMission.h"
 #include "../AI/Mission/PatrolMission.h"
+#include "../GameState/SquadLeaderGameState.h"
 
 AAIBasicManager::AAIBasicManager() {
 	PrimaryActorTick.bStartWithTickEnabled = true;
@@ -83,18 +84,20 @@ void AAIBasicManager::InitValue() {
 }
 
 void AAIBasicManager::ChooseControlArea() {
-	int _index_player = 0;
+	//int _index_player = 0;
+	//int _index_control_area = 0;
 
-	while (_index_player < nbr_unite) {
-		if (_index_control_area >= nbr_controlArea)
-			_index_control_area = 0;
-		for (int i = 0; i != nbr_unit_per_controlArea && _index_player < nbr_unite; ++i) {
-			UCaptureMission* _mission = Cast<UCaptureMission>(NewObject<UCaptureMission>(this, UCaptureMission::StaticClass()));
-			_mission->InitCaptureMission(-1, MissionPriority::eMIDDLE, m_controlAreaManager->GetControlArea()[_index_control_area]);
-			AIBasicList[_index_player]->SetMission<UCaptureMission*>(_mission);
-			_index_player++;
-		}
-		_index_control_area++;
 
-	}
+	//while (_index_player < nbr_unite) {
+	//	if (_index_control_area >= nbr_controlArea)
+	//		_index_control_area = 0;
+	//	for (int i = 0; i != nbr_unit_per_controlArea && _index_player < nbr_unite; ++i) {
+	//		UCaptureMission* _mission = Cast<UCaptureMission>(NewObject<UCaptureMission>(this, UCaptureMission::StaticClass()));
+	//		_mission->InitCaptureMission(-1, MissionPriority::eMIDDLE, m_controlAreaManager->GetControlArea()[_index_control_area]);
+	//		AIBasicList[_index_player]->SetMission<UCaptureMission*>(_mission);
+	//		_index_player++;
+	//	}
+	//	_index_control_area++;
+
+	//}
 }

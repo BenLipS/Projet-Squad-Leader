@@ -555,7 +555,7 @@ ResultState AAIGeneralController::Capturing() {
 
 	AControlArea* control_area = Cast<AControlArea>(blackboard->GetValueAsObject("ControlArea"));
 	if (control_area) {
-		if (auto value = control_area->TeamData.Find(Team)) {
+		if (auto value = control_area->TeamData.Find(GetTeam())) {
 			if ((*value)->controlValue >= control_area->maxControlValue) {
 				m_missionList->EndMission();
 				m_mission_changed = true;
