@@ -111,6 +111,10 @@ public:
 	void OnSquadMemberMaxShieldChanged(int index, float newMaxShield);
 	void OnSquadMemberMaxShieldChanged_Implementation(int index, float newMaxShield);
 
+	UFUNCTION(Client, Reliable)
+	void OnTextNotification_Received(const FString& notificationString);
+	void OnTextNotification_Received_Implementation(const FString& notificationString);
+
 	UFUNCTION(Server, Reliable)
 	void OnOrderGiven(MissionType Order, FVector Pos);
 	void OnOrderGiven_Implementation(MissionType Order, FVector Pos);

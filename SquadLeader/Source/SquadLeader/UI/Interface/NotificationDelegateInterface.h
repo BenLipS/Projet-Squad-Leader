@@ -24,7 +24,7 @@ private:
 	TArray<INotificationInterface*> NotificationDelegates;
 
 public:
-	virtual void OnTextNotification_Received(FText textNotification) override;
+	virtual void OnTextNotification_Received(FString textNotification) override;
 
 	void AddNotificationDelegate(INotificationInterface* newDelegate);
 	void RemoveNotificationDelegate(INotificationInterface* removeDelegate);

@@ -239,6 +239,14 @@ void ASoldierPlayerController::OnSquadMemberMaxShieldChanged_Implementation(int 
 	// Erreur syncronisation client / serveur
 }
 
+void ASoldierPlayerController::OnTextNotification_Received_Implementation(const FString& notificationString)
+{
+	if (ASL_HUD* CurrentHUD = GetHUD<ASL_HUD>(); CurrentHUD)
+	{
+		CurrentHUD->OnTextNotification_Received(notificationString);
+	}
+}
+
 void ASoldierPlayerController::OnOrderGiven_Implementation(MissionType Order, FVector Pos)
 {
 	if (ASoldierPlayer* Soldier = GetPawn<ASoldierPlayer>(); Soldier)

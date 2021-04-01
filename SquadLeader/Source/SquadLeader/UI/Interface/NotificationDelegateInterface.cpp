@@ -5,7 +5,7 @@
 
 // Add default functionality here for any INotificationDelegateInterface functions that are not pure virtual.
 
-void INotificationDelegateInterface::OnTextNotification_Received(FText textNotification)
+void INotificationDelegateInterface::OnTextNotification_Received(FString textNotification)
 {
 	for (auto NotificationInterface : NotificationDelegates)
 	{

@@ -19,5 +19,5 @@ class SQUADLEADER_API INotificationInterface
 
 public:
 	UFUNCTION()
-	virtual void OnTextNotification_Received(FText textNotification) = 0;
+	virtual void OnTextNotification_Received(FString textNotification) = 0;
 };
