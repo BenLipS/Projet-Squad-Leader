@@ -128,4 +128,8 @@ public:
 
 	UFUNCTION(exec)
 	void Cheat_Die();
+
+	UFUNCTION(Server, Reliable)
+	void ServerCheat_Die();
+	void ServerCheat_Die_Implementation();
 };

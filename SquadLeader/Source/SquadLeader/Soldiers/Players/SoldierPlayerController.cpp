@@ -289,6 +289,14 @@ void ASoldierPlayerController::ServerCheat_SuperSoldier_Implementation()
 
 void ASoldierPlayerController::Cheat_Die()
 {
+	if (GetLocalRole() < ROLE_Authority)
+		ServerCheat_Die();
+
 	if (ASoldierPlayer* Soldier = GetPawn<ASoldierPlayer>(); Soldier)
 		Soldier->GetAttributeSet()->SetHealth(0.f);
+}
+
+void ASoldierPlayerController::ServerCheat_Die_Implementation()
+{
+	Cheat_Die();
 }
