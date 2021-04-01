@@ -20,7 +20,7 @@ void ASoldierTeam::PreInitialisation()
 	}
 }
 
-int ASoldierTeam::getpriority()
+int ASoldierTeam::GetPriority() const
 {
 	return 1;
 }

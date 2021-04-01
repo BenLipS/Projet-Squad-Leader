@@ -63,14 +63,14 @@ public:
 	FAIFloatChangedController OnMaxHealthChanged;
 	FAIFloatChangedController OnShieldChanged;
 	FAIFloatChangedController OnMaxShieldChanged;
-protected:
 
+protected:
 	virtual void BeginPlay() override;
 
 	FVector LookingAtPosition;
 
 public:
-	virtual FVector GetLookingAtPosition() override;
+	virtual FVector GetLookingAtPosition(const float _MaxRange = 99999.f) const override;
 
 
 //////////////// Abilities

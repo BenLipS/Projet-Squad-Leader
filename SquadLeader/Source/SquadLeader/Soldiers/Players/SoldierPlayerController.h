@@ -111,10 +111,29 @@ public:
 	void OnSquadMemberMaxShieldChanged(int index, float newMaxShield);
 	void OnSquadMemberMaxShieldChanged_Implementation(int index, float newMaxShield);
 
+	UFUNCTION(Client, Reliable)
+	void OnTextNotification_Received(const FString& notificationString);
+	void OnTextNotification_Received_Implementation(const FString& notificationString);
+
 	UFUNCTION(Server, Reliable)
 	void OnOrderGiven(MissionType Order, FVector Pos);
 	void OnOrderGiven_Implementation(MissionType Order, FVector Pos);
 
 	UFUNCTION()
 	void BroadCastManagerData();
+
+//////////////// Cheat
+	UFUNCTION(exec)
+	void Cheat_SuperSoldier();
+
+	UFUNCTION(Server, Reliable)
+	void ServerCheat_SuperSoldier();
+	void ServerCheat_SuperSoldier_Implementation();
+
+	UFUNCTION(exec)
+	void Cheat_Die();
+
+	UFUNCTION(Server, Reliable)
+	void ServerCheat_Die();
+	void ServerCheat_Die_Implementation();
 };

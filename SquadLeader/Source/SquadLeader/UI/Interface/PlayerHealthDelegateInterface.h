@@ -21,8 +21,7 @@ class SQUADLEADER_API IPlayerHealthDelegateInterface : public IPlayerHealthInter
 {
 	GENERATED_BODY()
 
-protected:
-	//TArray<TScriptInterface<IPlayerHealthInterface*>> Delegates;
+private:
 	TArray<IPlayerHealthInterface*> PlayerHealthDelegates;
 
 public:

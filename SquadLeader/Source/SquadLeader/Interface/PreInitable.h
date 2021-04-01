@@ -25,5 +25,5 @@ public:
 		virtual void PreInitialisation() = 0;
 
 	UFUNCTION()
-		virtual int getpriority() = 0;
+		virtual int GetPriority() const = 0;
 };
