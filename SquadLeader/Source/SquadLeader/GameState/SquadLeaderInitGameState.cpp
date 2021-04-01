@@ -36,6 +36,8 @@ void ASquadLeaderInitGameState::InitMapAndData()
 
 void ASquadLeaderInitGameState::InitActorInWorld()
 {
+	PlaceActorInWorld();
+
 	TArray<IPreInitable*> InitList;
 	for (auto SceneActors : GetWorld()->PersistentLevel->Actors)  // cycle each actor
 	{
@@ -54,4 +56,14 @@ void ASquadLeaderInitGameState::InitActorInWorld()
 	}
 	ensure(SoldierTeamCollection.Num() >= 2);  // check if TeamCollection have at least 2 elements
 	ensure(ControlAreaManager->GetControlArea().Num() >= 1);  // check if ControlAreaManager exist and have at least one ControlArea
+}
+
+
+void ASquadLeaderInitGameState::PlaceActorInWorld() {
+	// Place ControlAreaManager in world
+	FTransform LocationTemp{ {0.f, -1000.f, 0.f}, {0.f,0.f,0.f} };
+	AControlAreaManager* CAM = GetWorld()->SpawnActorDeferred<AControlAreaManager>(AControlAreaManager::StaticClass(), LocationTemp, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+	
+	ensure(CAM);
+	CAM->FinishSpawning(LocationTemp);
 }
