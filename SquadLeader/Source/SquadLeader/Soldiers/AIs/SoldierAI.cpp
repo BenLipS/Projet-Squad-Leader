@@ -60,7 +60,7 @@ void ASoldierAI::BeginPlay()
 	AddStartupEffects();
 }
 
-FVector ASoldierAI::GetLookingAtPosition()
+FVector ASoldierAI::GetLookingAtPosition(const float _MaxRange) const
 {
 	return LookingAtPosition;
 }

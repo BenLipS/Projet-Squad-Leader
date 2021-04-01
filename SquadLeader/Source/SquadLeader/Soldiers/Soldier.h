@@ -167,6 +167,7 @@ public:
 
 	virtual void Die();
 	virtual void Respawn();
+	virtual void OnReceiveDamage(const FVector& _ImpactPoint, const FVector& _SourcePoint);
 
 //////////////// Cameras
 public:
@@ -235,7 +236,7 @@ public:
 	virtual void Turn(const float _Val);
 
 	UFUNCTION(BlueprintCallable, Category = "Movement")
-	virtual FVector GetLookingAtPosition();
+	virtual FVector GetLookingAtPosition(const float _MaxRange = 99999.f) const;
 
 	// Run
 	UFUNCTION(BlueprintCallable, Category = "Movement")
