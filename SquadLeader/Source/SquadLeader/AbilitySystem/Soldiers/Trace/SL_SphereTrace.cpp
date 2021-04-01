@@ -5,62 +5,8 @@
 #include "DrawDebugHelpers.h"
 #include "GameFramework/PlayerController.h"
 
-ASL_SphereTrace::ASL_SphereTrace()
+ASL_SphereTrace::ASL_SphereTrace() : TraceSphereRadius { 100.0f }
 {
-	TraceSphereRadius = 100.0f;
-}
-
-void ASL_SphereTrace::Configure(
-	const FGameplayAbilityTargetingLocationInfo& InStartLocation,
-	FGameplayTag InAimingTag,
-	FGameplayTag InAimingRemovalTag,
-	FCollisionProfileName InTraceProfile,
-	FGameplayTargetDataFilterHandle InFilter,
-	TSubclassOf<AGameplayAbilityWorldReticle> InReticleClass,
-	FWorldReticleParameters InReticleParams,
-	bool bInIgnoreBlockingHits,
-	bool bInShouldProduceTargetDataOnServer,
-	bool bInUsePersistentHitResults,
-	bool bInDebug,
-	bool bInTraceAffectsAimPitch,
-	bool bInTraceFromPlayerViewPoint,
-	bool bInUseAimingSpreadMod,
-	float InMaxRange,
-	float InTraceSphereRadius,
-	float InBaseSpread,
-	float InAimingSpreadMod,
-	float InTargetingSpreadIncrement,
-	float InTargetingSpreadMax,
-	int32 InMaxHitResultsPerTrace,
-	int32 InNumberOfTraces)
-{
-	StartLocation = InStartLocation;
-	AimingTag = InAimingTag;
-	AimingRemovalTag = InAimingRemovalTag;
-	TraceProfile = InTraceProfile;
-	Filter = InFilter;
-	ReticleClass = InReticleClass;
-	ReticleParams = InReticleParams;
-	bIgnoreBlockingHits = bInIgnoreBlockingHits;
-	ShouldProduceTargetDataOnServer = bInShouldProduceTargetDataOnServer;
-	bUsePersistentHitResults = bInUsePersistentHitResults;
-	bDebug = bInDebug;
-	bTraceAffectsAimPitch = bInTraceAffectsAimPitch;
-	bTraceFromPlayerViewPoint = bInTraceFromPlayerViewPoint;
-	bUseAimingSpreadMod = bInUseAimingSpreadMod;
-	MaxRange = InMaxRange;
-	TraceSphereRadius = InTraceSphereRadius;
-	BaseSpread = InBaseSpread;
-	AimingSpreadMod = InAimingSpreadMod;
-	TargetingSpreadIncrement = InTargetingSpreadIncrement;
-	TargetingSpreadMax = InTargetingSpreadMax;
-	MaxHitResultsPerTrace = InMaxHitResultsPerTrace;
-	NumberOfTraces = InNumberOfTraces;
-
-	if (bUsePersistentHitResults)
-	{
-		NumberOfTraces = 1;
-	}
 }
 
 void ASL_SphereTrace::SphereTraceWithFilter(TArray<FHitResult>& OutHitResults, const UWorld* World, const FGameplayTargetDataFilterHandle FilterHandle, const FVector& Start, const FVector& End, float Radius, FName ProfileName, const FCollisionQueryParams Params)
@@ -105,7 +51,7 @@ void ASL_SphereTrace::ShowDebugTrace(TArray<FHitResult>& HitResults, EDrawDebugT
 	{
 		FVector ViewStart = StartLocation.GetTargetingTransform().GetLocation();
 		FRotator ViewRot;
-		if (MasterPC && bTraceFromPlayerViewPoint)
+		if (MasterPC)
 		{
 			MasterPC->GetPlayerViewPoint(ViewStart, ViewRot);
 		}

@@ -47,11 +47,7 @@ public:
 	AAIGeneralController(FObjectInitializer const& object_initializer = FObjectInitializer::Get());
 	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 
-//////////////// Teamable
 protected:
-	UPROPERTY(Replicated)
-	ASoldierTeam* Team = nullptr;  // only server can replicate it
-	
 	UPROPERTY()
 	FVector ObjectifLocation{ 1000.f, 1000.f, 10.f };
 
@@ -92,7 +88,7 @@ public:
 	UFUNCTION()
 		ResultState ArriveAtDestination();
 
-
+	/////// Teamable
 	virtual ASoldierTeam* GetTeam() override;
 	virtual bool SetTeam(ASoldierTeam* _Team) override;
 

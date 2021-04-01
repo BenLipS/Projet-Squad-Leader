@@ -6,11 +6,10 @@
 #include "../../AI/AISquadManager.h"
 #include "../../AbilitySystem/Soldiers/GameplayAbilitySoldier.h"
 #include "../../Spawn/SoldierSpawn.h"
-
+#include "DrawDebugHelpers.h"
 
 ASoldierPlayer::ASoldierPlayer(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer), ASCInputBound{ false }
 {
-
 }
 
 /*
@@ -96,20 +95,6 @@ void ASoldierPlayer::Turn(const float _Val)
 		else
 			ServerSyncControlRotation(SyncControlRotation);
 	}
-}
-
-ASoldierTeam* ASoldierPlayer::GetTeam()
-{
-	if (auto SoldierPlayerState = Cast<ASoldierPlayerState>(GetPlayerState()); SoldierPlayerState)
-		return SoldierPlayerState->GetTeam();
-	return nullptr;
-}
-
-bool ASoldierPlayer::SetTeam(ASoldierTeam* _Team)
-{
-	if (auto SoldierPlayerState = Cast<ASoldierPlayerState>(GetPlayerState()); SoldierPlayerState)
-		return SoldierPlayerState->SetTeam(_Team);
-	return false;
 }
 
 void ASoldierPlayer::SetAbilitySystemComponent()

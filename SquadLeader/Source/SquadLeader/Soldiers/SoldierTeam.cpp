@@ -39,6 +39,7 @@ void ASoldierTeam::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	DOREPLIFETIME(ASoldierTeam, TeamName);
 	DOREPLIFETIME(ASoldierTeam, soldierList);
 	DOREPLIFETIME(ASoldierTeam, mainSpawnPoints);
+	DOREPLIFETIME(ASoldierTeam, Tickets);
 
 }
 

@@ -104,36 +104,46 @@ void UGA_FireWeaponInstant::HandleTargetData(const FGameplayAbilityTargetDataHan
 
 	ApplyEffectsToSource();
 
-	for (TWeakObjectPtr<AActor> Actor : _Data.Get(0)->GetActors())
+	FGameplayEffectSpecHandle DamageEffectSpecHandle = MakeOutgoingGameplayEffectSpec(GE_DamageClass, GetAbilityLevel());
+	DamageEffectSpecHandle.Data->SetSetByCallerMagnitude(FGameplayTag::RequestGameplayTag(FName("Data.Damage")), SourceWeapon->GetWeaponDamage());
+
+	const FGameplayAbilityTargetData* Data = _Data.Get(0);
+
+	for (TWeakObjectPtr<AActor> Actor : Data->GetActors())
 	{
 		if (ASoldier* TargetSoldier = Cast<ASoldier>(Actor); TargetSoldier && TargetSoldier->GetAbilitySystemComponent())
-			ApplyDamages(_Data, TargetSoldier->GetAbilitySystemComponent());
+		{
+			ApplyDamages(_Data, DamageEffectSpecHandle, TargetSoldier->GetAbilitySystemComponent());
+			TargetSoldier->OnReceiveDamage(Data->GetHitResult()->ImpactPoint, Data->GetHitResult()->TraceStart);
+		}
 	}
-	
-	FGameplayEffectSpecHandle FiringEffectSpecHandle = MakeOutgoingGameplayEffectSpec(GE_FiringStateClass, GetAbilityLevel());
-	SourceSoldier->GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*FiringEffectSpecHandle.Data.Get());
+
+	FGameplayCueParameters GC_Parameters;
+	GC_Parameters.EffectContext = DamageEffectSpecHandle.Data->GetEffectContext();
+	GC_Parameters.Instigator = CurrentActorInfo->AvatarActor.Get();
+	K2_ExecuteGameplayCueWithParams(FGameplayTag::RequestGameplayTag(FName("GameplayCue.FireWeapon.Instant")), GC_Parameters);
 }
 
 void UGA_FireWeaponInstant::ApplyEffectsToSource()
 {
 	SourceWeapon->DecrementAmmo();
+
+	FGameplayEffectSpecHandle FiringEffectSpecHandle = MakeOutgoingGameplayEffectSpec(GE_FiringStateClass, GetAbilityLevel());
+	SourceSoldier->GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*FiringEffectSpecHandle.Data.Get());
 }
 
-void UGA_FireWeaponInstant::ApplyDamages(const FGameplayAbilityTargetDataHandle& _Data, UAbilitySystemComponent* _TargetASC)
+void UGA_FireWeaponInstant::ApplyDamages(const FGameplayAbilityTargetDataHandle& _Data, const FGameplayEffectSpecHandle& _DamageEffectSpecHandle, UAbilitySystemComponent* _TargetASC)
 {
-	FGameplayEffectSpecHandle DamageEffectSpecHandle = MakeOutgoingGameplayEffectSpec(GE_DamageClass, GetAbilityLevel());
-	DamageEffectSpecHandle.Data->SetSetByCallerMagnitude(FGameplayTag::RequestGameplayTag(FName("Data.Damage")), SourceWeapon->GetWeaponDamage());
-
 	if (Cast<ASoldier>(_TargetASC->GetAvatarActor())->GetTeam() != SourceSoldier->GetTeam())
-		SourceSoldier->GetAbilitySystemComponent()->ApplyGameplayEffectSpecToTarget(*DamageEffectSpecHandle.Data.Get(), _TargetASC);
+		SourceSoldier->GetAbilitySystemComponent()->ApplyGameplayEffectSpecToTarget(*_DamageEffectSpecHandle.Data.Get(), _TargetASC);
 
-	FGameplayEffectContextHandle EffectContext = DamageEffectSpecHandle.Data->GetEffectContext();
+	FGameplayEffectContextHandle EffectContext = _DamageEffectSpecHandle.Data->GetEffectContext();
 	EffectContext.AddHitResult(*_Data.Get(0)->GetHitResult());
 }
 
 void UGA_FireWeaponInstant::ReloadWeapon()
 {
-	SourceSoldier->ActivateAbility(ASoldier::SkillReloadWeaponTag);
+	SourceSoldier->ActivateAbility(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.ReloadWeapon")));
 	CancelAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true);
 }
 
@@ -149,10 +159,9 @@ void UGA_FireWeaponInstant::ConfigLineTrace()
 	LineTrace->TraceProfile = FCollisionProfileName{ SourceWeapon->CollisionProfileName };
 	LineTrace->bIgnoreBlockingHits = false;
 	LineTrace->bUsePersistentHitResults = false;
-	LineTrace->bTraceAffectsAimPitch = true;
-	LineTrace->bUseAimingSpreadMod = false;
 	LineTrace->MaxRange = SourceWeapon->GetMaxRange();
 	LineTrace->BaseSpread = SourceWeapon->GetBaseSpread();
+	LineTrace->AimingSpreadMod = SourceWeapon->GetAimingSpreadMod();
 	LineTrace->TargetingSpreadIncrement = SourceWeapon->GetTargetingSpreadIncrement();
 	LineTrace->TargetingSpreadMax = SourceWeapon->GetTargetingSpreadMax();
 	LineTrace->SetShouldProduceTargetDataOnServer(!CurrentActorInfo->PlayerController.Get()); // Produce Target Data On Server only if the controller is an AI

@@ -16,33 +16,6 @@
 #include "SquadLeader/Weapons/SL_Weapon.h"
 //#include "DrawDebugHelpers.h"
 
-// States
-FGameplayTag ASoldier::StateDeadTag = FGameplayTag::RequestGameplayTag(FName("State.Dead"));
-FGameplayTag ASoldier::StateRunningTag = FGameplayTag::RequestGameplayTag(FName("State.Running"));
-FGameplayTag ASoldier::StateJumpingTag = FGameplayTag::RequestGameplayTag(FName("State.Jumping"));
-FGameplayTag ASoldier::StateCrouchingTag = FGameplayTag::RequestGameplayTag(FName("State.Crouching"));
-FGameplayTag ASoldier::StateFightingTag = FGameplayTag::RequestGameplayTag(FName("State.Fighting"));
-FGameplayTag ASoldier::StateAimingTag = FGameplayTag::RequestGameplayTag(FName("State.Aiming"));
-FGameplayTag ASoldier::StateGivingOrderTag = FGameplayTag::RequestGameplayTag(FName("State.GivingOrder"));
-FGameplayTag ASoldier::StateFiringTag = FGameplayTag::RequestGameplayTag(FName("State.Firing"));
-FGameplayTag ASoldier::StateReloadingWeaponTag = FGameplayTag::RequestGameplayTag(FName("State.ReloadingWeapon"));
-FGameplayTag ASoldier::StateDashingTag = FGameplayTag::RequestGameplayTag(FName("State.Dashing"));
-
-// Abilities
-FGameplayTag ASoldier::SkillRunTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Run"));
-FGameplayTag ASoldier::SkillJumpTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Jump"));
-FGameplayTag ASoldier::SkillCrouchTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Crouch"));
-FGameplayTag ASoldier::SkillFireWeaponTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.FireWeapon"));
-FGameplayTag ASoldier::SkillGrenadeTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Grenade"));
-FGameplayTag ASoldier::SkillAimTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Aim"));
-FGameplayTag ASoldier::SkillAreaEffectFromSelfTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.AreaEffectFromSelf"));
-FGameplayTag ASoldier::SkillGiveOrderTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.GiveOrder"));
-FGameplayTag ASoldier::SkillReloadWeaponTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.ReloadWeapon"));
-FGameplayTag ASoldier::SkillQuickDashTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.QuickDash"));
-
-// Weapon
-FGameplayTag ASoldier::NoWeaponTag = FGameplayTag::RequestGameplayTag(FName("Weapon.Equipped.None"));
-
 ASoldier::ASoldier(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer.SetDefaultSubobjectClass<USoldierMovementComponent>(ACharacter::CharacterMovementComponentName)),
 bAbilitiesInitialized{ false },
 bChangedWeaponLocally{ false },
@@ -58,7 +31,7 @@ ImpactHitFXScale{FVector{1.f}}
 	GetCapsuleComponent()->BodyInstance.SetObjectType(ECC_Player);
 
 	Inventory = FSoldier_Inventory{};
-	CurrentWeaponTag = ASoldier::NoWeaponTag;
+	CurrentWeaponTag = FGameplayTag::RequestGameplayTag(FName("Weapon.Equipped.None"));
 }
 
 /*
@@ -114,6 +87,7 @@ void ASoldier::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifeti
 
 	DOREPLIFETIME(ASoldier, Inventory);
 	DOREPLIFETIME(ASoldier, SyncControlRotation);
+	DOREPLIFETIME(ASoldier, Team);
 
 	// Only replicate CurrentWeapon to simulated clients and manually sync CurrentWeeapon with Owner when we're ready.
 	// This allows us to predict weapon changing.
@@ -206,9 +180,11 @@ void ASoldier::InitMovements()
 
 void ASoldier::ResetWeapons()
 {
-	// TODO complete here
-	//for (AWeapon* Weapon : Inventory)
-		//Weapon->Reset();
+	if (GetLocalRole() == ROLE_Authority || GetLocalRole() == ROLE_AutonomousProxy)
+	{
+		for (ASL_Weapon* Weapon : Inventory.Weapons)
+			Weapon->ResetWeapon();
+	}
 }
 
 void ASoldier::LockControls()
@@ -291,14 +267,7 @@ void ASoldier::AddStartupEffects()
 
 void ASoldier::InitializeTagChangeCallbacks()
 {
-	AbilitySystemComponent->RegisterGameplayTagEvent(ASoldier::StateDeadTag, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ASoldier::DeadTagChanged);
-	AbilitySystemComponent->RegisterGameplayTagEvent(ASoldier::StateRunningTag, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ASoldier::RunningTagChanged);
-	AbilitySystemComponent->RegisterGameplayTagEvent(ASoldier::StateJumpingTag, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ASoldier::JumpingTagChanged);
-	AbilitySystemComponent->RegisterGameplayTagEvent(ASoldier::StateFightingTag, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ASoldier::FightingTagChanged);
-	AbilitySystemComponent->RegisterGameplayTagEvent(ASoldier::StateAimingTag, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ASoldier::AimingTagChanged);
-	AbilitySystemComponent->RegisterGameplayTagEvent(ASoldier::StateGivingOrderTag, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ASoldier::GivingOrderTagChanged);
-	AbilitySystemComponent->RegisterGameplayTagEvent(ASoldier::StateFiringTag, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ASoldier::FiringTagChanged);
-	AbilitySystemComponent->RegisterGameplayTagEvent(ASoldier::StateReloadingWeaponTag, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ASoldier::ReloadingWeaponTagChanged);
+	AbilitySystemComponent->RegisterGameplayTagEvent(FGameplayTag::RequestGameplayTag(FName("State.Dead")), EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ASoldier::DeadTagChanged);
 }
 
 void ASoldier::InitializeAttributeChangeCallbacks()
@@ -349,39 +318,11 @@ void ASoldier::DeadTagChanged(const FGameplayTag _CallbackTag, int32 _NewCount)
 			UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 			AnimInstance->Montage_SetEndDelegate(Respawn_SoldierMontageEndedDelegate, RespawnMontage);
 		}
+		else
+		{
+			OnRespawnMontageCompleted(nullptr, false);
+		}
 	}
-}
-
-void ASoldier::RunningTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
-{
-}
-
-void ASoldier::JumpingTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
-{
-}
-
-void ASoldier::FightingTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
-{
-}
-
-void ASoldier::AimingTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
-{
-}
-
-void ASoldier::GivingOrderTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
-{
-}
-
-void ASoldier::FiringTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
-{
-}
-
-void ASoldier::ReloadingWeaponTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
-{
-}
-
-void ASoldier::DashingTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
-{
 }
 
 bool ASoldier::ActivateAbilities(const FGameplayTagContainer& _TagContainer)
@@ -483,6 +424,31 @@ void ASoldier::Turn(const float _Val)
 	}
 }
 
+FVector ASoldier::GetLookingAtPosition(const float _MaxRange) const
+{
+	FCollisionQueryParams Params(SCENE_QUERY_STAT(AGSGATA_LineTrace), false);
+	Params.bReturnPhysicalMaterial = true;
+	Params.AddIgnoredActor(this);
+	Params.bIgnoreBlocks = false;
+
+	FVector ViewStart = GetActorLocation();
+	FRotator ViewRot = GetActorRotation();
+
+	if (APlayerController* PC = Cast<APlayerController>(GetController()); PC)
+		PC->GetPlayerViewPoint(ViewStart, ViewRot);
+
+	const FVector ViewDir = ViewRot.Vector();
+	FVector ViewEnd = ViewStart + (ViewDir * _MaxRange);
+
+	// Get first blocking hit
+	FHitResult HitResult;
+	GetWorld()->LineTraceSingleByChannel(HitResult, ViewStart, ViewEnd, ECC_Player, Params);
+
+	//::DrawDebugLine(GetWorld(), ViewStart, HitResult.bBlockingHit ? HitResult.Location : ViewEnd, FColor::Blue, false, 2.f);
+
+	return HitResult.bBlockingHit ? HitResult.Location : ViewEnd;
+}
+
 // TODO: For now, we directly change the move speed multiplier with a setter. This is should be changed 
 // through a GE. It should use the execalculation to consider all the buffs/debbufs
 bool ASoldier::StartRunning()
@@ -509,10 +475,10 @@ void ASoldier::Landed(const FHitResult& _Hit)
 
 	// Force jump ability to end when reaching the ground
 	// This is necessary for AIs and players who would keep pressing the input
-	CancelAbility(ASoldier::SkillJumpTag);
+	CancelAbility(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Jump")));
 
 	FGameplayTagContainer EffectTagsToRemove;
-	EffectTagsToRemove.AddTag(ASoldier::StateJumpingTag);
+	EffectTagsToRemove.AddTag(FGameplayTag::RequestGameplayTag(FName("State.Jumping")));
 	AbilitySystemComponent->RemoveActiveEffectsWithGrantedTags(EffectTagsToRemove);
 }
 
@@ -621,7 +587,7 @@ void ASoldier::SetCurrentWeapon(ASL_Weapon* _NewWeapon, ASL_Weapon* _LastWeapon)
 	// Cancel active weapon abilities
 	if (AbilitySystemComponent)
 	{
-		FGameplayTagContainer AbilityTagsToCancel = FGameplayTagContainer(ASoldier::SkillFireWeaponTag);
+		FGameplayTagContainer AbilityTagsToCancel = FGameplayTagContainer(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.FireWeapon")));
 		AbilitySystemComponent->CancelAbilities(&AbilityTagsToCancel);
 	}
 
@@ -682,22 +648,6 @@ void ASoldier::ClientSyncCurrentWeapon_Implementation(ASL_Weapon* _InWeapon)
 bool ASoldier::ClientSyncCurrentWeapon_Validate(ASL_Weapon* _InWeapon)
 {
 	return true;
-}
-
-
-FVector ASoldier::GetLookingAtPosition()
-{
-	FHitResult OutHit;
-
-	FVector StartLocation = ThirdPersonCameraComponent->GetComponentTransform().GetLocation();
-	FVector ForwardVector = ThirdPersonCameraComponent->GetForwardVector();
-	FVector EndLocation = StartLocation + ForwardVector * 10000.f;
-
-	FCollisionQueryParams CollisionParams;
-	CollisionParams.AddIgnoredActor(this);
-
-	GetWorld()->LineTraceSingleByChannel(OutHit, StartLocation, EndLocation, ECollisionChannel::ECC_WorldStatic, CollisionParams);
-	return OutHit.bBlockingHit ? OutHit.Location : EndLocation;
 }
 
 int32 ASoldier::GetCharacterLevel() const
@@ -769,9 +719,13 @@ void ASoldier::Respawn()
 {
 	// Remove dead tag - respawn will be handled in DeadTagChanged
 	FGameplayTagContainer EffectTagsToRemove;
-	EffectTagsToRemove.AddTag(ASoldier::StateFightingTag); // Make sure all passive are available on respawn
-	EffectTagsToRemove.AddTag(ASoldier::StateDeadTag);
+	EffectTagsToRemove.AddTag(FGameplayTag::RequestGameplayTag(FName("State.Fighting"))); // Make sure all passive are available on respawn
+	EffectTagsToRemove.AddTag(FGameplayTag::RequestGameplayTag(FName("State.Dead")));
 	AbilitySystemComponent->RemoveActiveEffectsWithGrantedTags(EffectTagsToRemove);
+}
+
+void ASoldier::OnReceiveDamage(const FVector& _ImpactPoint, const FVector& _SourcePoint)
+{
 }
 
 void ASoldier::StartAiming()
@@ -861,6 +815,20 @@ void ASoldier::cycleBetweenTeam()
 		}
 	}
 	else ServerCycleBetweenTeam();
+}
+
+ASoldierTeam* ASoldier::GetTeam()
+{
+	return Team;
+}
+
+bool ASoldier::SetTeam(ASoldierTeam* _Team)
+{
+	if (GetLocalRole() == ROLE_Authority) {  // only the server is allowed to change the team of a player
+		Team = _Team;
+		return true;
+	}
+	return false;
 }
 
 void ASoldier::setup_stimulus() {
