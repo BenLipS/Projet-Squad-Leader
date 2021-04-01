@@ -438,7 +438,7 @@ EPathFollowingRequestResult::Type AAIGeneralController::MoveToVectorLocation() {
 	//TO-DO : if follow an enemy be at the distance to shoot 
 	EPathFollowingRequestResult::Type _movetoResult = MoveToLocation(blackboard->GetValueAsVector("VectorLocation"), 50.f);
 	if (_movetoResult == EPathFollowingRequestResult::Type::AlreadyAtGoal) {
-		SetState(AIBasicState::Patroling);
+		SetState(AIBasicState::Capturing);
 		blackboard->ClearValue("VectorLocation");
 		blackboard->ClearValue("need_GoBackward");
 	}
@@ -534,7 +534,7 @@ void AAIGeneralController::SetPatrolPoint()
 
 ResultState AAIGeneralController::ArriveAtDestination() {
 	if ( GetPawn() && FVector::Dist(GetPawn()->GetActorLocation(), GetObjectifLocation()) < 300.f) {
-		SetState(AIBasicState::Patroling);
+		SetState(AIBasicState::Capturing);
 		return ResultState::Success;
 	}
 	if (m_state == AIBasicState::Attacking)
