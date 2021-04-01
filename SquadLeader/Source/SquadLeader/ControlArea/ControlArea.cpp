@@ -58,7 +58,7 @@ void AControlArea::PreInitialisation()
 	}
 }
 
-int AControlArea::getpriority()
+int AControlArea::GetPriority() const
 {
 	return 2;
 }
