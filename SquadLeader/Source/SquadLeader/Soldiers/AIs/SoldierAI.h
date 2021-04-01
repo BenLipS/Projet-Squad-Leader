@@ -72,10 +72,6 @@ protected:
 public:
 	virtual FVector GetLookingAtPosition(const float _MaxRange = 99999.f) const override;
 
-//////////////// Teamable
-public:
-	virtual ASoldierTeam* GetTeam() override;
-	virtual bool SetTeam(ASoldierTeam* _Team) override;
 
 //////////////// Abilities
 public:

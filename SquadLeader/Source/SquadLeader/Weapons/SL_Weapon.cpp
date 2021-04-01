@@ -9,9 +9,6 @@
 #include "../Soldiers/Players/SoldierPlayerController.h"
 #include "../UI/SL_HUD.h"
 
-FGameplayTag ASL_Weapon::FireModeAutomaticTag = FGameplayTag::RequestGameplayTag(FName("Weapon.FireMode.Automatic"));
-FGameplayTag ASL_Weapon::FireModeSemiAutoTag = FGameplayTag::RequestGameplayTag(FName("Weapon.FireMode.SemiAuto"));
-
 ASL_Weapon::ASL_Weapon() :
 	Damage{ 10.f },
 	MaxRange{ 999'999.f },

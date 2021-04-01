@@ -34,26 +34,21 @@ void ASoldierPlayerState::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	// everyone
-	DOREPLIFETIME(ASoldierPlayerState, Team);
+	//DOREPLIFETIME(ASoldierPlayerState, var);
 }
 
 ASoldierTeam* ASoldierPlayerState::GetTeam()
 {
-	return Team;
+	if (auto soldier = Cast<ASoldier>(GetPawn()); soldier) {
+		return soldier->GetTeam();
+	}
+	return nullptr;
 }
 
 bool ASoldierPlayerState::SetTeam(ASoldierTeam* _Team)
 {
-	if (GetLocalRole() == ROLE_Authority) {  // only server can change team
-		if (auto soldier = Cast<ASoldier>(GetPawn()); soldier) {
-			if (Team)
-				Team->RemoveSoldierList(soldier);
-			if (_Team)
-				_Team->AddSoldierList(soldier);
-		}
-
-		Team = _Team;
-		return true;
+	if (auto soldier = Cast<ASoldier>(GetPawn()); soldier) {
+		return soldier->SetTeam(_Team);
 	}
 	return false;
 }

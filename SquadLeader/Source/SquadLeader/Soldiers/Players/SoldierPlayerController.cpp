@@ -259,6 +259,9 @@ void ASoldierPlayerController::BroadCastManagerData()
 
 void ASoldierPlayerController::Cheat_SuperSoldier()
 {
+	if (GetLocalRole() < ROLE_Authority)
+		ServerCheat_SuperSoldier();
+
 	if (ASoldierPlayer* Soldier = GetPawn<ASoldierPlayer>(); Soldier)
 	{
 		const float badassValue = 9'999'999.f;
@@ -277,6 +280,11 @@ void ASoldierPlayerController::Cheat_SuperSoldier()
 			Weapon->SetHasInfiniteAmmo(true);
 		}
 	}
+}
+
+void ASoldierPlayerController::ServerCheat_SuperSoldier_Implementation()
+{
+	Cheat_SuperSoldier();
 }
 
 void ASoldierPlayerController::Cheat_Die()

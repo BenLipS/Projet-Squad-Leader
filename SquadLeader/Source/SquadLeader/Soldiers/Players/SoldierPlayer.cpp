@@ -97,20 +97,6 @@ void ASoldierPlayer::Turn(const float _Val)
 	}
 }
 
-ASoldierTeam* ASoldierPlayer::GetTeam()
-{
-	if (auto SoldierPlayerState = Cast<ASoldierPlayerState>(GetPlayerState()); SoldierPlayerState)
-		return SoldierPlayerState->GetTeam();
-	return nullptr;
-}
-
-bool ASoldierPlayer::SetTeam(ASoldierTeam* _Team)
-{
-	if (auto SoldierPlayerState = Cast<ASoldierPlayerState>(GetPlayerState()); SoldierPlayerState)
-		return SoldierPlayerState->SetTeam(_Team);
-	return false;
-}
-
 void ASoldierPlayer::SetAbilitySystemComponent()
 {
 	check(IsValid(GetPlayerState()))

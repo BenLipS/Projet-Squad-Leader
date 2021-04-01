@@ -122,6 +122,10 @@ public:
 	UFUNCTION(exec)
 	void Cheat_SuperSoldier();
 
+	UFUNCTION(Server, Reliable)
+	void ServerCheat_SuperSoldier();
+	void ServerCheat_SuperSoldier_Implementation();
+
 	UFUNCTION(exec)
 	void Cheat_Die();
 };

@@ -71,9 +71,6 @@ protected:
 public:
 	FGameplayTag GetFireMode() const noexcept;
 
-	static FGameplayTag FireModeAutomaticTag;
-	static FGameplayTag FireModeSemiAutoTag;
-
 protected:
 	// Cache tags
 	FGameplayTag WeaponAbilityTag;
