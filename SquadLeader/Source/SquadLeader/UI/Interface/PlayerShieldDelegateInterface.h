@@ -21,8 +21,7 @@ class SQUADLEADER_API IPlayerShieldDelegateInterface : public IPlayerShieldInter
 {
 	GENERATED_BODY()
 
-protected:
-	//TArray<TScriptInterface<IPlayerShieldInterface*>> Delegates;
+private:
 	TArray<IPlayerShieldInterface*> PlayerShieldDelegates;
 
 public:

@@ -9,6 +9,7 @@
 #include "Interface/SquadDelegateInterface.h"
 #include "Interface/WeaponDelegateInterface.h"
 #include "Interface/OrderDelegateInterface.h"
+#include "Interface/NotificationDelegateInterface.h"
 #include "SL_HUD.generated.h"
 
 /**
@@ -20,7 +21,8 @@ class SQUADLEADER_API ASL_HUD : public AHUD,
 	public IPlayerShieldDelegateInterface,
 	public ISquadDelegateInterface,
 	public IWeaponDelegateInterface,
-	public IOrderDelegateInterface
+	public IOrderDelegateInterface,
+	public INotificationDelegateInterface
 {
 	GENERATED_BODY()
 	
@@ -77,4 +79,8 @@ public:
 public:
 	//void OnOrderInputPressed() override;
 	//void OnOrderInputReleased() override;
+	// 
+//-----INotificationDelegateInterface-----
+public:
+	//void OnTextNotification_Received(FText textNotification) override;
 };

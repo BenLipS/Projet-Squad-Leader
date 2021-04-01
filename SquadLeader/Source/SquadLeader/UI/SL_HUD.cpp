@@ -7,6 +7,8 @@
 #include "../Soldiers/Players/SoldierPlayerController.h"
 #include "../Soldiers/Players/SoldierPlayerState.h"
 
+#include "../Weapons/SL_Weapon.h"
+
 ASL_HUD::ASL_HUD()
 {
 }
@@ -36,6 +38,14 @@ void ASL_HUD::SetPlayerStateLink()
 	ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(GetOwningPlayerController());
 	if (PC)
 	{
+		if (ASoldier* Soldier = PC->GetPawn<ASoldier>(); Soldier)
+		{
+			if (ASL_Weapon* Weapon = Soldier->GetCurrentWeapon(); Weapon)
+			{
+				Weapon->SetCurrentAmmo(Weapon->GetCurrentAmmo());
+				Weapon->SetMaxAmmo(Weapon->GetMaxAmmo());
+			}
+		}
 		ASoldierPlayerState* PS = PC->GetPlayerState<ASoldierPlayerState>();
 		if (PS)
 		{
