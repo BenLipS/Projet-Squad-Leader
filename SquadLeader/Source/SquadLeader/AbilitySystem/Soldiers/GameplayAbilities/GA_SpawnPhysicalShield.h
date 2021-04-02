@@ -19,4 +19,10 @@ public:
 protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	TSubclassOf<class AShield> ShieldClass;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	float ShieldLifeSpan;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	float ShieldDistanceFromCaller;
 };

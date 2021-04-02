@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Components/StaticMeshComponent.h"
 #include "Shield.generated.h"
 
 UCLASS()
@@ -15,4 +16,6 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Mesh")
+	UStaticMeshComponent* Mesh;
 };

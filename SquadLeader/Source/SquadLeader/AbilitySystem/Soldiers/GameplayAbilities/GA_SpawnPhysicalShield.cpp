@@ -3,7 +3,7 @@
 #include "../AbilitySystemSoldier.h"
 #include "SquadLeader/Weapons/Shield.h"
 
-UGA_SpawnPhysicalShield::UGA_SpawnPhysicalShield()
+UGA_SpawnPhysicalShield::UGA_SpawnPhysicalShield() : ShieldLifeSpan{ 5.f }, ShieldDistanceFromCaller{ 10.f }
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 
@@ -25,17 +25,19 @@ void UGA_SpawnPhysicalShield::ActivateAbility(const FGameplayAbilitySpecHandle _
 		return;
 	}
 
+	ASoldier* SourceSoldier = Cast<ASoldier>(CurrentActorInfo->AvatarActor);
+
 	FActorSpawnParameters SpawnInfo;
-	SpawnInfo.Owner = CurrentActorInfo->AvatarActor.Get();
-	SpawnInfo.Instigator = CurrentActorInfo->AvatarActor.Get()->GetInstigator();
+	SpawnInfo.Owner = SourceSoldier;
+	SpawnInfo.Instigator = SourceSoldier->GetInstigator();
 	SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
 	FVector Location = CurrentActorInfo->AvatarActor->GetActorLocation();
-	Location.Z = 0.0f; // TODO: Can t be that
+	Location.Z -= SourceSoldier->GetDefaultHalfHeight() * 2.f;
 
-	AShield* Shield = GetWorld()->SpawnActor<AShield>(ShieldClass, CurrentActorInfo->AvatarActor->GetActorLocation(), CurrentActorInfo->AvatarActor->GetActorForwardVector().Rotation(), SpawnInfo);
+	AShield* Shield = GetWorld()->SpawnActor<AShield>(ShieldClass, SourceSoldier->GetActorLocation() + ShieldDistanceFromCaller * SourceSoldier->GetActorForwardVector(), SourceSoldier->GetActorForwardVector().Rotation(), SpawnInfo);
 
-	Shield->SetLifeSpan(5.f);
+	Shield->SetLifeSpan(ShieldLifeSpan);
 
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }
