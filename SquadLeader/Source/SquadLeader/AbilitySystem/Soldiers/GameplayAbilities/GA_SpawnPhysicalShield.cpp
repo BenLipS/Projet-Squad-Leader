@@ -3,7 +3,11 @@
 #include "../AbilitySystemSoldier.h"
 #include "SquadLeader/Weapons/Shield.h"
 
-UGA_SpawnPhysicalShield::UGA_SpawnPhysicalShield() : ShieldLifeSpan{ 5.f }, ShieldHealth { 500.f }, ShieldDistanceFromCaller{ 0.f }
+UGA_SpawnPhysicalShield::UGA_SpawnPhysicalShield() :
+ShieldLifeSpan{ 5.f },
+ShieldHealth { 500.f },
+ShieldDistanceFromCaller{ 0.f },
+ShieldScale{ FVector{ 1.f, 1.f, 1.f } }
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 
@@ -37,7 +41,7 @@ void UGA_SpawnPhysicalShield::SpawnShield()
 
 	FActorSpawnParameters SpawnInfo;
 	SpawnInfo.Owner = SourceSoldier;
-	SpawnInfo.Instigator = SourceSoldier->GetInstigator();
+	SpawnInfo.Instigator = SourceSoldier;
 	SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
 	FVector Location = CurrentActorInfo->AvatarActor->GetActorLocation();
@@ -47,4 +51,5 @@ void UGA_SpawnPhysicalShield::SpawnShield()
 
 	Shield->SetLifeSpan(ShieldLifeSpan);
 	Shield->SetHealth(ShieldHealth);
+	Shield->SetActorScale3D(ShieldScale);
 }
