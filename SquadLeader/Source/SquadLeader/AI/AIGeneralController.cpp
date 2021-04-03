@@ -237,8 +237,8 @@ void AAIGeneralController::SearchState() {
 	blackboard->SetValueAsBool("is_attacking", false);
 	blackboard->SetValueAsBool("is_moving", false);
 	blackboard->SetValueAsBool("is_patroling", false);
-	blackboard->SetValueAsBool("is_capturing", true);
-	blackboard->SetValueAsBool("is_searching", false);
+	blackboard->SetValueAsBool("is_capturing", false);
+	blackboard->SetValueAsBool("is_searching", true);
 }
 void AAIGeneralController::CapturingState() {
 	blackboard->SetValueAsBool("is_attacking", false);
