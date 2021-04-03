@@ -3,7 +3,7 @@
 #include "../AbilitySystemSoldier.h"
 #include "SquadLeader/Weapons/Shield.h"
 
-UGA_SpawnPhysicalShield::UGA_SpawnPhysicalShield() : ShieldLifeSpan{ 5.f }, ShieldDistanceFromCaller{ 10.f }
+UGA_SpawnPhysicalShield::UGA_SpawnPhysicalShield() : ShieldLifeSpan{ 5.f }, ShieldHealth { 500.f }, ShieldDistanceFromCaller{ 0.f }
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 
@@ -25,6 +25,14 @@ void UGA_SpawnPhysicalShield::ActivateAbility(const FGameplayAbilitySpecHandle _
 		return;
 	}
 
+	if (CurrentActorInfo->IsNetAuthority())
+		SpawnShield();
+
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+}
+
+void UGA_SpawnPhysicalShield::SpawnShield()
+{
 	ASoldier* SourceSoldier = Cast<ASoldier>(CurrentActorInfo->AvatarActor);
 
 	FActorSpawnParameters SpawnInfo;
@@ -38,6 +46,5 @@ void UGA_SpawnPhysicalShield::ActivateAbility(const FGameplayAbilitySpecHandle _
 	AShield* Shield = GetWorld()->SpawnActor<AShield>(ShieldClass, SourceSoldier->GetActorLocation() + ShieldDistanceFromCaller * SourceSoldier->GetActorForwardVector(), SourceSoldier->GetActorForwardVector().Rotation(), SpawnInfo);
 
 	Shield->SetLifeSpan(ShieldLifeSpan);
-
-	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+	Shield->SetHealth(ShieldHealth);
 }

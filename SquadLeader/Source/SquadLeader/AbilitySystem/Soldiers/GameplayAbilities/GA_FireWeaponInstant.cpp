@@ -1,5 +1,6 @@
 #include "GA_FireWeaponInstant.h"
 #include "SquadLeader/Weapons/SL_Weapon.h"
+#include "SquadLeader/Weapons/Shield.h"
 #include "SquadLeader/Soldiers/Soldier.h"
 #include "SquadLeader/AbilitySystem/Soldiers/AbilityTasks/SL_WaitTargetDataUsingActor.h"
 #include "SquadLeader/AbilitySystem/Soldiers/Trace/SL_LineTrace.h"
@@ -115,6 +116,10 @@ void UGA_FireWeaponInstant::HandleTargetData(const FGameplayAbilityTargetDataHan
 		{
 			ApplyDamages(_Data, DamageEffectSpecHandle, TargetSoldier->GetAbilitySystemComponent());
 			TargetSoldier->OnReceiveDamage(Data->GetHitResult()->ImpactPoint, Data->GetHitResult()->TraceStart);
+		}
+		else if (AShield* Shield = Cast<AShield>(Actor); Shield)
+		{
+			Shield->OnReceiveDamage(SourceWeapon->GetWeaponDamage());
 		}
 	}
 
