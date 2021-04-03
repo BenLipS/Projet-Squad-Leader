@@ -72,8 +72,7 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
-	UFUNCTION()
-	UMission* GetMission() { return Mission; };
+	auto GetMission() { return Mission; };
 
 	//For Formation
 	TArray<FVector> FormationPos;
@@ -110,4 +109,7 @@ public:
 
 	UFUNCTION()
 	void OnSquadMemberMaxShieldChange(float newValue, AAISquadController* SoldierController);
+
+protected:
+	bool m_inFormation = false;
 };

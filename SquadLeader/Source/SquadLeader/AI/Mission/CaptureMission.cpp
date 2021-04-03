@@ -10,4 +10,5 @@ UCaptureMission::UCaptureMission() : m_controlArea{ nullptr } {
 void UCaptureMission::InitCaptureMission(int _id, MissionPriority _p, AControlArea* _controlArea) {
 	Super::Init(_id, _p);
 	m_controlArea = _controlArea;
+	m_type = MissionType::eCAPTURE;
 }

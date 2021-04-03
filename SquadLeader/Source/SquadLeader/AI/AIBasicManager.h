@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
 #include "AIBasicController.h"
-#include "../SquadLeaderGameModeBase.h"
 #include "../ControlArea/ControlAreaManager.h"
 #include "AIBasicManager.generated.h"
 

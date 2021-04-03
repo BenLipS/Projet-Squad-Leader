@@ -7,6 +7,7 @@
 #include "CaptureMission.h"
 #include "DefendMission.h"
 #include "PatrolMission.h"
+#include "FormationMission.h"
 #include "Misc/TVariant.h"
 #include "MissionList.generated.h"
 
@@ -28,6 +29,7 @@ struct SQUADLEADER_API FMissionAction {
 	auto operator()(UCaptureMission* _mission)const;
 	auto operator()(UDefendMission* _mission)const;
 	auto operator()(UPatrolMission* _mission)const;
+	auto operator()(UFormationMission* _mission)const;
 };
 
 
@@ -41,14 +43,23 @@ struct SQUADLEADER_API FCompareMission {
 	auto operator()(UCaptureMission* _mission_left, UDefendMission* _mission_right)const{ return _mission_left->GetPriority() > _mission_right->GetPriority(); }
 	auto operator()(UCaptureMission* _mission_left, UPatrolMission* _mission_right)const { return _mission_left->GetPriority() > _mission_right->GetPriority(); };
 	auto operator()(UCaptureMission* _mission_left, UCaptureMission* _mission_right)const { return _mission_left->GetPriority() > _mission_right->GetPriority(); };
+	auto operator()(UCaptureMission* _mission_left, UFormationMission* _mission_right)const { return _mission_left->GetPriority() > _mission_right->GetPriority(); };
 
 	auto operator()(UDefendMission* _mission_left, UDefendMission* _mission_right)const { return _mission_left->GetPriority() > _mission_right->GetPriority(); };
 	auto operator()(UDefendMission* _mission_left, UPatrolMission* _mission_right)const { return _mission_left->GetPriority() > _mission_right->GetPriority(); };
 	auto operator()(UDefendMission* _mission_left, UCaptureMission* _mission_right)const { return _mission_left->GetPriority() > _mission_right->GetPriority(); };
+	auto operator()(UDefendMission* _mission_left, UFormationMission* _mission_right)const { return _mission_left->GetPriority() > _mission_right->GetPriority(); };
 	
 	auto operator()(UPatrolMission* _mission_left, UDefendMission* _mission_right)const { return _mission_left->GetPriority() > _mission_right->GetPriority(); };
 	auto operator()(UPatrolMission* _mission_left, UPatrolMission* _mission_right)const { return _mission_left->GetPriority() > _mission_right->GetPriority(); };
 	auto operator()(UPatrolMission* _mission_left, UCaptureMission* _mission_right)const { return _mission_left->GetPriority() > _mission_right->GetPriority(); };
+	auto operator()(UPatrolMission* _mission_left, UFormationMission* _mission_right)const { return _mission_left->GetPriority() > _mission_right->GetPriority(); };
+
+	auto operator()(UFormationMission* _mission_left, UDefendMission* _mission_right)const { return _mission_left->GetPriority() > _mission_right->GetPriority(); }
+	auto operator()(UFormationMission* _mission_left, UPatrolMission* _mission_right)const { return _mission_left->GetPriority() > _mission_right->GetPriority(); };
+	auto operator()(UFormationMission* _mission_left, UCaptureMission* _mission_right)const { return _mission_left->GetPriority() > _mission_right->GetPriority(); };
+	auto operator()(UFormationMission* _mission_left, UFormationMission* _mission_right)const { return _mission_left->GetPriority() > _mission_right->GetPriority(); };
+
 };
 
 
@@ -59,7 +70,7 @@ class SQUADLEADER_API UMissionList : public UObject
 	GENERATED_BODY()
 
 public:
-	using type_mission = TVariant<UCaptureMission*, UDefendMission*, UPatrolMission*>;
+	using type_mission = TVariant<UCaptureMission*, UDefendMission*, UPatrolMission*, UFormationMission*>;
 	using array_mission_type = TArray<type_mission>;
 
 	UMissionList();
@@ -97,6 +108,5 @@ public:
 
 	void EndMission();
 
-	UFUNCTION()
-		void RunMission();
+	void RunMission();
 };

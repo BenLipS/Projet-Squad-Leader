@@ -54,6 +54,8 @@ public:
 
 	void SetState(MissionState _state) noexcept { m_state = _state; }
 
+	auto GetMissionType() const noexcept { return m_type; }
+
 protected:
 
 	UPROPERTY()
@@ -64,6 +66,9 @@ protected:
 
 	UPROPERTY()
 		MissionPriority m_priority;
+
+	UPROPERTY()
+		MissionType m_type;
 
 private:
 	void SetPriority(MissionPriority _p) noexcept { m_priority = _p; }

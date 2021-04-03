@@ -8,6 +8,7 @@
 #include "../Soldiers/AIs/SoldierAI.h"
 #include "Perception/AIPerceptiontypes.h"
 #include "../Soldiers/Interface/Teamable.h"
+#include "../ControlArea/ControlArea.h"
 #include "AIGeneralController.generated.h"
 
 class UFlockingComponent;

@@ -6,6 +6,7 @@
 #include "../ControlArea/ControlArea.h"
 #include "../AI/Mission/CaptureMission.h"
 #include "../AI/Mission/PatrolMission.h"
+#include "../SquadLeaderGameModeBase.h"
 #include "../GameState/SquadLeaderGameState.h"
 
 AAIBasicManager::AAIBasicManager() {
@@ -16,7 +17,7 @@ AAIBasicManager::AAIBasicManager() {
 void AAIBasicManager::BeginPlay() {
 	Super::BeginPlay();
 	InitValue();
-	if (nbr_controlArea > 0)
+	if (nbr_controlArea > 0 && nbr_unite > 0)
 		ChooseControlArea();
 }
 
