@@ -4,10 +4,12 @@
 #include "GameFramework/Actor.h"
 #include "Components/StaticMeshComponent.h"
 #include "Net/UnrealNetwork.h"
+#include "SquadLeader/Soldiers/SoldierTeam.h"
+#include "SquadLeader/Soldiers/Interface/Teamable.h"
 #include "Shield.generated.h"
 
 UCLASS()
-class SQUADLEADER_API AShield : public AActor
+class SQUADLEADER_API AShield : public AActor, public ITeamable
 {
 	GENERATED_BODY()
 	
@@ -29,10 +31,19 @@ protected:
 
 public:
 	void SetHealth(const float _Health);
-	void OnReceiveDamage(const float _Damage);
+	void ApplyDamages(const float _Damage);
 
 	UFUNCTION(Server, Reliable, WithValidation)
-	void ServerOnReceiveDamage(const float _Damage);
-	void ServerOnReceiveDamage_Implementation(const float _Damage);
-	bool ServerOnReceiveDamage_Validate(const float _Damage);
+	void ServerApplyDamages(const float _Damage);
+	void ServerApplyDamages_Implementation(const float _Damage);
+	bool ServerApplyDamages_Validate(const float _Damage);
+
+//////////////// Teamable
+protected:
+	UPROPERTY(replicated)
+	ASoldierTeam* Team;
+
+public:
+	virtual ASoldierTeam* GetTeam() override;
+	virtual bool SetTeam(ASoldierTeam* _Team) override;
 };

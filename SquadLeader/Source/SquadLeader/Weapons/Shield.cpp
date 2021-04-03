@@ -1,5 +1,6 @@
 #include "Shield.h"
 #include "SquadLeader/SquadLeader.h"
+#include "SquadLeader/Soldiers/Soldier.h"
 
 AShield::AShield() : Health { 100.f }
 {
@@ -14,6 +15,9 @@ AShield::AShield() : Health { 100.f }
 void AShield::BeginPlay()
 {
 	Super::BeginPlay();
+
+	ASoldier* SourceSoldier = Cast<ASoldier>(GetOwner());
+	SetTeam(SourceSoldier ? SourceSoldier->GetTeam() : nullptr);
 }
 
 void AShield::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -21,6 +25,7 @@ void AShield::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeP
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AShield, Health);
+	DOREPLIFETIME(AShield, Team);
 }
 
 void AShield::DestroyShield()
@@ -33,22 +38,36 @@ void AShield::SetHealth(const float _Health)
 	Health = _Health;
 }
 
-void AShield::OnReceiveDamage(const float _Damage)
+void AShield::ApplyDamages(const float _Damage)
 {
 	if (GetLocalRole() < ROLE_Authority)
-		ServerOnReceiveDamage(_Damage);
+		ServerApplyDamages(_Damage);
 
 	Health -= _Damage;
 	if (Health < 0.f)
 		DestroyShield();
 }
 
-void AShield::ServerOnReceiveDamage_Implementation(const float _Damage)
+void AShield::ServerApplyDamages_Implementation(const float _Damage)
 {
-	OnReceiveDamage(_Damage);
+	ApplyDamages(_Damage);
 }
 
-bool AShield::ServerOnReceiveDamage_Validate(const float _Damage)
+bool AShield::ServerApplyDamages_Validate(const float _Damage)
 {
+	return true;
+}
+
+ASoldierTeam* AShield::GetTeam()
+{
+	return Team;
+}
+
+bool AShield::SetTeam(ASoldierTeam* _Team)
+{
+	if (GetLocalRole() < ROLE_Authority)
+		return false;
+
+	Team = _Team;
 	return true;
 }
