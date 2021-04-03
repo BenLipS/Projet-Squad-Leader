@@ -39,44 +39,44 @@ void AAISquadManager::Init(ASoldierTeam* _Team, ASoldierPlayer* _Player)
 	LocationAI1.SetLocation(PlayerTransform.GetLocation() - Offset_1);
 	LocationAI2.SetLocation(PlayerTransform.GetLocation() + Offset_);
 
-	//FActorSpawnParameters SpawnInfo;
-	//SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn; // La maniere de faire le respawn
-	//ASoldierAI* SquadAI = GetWorld()->SpawnActorDeferred<ASoldierAI>(ClassAI, LocationAI, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn); 
-	//if (SquadAI) {
-	//	SquadAI->SpawnDefaultController();
-	//	SquadAI->OnHealthChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberHealthChange);
-	//	SquadAI->OnMaxHealthChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberMaxHealthChange);
-	//	SquadAI->OnShieldChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberShieldChange);
-	//	SquadAI->OnMaxShieldChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberMaxShieldChange);
-	//	SquadAI->FinishSpawning(LocationAI);
-	//	SquadAI->BroadCastDatas();
-	//	AISquadList.Add(Cast<AAISquadController>(SquadAI->Controller));
-	//	Cast<AAISquadController>(SquadAI->Controller)->SquadManager = this;
-	//}
-	//ASoldierAI* SquadAI1 = GetWorld()->SpawnActorDeferred<ASoldierAI>(ClassAI, LocationAI1, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
-	//if (SquadAI1) {
-	//	SquadAI1->SpawnDefaultController();
-	//	SquadAI1->OnHealthChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberHealthChange);
-	//	SquadAI1->OnMaxHealthChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberMaxHealthChange);
-	//	SquadAI1->OnShieldChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberShieldChange);
-	//	SquadAI1->OnMaxShieldChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberMaxShieldChange);
-	//	SquadAI1->FinishSpawning(LocationAI1);
-	//	SquadAI1->BroadCastDatas();
-	//	AISquadList.Add(Cast<AAISquadController>(SquadAI1->Controller));
-	//	Cast<AAISquadController>(SquadAI1->Controller)->SquadManager = this;
-	//}
-	//ASoldierAI* SquadAI2 = GetWorld()->SpawnActorDeferred<ASoldierAI>(ClassAI, LocationAI2, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
-	//if (SquadAI2) {
-	//	SquadAI2->SpawnDefaultController();
-	//	SquadAI2->OnHealthChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberHealthChange);
-	//	SquadAI2->OnMaxHealthChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberMaxHealthChange);
-	//	SquadAI2->OnShieldChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberShieldChange);
-	//	SquadAI2->OnMaxShieldChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberMaxShieldChange);
-	//	SquadAI2->FinishSpawning(LocationAI2);
-	//	SquadAI2->BroadCastDatas();
-	//	AISquadList.Add(Cast<AAISquadController>(SquadAI2->Controller));
-	//	Cast<AAISquadController>(SquadAI2->Controller)->SquadManager = this;
-	//}
+	FActorSpawnParameters SpawnInfo;
+	SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn; // La maniere de faire le respawn
+	ASoldierAI* SquadAI = GetWorld()->SpawnActorDeferred<ASoldierAI>(ClassAI, LocationAI, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn); 
+	if (SquadAI) {
+		SquadAI->SpawnDefaultController();
+		SquadAI->OnHealthChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberHealthChange);
+		SquadAI->OnMaxHealthChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberMaxHealthChange);
+		SquadAI->OnShieldChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberShieldChange);
+		SquadAI->OnMaxShieldChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberMaxShieldChange);
+		SquadAI->FinishSpawning(LocationAI);
+		SquadAI->BroadCastDatas();
+		AISquadList.Add(Cast<AAISquadController>(SquadAI->Controller));
+		Cast<AAISquadController>(SquadAI->Controller)->SquadManager = this;
+	}
+	ASoldierAI* SquadAI1 = GetWorld()->SpawnActorDeferred<ASoldierAI>(ClassAI, LocationAI1, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+	if (SquadAI1) {
+		SquadAI1->SpawnDefaultController();
+		SquadAI1->OnHealthChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberHealthChange);
+		SquadAI1->OnMaxHealthChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberMaxHealthChange);
+		SquadAI1->OnShieldChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberShieldChange);
+		SquadAI1->OnMaxShieldChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberMaxShieldChange);
+		SquadAI1->FinishSpawning(LocationAI1);
+		SquadAI1->BroadCastDatas();
+		AISquadList.Add(Cast<AAISquadController>(SquadAI1->Controller));
+		Cast<AAISquadController>(SquadAI1->Controller)->SquadManager = this;
+	}
+	ASoldierAI* SquadAI2 = GetWorld()->SpawnActorDeferred<ASoldierAI>(ClassAI, LocationAI2, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+	if (SquadAI2) {
+		SquadAI2->SpawnDefaultController();
+		SquadAI2->OnHealthChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberHealthChange);
+		SquadAI2->OnMaxHealthChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberMaxHealthChange);
+		SquadAI2->OnShieldChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberShieldChange);
+		SquadAI2->OnMaxShieldChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberMaxShieldChange);
+		SquadAI2->FinishSpawning(LocationAI2);
+		SquadAI2->BroadCastDatas();
+		AISquadList.Add(Cast<AAISquadController>(SquadAI2->Controller));
+		Cast<AAISquadController>(SquadAI2->Controller)->SquadManager = this;
+	}
 
 	m_inFormation = true;
 	TypeOfFormation = FormationType::Circle;

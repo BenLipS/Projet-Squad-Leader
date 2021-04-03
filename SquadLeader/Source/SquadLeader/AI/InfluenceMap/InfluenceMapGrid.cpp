@@ -28,7 +28,7 @@ void AInfluenceMapGrid::BeginPlay() {
 void AInfluenceMapGrid::Tick(float DeltaSeconds) {
 	Super::Tick(DeltaSeconds);
 	if (GetLocalRole() == ROLE_Authority) {
-		//DrawGrid();
+		DrawGrid();
 		{
 			const double startTime = FPlatformTime::Seconds();
 
@@ -43,11 +43,15 @@ void AInfluenceMapGrid::Tick(float DeltaSeconds) {
 }
 
 void AInfluenceMapGrid::InitGrid() noexcept {
+	UNavigationSystemV1* navSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
+	auto box_ = navSys->GetLevelBounds(GetWorld()->GetCurrentLevel());
 
 	for (int y = m_tile_height / 2.f; y <= m_grid_height; y += m_tile_height) {
 		for (int x = m_tile_width / 2.f; x <= m_grid_width; x += m_tile_width) {
 			FTileBase m_tile;
-			if (auto _location = FVector(x, y, 100.f); IsValid(_location)) {
+			auto _location = FVector(x, y, m_startLocation.Z);
+			if (IsValid(_location)) {
+				_location.Z += m_height;
 				m_tile.m_location = _location;
 				m_influencemap.Add(m_tile);
 			}
@@ -58,19 +62,26 @@ void AInfluenceMapGrid::InitGrid() noexcept {
 
 bool AInfluenceMapGrid::IsValid(FVector _location) const {
 	UNavigationSystemV1* navSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
-	UNavigationPath* path = navSys->FindPathToLocationSynchronously(GetWorld(), FVector(5000.f, 5000.f, 80.f), _location);
-	return path->IsValid() && (!path->IsPartial());
+	UNavigationPath* path;
+	for (float _height : m_heightList) {
+		_location.Z = _height;
+		path = navSys->FindPathToLocationSynchronously(GetWorld(), m_startLocation, _location);
+		if (path->IsValid() && (!path->IsPartial()))
+			return true;
+	}
+	return false;
 }
 
 void AInfluenceMapGrid::DrawGrid() const {
-	for (FTileBase _tile : m_influencemap) {
-		if (_tile.m_team == 1)
-			DrawDebugSolidBox(GetWorld(), _tile.m_location, FVector(95.f, 95.f, 10.f), FColor(0, 0, 255 * _tile.m_value));
-		else if (_tile.m_team == 2)
-			DrawDebugSolidBox(GetWorld(), _tile.m_location, FVector(95.f, 95.f, 10.f), FColor(255 * _tile.m_value, 0, 0));
-		
-	/*	else
-			DrawDebugSolidBox(GetWorld(), _tile.m_location, FVector(95.f, 95.f, 10.f), FColor(0, 255, 0));*/
+	if (m_DrawCharacterInfluence) {
+		for (FTileBase _tile : m_influencemap) {
+			if (_tile.m_team == 1)
+				DrawDebugSolidBox(GetWorld(), _tile.m_location, FVector(95.f, 95.f, 10.f), FColor(0, 0, 255 * _tile.m_value));
+			else if (_tile.m_team == 2)
+				DrawDebugSolidBox(GetWorld(), _tile.m_location, FVector(95.f, 95.f, 10.f), FColor(255 * _tile.m_value, 0, 0));
+			else if(m_DrawAllGrid)
+				DrawDebugSolidBox(GetWorld(), _tile.m_location, FVector(95.f, 95.f, 10.f), FColor(0, 255, 0));
+		}
 	}
 }
 
