@@ -297,8 +297,7 @@ void ASoldier::DeadTagChanged(const FGameplayTag _CallbackTag, int32 _NewCount)
 		if (ASquadLeaderGameModeBase* GameMode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode()); GameMode)
 			GameMode->SoldierDied(GetController());
 
-		if (DeathMontage)
-			PlayAnimMontage(DeathMontage);
+		HandleDeathMontage();
 	}
 	else // If dead tag is removed - Handle respawn
 	{
@@ -841,6 +840,12 @@ uint8 ASoldier::GetInfluenceRadius() const noexcept{
 	return InfluenceRadius;
 }
 
+void ASoldier::HandleDeathMontage()
+{
+	if (DeathMontage)
+		PlayAnimMontage(DeathMontage);
+}
+
 void ASoldier::OnStartGameMontageCompleted(UAnimMontage* _Montage, bool _bInterrupted)
 {
 	UnLockControls();
@@ -852,7 +857,7 @@ void ASoldier::OnRespawnMontageCompleted(UAnimMontage* _Montage, bool _bInterrup
 
 	GetCharacterMovement()->GravityScale = 1.f;
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Player, ECollisionResponse::ECR_Block);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Player, ECollisionResponse::ECR_Overlap);
 }
 
 // TODO: Show particle from the hit location - not center of the soldier

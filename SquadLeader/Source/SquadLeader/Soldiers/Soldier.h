@@ -376,6 +376,8 @@ public:
 	UAnimMontage* WeaponFireMontage;
 
 protected:
+	void HandleDeathMontage();
+
 	// Callbacks
 	FOnMontageEnded StartGame_SoldierMontageEndedDelegate;
 	FOnMontageEnded Respawn_SoldierMontageEndedDelegate;
