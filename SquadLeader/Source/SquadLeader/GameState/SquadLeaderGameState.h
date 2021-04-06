@@ -31,9 +31,9 @@ public:
 
 protected:
 	// storage of global data for all the game
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Replicated, Category = "GameModeData")
+	UPROPERTY(BlueprintReadWrite, Replicated, Category = "GameModeData")
 		AControlAreaManager* ControlAreaManager;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Replicated, Category = "GameModeData")
+	UPROPERTY(BlueprintReadWrite, Replicated, Category = "GameModeData")
 		TArray<ASoldierTeam*> SoldierTeamCollection;
 
 public:

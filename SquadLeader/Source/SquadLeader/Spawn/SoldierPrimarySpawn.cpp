@@ -38,7 +38,7 @@ void ASoldierPrimarySpawn::PreInitialisation()
 	UpdateTeamOwner();
 }
 
-int ASoldierPrimarySpawn::getpriority()
+int ASoldierPrimarySpawn::GetPriority() const
 {
 	return 2;
 }

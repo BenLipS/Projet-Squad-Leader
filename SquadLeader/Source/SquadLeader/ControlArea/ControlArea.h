@@ -25,15 +25,12 @@ protected:
 	virtual void BeginPlay() override;
 
 public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
 	// for replication purpose
 	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 
 	// Pre init launch by the gameMode before the BeginPlay() function
 	virtual void PreInitialisation() override;
-	virtual int getpriority() override;
+	virtual int GetPriority() const override;
 
 public:
 	/** Zone Collide */

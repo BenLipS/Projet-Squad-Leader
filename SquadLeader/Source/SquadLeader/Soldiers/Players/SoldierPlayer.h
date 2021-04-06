@@ -40,10 +40,6 @@ public:
 	virtual void LookUp(const float _Val) override;
 	virtual void Turn(const float _Val) override;
 
-//////////////// Teamable
-public:
-	virtual ASoldierTeam* GetTeam() override;
-	virtual bool SetTeam(ASoldierTeam* _Team) override;
 
 	virtual void cycleBetweenTeam() override;
 

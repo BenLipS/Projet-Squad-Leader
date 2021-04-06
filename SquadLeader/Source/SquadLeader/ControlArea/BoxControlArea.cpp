@@ -9,7 +9,7 @@ ABoxControlArea::ABoxControlArea()
 	initCollideElement();
 
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 }
 
 // used when initialising the control area
@@ -20,15 +20,8 @@ void ABoxControlArea::initCollideElement() {
 	RootComponent = BoxCollide;
 }
 
-
 // Called when the game starts or when spawned
 void ABoxControlArea::BeginPlay()
 {
 	Super::BeginPlay();
-}
-
-// Called every frame
-void ABoxControlArea::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
 }
