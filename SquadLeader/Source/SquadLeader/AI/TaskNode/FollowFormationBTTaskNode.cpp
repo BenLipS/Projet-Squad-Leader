@@ -39,10 +39,25 @@ void UFollowFormationBTTaskNode::TickTask(class UBehaviorTreeComponent& OwnerCom
 	}
 
 	if (/*MoveToActorResult == EPathFollowingRequestResult::AlreadyAtGoal && */!AISquadController->get_blackboard()->GetValueAsBool("IsInFormation") || AISquadController->get_blackboard()->GetValueAsBool("HasOrder") || AISquadController->StopCurrentBehavior) {
-		Cast<ASoldierAI>(AISquadController->GetPawn())->CancelAbilityRun();
-		AISquadController->RunToFormation = false;
+		//Cast<ASoldierAI>(AISquadController->GetPawn())->CancelAbilityRun();
+		//AISquadController->RunToFormation = false;
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	}
+
+	if ((AISquadController->get_blackboard()->GetValueAsVector("FormationLocation") - (Cast<AAISquadController>(OwnerComp.GetOwner())->GetPawn()->GetActorLocation())).Size() < AISquadController->StopHysteresisRunningDistanceForFormation)
+		AISquadController->HysteresisDoRunningFormation = false;
+	if ((AISquadController->get_blackboard()->GetValueAsVector("FormationLocation") - (Cast<AAISquadController>(OwnerComp.GetOwner())->GetPawn()->GetActorLocation())).Size() > AISquadController->HysteresisRunningDistanceForFormation)
+		AISquadController->HysteresisDoRunningFormation = true;
+
+	if (AISquadController->HysteresisDoRunningFormation && !AISquadController->IsRunning) {
+		Cast<ASoldierAI>(Cast<AAISquadController>(OwnerComp.GetOwner())->GetPawn())->ActivateAbilityRun();
+		AISquadController->IsRunning = true;
+	}
+	else if (!AISquadController->HysteresisDoRunningFormation && AISquadController->IsRunning) {
+		Cast<ASoldierAI>(Cast<AAISquadController>(OwnerComp.GetOwner())->GetPawn())->CancelAbilityRun();
+		AISquadController->IsRunning = false;
+	}
+
 	//if (MoveToActorResult == EPathFollowingRequestResult::Failed) {
 	//	Cast<ASoldierAI>(AISquadController->GetPawn())->CancelAbilityRun();
 	//	AISquadController->RunToFormation = false;

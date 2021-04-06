@@ -98,7 +98,7 @@ void ASoldierAI::CancelAbilityRun()
 
 bool ASoldierAI::ActivateAbilityLaunchGrenade()
 {
-	return ActivateAbility(ASoldier::SkillGrenadeTag);
+	return ActivateAbility(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Grenade.Assault")));
 }
 
 bool ASoldierAI::ActivateAbilityLaunchHeal()

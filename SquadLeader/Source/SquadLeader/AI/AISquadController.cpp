@@ -80,25 +80,25 @@ void AAISquadController::FollowFormation() {
 	//EPathFollowingRequestResult::Type _movetoResult = MoveToLocation(blackboard->GetValueAsVector("FormationLocation"), 5.f);
 	DrawDebugPoint(GetWorld(), blackboard->GetValueAsVector("FormationLocation"), 12, FColor::Purple);
 
-	if ((blackboard->GetValueAsVector("FormationLocation") - (GetPawn()->GetActorLocation())).Size() < StopHysteresisRunningDistanceForFormation)
-		HysteresisDoRunningFormation = false;
-	if ((blackboard->GetValueAsVector("FormationLocation") - (GetPawn()->GetActorLocation())).Size() > HysteresisRunningDistanceForFormation)
-		HysteresisDoRunningFormation = true;
+	//if ((blackboard->GetValueAsVector("FormationLocation") - (GetPawn()->GetActorLocation())).Size() < StopHysteresisRunningDistanceForFormation)
+	//	HysteresisDoRunningFormation = false;
+	//if ((blackboard->GetValueAsVector("FormationLocation") - (GetPawn()->GetActorLocation())).Size() > HysteresisRunningDistanceForFormation)
+	//	HysteresisDoRunningFormation = true;
 
-	if (HysteresisDoRunningFormation && !IsRunning) {
-		Cast<ASoldierAI>(GetPawn())->ActivateAbilityRun();
-		IsRunning = true;
-	}
-	else if ((blackboard->GetValueAsVector("FormationLocation") - (GetPawn()->GetActorLocation())).Size() <= StopHysteresisRunningDistanceForFormation){
-		Cast<ASoldierAI>(GetPawn())->CancelAbilityRun();
-		IsRunning = false;
-	}
+	//if (HysteresisDoRunningFormation && !IsRunning) {
+	//	Cast<ASoldierAI>(GetPawn())->ActivateAbilityRun();
+	//	IsRunning = true;
+	//}
+	//else if ((blackboard->GetValueAsVector("FormationLocation") - (GetPawn()->GetActorLocation())).Size() <= StopHysteresisRunningDistanceForFormation){
+	//	Cast<ASoldierAI>(GetPawn())->CancelAbilityRun();
+	//	IsRunning = false;
+	//}
 
-	//if ((blackboard->GetValueAsVector("FormationLocation") - GetPawn()->GetActorLocation()).Size() >= RuningDistanceForFormation && !RunToFormation) {
+	//if ((blackboard->GetValueAsVector("FormationLocation") - GetPawn()->GetActorLocation()).Size() >= HysteresisRunningDistanceForFormation && !RunToFormation) {
 	//	Cast<ASoldierAI>(GetPawn())->ActivateAbilityRun();
 	//	RunToFormation = true;
 	//}
-	//else if ((blackboard->GetValueAsVector("FormationLocation") - GetPawn()->GetActorLocation()).Size() < StopRuningDistanceForFormation) {
+	//else if ((blackboard->GetValueAsVector("FormationLocation") - GetPawn()->GetActorLocation()).Size() < StopHysteresisRunningDistanceForFormation) {
 	//	DrawDebugPoint(GetWorld(), GetPawn()->GetActorLocation(), 32, FColor::Red);
 	//	Cast<ASoldierAI>(GetPawn())->CancelAbilityRun();
 	//	RunToFormation = false;
