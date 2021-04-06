@@ -3,14 +3,15 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "SL_UserWidget.h"
 #include "Interface/NotificationInterface.h"
 
 #include "Components/CanvasPanel.h"
-
 #include "Components/TextBlock.h"
 #include "Components/CanvasPanel.h"
 #include "Components/CanvasPanelSlot.h"
+#include "NotificationWidgetElement.h"
 
 #include "NotificationWidget.generated.h"
 
@@ -18,11 +19,11 @@
  * 
  */
 USTRUCT()
-struct FTextBlockSlot
+struct FNotificationWidgetSlot
 {
 	GENERATED_BODY()
 
-	UTextBlock* TextBlock;
+	UNotificationWidgetElement* Widget;
 	UCanvasPanelSlot* Slot;
 };
 
@@ -33,11 +34,13 @@ class SQUADLEADER_API UNotificationWidget : public USL_UserWidget, public INotif
 
 public:
 	UNotificationWidget(const FObjectInitializer& ObjectInitializer);
-	virtual void NativeConstruct() override;
 
 protected:
 	UPROPERTY()
-	TArray<FTextBlockSlot> Items;
+	TArray<FNotificationWidgetSlot> Items;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Notification")
+	TSubclassOf<class UNotificationWidgetElementText> TextElementClass;
 
 	UPROPERTY(EditDefaultsOnly, Category="Notification")
 	int MaxItem = 10;
@@ -45,8 +48,7 @@ protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	class UCanvasPanel* MainPanel;
 
-	UFUNCTION()
-	void AddNotification(FString textNotification);
+	void AddNotification(class UNotificationWidgetElement* newWidget);
 
 	void UpdateNotificationsPosition();
 
