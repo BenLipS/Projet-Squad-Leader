@@ -31,13 +31,22 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Flocking Behaviour")
 		float CohesionWeight{ 1.f };
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Flocking Behaviour")
+		float CohesionMaxSize{ 3.f };
+
 	/* The weight of the Collision vector component */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Flocking Behaviour")
 		float SeparationWeight{ 5.f };
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Flocking Behaviour")
+	float SeparationMaxSize{ 2.f };
+
 	/* The weight of the wall avoidance vector component */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Flocking Behaviour")
 		float WallAvoidanceWeight{ 5.f };
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Flocking Behaviour")
+		float WallAvoidanceMaxSize{ 0.5f };
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Flocking Behaviour")
 		float ObjectifWeight{ 2.5f };

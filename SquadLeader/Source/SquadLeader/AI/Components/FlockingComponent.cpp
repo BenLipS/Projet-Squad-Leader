@@ -171,11 +171,11 @@ void UFlockingComponent::UpdateMovementVector()
 
 	AlignementVector = AlignementVector.GetSafeNormal(DefaultNormalizeVectorTolerance);
 	AlignementVector.Z = 0;
-	CohesionVector = CohesionVector/*.GetSafeNormal(DefaultNormalizeVectorTolerance)*/;
+	CohesionVector = CohesionVector.GetClampedToMaxSize(CohesionMaxSize);/*.GetSafeNormal(DefaultNormalizeVectorTolerance)*/;
 	CohesionVector.Z = 0;
-	SeparationVector = SeparationVector/*.GetSafeNormal(DefaultNormalizeVectorTolerance)*/;
+	SeparationVector = SeparationVector.GetClampedToMaxSize(SeparationMaxSize);/*.GetSafeNormal(DefaultNormalizeVectorTolerance)*/;
 	SeparationVector.Z = 0;
-	WallAvoidanceVector = WallAvoidanceVector/*.GetSafeNormal(DefaultNormalizeVectorTolerance)*/;
+	WallAvoidanceVector = WallAvoidanceVector.GetClampedToMaxSize(WallAvoidanceMaxSize);/*.GetSafeNormal(DefaultNormalizeVectorTolerance)*/;
 	WallAvoidanceVector.Z = 0;
 	ObjectifVector = ObjectifVector.GetSafeNormal(DefaultNormalizeVectorTolerance);
 	ObjectifVector.Z = 0;
@@ -299,6 +299,10 @@ void UFlockingComponent::UpdateFlockingPosition(float DeltaSeconds)
 	if (IsFlockingPositionValid()) {
 		//Flocking Location Set in IsFlockingPositionValid()
 	}
+	else if (Cast<AAIGeneralController>(GetOwner())->get_blackboard()->GetValueAsBool("IsInFormation")) {
+		FVector FormationPos = Cast<AAIGeneralController>(GetOwner())->get_blackboard()->GetValueAsVector("FormationLocation");
+		Cast<AAIGeneralController>(GetOwner())->get_blackboard()->SetValueAsVector("FlockingLocation", FormationPos);
+	}
 	else if(!Cast<AAIGeneralController>(GetOwner())->get_blackboard()->GetValueAsBool("is_attacking")){
 		FVector RealObjectifLocation = Cast<AAIGeneralController>(GetOwner())->GetObjectifLocation();
 		Cast<AAIGeneralController>(GetOwner())->get_blackboard()->SetValueAsVector("FlockingLocation", RealObjectifLocation);
@@ -320,12 +324,13 @@ bool UFlockingComponent::IsFlockingPositionValid()
 	FVector endLocation = startLocation + MovementVector;
 
 	if (navSys->NavigationRaycast(GetWorld(), startLocation, endLocation, HitLocation)) {
+		Cast<AAIGeneralController>(GetOwner())->get_blackboard()->SetValueAsVector("FlockingLocation", HitLocation);
 		return false;
 	}
 	//DrawDebugLine(GetWorld(), startLocation, endLocation, FColor::Green);
 	//DrawDebugLine(GetWorld(), GetPawn()->GetActorLocation(), GetPawn()->GetActorLocation() + MovementVector, FColor::Blue);
 	//DrawDebugPoint(GetWorld(), HitLocation, 35, FColor::Red);
-	Cast<AAIGeneralController>(GetOwner())->get_blackboard()->SetValueAsVector("FlockingLocation", HitLocation);
+	Cast<AAIGeneralController>(GetOwner())->get_blackboard()->SetValueAsVector("FlockingLocation", endLocation);
 	return true;
 }
 
