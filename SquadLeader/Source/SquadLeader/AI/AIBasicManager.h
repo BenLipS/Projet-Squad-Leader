@@ -69,4 +69,11 @@ private:
 
 	UPROPERTY()
 		AControlAreaManager* m_controlAreaManager;
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Navigation Filter")
+		TSubclassOf<UNavigationQueryFilter_avoidTeam> m_filterTeam1;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Navigation Filter")
+		TSubclassOf<UNavigationQueryFilter_avoidTeam> m_filterTeam2;
 };
