@@ -301,6 +301,19 @@ protected:
 		int max_tick = 2;
 
 public:
+
+	UPROPERTY()
+		bool IsRunning = false;
+
+	UPROPERTY()
+		bool HysteresisDoRunningFlocking = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Flocking Behaviour")
+		float HysteresisRunningDistanceForFlocking = 2500.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Flocking Behaviour")
+		float StopHysteresisRunningDistanceForFlocking = 2000.f;
+
 	UPROPERTY()
 	bool StopCurrentBehavior = false;
 	UPROPERTY()

@@ -22,8 +22,6 @@ protected:
 	bool GetValidFormationPos();
 
 public:
-	UPROPERTY()
-		bool IsRunning = false;
 
 	UPROPERTY()
 		bool HysteresisDoRunningFormation = false;

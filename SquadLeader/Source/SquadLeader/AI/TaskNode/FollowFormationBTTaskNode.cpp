@@ -19,6 +19,7 @@ EBTNodeResult::Type UFollowFormationBTTaskNode::ExecuteTask(UBehaviorTreeCompone
 	// Appeler la fonctionUpdateNextTargetPoint qui contient la logique pour sélectionner
 	 // le prochain TargetPoint
 	HysteresisDoFollow = false;
+	Cast<ASoldierAI>(AISquadController->GetPawn())->CancelAbilityRun();
 	AISquadController->FollowFormation();
 	AISquadController->FollowFlocking();
 	//Nous retournons Succeeded
@@ -39,8 +40,8 @@ void UFollowFormationBTTaskNode::TickTask(class UBehaviorTreeComponent& OwnerCom
 	}
 
 	if (/*MoveToActorResult == EPathFollowingRequestResult::AlreadyAtGoal && */!AISquadController->get_blackboard()->GetValueAsBool("IsInFormation") || AISquadController->get_blackboard()->GetValueAsBool("HasOrder") || AISquadController->StopCurrentBehavior) {
-		//Cast<ASoldierAI>(AISquadController->GetPawn())->CancelAbilityRun();
-		//AISquadController->RunToFormation = false;
+		Cast<ASoldierAI>(AISquadController->GetPawn())->CancelAbilityRun();
+		AISquadController->IsRunning = false;
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	}
 
