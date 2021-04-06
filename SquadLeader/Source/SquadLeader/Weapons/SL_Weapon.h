@@ -192,7 +192,7 @@ public:
 
 // Collision
 public:
-	// Collision name the weapon should detect - See Preset in Engine - Collision 
+	// Collision profile - See Preset in Engine - Collision 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Collision")
 	FName CollisionProfileName;
 
