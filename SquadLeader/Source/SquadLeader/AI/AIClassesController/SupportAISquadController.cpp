@@ -30,6 +30,10 @@ void ASupportAISquadController::Tick(float DeltaSeconds) {
 			if (Cast<ASoldier>(AISquad->GetPawn())->GetHealth() / Cast<ASoldier>(AISquad->GetPawn())->GetMaxHealth() < SinglePlayerRatioBeforeHeal)
 				IsAnAllyHealthVeryLow = true;
 		}
+
+		if(SquadManager->Leader->GetHealth() / SquadManager->Leader->GetMaxHealth() < SinglePlayerRatioBeforeHeal)
+			IsAnAllyHealthVeryLow = true;
+
 		RatioHealth = TotalHealth / TotalMaxHealth;
 
 		if (RatioHealth < RatioBeforeHeal || IsAnAllyHealthVeryLow) {
