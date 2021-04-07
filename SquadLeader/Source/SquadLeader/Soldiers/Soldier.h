@@ -336,7 +336,8 @@ public:
 //////////////// Teamable
 protected:
 	UPROPERTY(replicated)
-		ASoldierTeam* Team;
+	ASoldierTeam* Team;
+
 public:
 	virtual ASoldierTeam* GetTeam() override;
 	virtual bool SetTeam(ASoldierTeam* _Team) override;
