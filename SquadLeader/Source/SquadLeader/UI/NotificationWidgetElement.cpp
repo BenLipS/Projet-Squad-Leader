@@ -1,8 +1,5 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
-#include "NotificationWidget.h"
 #include "NotificationWidgetElement.h"
+#include "NotificationWidget.h"
 
 UNotificationWidget* UNotificationWidgetElement::GetNotificationWidget()
 {

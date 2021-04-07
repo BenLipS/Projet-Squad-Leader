@@ -53,15 +53,17 @@ void ASoldier::BeginPlay()
 		setToThirdCameraPerson();
 
 	// Teams
-	if (GetLocalRole() == ROLE_Authority) {
-		// init team:
+	// TODO: Clients must be aware of their team. If we really want a security with the server, we should call this function
+	// from the server only, have a test to determine wheter we can change the team, then use a ClientSetTeam to replicate the change
+	//if (GetLocalRole() == ROLE_Authority)
+	{
+		// Init team
 		if (InitialTeam && !(GetTeam()))
 			SetTeam(InitialTeam);
 
-		// add this to the team data
-		if (GetTeam()) {
+		// Add this to the team data
+		if (GetTeam())
 			GetTeam()->AddSoldierList(this);
-		}
 	}
 
 	if (StartGameMontage)
@@ -119,7 +121,7 @@ void ASoldier::Tick(float DeltaTime)
 
 		m_package.m_type = Type::Soldier;
 		GM->InfluenceMap->ReceivedMessage(m_package);
-	}	
+	}
 }
 
 void ASoldier::InitCameras()
@@ -824,7 +826,10 @@ ASoldierTeam* ASoldier::GetTeam()
 
 bool ASoldier::SetTeam(ASoldierTeam* _Team)
 {
-	if (GetLocalRole() == ROLE_Authority) {  // only the server is allowed to change the team of a player
+	// TODO: Clients must be aware of their team. If we really want a security with the server, we should call this function
+	// from the server only, have a test to determine wheter we can change the team, then use a ClientSetTeam to replicate the change
+	//if (GetLocalRole() == ROLE_Authority)
+	{  
 		Team = _Team;
 		return true;
 	}
