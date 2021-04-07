@@ -14,7 +14,8 @@
 				"CoreUObject",
 				"AIModule",
 				"UMG",
-				"VariantManagerContent"
+				"VariantManagerContent",
+				"NavigationSystem"
 			]
 		}
 	],
