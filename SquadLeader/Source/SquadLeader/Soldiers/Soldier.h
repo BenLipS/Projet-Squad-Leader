@@ -98,6 +98,8 @@ protected:
 	void InitializeTagChangeCallbacks();
 	virtual void InitializeAttributeChangeCallbacks();
 
+	bool IsInCooldown(const FGameplayTag& _Tag);
+
 //////////////// Tag Change Callbacks
 public:
 	// Weapon
