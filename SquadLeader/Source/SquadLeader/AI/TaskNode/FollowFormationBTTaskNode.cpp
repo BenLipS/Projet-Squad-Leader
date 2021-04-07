@@ -19,6 +19,7 @@ EBTNodeResult::Type UFollowFormationBTTaskNode::ExecuteTask(UBehaviorTreeCompone
 	// Appeler la fonctionUpdateNextTargetPoint qui contient la logique pour sélectionner
 	 // le prochain TargetPoint
 	HysteresisDoFollow = false;
+	AISquadController->HysteresisDoRunningFormation = false;
 	Cast<ASoldierAI>(AISquadController->GetPawn())->CancelAbilityRun();
 	AISquadController->FollowFormation();
 	AISquadController->FollowFlocking();
@@ -39,7 +40,7 @@ void UFollowFormationBTTaskNode::TickTask(class UBehaviorTreeComponent& OwnerCom
 		EPathFollowingRequestResult::Type MoveToActorResult = AISquadController->FollowFlocking();
 	}
 
-	if (/*MoveToActorResult == EPathFollowingRequestResult::AlreadyAtGoal && */!AISquadController->get_blackboard()->GetValueAsBool("IsInFormation") || AISquadController->get_blackboard()->GetValueAsBool("HasOrder") || AISquadController->StopCurrentBehavior) {
+	if (/*MoveToActorResult == EPathFollowingRequestResult::AlreadyAtGoal && */!AISquadController->get_blackboard()->GetValueAsBool("IsInFormation") || AISquadController->get_blackboard()->GetValueAsBool("HasOrder") || AISquadController->StopCurrentBehavior || AISquadController->get_blackboard()->GetValueAsBool("LaunchHeal")) {
 		Cast<ASoldierAI>(AISquadController->GetPawn())->CancelAbilityRun();
 		AISquadController->IsRunning = false;
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);

@@ -36,7 +36,7 @@ void ASupportAISquadController::Tick(float DeltaSeconds) {
 
 		RatioHealth = TotalHealth / TotalMaxHealth;
 
-		if (RatioHealth < RatioBeforeHeal || IsAnAllyHealthVeryLow && !SquadManager->IsASquadMemberHealing) {
+		if ( (RatioHealth < RatioBeforeHeal || IsAnAllyHealthVeryLow ) && !SquadManager->IsASquadMemberHealing && !Cast<ASoldier>(GetPawn())->IsInCooldown(FGameplayTag::RequestGameplayTag(FName("Cooldown.AreaEffectFromSelf.Instant.Heal")))) {
 			Blackboard->SetValueAsBool("LaunchHeal", true);
 			SquadManager->IsASquadMemberHealing = true;
 			StopCurrentBehavior = true;

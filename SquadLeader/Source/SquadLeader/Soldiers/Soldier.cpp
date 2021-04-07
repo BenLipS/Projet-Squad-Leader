@@ -275,7 +275,7 @@ void ASoldier::InitializeAttributeChangeCallbacks()
 	HealthChangedDelegateHandle = AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetHealthAttribute()).AddUObject(this, &ASoldier::HealthChanged);
 }
 
-bool ASoldier::IsInCooldown(const FGameplayTag& Tag)
+bool ASoldier::IsInCooldown(const FGameplayTag& _Tag)
 {
 	if (AbilitySystemComponent)
 	{

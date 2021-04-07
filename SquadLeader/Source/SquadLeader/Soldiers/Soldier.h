@@ -98,6 +98,7 @@ protected:
 	void InitializeTagChangeCallbacks();
 	virtual void InitializeAttributeChangeCallbacks();
 
+public:
 	bool IsInCooldown(const FGameplayTag& _Tag);
 
 //////////////// Tag Change Callbacks
