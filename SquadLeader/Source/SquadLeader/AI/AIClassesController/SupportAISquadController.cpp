@@ -36,8 +36,9 @@ void ASupportAISquadController::Tick(float DeltaSeconds) {
 
 		RatioHealth = TotalHealth / TotalMaxHealth;
 
-		if (RatioHealth < RatioBeforeHeal || IsAnAllyHealthVeryLow) {
+		if (RatioHealth < RatioBeforeHeal || IsAnAllyHealthVeryLow && !SquadManager->IsASquadMemberHealing) {
 			Blackboard->SetValueAsBool("LaunchHeal", true);
+			SquadManager->IsASquadMemberHealing = true;
 			StopCurrentBehavior = true;
 		}
 	}

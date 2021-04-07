@@ -110,4 +110,8 @@ public:
 
 	UFUNCTION()
 	void OnSquadMemberMaxShieldChange(float newValue, AAISquadController* SoldierController);
+
+	//for healing coordination
+	UPROPERTY()
+	bool IsASquadMemberHealing = false;
 };
