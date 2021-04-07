@@ -13,6 +13,13 @@ UCLASS(Blueprintable)
 class SQUADLEADER_API ASupportAISquadController : public AAISquadController
 {
 	GENERATED_BODY()
+
+	UFUNCTION()
+	void CheckIfLaunchHeal();
+
+	UFUNCTION()
+	void CheckIfLaunchShield();
+
 public:
 	ASupportAISquadController();
 

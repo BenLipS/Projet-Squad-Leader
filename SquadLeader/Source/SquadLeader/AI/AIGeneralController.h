@@ -145,7 +145,10 @@ public:
 	ResultState LaunchGrenade();
 
 	UFUNCTION(BlueprintCallable, Category = "Launch heal")
-		ResultState LaunchHeal();
+	ResultState LaunchHeal();
+
+	UFUNCTION(BlueprintCallable, Category = "Launch shield")
+	ResultState LaunchShield();
 
 	class UBlackboardComponent* get_blackboard() const;
 	

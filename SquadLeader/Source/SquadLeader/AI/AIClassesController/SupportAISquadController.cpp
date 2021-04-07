@@ -13,10 +13,7 @@ ASupportAISquadController::ASupportAISquadController() {
 	setup_BehaviorTree();
 }
 
-void ASupportAISquadController::Tick(float DeltaSeconds) {
-	Super::Tick(DeltaSeconds);
-
-	//TODO Make a function with that LaunchHeal()
+void ASupportAISquadController::CheckIfLaunchHeal() {
 	int TotalHealth = 0;
 	int TotalMaxHealth = 0;
 	float RatioHealth = 0;
@@ -31,17 +28,29 @@ void ASupportAISquadController::Tick(float DeltaSeconds) {
 				IsAnAllyHealthVeryLow = true;
 		}
 
-		if(SquadManager->Leader->GetHealth() / SquadManager->Leader->GetMaxHealth() < SinglePlayerRatioBeforeHeal)
+		if (SquadManager->Leader->GetHealth() / SquadManager->Leader->GetMaxHealth() < SinglePlayerRatioBeforeHeal)
 			IsAnAllyHealthVeryLow = true;
 
 		RatioHealth = TotalHealth / TotalMaxHealth;
 
-		if ( (RatioHealth < RatioBeforeHeal || IsAnAllyHealthVeryLow ) && !SquadManager->IsASquadMemberHealing && !Cast<ASoldier>(GetPawn())->IsInCooldown(FGameplayTag::RequestGameplayTag(FName("Cooldown.AreaEffectFromSelf.Instant.Heal")))) {
+		if ((RatioHealth < RatioBeforeHeal || IsAnAllyHealthVeryLow) && !SquadManager->IsASquadMemberHealing && !Cast<ASoldier>(GetPawn())->IsInCooldown(FGameplayTag::RequestGameplayTag(FName("Cooldown.AreaEffectFromSelf.Instant.Heal")))) {
 			Blackboard->SetValueAsBool("LaunchHeal", true);
 			SquadManager->IsASquadMemberHealing = true;
 			StopCurrentBehavior = true;
 		}
 	}
+};
+
+void ASupportAISquadController::CheckIfLaunchShield() {
+
+};
+
+void ASupportAISquadController::Tick(float DeltaSeconds) {
+	Super::Tick(DeltaSeconds);
+
+	CheckIfLaunchHeal();
+
+	CheckIfLaunchShield();
 
 }
 

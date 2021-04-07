@@ -106,6 +106,11 @@ bool ASoldierAI::ActivateAbilityLaunchHeal()
 	return ActivateAbility(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.AreaEffectFromSelf.Instant.Heal")));
 }
 
+bool ASoldierAI::ActivateAbilityLaunchShield()
+{
+	return ActivateAbility(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.SpawnPhysicalShield")));
+}
+
 FVector ASoldierAI::GetRespawnPoint()
 {
 	if (auto AIController = Cast<AAIGeneralController>(GetController()); AIController) {

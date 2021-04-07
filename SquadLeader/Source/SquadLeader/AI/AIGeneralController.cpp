@@ -181,6 +181,17 @@ ResultState AAIGeneralController::LaunchHeal()
 	return result;
 }
 
+ResultState AAIGeneralController::LaunchShield()
+{
+	ResultState result = ResultState::Failed;
+	if (ASoldierAI* soldier = Cast<ASoldierAI>(GetPawn()); soldier)
+	{
+		if (soldier->ActivateAbilityLaunchShield())
+			result = ResultState::Success;
+	}
+	return result;
+}
+
 UBlackboardComponent* AAIGeneralController::get_blackboard() const
 {
 	return blackboard;
