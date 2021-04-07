@@ -9,7 +9,6 @@
 #include "NotificationWidgetElementText.h"
 
 #include "Blueprint/WidgetTree.h"
-
 #include "Blueprint/UserWidget.h"
 
 UNotificationWidget::UNotificationWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
