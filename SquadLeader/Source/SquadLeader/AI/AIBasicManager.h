@@ -6,6 +6,7 @@
 #include "UObject/NoExportTypes.h"
 #include "AIBasicController.h"
 #include "../ControlArea/ControlAreaManager.h"
+#include "NavFilters/NavigationQueryFilter.h"
 #include "AIBasicManager.generated.h"
 
 /**
@@ -69,4 +70,5 @@ private:
 
 	UPROPERTY()
 		AControlAreaManager* m_controlAreaManager;
+
 };

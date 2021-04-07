@@ -9,6 +9,7 @@
 #include "Perception/AIPerceptiontypes.h"
 #include "../Soldiers/Interface/Teamable.h"
 #include "../ControlArea/ControlArea.h"
+#include "NavFilters/NavigationQueryFilter.h"
 #include "AIGeneralController.generated.h"
 
 class UFlockingComponent;
@@ -415,4 +416,14 @@ protected:
 	class UMissionList* m_missionList;
 
 	bool m_mission_changed = false;
+
+	/*
+	* For the navigation
+	*/
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Navigation")
+		TSubclassOf<UNavigationQueryFilter> m_queryFilter;
+
+public:
+	void SetQueryFilter(TSubclassOf<UNavigationQueryFilter> _filter) noexcept { m_queryFilter = _filter; }
 };
