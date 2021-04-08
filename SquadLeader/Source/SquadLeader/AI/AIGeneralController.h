@@ -150,6 +150,15 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Launch shield")
 	ResultState LaunchShield();
 
+	UFUNCTION(BlueprintCallable, Category = "RegenShield")
+		ResultState RegenShield();
+
+	UFUNCTION(BlueprintCallable, Category = "OverHeat")
+		ResultState OverHeat();
+
+	UFUNCTION(BlueprintCallable, Category = "Launch Mine")
+		ResultState LaunchMine();
+
 	class UBlackboardComponent* get_blackboard() const;
 	
 	/*
@@ -169,6 +178,10 @@ public:
 	*/
 	UFUNCTION()
 		void SetState(AIBasicState _state) noexcept;
+
+	UFUNCTION()
+		virtual void CheckIfRegenShield() {};
+
 protected:
 	/*Set-up the BehaviorTree at the construction*/
 	virtual void setup_BehaviorTree();

@@ -111,6 +111,21 @@ bool ASoldierAI::ActivateAbilityLaunchShield()
 	return ActivateAbility(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.SpawnPhysicalShield")));
 }
 
+bool ASoldierAI::ActivateAbilityRegenShield()
+{
+	return ActivateAbility(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.AreaEffectFromSelf.Temporary.MaxShield")));
+}
+
+bool ASoldierAI::ActivateAbilityLaunchMine()
+{
+	return ActivateAbility(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Grenade")));
+}
+
+bool ASoldierAI::ActivateAbilityOverHeat()
+{
+	return ActivateAbility(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.OverheatingWeapon")));
+}
+
 FVector ASoldierAI::GetRespawnPoint()
 {
 	if (auto AIController = Cast<AAIGeneralController>(GetController()); AIController) {

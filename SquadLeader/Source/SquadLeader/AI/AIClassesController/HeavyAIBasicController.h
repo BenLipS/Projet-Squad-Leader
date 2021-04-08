@@ -13,5 +13,13 @@ UCLASS()
 class SQUADLEADER_API AHeavyAIBasicController : public AAIBasicController
 {
 	GENERATED_BODY()
-	
+
+	void CheckIfRegenShield() override;
+
+public:
+	AHeavyAIBasicController();
+
+	virtual void Tick(float DeltaSeconds) override;
+
+	virtual void setup_BehaviorTree() override;
 };

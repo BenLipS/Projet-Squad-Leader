@@ -101,6 +101,18 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Abilities")
 		bool ActivateAbilityLaunchShield();
 
+	// LaunchShield
+	UFUNCTION(BlueprintCallable, Category = "Abilities")
+		bool ActivateAbilityRegenShield();
+
+	// LaunchShield
+	UFUNCTION(BlueprintCallable, Category = "Abilities")
+		bool ActivateAbilityLaunchMine();
+
+	// LaunchShield
+	UFUNCTION(BlueprintCallable, Category = "Abilities")
+		bool ActivateAbilityOverHeat();
+
 	UFUNCTION(BlueprintCallable, Category = "Shoot")
 	void SetLookingAtPosition(const FVector& _LookingAtPosition);
 

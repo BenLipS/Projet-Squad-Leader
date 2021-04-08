@@ -192,6 +192,39 @@ ResultState AAIGeneralController::LaunchShield()
 	return result;
 }
 
+ResultState AAIGeneralController::RegenShield()
+{
+	ResultState result = ResultState::Failed;
+	if (ASoldierAI* soldier = Cast<ASoldierAI>(GetPawn()); soldier)
+	{
+		if (soldier->ActivateAbilityRegenShield())
+			result = ResultState::Success;
+	}
+	return result;
+}
+
+ResultState AAIGeneralController::OverHeat()
+{
+	ResultState result = ResultState::Failed;
+	if (ASoldierAI* soldier = Cast<ASoldierAI>(GetPawn()); soldier)
+	{
+		if (soldier->ActivateAbilityOverHeat())
+			result = ResultState::Success;
+	}
+	return result;
+}
+
+ResultState AAIGeneralController::LaunchMine()
+{
+	ResultState result = ResultState::Failed;
+	if (ASoldierAI* soldier = Cast<ASoldierAI>(GetPawn()); soldier)
+	{
+		if (soldier->ActivateAbilityLaunchMine())
+			result = ResultState::Success;
+	}
+	return result;
+}
+
 UBlackboardComponent* AAIGeneralController::get_blackboard() const
 {
 	return blackboard;
