@@ -99,6 +99,9 @@ protected:
 	void InitializeTagChangeCallbacks();
 	virtual void InitializeAttributeChangeCallbacks();
 
+public:
+	bool IsInCooldown(const FGameplayTag& _Tag);
+
 //////////////// Tag Change Callbacks
 public:
 	// Weapon
@@ -391,4 +394,8 @@ protected:
 public:
 	UFUNCTION()
 	void ShowImpactHitEffect();
+
+	// Projectile forwardVector to launch from
+	UFUNCTION()
+	virtual FVector GetLookingDirection();
 };

@@ -73,8 +73,7 @@ public:
 	// Check whether this manager controls the given soldier
 	bool HasSoldier(const ASoldier* _Soldier) const;
 
-	UFUNCTION()
-	UMission* GetMission() { return Mission; };
+	auto GetMission() { return Mission; };
 
 	//For Formation
 	TArray<FVector> FormationPos;
@@ -110,4 +109,15 @@ public:
 
 	UFUNCTION()
 	void OnSquadMemberMaxShieldChange(float newValue, AAISquadController* SoldierController);
+
+	//for healing coordination
+	UPROPERTY()
+	bool IsASquadMemberHealing = false;
+
+	//for shielding coordination
+	UPROPERTY()
+	bool IsASquadMemberShielding = false;
+
+protected:
+	bool m_inFormation = false;
 };

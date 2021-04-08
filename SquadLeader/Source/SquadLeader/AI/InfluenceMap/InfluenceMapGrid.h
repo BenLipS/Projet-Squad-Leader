@@ -46,13 +46,18 @@ struct SQUADLEADER_API FTileBase {
 
 	GENERATED_USTRUCT_BODY()
 
-		FTileBase() {
+	FTileBase() {
 	}
 
+	//value of the tile
 	float m_value = 0.f;
+	//the position of the tile in the world
 	FVector m_location;
+	//wich team possess this tile
 	int m_team = -1;
+	//the type of the tile (Soldier, COntrolArea, Projectile, etc.)
 	TEnumAsByte<Type> m_type;
+
 	bool in_update = false;
 };
 
@@ -145,18 +150,33 @@ private:
 public:
 
 	//Dimension of the grid
-	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Grid")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
 		int m_grid_width = 100000;
 
-	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Grid")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
 		int m_grid_height = 100000;
 
 	//Dimension of a tile-base
-	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Grid")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tile")
 		int m_tile_width = 200;
 
-	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Grid")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tile")
 		int m_tile_height = 200;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tile")
+		float m_height = 10.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
+		FVector m_startLocation = FVector{ 0.f,0.f,0.f };
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
+		TArray<float> m_heightList;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug")
+		bool m_DrawAllGrid = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug")
+		bool m_DrawCharacterInfluence = false;
 
 private:
 

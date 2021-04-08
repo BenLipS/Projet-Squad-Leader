@@ -38,8 +38,10 @@ public:
 		int Id = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "GlobalTeamData")
-		int NbAIBasic = 6;
+		int NbAIBasicAssault = 6;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "GlobalTeamData")
+		int NbAIBasicHeavy = 6;
 
 protected:  // Soldier List
 	UPROPERTY(BlueprintReadOnly, Replicated, Category = "SoldierList")
@@ -53,9 +55,21 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "SoldierList")
 		TSubclassOf<class ASoldierAI> ClassBasicAI;
 
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "SoldierList")
+		TSubclassOf<class ASoldierAI> ClassBasicAIAssault;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "SoldierList")
+		TSubclassOf<class ASoldierAI> ClassBasicAIHeavy;
+
 public:
 	UFUNCTION(BlueprintCallable, Category = "SoldierList")
 		TSubclassOf<class ASoldierAI> GetClassBasicAI();
+
+	UFUNCTION(BlueprintCallable, Category = "SoldierList")
+		TSubclassOf<class ASoldierAI> GetClassBasicAIAssault();
+
+	UFUNCTION(BlueprintCallable, Category = "SoldierList")
+		TSubclassOf<class ASoldierAI> GetClassBasicAIHeavy();
 
 	UFUNCTION(BlueprintCallable, Category = "SoldierList")
 		void AddSoldierList(ASoldier* NewSoldier);

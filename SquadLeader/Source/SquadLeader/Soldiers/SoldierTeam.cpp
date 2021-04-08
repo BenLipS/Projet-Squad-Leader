@@ -32,7 +32,8 @@ void ASoldierTeam::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(ASoldierTeam, NbAIBasic);
+	DOREPLIFETIME(ASoldierTeam, NbAIBasicAssault);
+	DOREPLIFETIME(ASoldierTeam, NbAIBasicHeavy);
 	DOREPLIFETIME(ASoldierTeam, TeamName);
 	DOREPLIFETIME(ASoldierTeam, SoldierList);
 	DOREPLIFETIME(ASoldierTeam, mainSpawnPoints);
@@ -45,10 +46,19 @@ TSubclassOf<ASoldierAI> ASoldierTeam::GetClassBasicAI()
 	return ClassBasicAI;
 }
 
+TSubclassOf<class ASoldierAI> ASoldierTeam::GetClassBasicAIAssault()
+{
+	return ClassBasicAIAssault;
+}
+
+TSubclassOf<class ASoldierAI> ASoldierTeam::GetClassBasicAIHeavy()
+{
+	return ClassBasicAIHeavy;
+}
+
 void ASoldierTeam::AddSoldierList(ASoldier* NewSoldier)
 {
 	SoldierList.AddUnique(NewSoldier);
-	OnSoldierAddedToList.Broadcast(NewSoldier);
 }
 
 void ASoldierTeam::RemoveSoldierList(ASoldier* NewSoldier)

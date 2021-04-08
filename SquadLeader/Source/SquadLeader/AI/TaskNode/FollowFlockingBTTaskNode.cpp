@@ -17,10 +17,12 @@ EBTNodeResult::Type UFollowFlockingBTTaskNode::ExecuteTask(UBehaviorTreeComponen
 {
 	// Obtenir un pointeur sur AIEnemyController
 	AAIGeneralController* AIGeneralController = Cast<AAIGeneralController>(OwnerComp.GetOwner());
-	// Appeler la fonctionUpdateNextTargetPoint qui contient la logique pour sélectionner
-	 // le prochain TargetPoint
+	
+	Cast<ASoldierAI>(AIGeneralController->GetPawn())->CancelAbilityRun();
+	AIGeneralController->IsRunning = false;
+
 	AIGeneralController->FollowFlocking();
-	//Nous retournons Succeeded
+
 	return EBTNodeResult::InProgress;
 }
 
@@ -31,7 +33,25 @@ void UFollowFlockingBTTaskNode::TickTask(class UBehaviorTreeComponent& OwnerComp
 
 	ResultState arrive = AIGeneralController->ArriveAtDestination();
 
-	
+	/*Run*/
+	FVector Goal;
+	if (!AIGeneralController->get_blackboard()->GetValueAsBool("is_attacking")) Goal = AIGeneralController->GetObjectifLocation();
+	else Goal = AIGeneralController->get_blackboard()->GetValueAsVector("ShootingPosition");
+
+	if ((Goal - (AIGeneralController->GetPawn()->GetActorLocation())).Size() < AIGeneralController->StopHysteresisRunningDistanceForFlocking)
+		AIGeneralController->HysteresisDoRunningFlocking = false;
+	if ((Goal - (AIGeneralController->GetPawn()->GetActorLocation())).Size() > AIGeneralController->HysteresisRunningDistanceForFlocking)
+		AIGeneralController->HysteresisDoRunningFlocking = true;
+
+	if (AIGeneralController->HysteresisDoRunningFlocking && !AIGeneralController->IsRunning) {
+		Cast<ASoldierAI>(AIGeneralController->GetPawn())->ActivateAbilityRun();
+		AIGeneralController->IsRunning = true;
+	}
+	else if (!AIGeneralController->HysteresisDoRunningFlocking && AIGeneralController->IsRunning) {
+		Cast<ASoldierAI>(AIGeneralController->GetPawn())->CancelAbilityRun();
+		AIGeneralController->IsRunning = false;
+	}
+	/**/
 
 	if(arrive == ResultState::Success)
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
