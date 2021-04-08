@@ -275,6 +275,18 @@ void ASoldier::InitializeAttributeChangeCallbacks()
 	HealthChangedDelegateHandle = AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetHealthAttribute()).AddUObject(this, &ASoldier::HealthChanged);
 }
 
+bool ASoldier::IsInCooldown(const FGameplayTag& _Tag)
+{
+	if (AbilitySystemComponent)
+	{
+		float RemainTime = 0.00f;
+		const bool bTagFoundAsCooldown = AbilitySystemComponent->GetCooldownRemainingForTag(_Tag, RemainTime);
+
+		return bTagFoundAsCooldown && (RemainTime > 0.00f);
+	}
+	return false;
+}
+
 void ASoldier::DeadTagChanged(const FGameplayTag _CallbackTag, int32 _NewCount)
 {
 	if (_NewCount > 0) // If dead tag is added - Handle death
@@ -859,4 +871,16 @@ void ASoldier::OnRespawnMontageCompleted(UAnimMontage* _Montage, bool _bInterrup
 void ASoldier::ShowImpactHitEffect()
 {
 	UParticleSystemComponent* LaserParticle = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactHitFX, GetActorLocation(), FRotator(), ImpactHitFXScale);
+}
+
+FVector ASoldier::GetLookingDirection()
+{
+	if (CurrentCameraComponent)
+	{
+		return CurrentCameraComponent->GetForwardVector();
+	}
+	else
+	{
+		return GetActorForwardVector();
+	}
 }
