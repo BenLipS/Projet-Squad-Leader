@@ -8,6 +8,7 @@
 UMinimapWidget::UMinimapWidget(const FObjectInitializer& _ObjectInitializer) : USL_UserWidget(_ObjectInitializer),
 Dimensions{ 10'000.f },
 Zoom{ 1.f },
+IconMaxLengthVisibility{ 130.f },
 POIList{}
 {
 }
@@ -82,12 +83,19 @@ void UMinimapWidget::OnUpdateTeamPositions()
 		const float DiffY = (SoldierPosition.Y - PlayerPosition.Y) / Coeff; // Implicit * -1
 		const FVector2D DiffVec = { DiffX, DiffY };
 
+		// The POI is too far from the player
+		if (DiffVec.Size() > IconMaxLengthVisibility)
+		{
+			POI->SetVisibility(ESlateVisibility::Collapsed);
+			continue;
+		}
+
 		// Angle between soldier and player (center of the minimap)
 		const float Angle = FMath::Atan2(/* 0.f*/ - DiffY, /* 0.f*/ - DiffX);
 		const float Length = FMath::Clamp(DiffVec.Size(), 0.f, IconMaxLengthVisibility);
 
 		const FVector2D SoldierPosOnMinimap = -FVector2D{ FMath::Sin(Angle) * Length, FMath::Cos(Angle) * Length };
 		POI->SetRenderTranslation(SoldierPosOnMinimap);
-
+		POI->SetVisibility(ESlateVisibility::Visible);
 	}
 }
