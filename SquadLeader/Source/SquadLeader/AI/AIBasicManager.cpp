@@ -58,6 +58,10 @@ void AAIBasicManager::Init(ASoldierTeam* _Team)
 
 			AAIBasicController* AC = Cast<AAIBasicController>(BasicAI->GetController());
 			ensure(AC);
+			if (Team->Id == 1)
+				AC->SetQueryFilter(m_queryFilter_team1);
+			else
+				AC->SetQueryFilter(m_queryFilter_team2);
 			AIBasicList.Add(AC);
 
 			//Add the mission Patroling by default

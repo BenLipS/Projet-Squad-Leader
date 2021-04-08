@@ -420,10 +420,11 @@ protected:
 	/*
 	* For the navigation
 	*/
-protected:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Navigation")
-		TSubclassOf<UNavigationQueryFilter> m_queryFilter;
 
 public:
-	void SetQueryFilter(TSubclassOf<UNavigationQueryFilter> _filter) noexcept { m_queryFilter = _filter; }
+	UFUNCTION()
+		void SetQueryFilter(TSubclassOf<UNavigationQueryFilter> _filter) noexcept { DefaultNavigationFilterClass = _filter; }
+
+	UFUNCTION()
+		TSubclassOf<UNavigationQueryFilter> GetQueryFilter() const noexcept { return DefaultNavigationFilterClass; }
 };

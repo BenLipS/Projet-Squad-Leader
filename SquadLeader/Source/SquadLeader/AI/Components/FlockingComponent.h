@@ -136,4 +136,7 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 		
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Navigation")
+		TSubclassOf<UNavigationQueryFilter> m_filter;
 };
