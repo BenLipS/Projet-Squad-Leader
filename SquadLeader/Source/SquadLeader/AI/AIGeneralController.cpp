@@ -428,7 +428,6 @@ void AAIGeneralController::UpdateSeenEnemySoldier()
 	}
 }
 
-void AAIGeneralController::SetMission(UMission* _Mission)
 template <class T>
 void AAIGeneralController::SetMission(T _mission){
 	//m_mission_type.Emplace<T>(_mission);
