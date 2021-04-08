@@ -122,6 +122,7 @@ void AAISquadController::FormationState() {
 	blackboard->SetValueAsBool("is_moving", false);
 	blackboard->SetValueAsBool("is_patroling", false);
 	blackboard->SetValueAsBool("is_searching", false);
+	blackboard->SetValueAsBool("is_capturing", false);
 	blackboard->SetValueAsBool("IsInFormation", true);
 }
 
