@@ -14,13 +14,13 @@ ULaunchShieldBTTaskNode::ULaunchShieldBTTaskNode() {
 
 EBTNodeResult::Type ULaunchShieldBTTaskNode::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) {
 	AAIGeneralController* AIGeneralController = Cast<AAIGeneralController>(OwnerComp.GetOwner());
-	if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, FString::Printf(TEXT("%s heal"), *AIGeneralController->GetName()));
+	if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, FString::Printf(TEXT("%s Shield"), *AIGeneralController->GetName()));
 	ResultState _result = AIGeneralController->LaunchShield();
 
-	//AIGeneralController->get_blackboard()->SetValueAsBool("LaunchHeal", false);
+	AIGeneralController->get_blackboard()->SetValueAsBool("LaunchShield", false);
 
-	//if (AAISquadController* AISquadController = Cast<AAISquadController>(OwnerComp.GetOwner()); AISquadController)
-	//	AISquadController->SquadManager->IsASquadMemberHealing = false;
+	if (AAISquadController* AISquadController = Cast<AAISquadController>(OwnerComp.GetOwner()); AISquadController)
+		AISquadController->SquadManager->IsASquadMemberShielding = false;
 
 	if (_result == ResultState::Success)
 		return EBTNodeResult::Succeeded;

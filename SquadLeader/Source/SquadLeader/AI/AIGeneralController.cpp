@@ -499,7 +499,7 @@ void AAIGeneralController::SetPatrolPoint()
 	FVector PatrolPos;
 	PatrolPos.X = FMath::FRandRange(-HalfRadiusPatrol, HalfRadiusPatrol);
 	PatrolPos.Y = FMath::FRandRange(-HalfRadiusPatrol, HalfRadiusPatrol);
-	PatrolPos.Z = FMath::FRandRange(-HalfRadiusPatrol, HalfRadiusPatrol);
+	PatrolPos.Z = 0;
 
 	FVector HitLocation{};
 

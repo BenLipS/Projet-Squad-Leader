@@ -42,7 +42,11 @@ void ASupportAISquadController::CheckIfLaunchHeal() {
 };
 
 void ASupportAISquadController::CheckIfLaunchShield() {
-
+	if (SeenEnemySoldier.Num() > 2 && !SquadManager->IsASquadMemberShielding && !Cast<ASoldier>(GetPawn())->IsInCooldown(FGameplayTag::RequestGameplayTag(FName("Cooldown.Shield")))) {
+		Blackboard->SetValueAsBool("LaunchShield", true);
+		SquadManager->IsASquadMemberShielding = true;
+		StopCurrentBehavior = true;
+	}
 };
 
 void ASupportAISquadController::Tick(float DeltaSeconds) {

@@ -114,4 +114,8 @@ public:
 	//for healing coordination
 	UPROPERTY()
 	bool IsASquadMemberHealing = false;
+
+	//for shielding coordination
+	UPROPERTY()
+	bool IsASquadMemberShielding = false;
 };

@@ -47,7 +47,7 @@ void UFlockingComponent::UpdateNeighbourhood()
 {
 	for (ASoldier* soldier : Cast<AAIGeneralController>(GetOwner())->GetSeenSoldier())
 	{
-		if (AAIGeneralController* AI = Cast<AAIGeneralController>(soldier->Controller); AI && soldier->GetTeam() == Cast<ASoldier>(Cast<AAIGeneralController>(GetOwner())->GetPawn())->GetTeam() /*&& Cast<AAIGeneralController>(GetOwner())->GetObjectifLocation() == AI->GetObjectifLocation()*/)
+		if (AAIGeneralController* AI = Cast<AAIGeneralController>(soldier->Controller); AI && soldier->GetTeam() == Cast<ASoldier>(Cast<AAIGeneralController>(GetOwner())->GetPawn())->GetTeam()  /*&& Cast<AAIGeneralController>(GetOwner())->GetObjectifLocation() == AI->GetObjectifLocation()*/)
 			SeenBoids.Add(AI);
 	};
 }
@@ -106,7 +106,7 @@ void UFlockingComponent::UpdateSeparationVector()
 	}
 
 	const FVector SeparationForceComponent = SeparationVector * 100;
-	SeparationVector += SeparationForceComponent + SeparationForceComponent * (5 / SeenBoids.Num());
+	SeparationVector += SeparationForceComponent + SeparationForceComponent * (5 / Cast<AAIGeneralController>(GetOwner())->GetSeenSoldier().Num());
 }
 
 void UFlockingComponent::UpdateObjectifVector()
@@ -265,18 +265,19 @@ void UFlockingComponent::UpdateFlockingPosition(float DeltaSeconds)
 	UpdateNeighbourhood();
 	if (AAISquadController* AISquad = Cast<AAISquadController>(GetOwner()); AISquad && AISquad->get_blackboard()->GetValueAsBool("IsInFormation")) {
 		UpdateFollowFormationVector();
-		if (SeenBoids.Num() > 0) { //because this involve /0
+		if (Cast<AAIGeneralController>(GetOwner())->GetSeenSoldier().Num() > 0) { //because this involve /0
 			UpdateSeparationVector();
 		}
 		UpdateWallAvoidanceVector();
 	}
 	else {
+		if (Cast<AAIGeneralController>(GetOwner())->GetSeenSoldier().Num() > 0) { //because this involve /0
+			UpdateSeparationVector();
+		}
 		if (SeenBoids.Num() > 0) { //because this involve /0
 			UpdateAlignementVector();
 
 			UpdateCohesionVector();
-
-			UpdateSeparationVector();
 		}
 
 		UpdateWallAvoidanceVector();

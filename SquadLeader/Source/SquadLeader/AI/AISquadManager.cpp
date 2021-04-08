@@ -142,6 +142,7 @@ void AAISquadManager::UpdateMission(const MissionType _MissionType, const FVecto
 			AISquad->get_blackboard()->SetValueAsBool("HasOrder", false);
 		}
 		else if (Mission->Type != MissionType::None) {
+			AISquad->SetState(AIBasicState::Moving);
 			AISquad->get_blackboard()->SetValueAsBool("IsInFormation", false);
 			AISquad->get_blackboard()->SetValueAsBool("HasOrder", true);
 		}
