@@ -116,7 +116,6 @@ void AAISquadController::ResetBlackBoard() {
 	blackboard->SetValueAsBool("IsInFormation", true);
 }
 
-
 void AAISquadController::FormationState() {
 	SetState(AIBasicState::Moving);
 	blackboard->SetValueAsBool("is_attacking", false);
@@ -124,4 +123,8 @@ void AAISquadController::FormationState() {
 	blackboard->SetValueAsBool("is_patroling", false);
 	blackboard->SetValueAsBool("is_searching", false);
 	blackboard->SetValueAsBool("IsInFormation", true);
+}
+
+void AAISquadController::UpdateFormation(const FVector _position) {
+	get_blackboard()->SetValueAsVector("FormationLocation", _position);
 }

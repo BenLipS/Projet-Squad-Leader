@@ -64,4 +64,7 @@ public:
 	virtual void ResetBlackBoard() override;
 
 	void FormationState();
+
+	UFUNCTION()
+		void UpdateFormation(const FVector _position);
 };

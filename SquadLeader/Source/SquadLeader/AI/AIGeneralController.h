@@ -7,8 +7,9 @@
 #include "../Soldiers/Soldier.h"
 #include "../Soldiers/AIs/SoldierAI.h"
 #include "Perception/AIPerceptiontypes.h"
-#include "Mission.h"
 #include "../Soldiers/Interface/Teamable.h"
+#include "../ControlArea/ControlArea.h"
+#include "NavFilters/NavigationQueryFilter.h"
 #include "AIGeneralController.generated.h"
 
 class UFlockingComponent;
@@ -20,7 +21,9 @@ UENUM()
 enum AIBasicState {
 	Attacking UMETA(DisplayName = "Attacking"),
 	Patroling UMETA(DisplayName = "Patroling"),
+	Capturing UMETA(DisplayName = "Capturing"),
 	Search UMETA(DisplayName = "Searching"),
+	Defend UMETA(DisplayName = "Defending"),
 	Moving UMETA(DisplayName = "Moving"),
 };
 
@@ -36,14 +39,13 @@ enum ResultState {
 };
 
 
-
-
 UCLASS()
 class SQUADLEADER_API AAIGeneralController : public AAIController, public ITeamable
 {
 	GENERATED_BODY()
 
 public:
+
 	AAIGeneralController(FObjectInitializer const& object_initializer = FObjectInitializer::Get());
 	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 
@@ -64,15 +66,11 @@ public:
 		FVector GetObjectifLocation() { return ObjectifLocation + 100; };
 	UFUNCTION(BlueprintCallable)
 		FVector GetRealObjectifLocation() { return ObjectifLocation; };
-	UFUNCTION(BlueprintCallable)
-		void SetObjectifLocation(FVector _Location) { ObjectifLocation = _Location; };
 
 	UFUNCTION(BlueprintCallable)
 		FVector GetTempObjectifLocation() { return TempObjectifLocation; };
 	UFUNCTION(BlueprintCallable)
-		void SetTempObjectifLocation(FVector _Location) { TempObjectifLocation = _Location; };
-
-	/* For BT Task  */
+		void SetTempObjectifLocation(FVector _Location) { TempObjectifLocation = _Location; };	/* For BT Task  */
 	UFUNCTION(BlueprintCallable, Category = "Flocking Behaviour")
 		EPathFollowingRequestResult::Type FollowFlocking();
 
@@ -109,6 +107,12 @@ public:
 
 	UFUNCTION()
 	virtual void BeginPlay();
+
+	UFUNCTION()
+		void Init();
+
+	UFUNCTION()
+		void InitMissionList();
 	
 	/*Move to a location, the location must be an AActor*/
 	UFUNCTION(BlueprintCallable, Category = "SquadLeader")
@@ -159,6 +163,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Launch Mine")
 		ResultState LaunchMine();
 
+	UFUNCTION(BlueprintCallable, Category = "Capturing")
+		ResultState Capturing();
 	class UBlackboardComponent* get_blackboard() const;
 	
 	/*
@@ -276,6 +282,9 @@ protected:
 
 	UFUNCTION()
 		void SearchState();
+
+	UFUNCTION()
+		void CapturingState();
 
 protected:
 	/*The behaviorTree that we are running*/
@@ -421,10 +430,50 @@ public:
 	virtual FVector GetRespawnPoint() { return FVector(0.f, 0.f, 1500.f); }  // function overide in in each controller
 
 public:	//Mission
-	void SetMission(UMission* _Mission);
-	UMission* GetMission();
+
+	/*
+	* Set a mission of type T
+	*/
+	template<class T>
+	void SetMission(T _mission);
+	
+	/*
+	* Return the current mission that the NPC is running
+	*/
+	auto GetMission();
+
+	/*
+	* Set a control area as the destination for the AI
+	*/
+	UFUNCTION()
+		void SetControlAreaBB(AControlArea* _controlArea);
+
+	/*
+	* Set the Objectif Location of the AI
+	* And it'll set the state to moving
+	*/
+	UFUNCTION(BlueprintCallable)
+		void SetObjectifLocation(FVector _location) noexcept;
 
 protected:
+
+	/*
+	* variables for the mission system
+	* represent a heap of mission
+	*/
 	UPROPERTY()
-	UMission* Mission;
+	class UMissionList* m_missionList;
+
+	bool m_mission_changed = false;
+
+	/*
+	* For the navigation
+	*/
+
+public:
+	UFUNCTION()
+		void SetQueryFilter(TSubclassOf<UNavigationQueryFilter> _filter) noexcept { DefaultNavigationFilterClass = _filter; }
+
+	UFUNCTION()
+		TSubclassOf<UNavigationQueryFilter> GetQueryFilter() const noexcept { return DefaultNavigationFilterClass; }
 };

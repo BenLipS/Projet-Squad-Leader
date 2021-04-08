@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AIGeneralController.h"
+#include "Mission/CaptureMission.h"
 #include "AIBasicController.generated.h"
 
 /**
@@ -18,6 +19,11 @@ public:
 	AAIBasicController();
 
 protected:
+
+protected:
+
+	UPROPERTY()
+		class AAIBasicManager* m_manager;
 
 	virtual void setup_BehaviorTree() override;
 
@@ -34,12 +40,12 @@ public:
 
 	void SetObjectifLocation(FVector _objLocation) noexcept;
 
-public://Mission
-	UFUNCTION()
-	void UpdateMission();
+public:
 
 	virtual void Die() override;
 
 	virtual void ResetBlackBoard() override;
+
+	void SetManager(AAIBasicManager* _manager) noexcept;
 
 };

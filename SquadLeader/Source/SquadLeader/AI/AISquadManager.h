@@ -72,8 +72,7 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
-	UFUNCTION()
-	UMission* GetMission() { return Mission; };
+	auto GetMission() { return Mission; };
 
 	//For Formation
 	TArray<FVector> FormationPos;
@@ -118,4 +117,7 @@ public:
 	//for shielding coordination
 	UPROPERTY()
 	bool IsASquadMemberShielding = false;
+
+protected:
+	bool m_inFormation = false;
 };

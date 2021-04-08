@@ -113,7 +113,8 @@ void UFlockingComponent::UpdateObjectifVector()
 {
 	FVector SoldierLocation = Cast<ASoldier>(Cast<AAIGeneralController>(GetOwner())->GetPawn())->GetLocation();
 	UNavigationSystemV1* navSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
-	UNavigationPath* path = navSys->FindPathToLocationSynchronously(GetWorld(), SoldierLocation, Cast<AAIGeneralController>(GetOwner())->GetObjectifLocation(), NULL);
+	AAIGeneralController* _soldier = Cast<AAIGeneralController>(GetOwner());
+	UNavigationPath* path = navSys->FindPathToLocationSynchronously(GetWorld(), SoldierLocation, _soldier->GetObjectifLocation(), NULL, _soldier->GetQueryFilter());
 
 	FVector ObjectifLocalDir;
 	if (path) {
