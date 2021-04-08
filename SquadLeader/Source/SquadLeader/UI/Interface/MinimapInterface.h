@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
+#include "SquadLeader/Soldiers/Soldier.h"
 #include "MinimapInterface.generated.h"
 
 // This class does not need to be modified.
@@ -17,5 +18,11 @@ class SQUADLEADER_API IMinimapInterface
 
 public:
 	UFUNCTION()
-	virtual void OnTeamPositionsChanged(const TArray<FVector2D>& _Positions) = 0;
+	virtual void OnSoldierAddedToTeam(ASoldier* _Soldier) = 0;
+
+	UFUNCTION()
+	virtual void OnSoldierRemovedFromTeam() = 0;
+
+	UFUNCTION()
+	virtual void OnUpdateTeamPositions() = 0;
 };

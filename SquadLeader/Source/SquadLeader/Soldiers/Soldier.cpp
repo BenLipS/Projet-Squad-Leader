@@ -34,6 +34,12 @@ ImpactHitFXScale{FVector{1.f}}
 	CurrentWeaponTag = FGameplayTag::RequestGameplayTag(FName("Weapon.Equipped.None"));
 }
 
+void ASoldier::Destroyed()
+{
+	GetTeam()->RemoveSoldierList(this);
+	Super::Destroyed();
+}
+
 /*
 * On the Server, Possession happens before BeginPlay.
 * On the Client, BeginPlay happens before Possession.

@@ -160,7 +160,7 @@ void ASquadLeaderGameModeBase::CheckTeamTicketsVictoryCondition()
 void ASquadLeaderGameModeBase::EndGame()
 {
 	for (auto Teams : Cast<ASquadLeaderGameState>(GameState)->GetSoldierTeamCollection()) {
-		for (auto Soldiers : Teams->soldierList) {
+		for (auto Soldiers : Teams->GetSoldierList()) {
 			if (auto PlayerControler = Cast<ASoldierPlayerController>(Soldiers->GetController()); PlayerControler) {
 				PlayerControler->ClientSendCommand("EXIT", true);
 			}

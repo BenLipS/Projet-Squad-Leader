@@ -20,7 +20,9 @@ private:
 	TArray<IMinimapInterface*> MinimapDelegates;
 
 public:
-	virtual void OnTeamPositionsChanged(const TArray<FVector2D>& _Positions);
+	virtual void OnSoldierAddedToTeam(ASoldier* _Soldier);
+	virtual void OnSoldierRemovedFromTeam();
+	virtual void OnUpdateTeamPositions();
 
 	void AddMinimapDelegate(IMinimapInterface* _NewDelegate);
 	void RemoveMinimapDelegate(IMinimapInterface* _RemoveDelegate);

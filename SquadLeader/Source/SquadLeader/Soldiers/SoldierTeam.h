@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 // forward declaration
 class ASoldier;
@@ -8,14 +6,11 @@ class ASoldierSpawn;
 #include "CoreMinimal.h"
 #include "GameFramework/Info.h"
 #include "../Interface/PreInitable.h"
-//#include "Soldier.h"
-//#include "../ControlArea/ControlArea.h"
 #include "SoldierTeam.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSoldierAddedToList, ASoldier*, NewSoldier);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FSoldierRemovedFromList);
 
-/**
- * 
- */
 UCLASS(Blueprintable)
 class SQUADLEADER_API ASoldierTeam : public AInfo, public IPreInitable
 {
@@ -46,9 +41,13 @@ public:
 		int NbAIBasic = 6;
 
 
-public:  // Soldier List
+protected:  // Soldier List
 	UPROPERTY(BlueprintReadOnly, Replicated, Category = "SoldierList")
-		TArray<ASoldier*> soldierList;
+		TArray<ASoldier*> SoldierList;
+
+public:
+	UFUNCTION(BlueprintCallable, Category = "SoldierList")
+		TArray<ASoldier*> GetSoldierList() const;
 
 protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "SoldierList")
@@ -59,12 +58,17 @@ public:
 		TSubclassOf<class ASoldierAI> GetClassBasicAI();
 
 	UFUNCTION(BlueprintCallable, Category = "SoldierList")
-		void AddSoldierList(ASoldier* newSoldier);
+		void AddSoldierList(ASoldier* NewSoldier);
 	UFUNCTION(BlueprintCallable, Category = "SoldierList")
-		void RemoveSoldierList(ASoldier* newSoldier);
+		void RemoveSoldierList(ASoldier* NewSoldier);
 	UFUNCTION(BlueprintCallable, Category = "SoldierList")
 		void CleanSoldierList();
 
+	UPROPERTY()
+		FSoldierAddedToList OnSoldierAddedToList;
+
+	UPROPERTY()
+		FSoldierRemovedFromList OnSoldierRemovedFromList;
 
 protected: // Spawn points
 	UPROPERTY(VisibleAnywhere, Replicated, Category = "SpawnPoints")
@@ -78,7 +82,6 @@ public:
 		void CleanSpawnPoints();
 	UFUNCTION(BlueprintCallable, Category = "SpawnPoints")
 		TArray<ASoldierSpawn*> GetUsableSpawnPoints();
-
 
 protected:  // Tickets
 	UPROPERTY(EditAnywhere, Replicated, Category = "Tickets")

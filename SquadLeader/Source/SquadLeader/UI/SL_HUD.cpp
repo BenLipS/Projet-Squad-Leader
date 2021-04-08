@@ -1,17 +1,11 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "SL_HUD.h"
 #include "SL_UserWidget.h"
 
 #include "../Soldiers/Players/SoldierPlayerController.h"
 #include "../Soldiers/Players/SoldierPlayerState.h"
 
+#include "SquadLeader/GameState/SquadLeaderGameState.h"
 #include "../Weapons/SL_Weapon.h"
-
-ASL_HUD::ASL_HUD()
-{
-}
 
 void ASL_HUD::BeginPlay()
 {
@@ -31,6 +25,7 @@ void ASL_HUD::BeginPlay()
 	}
 	SetPlayerStateLink();
 	SetAIStateLink();
+	BindSoldierTeamChanges();
 }
 
 void ASL_HUD::SetPlayerStateLink()
@@ -70,5 +65,17 @@ void ASL_HUD::SetAIStateLink()
 	if (ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(GetOwningPlayerController()); PC)
 	{
 		PC->BroadCastManagerData();
+	}
+}
+
+void ASL_HUD::BindSoldierTeamChanges()
+{
+	if (ASquadLeaderGameState* GS = GetWorld()->GetGameState<ASquadLeaderGameState>(); GS)
+	{
+		for (ASoldierTeam* Team : GS->GetSoldierTeamCollection())
+		{
+			Team->OnSoldierAddedToList.AddDynamic(this, &ASL_HUD::OnSoldierAddedToTeam);
+			Team->OnSoldierRemovedFromList.AddDynamic(this, &ASL_HUD::OnSoldierRemovedFromTeam);
+		}
 	}
 }

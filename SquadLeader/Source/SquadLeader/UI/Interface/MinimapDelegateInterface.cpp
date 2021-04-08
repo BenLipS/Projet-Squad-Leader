@@ -2,11 +2,27 @@
 
 // Add default functionality here for any IMinimapDelegateInterface functions that are not pure virtual.
 
-void IMinimapDelegateInterface::OnTeamPositionsChanged(const TArray<FVector2D>& _Positions)
+void IMinimapDelegateInterface::OnSoldierAddedToTeam(ASoldier* _Soldier)
 {
 	for (auto MinimapInterface : MinimapDelegates)
 	{
-		MinimapInterface->OnTeamPositionsChanged(_Positions);
+		MinimapInterface->OnSoldierAddedToTeam(_Soldier);
+	}
+}
+
+void IMinimapDelegateInterface::OnSoldierRemovedFromTeam()
+{
+	for (auto MinimapInterface : MinimapDelegates)
+	{
+		MinimapInterface->OnSoldierRemovedFromTeam();
+	}
+}
+
+void IMinimapDelegateInterface::OnUpdateTeamPositions()
+{
+	for (auto MinimapInterface : MinimapDelegates)
+	{
+		MinimapInterface->OnUpdateTeamPositions();
 	}
 }
 
