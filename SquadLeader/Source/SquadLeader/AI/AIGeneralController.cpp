@@ -38,12 +38,7 @@ void AAIGeneralController::BeginPlay() {
 	Super::BeginPlay();
 	RunBehaviorTree(m_behaviorTree);
 	Init();
-	
-	DefaultNavigationFilterClass = m_queryFilter;
-	/*blackboard->SetValueAsObject("ControlArea", m_mission->GetControlArea());
-	ObjectifLocation = m_mission->GetControlArea()->GetActorLocation();
-	blackboard->SetValueAsVector("VectorLocation", ObjectifLocation);
-	SetState(AIBasicState::Moving);*/
+
 }
 
 void AAIGeneralController::Init() {
@@ -428,8 +423,7 @@ EPathFollowingRequestResult::Type AAIGeneralController::MoveToActorLocation() {
 	AActor* _actor = Cast<AActor>(blackboard->GetValueAsObject("ActorLocation"));
 
 	EPathFollowingRequestResult::Type _movetoResult;
-	DefaultNavigationFilterClass = m_queryFilter;
-	_movetoResult = MoveToActor(_actor, 1.f, true, true, true, m_queryFilter);
+	_movetoResult = MoveToActor(_actor, 1.f);
 
 	return _movetoResult;
 }
@@ -441,8 +435,7 @@ EPathFollowingRequestResult::Type AAIGeneralController::MoveToVectorLocation() {
 
 	//TO-DO : if follow an enemy be at the distance to shoot 
 	EPathFollowingRequestResult::Type _movetoResult;
-	DefaultNavigationFilterClass = m_queryFilter;
-	_movetoResult = MoveToLocation(blackboard->GetValueAsVector("VectorLocation"), 50.f, true, true, false, true, m_queryFilter);
+	_movetoResult = MoveToLocation(blackboard->GetValueAsVector("VectorLocation"), 50.f);
 	if (_movetoResult == EPathFollowingRequestResult::Type::AlreadyAtGoal) {
 		SetState(AIBasicState::Capturing);
 		blackboard->ClearValue("VectorLocation");
@@ -468,8 +461,7 @@ EPathFollowingRequestResult::Type AAIGeneralController::MoveToEnemyLocation() {
 
 		//TO-DO : if follow an enemy be at the distance to shoot 
 		EPathFollowingRequestResult::Type _movetoResult;
-		DefaultNavigationFilterClass = m_queryFilter;
-		_movetoResult = MoveToLocation(_soldier_enemy->GetActorLocation(), m_distanceShootAndStop, true, true, false, true, m_queryFilter);
+		_movetoResult = MoveToLocation(_soldier_enemy->GetActorLocation(), m_distanceShootAndStop);
 
 		return _movetoResult;
 	}
@@ -486,8 +478,7 @@ EPathFollowingRequestResult::Type AAIGeneralController::MoveToSearchEnemy() {
 	soldier->CancelAbilityRun();
 
 	EPathFollowingRequestResult::Type _movetoResult;
-	DefaultNavigationFilterClass = m_queryFilter;
-	_movetoResult = MoveToLocation(location_, 5.f, true, true, false, true, m_queryFilter);
+	_movetoResult = MoveToLocation(location_, 5.f);
 
 	return _movetoResult;
 }
@@ -518,8 +509,7 @@ ResultState AAIGeneralController::ShootEnemy() {
 
 EPathFollowingRequestResult::Type AAIGeneralController::FollowFlocking() {
 	EPathFollowingRequestResult::Type _movetoResult;
-	DefaultNavigationFilterClass = m_queryFilter;
-	_movetoResult = MoveToLocation(blackboard->GetValueAsVector("FlockingLocation"), 5.f, true, true, false,true, m_queryFilter, true);
+	_movetoResult = MoveToLocation(blackboard->GetValueAsVector("FlockingLocation"), 5.f);
 	return _movetoResult;
 }
 
