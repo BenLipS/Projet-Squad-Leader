@@ -12,22 +12,6 @@
 class ASoldier;
 class UPointOfInterestWidget;
 
-USTRUCT()
-struct FPointOfInterestSoldier
-{
-	GENERATED_BODY()
-
-	ASoldier* Soldier = nullptr;
-	UPointOfInterestWidget* Widget = nullptr;
-
-	FPointOfInterestSoldier() = default;
-	FPointOfInterestSoldier(ASoldier* _Soldier, UPointOfInterestWidget* _Widget)
-	{
-		Soldier = _Soldier;
-		Widget = _Widget;
-	}
-};
-
 // !! WARNING !!
 // We suppose the minimap is a square ONLY
 
@@ -37,7 +21,7 @@ class SQUADLEADER_API UMinimapWidget : public USL_UserWidget, public IMinimapInt
 	GENERATED_BODY()
 
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	float Dimensions;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -52,8 +36,13 @@ protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UImage* PlayerIconImage;
 
+	// Max length a POI can be from the player icon to be visible
+	UPROPERTY(EditDefaultsOnly)
+	float IconMaxLengthVisibility;
+
 //////////////// Points of interest
-	TArray<FPointOfInterestSoldier> SoldierList;
+	// List of points of interest
+	TArray<UPointOfInterestWidget*> POIList;
 
 // Squad
 	UPROPERTY(EditDefaultsOnly, Category = "PointOfInterest")
@@ -74,10 +63,7 @@ public:
 
 	//-----IMinimapDelegateInterface-----
 	virtual void OnSoldierAddedToTeam(ASoldier* _Soldier) override;
-	virtual void OnSoldierRemovedFromTeam() override;
+	virtual void OnSoldierRemovedFromTeam(ASoldier* _Soldier) override;
 
 	virtual void OnUpdateTeamPositions() override;
-
-	UFUNCTION(BlueprintImplementableEvent)
-	void OnNewTeamPosition();
 };

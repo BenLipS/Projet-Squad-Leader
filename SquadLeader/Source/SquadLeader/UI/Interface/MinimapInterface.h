@@ -21,7 +21,7 @@ public:
 	virtual void OnSoldierAddedToTeam(ASoldier* _Soldier) = 0;
 
 	UFUNCTION()
-	virtual void OnSoldierRemovedFromTeam() = 0;
+	virtual void OnSoldierRemovedFromTeam(ASoldier* _Soldier) = 0;
 
 	UFUNCTION()
 	virtual void OnUpdateTeamPositions() = 0;

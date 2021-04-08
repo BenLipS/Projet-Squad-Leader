@@ -56,7 +56,7 @@ void ASoldierTeam::RemoveSoldierList(ASoldier* NewSoldier)
 	if (SoldierList.Contains(NewSoldier))
 	{
 		SoldierList.Remove(NewSoldier);
-		OnSoldierRemovedFromList.Broadcast();
+		OnSoldierRemovedFromList.Broadcast(NewSoldier);
 	}
 }
 

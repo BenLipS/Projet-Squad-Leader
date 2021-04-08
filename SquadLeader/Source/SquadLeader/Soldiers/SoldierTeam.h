@@ -9,7 +9,7 @@ class ASoldierSpawn;
 #include "SoldierTeam.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSoldierAddedToList, ASoldier*, NewSoldier);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FSoldierRemovedFromList);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSoldierRemovedFromList, ASoldier*, NewSoldier);
 
 UCLASS(Blueprintable)
 class SQUADLEADER_API ASoldierTeam : public AInfo, public IPreInitable

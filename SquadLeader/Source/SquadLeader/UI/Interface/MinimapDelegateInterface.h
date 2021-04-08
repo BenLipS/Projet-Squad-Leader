@@ -21,7 +21,7 @@ private:
 
 public:
 	virtual void OnSoldierAddedToTeam(ASoldier* _Soldier);
-	virtual void OnSoldierRemovedFromTeam();
+	virtual void OnSoldierRemovedFromTeam(ASoldier* _Soldier);
 	virtual void OnUpdateTeamPositions();
 
 	void AddMinimapDelegate(IMinimapInterface* _NewDelegate);

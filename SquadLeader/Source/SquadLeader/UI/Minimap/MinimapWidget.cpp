@@ -5,7 +5,10 @@
 #include "Components/OverlaySlot.h"
 #include "SquadLeader/AI/AISquadManager.h"
 
-UMinimapWidget::UMinimapWidget(const FObjectInitializer& _ObjectInitializer) : USL_UserWidget(_ObjectInitializer), Dimensions{ 10'000.f }, Zoom{ 1.f }, SoldierList{}
+UMinimapWidget::UMinimapWidget(const FObjectInitializer& _ObjectInitializer) : USL_UserWidget(_ObjectInitializer),
+Dimensions{ 10'000.f },
+Zoom{ 1.f },
+POIList{}
 {
 }
 
@@ -38,23 +41,26 @@ void UMinimapWidget::OnSoldierAddedToTeam(ASoldier* _Soldier)
 		POI = CreateWidget<UPointOfInterestWidget>(MinimapOverlay, AllieIconWidgetClass);
 	}
 
-	// Create the POI widget, put it to the center of the map then display it
 	if (POI)
 	{
+		// Put the POI to the center of the minimap as the base position
 		if (UOverlaySlot* OverlaySlot = Cast<UOverlaySlot>(MinimapOverlay->AddChild(POI)); OverlaySlot)
 		{
 			OverlaySlot->SetHorizontalAlignment(EHorizontalAlignment::HAlign_Center);
 			OverlaySlot->SetVerticalAlignment(EVerticalAlignment::VAlign_Center);
 		}
 		
-		SoldierList.Add(FPointOfInterestSoldier{ _Soldier, POI });
+		POI->OwningSoldier = _Soldier;
+		POIList.Add(POI);
 	}
 }
 
-void UMinimapWidget::OnSoldierRemovedFromTeam()
+void UMinimapWidget::OnSoldierRemovedFromTeam(ASoldier* _Soldier)
 {
-	// Remove any nullptr from the list
-	SoldierList.RemoveAll([](const FPointOfInterestSoldier& POI) { return !POI.Soldier; });
+	// Remove any widget whose actor ref match _Soldier
+	POIList.RemoveAll([&_Soldier](UPointOfInterestWidget* POI) { return POI->OwningSoldier == _Soldier; });
+
+	// TODO do I have to remove from viewport ?
 }
 
 void UMinimapWidget::OnUpdateTeamPositions()
@@ -66,10 +72,9 @@ void UMinimapWidget::OnUpdateTeamPositions()
 
 	const FVector2D PlayerPosition = FVector2D{ Player->GetActorLocation().X, Player->GetActorLocation().Y };
 
-	//for (ASoldier* Soldier : SoldierList)
-	for (const FPointOfInterestSoldier& PointOfInterestSoldier : SoldierList)
+	for (UPointOfInterestWidget* POI : POIList)
 	{
-		const FVector2D SoldierPosition = FVector2D{ PointOfInterestSoldier.Soldier->GetActorLocation().X, PointOfInterestSoldier.Soldier->GetActorLocation().Y };
+		const FVector2D SoldierPosition = FVector2D{ POI->OwningSoldier->GetActorLocation().X, POI->OwningSoldier->GetActorLocation().Y };
 
 		// Diff position between soldier and player
 		const float Coeff = Dimensions * Zoom / MinimapImage->GetDesiredSize().X; // Assume MinimapImage is 
@@ -79,13 +84,10 @@ void UMinimapWidget::OnUpdateTeamPositions()
 
 		// Angle between soldier and player (center of the minimap)
 		const float Angle = FMath::Atan2(/* 0.f*/ - DiffY, /* 0.f*/ - DiffX);
+		const float Length = FMath::Clamp(DiffVec.Size(), 0.f, IconMaxLengthVisibility);
 
-		const float MaxLength = 130.f; // TODO: expose this property
-		const float Length = FMath::Clamp(DiffVec.Size(), 0.f, MaxLength);
+		const FVector2D SoldierPosOnMinimap = -FVector2D{ FMath::Sin(Angle) * Length, FMath::Cos(Angle) * Length };
+		POI->SetRenderTranslation(SoldierPosOnMinimap);
 
-		const FVector2D SoldierPosOnMinimap = -FVector2D{FMath::Sin(Angle) * Length, FMath::Cos(Angle) * Length };
-		PointOfInterestSoldier.Widget->SetRenderTranslation(SoldierPosOnMinimap);
 	}
-
-	OnNewTeamPosition();
 }

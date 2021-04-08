@@ -10,11 +10,11 @@ void IMinimapDelegateInterface::OnSoldierAddedToTeam(ASoldier* _Soldier)
 	}
 }
 
-void IMinimapDelegateInterface::OnSoldierRemovedFromTeam()
+void IMinimapDelegateInterface::OnSoldierRemovedFromTeam(ASoldier* _Soldier)
 {
 	for (auto MinimapInterface : MinimapDelegates)
 	{
-		MinimapInterface->OnSoldierRemovedFromTeam();
+		MinimapInterface->OnSoldierRemovedFromTeam(_Soldier);
 	}
 }
 

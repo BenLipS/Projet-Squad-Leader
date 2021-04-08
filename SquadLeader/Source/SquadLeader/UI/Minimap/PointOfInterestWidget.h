@@ -8,5 +8,7 @@ UCLASS()
 class SQUADLEADER_API UPointOfInterestWidget : public USL_UserWidget
 {
 	GENERATED_BODY()
-	
+
+public:
+	ASoldier* OwningSoldier;
 };
