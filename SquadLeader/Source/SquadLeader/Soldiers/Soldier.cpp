@@ -36,7 +36,8 @@ ImpactHitFXScale{FVector{1.f}}
 
 void ASoldier::Destroyed()
 {
-	GetTeam()->RemoveSoldierList(this);
+	if (GetTeam())
+		GetTeam()->RemoveSoldierList(this);
 	Super::Destroyed();
 }
 
