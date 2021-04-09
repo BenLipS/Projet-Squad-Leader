@@ -49,13 +49,13 @@ public:
 
 public:
 	AAISquadManager();
+	virtual void Tick(float DeltaTime) override;
 
 public:
 	UPROPERTY(BlueprintReadOnly)
 	TArray<AAISquadController*> AISquadList;
 
 public:
-
 	void BeginPlay() override;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
@@ -70,7 +70,8 @@ public:
 	UPROPERTY()
 	ASoldierPlayer* Leader;
 
-	virtual void Tick(float DeltaTime) override;
+	// Check whether this manager controls the given soldier
+	bool HasSoldier(const ASoldier* _Soldier) const;
 
 	auto GetMission() { return Mission; };
 
@@ -84,7 +85,6 @@ public:
 
 	UFUNCTION()
 	void UpdateCircleFormation();
-
 
 	UPROPERTY()
 	UMission* Mission;

@@ -1,6 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "SoldierTeam.h"
 #include "Soldier.h"
 #include "../Spawn/SoldierSpawn.h"
@@ -38,7 +35,7 @@ void ASoldierTeam::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	DOREPLIFETIME(ASoldierTeam, NbAIBasicAssault);
 	DOREPLIFETIME(ASoldierTeam, NbAIBasicHeavy);
 	DOREPLIFETIME(ASoldierTeam, TeamName);
-	DOREPLIFETIME(ASoldierTeam, soldierList);
+	DOREPLIFETIME(ASoldierTeam, SoldierList);
 	DOREPLIFETIME(ASoldierTeam, mainSpawnPoints);
 	DOREPLIFETIME(ASoldierTeam, Tickets);
 
@@ -59,20 +56,23 @@ TSubclassOf<class ASoldierAI> ASoldierTeam::GetClassBasicAIHeavy()
 	return ClassBasicAIHeavy;
 }
 
-void ASoldierTeam::AddSoldierList(ASoldier* newSoldier)
+void ASoldierTeam::AddSoldierList(ASoldier* NewSoldier)
 {
-	soldierList.AddUnique(newSoldier);
+	SoldierList.AddUnique(NewSoldier);
 }
 
-void ASoldierTeam::RemoveSoldierList(ASoldier* newSoldier)
+void ASoldierTeam::RemoveSoldierList(ASoldier* NewSoldier)
 {
-	if (soldierList.Contains(newSoldier))
-		soldierList.Remove(newSoldier);
+	if (SoldierList.Contains(NewSoldier))
+	{
+		SoldierList.Remove(NewSoldier);
+		OnSoldierRemovedFromList.Broadcast(NewSoldier);
+	}
 }
 
 void ASoldierTeam::CleanSoldierList()
 {
-	soldierList.RemoveAll([](ASoldier* element) {return element == nullptr; });
+	SoldierList.RemoveAll([](ASoldier* element) {return element == nullptr; });
 }
 
 
@@ -105,6 +105,10 @@ TArray<ASoldierSpawn*> ASoldierTeam::GetUsableSpawnPoints()
 	return result;
 }
 
+TArray<ASoldier*> ASoldierTeam::GetSoldierList() const
+{
+	return SoldierList;
+}
 
 void ASoldierTeam::RemoveOneTicket()
 {

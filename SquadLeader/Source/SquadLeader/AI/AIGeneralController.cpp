@@ -23,7 +23,6 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Math/RandomStream.h"
 #include "../ControlArea/ControlArea.h"
-#include "Mission/MissionList.h"
 
 AAIGeneralController::AAIGeneralController(FObjectInitializer const& object_initializer)
 {
@@ -426,19 +425,6 @@ void AAIGeneralController::UpdateSeenEnemySoldier()
 			SeenEnemySoldier.Add(Elem);
 		}
 	}
-}
-
-template <class T>
-void AAIGeneralController::SetMission(T _mission){
-	//m_mission_type.Emplace<T>(_mission);
-	UMissionList::type_mission m_mission{};
-	m_mission.Emplace<T>(_mission);
-
-	if (m_missionList == nullptr)
-		InitMissionList();
-	
-	m_missionList->Add(m_mission);
-	m_mission_changed = true;
 }
 
 auto AAIGeneralController::GetMission()

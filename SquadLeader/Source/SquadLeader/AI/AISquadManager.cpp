@@ -94,6 +94,13 @@ void AAISquadManager::Tick(float DeltaTime)
 		
 }
 
+bool AAISquadManager::HasSoldier(const ASoldier* _Soldier) const
+{
+	if (AAISquadController* SC = Cast<AAISquadController>(_Soldier->GetController()))
+		return AISquadList.Find(SC) != INDEX_NONE;
+	return false;
+}
+
 void AAISquadManager::UpdateFormation()
 {
 	switch (TypeOfFormation) {
