@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "SL_UserWidget.h"
+#include "../SL_UserWidget.h"
 #include "Components/NamedSlot.h"
 
 #include "MenuLayoutWidget.generated.h"
