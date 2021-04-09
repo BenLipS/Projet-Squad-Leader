@@ -37,6 +37,7 @@ class SQUADLEADER_API ASoldier : public ACharacter, public IAbilitySystemInterfa
 
 public:
 	ASoldier(const FObjectInitializer& _ObjectInitializer);
+	virtual void Destroyed() override;
 
 protected:
 	virtual void BeginPlay() override;
@@ -380,6 +381,8 @@ public:
 	UAnimMontage* WeaponFireMontage;
 
 protected:
+	void HandleDeathMontage();
+
 	// Callbacks
 	FOnMontageEnded StartGame_SoldierMontageEndedDelegate;
 	FOnMontageEnded Respawn_SoldierMontageEndedDelegate;

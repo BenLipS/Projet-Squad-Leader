@@ -34,6 +34,13 @@ ImpactHitFXScale{FVector{1.f}}
 	CurrentWeaponTag = FGameplayTag::RequestGameplayTag(FName("Weapon.Equipped.None"));
 }
 
+void ASoldier::Destroyed()
+{
+	if (GetTeam())
+		GetTeam()->RemoveSoldierList(this);
+	Super::Destroyed();
+}
+
 /*
 * On the Server, Possession happens before BeginPlay.
 * On the Client, BeginPlay happens before Possession.
@@ -53,15 +60,17 @@ void ASoldier::BeginPlay()
 		setToThirdCameraPerson();
 
 	// Teams
-	if (GetLocalRole() == ROLE_Authority) {
-		// init team:
+	// TODO: Clients must be aware of their team. If we really want a security with the server, we should call this function
+	// from the server only, have a test to determine wheter we can change the team, then use a ClientSetTeam to replicate the change
+	//if (GetLocalRole() == ROLE_Authority)
+	{
+		// Init team
 		if (InitialTeam && !(GetTeam()))
 			SetTeam(InitialTeam);
 
-		// add this to the team data
-		if (GetTeam()) {
+		// Add this to the team data
+		if (GetTeam())
 			GetTeam()->AddSoldierList(this);
-		}
 	}
 
 	if (StartGameMontage)
@@ -119,7 +128,7 @@ void ASoldier::Tick(float DeltaTime)
 
 		m_package.m_type = Type::Soldier;
 		GM->InfluenceMap->ReceivedMessage(m_package);
-	}	
+	}
 }
 
 void ASoldier::InitCameras()
@@ -309,8 +318,7 @@ void ASoldier::DeadTagChanged(const FGameplayTag _CallbackTag, int32 _NewCount)
 		if (ASquadLeaderGameModeBase* GameMode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode()); GameMode)
 			GameMode->SoldierDied(GetController());
 
-		if (DeathMontage)
-			PlayAnimMontage(DeathMontage);
+		HandleDeathMontage();
 	}
 	else // If dead tag is removed - Handle respawn
 	{
@@ -489,9 +497,12 @@ void ASoldier::Landed(const FHitResult& _Hit)
 	// This is necessary for AIs and players who would keep pressing the input
 	CancelAbility(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Jump")));
 
-	FGameplayTagContainer EffectTagsToRemove;
-	EffectTagsToRemove.AddTag(FGameplayTag::RequestGameplayTag(FName("State.Jumping")));
-	AbilitySystemComponent->RemoveActiveEffectsWithGrantedTags(EffectTagsToRemove);
+	if (AbilitySystemComponent)
+	{
+		FGameplayTagContainer EffectTagsToRemove;
+		EffectTagsToRemove.AddTag(FGameplayTag::RequestGameplayTag(FName("State.Jumping")));
+		AbilitySystemComponent->RemoveActiveEffectsWithGrantedTags(EffectTagsToRemove);
+	}
 }
 
 void ASoldier::SpawnDefaultInventory()
@@ -836,7 +847,10 @@ ASoldierTeam* ASoldier::GetTeam()
 
 bool ASoldier::SetTeam(ASoldierTeam* _Team)
 {
-	if (GetLocalRole() == ROLE_Authority) {  // only the server is allowed to change the team of a player
+	// TODO: Clients must be aware of their team. If we really want a security with the server, we should call this function
+	// from the server only, have a test to determine wheter we can change the team, then use a ClientSetTeam to replicate the change
+	//if (GetLocalRole() == ROLE_Authority)
+	{  
 		Team = _Team;
 		return true;
 	}
@@ -853,6 +867,12 @@ uint8 ASoldier::GetInfluenceRadius() const noexcept{
 	return InfluenceRadius;
 }
 
+void ASoldier::HandleDeathMontage()
+{
+	if (DeathMontage)
+		PlayAnimMontage(DeathMontage);
+}
+
 void ASoldier::OnStartGameMontageCompleted(UAnimMontage* _Montage, bool _bInterrupted)
 {
 	UnLockControls();
@@ -864,7 +884,7 @@ void ASoldier::OnRespawnMontageCompleted(UAnimMontage* _Montage, bool _bInterrup
 
 	GetCharacterMovement()->GravityScale = 1.f;
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Player, ECollisionResponse::ECR_Block);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Player, ECollisionResponse::ECR_Overlap);
 }
 
 // TODO: Show particle from the hit location - not center of the soldier

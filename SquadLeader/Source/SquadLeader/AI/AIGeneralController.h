@@ -10,6 +10,7 @@
 #include "../Soldiers/Interface/Teamable.h"
 #include "../ControlArea/ControlArea.h"
 #include "NavFilters/NavigationQueryFilter.h"
+#include "Mission/MissionList.h"
 #include "AIGeneralController.generated.h"
 
 class UFlockingComponent;
@@ -435,7 +436,18 @@ public:	//Mission
 	* Set a mission of type T
 	*/
 	template<class T>
-	void SetMission(T _mission);
+	void SetMission(T _mission)
+	{
+		//m_mission_type.Emplace<T>(_mission);
+		UMissionList::type_mission m_mission{};
+		m_mission.Emplace<T>(_mission);
+
+		if (m_missionList == nullptr)
+			InitMissionList();
+
+		m_missionList->Add(m_mission);
+		m_mission_changed = true;
+	}
 	
 	/*
 	* Return the current mission that the NPC is running
