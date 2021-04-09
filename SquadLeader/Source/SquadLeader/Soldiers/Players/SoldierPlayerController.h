@@ -4,7 +4,6 @@
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "camera/cameracomponent.h"
-#include "../../UI/HUDWidget.h"
 #include "../Interface/Teamable.h"
 #include "../../AI/AISquadManager.h"
 #include "../AIs/SoldierAI.h"
