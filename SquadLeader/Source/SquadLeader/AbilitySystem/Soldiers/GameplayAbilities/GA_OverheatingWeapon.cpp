@@ -32,9 +32,10 @@ void UGA_OverheatingWeapon::ActivateAbility(const FGameplayAbilitySpecHandle _Ha
 	SourceWeapon->SetHasInfiniteAmmo(true);
 	SourceWeapon->SetTimeBetweenShots(SourceWeapon->GetTimeBetweenShots() * TimeBetweenShootMultiplier);
 
-	UAbilityTask_WaitDelay* TaskWaitDelay = UAbilityTask_WaitDelay::WaitDelay(this, TimeOverHeat);
-	TaskWaitDelay->Activate();
-	TaskWaitDelay->OnFinish.AddDynamic(this, &UGA_OverheatingWeapon::EndOverHeat);
+	//UAbilityTask_WaitDelay* TaskWaitDelay = UAbilityTask_WaitDelay::WaitDelay(this, TimeOverHeat);
+	//TaskWaitDelay->Activate();
+	//TaskWaitDelay->OnFinish.AddDynamic(this, &UGA_OverheatingWeapon::EndOverHeat);
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }
 
 void UGA_OverheatingWeapon::EndOverHeat()
