@@ -15,7 +15,7 @@ void AAssaultAIBasicController::Tick(float DeltaSeconds) {
 	Super::Tick(DeltaSeconds);
 
 	//TODO Make a function with that LaunchGrenade()
-	if (SeenEnemySoldier.Num() >= NUmberOfEnemyToLaunchAGrenade) {
+	if (SeenEnemySoldier.Num() >= NUmberOfEnemyToLaunchAGrenade && !Cast<ASoldier>(GetPawn())->IsInCooldown(FGameplayTag::RequestGameplayTag(FName("Cooldown.LaunchProjectile.Grenade")))) {
 		FVector MeanEnmyPos = FVector::ZeroVector;
 		for (ASoldier* Enemy : SeenEnemySoldier) {
 			MeanEnmyPos += Enemy->GetLocation();
@@ -29,9 +29,15 @@ void AAssaultAIBasicController::Tick(float DeltaSeconds) {
 		/*DrawDebugLine(GetWorld(), GetPawn()->GetActorLocation(), GetPawn()->GetActorLocation() + GetPawn()->GetActorForwardVector() * 1000, FColor::Red);
 		DrawDebugLine(GetWorld(), GetPawn()->GetActorLocation(), GetPawn()->GetActorLocation() + LaunchDir, FColor::Yellow);*/
 
+		StopCurrentBehavior = true;
 		Blackboard->SetValueAsBool("LaunchGrenade", true);
 	}
 	
+	//TODO Make a function with that OverHeat()
+	if (SeenEnemySoldier.Num() >= NUmberOfEnemyToOverHeat && !Cast<ASoldier>(GetPawn())->IsInCooldown(FGameplayTag::RequestGameplayTag(FName("Cooldown.Ability.OverheatingWeapon")))) {
+		StopCurrentBehavior = true;
+		Blackboard->SetValueAsBool("OverHeat", true);
+	}
 }
 
 void AAssaultAIBasicController::setup_BehaviorTree()
