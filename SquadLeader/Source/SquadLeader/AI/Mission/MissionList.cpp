@@ -20,7 +20,7 @@ auto FMissionAction::operator()(UPatrolMission* _mission)const
 {
 	GEngine->AddOnScreenDebugMessage(50, 10.f, FColor::Blue, TEXT("Mission de type UPatrolMission"));
 	_mission->SetState(MissionState::eRUNNING);
-	m_ai_controller->SetObjectifLocation(m_ai_controller->GetPawn()->GetActorLocation());
+	//m_ai_controller->SetObjectifLocation(m_ai_controller->GetPawn()->GetActorLocation());
 }
 auto FMissionAction::operator()(UFormationMission* _mission)const
 {
