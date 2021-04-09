@@ -497,9 +497,12 @@ void ASoldier::Landed(const FHitResult& _Hit)
 	// This is necessary for AIs and players who would keep pressing the input
 	CancelAbility(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Jump")));
 
-	FGameplayTagContainer EffectTagsToRemove;
-	EffectTagsToRemove.AddTag(FGameplayTag::RequestGameplayTag(FName("State.Jumping")));
-	AbilitySystemComponent->RemoveActiveEffectsWithGrantedTags(EffectTagsToRemove);
+	if (AbilitySystemComponent)
+	{
+		FGameplayTagContainer EffectTagsToRemove;
+		EffectTagsToRemove.AddTag(FGameplayTag::RequestGameplayTag(FName("State.Jumping")));
+		AbilitySystemComponent->RemoveActiveEffectsWithGrantedTags(EffectTagsToRemove);
+	}
 }
 
 void ASoldier::SpawnDefaultInventory()
