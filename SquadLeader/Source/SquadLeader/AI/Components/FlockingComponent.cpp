@@ -3,6 +3,7 @@
 
 #include "FlockingComponent.h"
 #include "../AIGeneralController.h"
+#include "../AISquadController.h"
 #include "NavigationSystem.h"
 #include "DrawDebugHelpers.h"
 #include "BehaviorTree/BlackboardComponent.h"
@@ -39,13 +40,14 @@ void UFlockingComponent::ResetVectors()
 	ObjectifVector = FVector::ZeroVector;
 	WallAvoidanceVector = FVector::ZeroVector;
 	ShootingPositionVector = FVector::ZeroVector;
+	FollowFormationVector = FVector::ZeroVector;
 }
 
 void UFlockingComponent::UpdateNeighbourhood()
 {
 	for (ASoldier* soldier : Cast<AAIGeneralController>(GetOwner())->GetSeenSoldier())
 	{
-		if (AAIGeneralController* AI = Cast<AAIGeneralController>(soldier->Controller); AI && soldier->GetTeam() == Cast<ASoldier>(Cast<AAIGeneralController>(GetOwner())->GetPawn())->GetTeam() /*&& Cast<AAIGeneralController>(GetOwner())->GetObjectifLocation() == AI->GetObjectifLocation()*/)
+		if (AAIGeneralController* AI = Cast<AAIGeneralController>(soldier->Controller); AI && soldier->GetTeam() == Cast<ASoldier>(Cast<AAIGeneralController>(GetOwner())->GetPawn())->GetTeam()  /*&& Cast<AAIGeneralController>(GetOwner())->GetObjectifLocation() == AI->GetObjectifLocation()*/)
 			SeenBoids.Add(AI);
 	};
 }
@@ -53,26 +55,28 @@ void UFlockingComponent::UpdateNeighbourhood()
 void UFlockingComponent::UpdateCohesionVector()
 {
 	FVector SoldierLocation = Cast<ASoldier>(Cast<AAIGeneralController>(GetOwner())->GetPawn())->GetLocation();
+	FVector CohesionComponent = FVector::ZeroVector;
 	for (AAIGeneralController* Boid : SeenBoids)
 	{
 		if (Cast<AAIGeneralController>(GetOwner())->GetObjectifLocation() == Boid->GetObjectifLocation()) {
 			/* Cohesion throught pathfinding and not absolute*/
-			UNavigationSystemV1* navSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
-			UNavigationPath* path = navSys->FindPathToLocationSynchronously(GetWorld(), SoldierLocation, Boid->GetPawn()->GetActorLocation(), NULL);
-
-			FVector CohesionLocalDir;
-			if (path->PathPoints.Num() > 2)
-				CohesionLocalDir = path->PathPoints[1];
-			else
-				CohesionLocalDir = Boid->GetPawn()->GetActorLocation();
-
-			//DrawDebugPoint(GetWorld(), CohesionLocalDir, 10, FColor::Red);
-
-			CohesionVector += CohesionLocalDir.GetSafeNormal(DefaultNormalizeVectorTolerance) * Boid->GetPawn()->GetActorLocation().Size() - SoldierLocation;
+			CohesionComponent += Boid->GetPawn()->GetActorLocation() - SoldierLocation;
 		}
 	}
 
-	CohesionVector = (CohesionVector / SeenBoids.Num()) / 100;
+	UNavigationSystemV1* navSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
+	UNavigationPath* path = navSys->FindPathToLocationSynchronously(GetWorld(), SoldierLocation, SoldierLocation + CohesionComponent, NULL);
+
+	FVector CohesionLocalDir;
+	if (path->PathPoints.Num() > 2) {
+		CohesionLocalDir = path->PathPoints[1] - SoldierLocation;
+		//DrawDebugPoint(GetWorld(), CohesionLocalDir, 32, FColor::Blue);
+		//DrawDebugPoint(GetWorld(), SoldierLocation, 32, FColor::Red);
+	}
+	else
+		CohesionLocalDir = CohesionComponent;
+
+	CohesionVector = (CohesionLocalDir.GetSafeNormal(DefaultNormalizeVectorTolerance) * CohesionComponent.Size() / SeenBoids.Num()) / 100;
 }
 
 void UFlockingComponent::UpdateAlignementVector()
@@ -102,14 +106,15 @@ void UFlockingComponent::UpdateSeparationVector()
 	}
 
 	const FVector SeparationForceComponent = SeparationVector * 100;
-	SeparationVector += SeparationForceComponent + SeparationForceComponent * (5 / SeenBoids.Num());
+	SeparationVector += SeparationForceComponent + SeparationForceComponent * (5 / Cast<AAIGeneralController>(GetOwner())->GetSeenSoldier().Num());
 }
 
 void UFlockingComponent::UpdateObjectifVector()
 {
 	FVector SoldierLocation = Cast<ASoldier>(Cast<AAIGeneralController>(GetOwner())->GetPawn())->GetLocation();
 	UNavigationSystemV1* navSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
-	UNavigationPath* path = navSys->FindPathToLocationSynchronously(GetWorld(), SoldierLocation, Cast<AAIGeneralController>(GetOwner())->GetObjectifLocation(), NULL);
+	AAIGeneralController* _soldier = Cast<AAIGeneralController>(GetOwner());
+	UNavigationPath* path = navSys->FindPathToLocationSynchronously(GetWorld(), SoldierLocation, _soldier->GetObjectifLocation(), NULL, _soldier->GetQueryFilter());
 
 	FVector ObjectifLocalDir;
 	if (path) {
@@ -145,19 +150,21 @@ void UFlockingComponent::UpdateShootingPositionVector()
 		ShootingPositionVector = IdealShootingPosition - SoldierLocation;
 	}
 	
-	UNavigationPath* path = navSys->FindPathToLocationSynchronously(GetWorld(), SoldierLocation, ShootingPositionVector, NULL);
+	UNavigationPath* path = navSys->FindPathToLocationSynchronously(GetWorld(), SoldierLocation, SoldierLocation + ShootingPositionVector, NULL);
 
 	FVector ShootingPositionLocalDir;
 	if (path) {
-		if (path->PathPoints.Num() > 1)
+		if (path->PathPoints.Num() > 1) {
 			ShootingPositionLocalDir = path->PathPoints[1];
+			//for (auto Point : path->PathPoints) {
+			//	DrawDebugPoint(GetWorld(), Point, 32, FColor::Cyan);
+			//}
+		}
 		else
 			ShootingPositionLocalDir = Cast<AAIGeneralController>(GetOwner())->get_blackboard()->GetValueAsVector("ShootingPosition");
 	}
 
 	ShootingPositionVector = ShootingPositionLocalDir - SoldierLocation;
-
-	//DrawDebugPoint(GetWorld(), SoldierLocation + ShootingPositionVector, 32, FColor::Cyan);
 }
 
 void UFlockingComponent::UpdateMovementVector()
@@ -165,23 +172,26 @@ void UFlockingComponent::UpdateMovementVector()
 
 	AlignementVector = AlignementVector.GetSafeNormal(DefaultNormalizeVectorTolerance);
 	AlignementVector.Z = 0;
-	CohesionVector = CohesionVector/*.GetSafeNormal(DefaultNormalizeVectorTolerance)*/;
+	CohesionVector = CohesionVector.GetClampedToMaxSize(CohesionMaxSize);/*.GetSafeNormal(DefaultNormalizeVectorTolerance)*/;
 	CohesionVector.Z = 0;
-	SeparationVector = SeparationVector/*.GetSafeNormal(DefaultNormalizeVectorTolerance)*/;
+	SeparationVector = SeparationVector.GetClampedToMaxSize(SeparationMaxSize);/*.GetSafeNormal(DefaultNormalizeVectorTolerance)*/;
 	SeparationVector.Z = 0;
-	WallAvoidanceVector = WallAvoidanceVector/*.GetSafeNormal(DefaultNormalizeVectorTolerance)*/;
+	WallAvoidanceVector = WallAvoidanceVector.GetClampedToMaxSize(WallAvoidanceMaxSize);/*.GetSafeNormal(DefaultNormalizeVectorTolerance)*/;
 	WallAvoidanceVector.Z = 0;
 	ObjectifVector = ObjectifVector.GetSafeNormal(DefaultNormalizeVectorTolerance);
 	ObjectifVector.Z = 0;
 	ShootingPositionVector = ShootingPositionVector.GetSafeNormal(DefaultNormalizeVectorTolerance);
 	ShootingPositionVector.Z = 0;
+	FollowFormationVector = FollowFormationVector.GetSafeNormal(DefaultNormalizeVectorTolerance);
+	FollowFormationVector.Z = 0;
 
 	MovementVector = AlignementVector * AlignementWeight
 		+ CohesionVector * CohesionWeight
 		+ SeparationVector * SeparationWeight
 		+ WallAvoidanceVector * WallAvoidanceWeight
 		+ ObjectifVector * ObjectifWeight
-		+ ShootingPositionVector * ShootingPositionWeight;
+		+ ShootingPositionVector * ShootingPositionWeight
+		+ FollowFormationVector * FollowFormationWeight;
 
 	MovementVector = MovementVector.GetSafeNormal(DefaultNormalizeVectorTolerance);
 	MovementVector.Z = 0;
@@ -192,7 +202,7 @@ void UFlockingComponent::UpdateWallAvoidanceVector()
 	FVector SoldierLocation = Cast<ASoldier>(Cast<AAIGeneralController>(GetOwner())->GetPawn())->GetLocation();
 	UNavigationSystemV1* navSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
 
-	FVector Offset = { RadiusForWallAvoidance, 0.f, 0.f };
+	FVector Offset = Cast<ASoldier>(Cast<AAIGeneralController>(GetOwner())->GetPawn())->GetActorForwardVector().GetSafeNormal() * RadiusForWallAvoidance;//{ RadiusForWallAvoidance, 0.f, 0.f };
 	FVector HitLocation{};
 	float AnglePerRay = 360.f / NumberOfRayForWallAvoidance;
 	int NbOfHit = 0;
@@ -204,12 +214,31 @@ void UFlockingComponent::UpdateWallAvoidanceVector()
 			if(Separation.Size()>0)WallAvoidanceVector += Separation.GetSafeNormal(DefaultNormalizeVectorTolerance) / FMath::Abs(Separation.Size() - BoidPhysicalRadius);
 			NbOfHit++;
 		}
-		///DrawDebugLine(GetWorld(), SoldierLocation, SoldierLocation + Offset, FColor::Purple);
+		//DrawDebugLine(GetWorld(), SoldierLocation, SoldierLocation + Offset, FColor::Purple);
 	}
 
 	const FVector WallAvoidanceForceComponent = WallAvoidanceVector * 50;
 	if(NbOfHit)
 		WallAvoidanceVector += WallAvoidanceForceComponent + WallAvoidanceVector * (5 / NbOfHit);
+}
+
+void UFlockingComponent::UpdateFollowFormationVector()
+{
+	FVector FormationPos = Cast<AAISquadController>(GetOwner())->get_blackboard()->GetValueAsVector("FormationLocation");
+
+	FVector SoldierLocation = Cast<ASoldier>(Cast<AAIGeneralController>(GetOwner())->GetPawn())->GetLocation();
+	UNavigationSystemV1* navSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
+	UNavigationPath* path = navSys->FindPathToLocationSynchronously(GetWorld(), SoldierLocation, FormationPos, NULL);
+
+	FollowFormationVector = FormationPos;
+
+	FVector FormationLocalDir;
+	if (path) {
+		if (path->PathPoints.Num() > 1)
+			FollowFormationVector = path->PathPoints[1] - SoldierLocation;
+		else
+			FollowFormationVector = FormationPos;
+	}
 }
 
 void UFlockingComponent::DrawDebug()
@@ -223,6 +252,7 @@ void UFlockingComponent::DrawDebug()
 	DrawDebugLine(GetWorld(), SoldierLocation, SoldierLocation + ObjectifVector * ObjectifWeight * 200, FColor::Yellow, false, -1.f, '\000', 10); /*Objectif vector*/
 	DrawDebugLine(GetWorld(), SoldierLocation, SoldierLocation + WallAvoidanceVector * WallAvoidanceWeight * 200, FColor::Purple, false, -1.f, '\000', 10); /*Wall avoidance vector*/
 	DrawDebugLine(GetWorld(), SoldierLocation, SoldierLocation + ShootingPositionVector * ShootingPositionWeight * 200, FColor::Cyan, false, -1.f, '\000', 10); /*Wall avoidance vector*/
+	DrawDebugLine(GetWorld(), SoldierLocation, SoldierLocation + FollowFormationVector * FollowFormationWeight * 200, FColor::Emerald, false, -1.f, '\000', 10); /*FollowFlocking*/
 	DrawDebugLine(GetWorld(), SoldierLocation, SoldierLocation + MovementVector, FColor::Black); /*Movement vector*/
 	DrawDebugPoint(GetWorld(), Cast<AAIGeneralController>(GetOwner())->GetObjectifLocation(), 12, FColor::Purple);
 	DrawDebugPoint(GetWorld(), Cast<AAIGeneralController>(GetOwner())->get_blackboard()->GetValueAsVector("ShootingPosition"), 12, FColor::Cyan);
@@ -234,24 +264,32 @@ void UFlockingComponent::UpdateFlockingPosition(float DeltaSeconds)
 	ResetVectors();
 
 	UpdateNeighbourhood();
-
-	UpdateAlignementVector();
-
-	if (SeenBoids.Num() > 0) { //because this involve /0
-		UpdateCohesionVector();
-
-		UpdateSeparationVector();
-	}
-
-	UpdateWallAvoidanceVector();
-
-	if (Cast<AAIGeneralController>(GetOwner())->get_blackboard()->GetValueAsBool("is_attacking")) {
-		UpdateShootingPositionVector();
+	if (AAISquadController* AISquad = Cast<AAISquadController>(GetOwner()); AISquad && AISquad->get_blackboard()->GetValueAsBool("IsInFormation")) {
+		UpdateFollowFormationVector();
+		if (Cast<AAIGeneralController>(GetOwner())->GetSeenSoldier().Num() > 0) { //because this involve /0
+			UpdateSeparationVector();
+		}
+		UpdateWallAvoidanceVector();
 	}
 	else {
-		UpdateObjectifVector();
-	}
+		if (Cast<AAIGeneralController>(GetOwner())->GetSeenSoldier().Num() > 0) { //because this involve /0
+			UpdateSeparationVector();
+		}
+		if (SeenBoids.Num() > 0) { //because this involve /0
+			UpdateAlignementVector();
 
+			UpdateCohesionVector();
+		}
+
+		UpdateWallAvoidanceVector();
+
+		if (Cast<AAIGeneralController>(GetOwner())->get_blackboard()->GetValueAsBool("is_attacking")) {
+			UpdateShootingPositionVector();
+		}
+		else {
+			UpdateObjectifVector();
+		}
+	}
 	UpdateMovementVector();
 
 	//TODO Check if the new movement vector is not too opposit to the previous one
@@ -262,6 +300,10 @@ void UFlockingComponent::UpdateFlockingPosition(float DeltaSeconds)
 
 	if (IsFlockingPositionValid()) {
 		//Flocking Location Set in IsFlockingPositionValid()
+	}
+	else if (Cast<AAIGeneralController>(GetOwner())->get_blackboard()->GetValueAsBool("IsInFormation")) {
+		FVector FormationPos = Cast<AAIGeneralController>(GetOwner())->get_blackboard()->GetValueAsVector("FormationLocation");
+		Cast<AAIGeneralController>(GetOwner())->get_blackboard()->SetValueAsVector("FlockingLocation", FormationPos);
 	}
 	else if(!Cast<AAIGeneralController>(GetOwner())->get_blackboard()->GetValueAsBool("is_attacking")){
 		FVector RealObjectifLocation = Cast<AAIGeneralController>(GetOwner())->GetObjectifLocation();
@@ -284,12 +326,13 @@ bool UFlockingComponent::IsFlockingPositionValid()
 	FVector endLocation = startLocation + MovementVector;
 
 	if (navSys->NavigationRaycast(GetWorld(), startLocation, endLocation, HitLocation)) {
+		Cast<AAIGeneralController>(GetOwner())->get_blackboard()->SetValueAsVector("FlockingLocation", HitLocation);
 		return false;
 	}
 	//DrawDebugLine(GetWorld(), startLocation, endLocation, FColor::Green);
 	//DrawDebugLine(GetWorld(), GetPawn()->GetActorLocation(), GetPawn()->GetActorLocation() + MovementVector, FColor::Blue);
 	//DrawDebugPoint(GetWorld(), HitLocation, 35, FColor::Red);
-	Cast<AAIGeneralController>(GetOwner())->get_blackboard()->SetValueAsVector("FlockingLocation", HitLocation);
+	Cast<AAIGeneralController>(GetOwner())->get_blackboard()->SetValueAsVector("FlockingLocation", endLocation);
 	return true;
 }
 

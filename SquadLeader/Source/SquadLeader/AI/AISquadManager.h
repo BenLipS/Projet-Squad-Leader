@@ -49,13 +49,13 @@ public:
 
 public:
 	AAISquadManager();
+	virtual void Tick(float DeltaTime) override;
 
 public:
 	UPROPERTY(BlueprintReadOnly)
 	TArray<AAISquadController*> AISquadList;
 
 public:
-
 	void BeginPlay() override;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
@@ -70,10 +70,10 @@ public:
 	UPROPERTY()
 	ASoldierPlayer* Leader;
 
-	virtual void Tick(float DeltaTime) override;
+	// Check whether this manager controls the given soldier
+	bool HasSoldier(const ASoldier* _Soldier) const;
 
-	UFUNCTION()
-	UMission* GetMission() { return Mission; };
+	auto GetMission() { return Mission; };
 
 	//For Formation
 	TArray<FVector> FormationPos;
@@ -85,7 +85,6 @@ public:
 
 	UFUNCTION()
 	void UpdateCircleFormation();
-
 
 	UPROPERTY()
 	UMission* Mission;
@@ -110,4 +109,15 @@ public:
 
 	UFUNCTION()
 	void OnSquadMemberMaxShieldChange(float newValue, AAISquadController* SoldierController);
+
+	//for healing coordination
+	UPROPERTY()
+	bool IsASquadMemberHealing = false;
+
+	//for shielding coordination
+	UPROPERTY()
+	bool IsASquadMemberShielding = false;
+
+protected:
+	bool m_inFormation = false;
 };

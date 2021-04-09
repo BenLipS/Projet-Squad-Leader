@@ -1,14 +1,14 @@
 #include "SoldierPlayerController.h"
 #include "SoldierPlayerState.h"
-#include "../Soldier.h"
+#include "SoldierPlayer.h"
 #include "AbilitySystemComponent.h"
+#include "SquadLeader/Weapons/SL_Weapon.h"
+#include "../SoldierTeam.h"
+#include "../../AI/AISquadManager.h"
 #include "../../UI/SL_HUD.h"
 
 //TODO: rmove next include -> only use for the team init -> only use on temporary debug
 #include "../../GameState/SquadLeaderGameState.h"
-#include "../Players/SoldierPlayer.h"
-#include "../../AI/AISquadManager.h"
-#include "SquadLeader/Weapons/SL_Weapon.h"
 
 ASoldierPlayerController::ASoldierPlayerController()
 {
@@ -95,6 +95,17 @@ void ASoldierPlayerController::OnRep_PlayerState()
 void ASoldierPlayerController::Tick(float _deltaTime)
 {
 	Super::Tick(_deltaTime);
+
+	if (ASL_HUD* CurrentHUD = GetHUD<ASL_HUD>(); CurrentHUD && GetTeam())
+	{
+		TArray<FVector2D> SoldierPositions{};
+
+		for (ASoldier* Soldier : GetTeam()->GetSoldierList())
+		{
+			SoldierPositions.Add(FVector2D{ Soldier->GetActorLocation().X, Soldier->GetActorLocation().Y });
+		}
+		CurrentHUD->OnUpdateTeamPositions();
+	}
 }
 
 void ASoldierPlayerController::SetupInputComponent()

@@ -37,6 +37,7 @@ class SQUADLEADER_API ASoldier : public ACharacter, public IAbilitySystemInterfa
 
 public:
 	ASoldier(const FObjectInitializer& _ObjectInitializer);
+	virtual void Destroyed() override;
 
 protected:
 	virtual void BeginPlay() override;
@@ -97,6 +98,9 @@ protected:
 	void AddStartupEffects();
 	void InitializeTagChangeCallbacks();
 	virtual void InitializeAttributeChangeCallbacks();
+
+public:
+	bool IsInCooldown(const FGameplayTag& _Tag);
 
 //////////////// Tag Change Callbacks
 public:
@@ -377,6 +381,8 @@ public:
 	UAnimMontage* WeaponFireMontage;
 
 protected:
+	void HandleDeathMontage();
+
 	// Callbacks
 	FOnMontageEnded StartGame_SoldierMontageEndedDelegate;
 	FOnMontageEnded Respawn_SoldierMontageEndedDelegate;
@@ -390,4 +396,8 @@ protected:
 public:
 	UFUNCTION()
 	void ShowImpactHitEffect();
+
+	// Projectile forwardVector to launch from
+	UFUNCTION()
+	virtual FVector GetLookingDirection();
 };

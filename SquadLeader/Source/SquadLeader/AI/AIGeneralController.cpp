@@ -22,26 +22,38 @@
 #include "DrawDebugHelpers.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Math/RandomStream.h"
-
+#include "../ControlArea/ControlArea.h"
 
 AAIGeneralController::AAIGeneralController(FObjectInitializer const& object_initializer)
 {
 	setup_BehaviorTree();
 	setup_perception_system();
+	//m_queryFilter = TSubclassOf<UNavigationQueryFilter>(UNavigationQueryFilter::StaticClass());
 	//m_destination = FVector(11410.f, 2950.f, 0.f);
 	m_destination = FVector(5000.f, 5000.f, 0.f);
 }
 
 void AAIGeneralController::BeginPlay() {
 	Super::BeginPlay();
-
-	FlockingComponent = NewObject<UFlockingComponent>(this, ClassFlockingComponent);
 	RunBehaviorTree(m_behaviorTree);
+	Init();
+
+}
+
+void AAIGeneralController::Init() {
+	FlockingComponent = NewObject<UFlockingComponent>(this, ClassFlockingComponent);
 	blackboard = BrainComponent->GetBlackboardComponent();
 
 	m_state = AIBasicState::Moving;
 	m_old_state = m_state;
 	blackboard->SetValueAsBool("is_moving", true);
+	if (m_missionList == nullptr)
+		InitMissionList();
+}
+
+void AAIGeneralController::InitMissionList() {
+	m_missionList = NewObject<UMissionList>(this, UMissionList::StaticClass());
+	m_missionList->Init(this);
 }
 
 void AAIGeneralController::Tick(float DeltaSeconds) {
@@ -60,10 +72,16 @@ void AAIGeneralController::Tick(float DeltaSeconds) {
 
 void AAIGeneralController::Sens() {
 	UpdateSeenSoldier();
+	UpdateSeenEnemySoldier();
 	FocusEnemy();
 }
 
 void AAIGeneralController::Think() {
+	if (m_mission_changed) 
+	{
+		m_mission_changed = false;
+		m_missionList->RunMission();
+	}
 	ChooseState();
 }
 
@@ -73,6 +91,8 @@ void AAIGeneralController::Act() {
 		UpdateShootingPosition();
 		//TooClose();
 		//TooFar();
+		break;
+	case AIBasicState::Capturing:
 		break;
 	case AIBasicState::Patroling:
 		break;
@@ -114,7 +134,7 @@ void AAIGeneralController::ontargetperception_update_sight(AActor* actor, FAISti
 };
 
 void AAIGeneralController::ActorsPerceptionUpdated(const TArray < AActor* >& UpdatedActors) {
-	if (Cast<ASoldierAI>(GetPawn())->IsAlive()) {
+	if (Cast<ASoldier>(GetPawn())->IsAlive()) {
 		for (auto& Elem : UpdatedActors) {
 			if (ASoldier* soldier = Cast<ASoldier>(Elem); soldier && soldier->IsAlive() && soldier->GetTeam()->TeamName != "Spectator" && (this->GetPawn()->GetActorLocation() - Elem->GetActorLocation()).Size() < m_distancePerception){//TODO: Remove ugly last condition to avoid seig nearly respawned enemi , If team == spectateur then AI don't see you Cool to test
 				if (SeenSoldier.Contains(soldier));
@@ -158,6 +178,72 @@ void AAIGeneralController::setup_BehaviorTree() {
 		m_behaviorTree = obj.Object;
 }
 
+ResultState AAIGeneralController::LaunchGrenade()
+{
+	ResultState result = ResultState::Failed;
+	if (ASoldierAI* soldier = Cast<ASoldierAI>(GetPawn()); soldier && GetFocusActor() && m_state == AIBasicState::Attacking)
+	{
+		if(soldier->ActivateAbilityLaunchGrenade())
+			result = ResultState::Success;
+	}
+	return result;
+}
+
+ResultState AAIGeneralController::LaunchHeal()
+{
+	ResultState result = ResultState::Failed;
+	if (ASoldierAI* soldier = Cast<ASoldierAI>(GetPawn()); soldier)
+	{
+		if (soldier->ActivateAbilityLaunchHeal())
+			result = ResultState::Success;
+	}
+	return result;
+}
+
+ResultState AAIGeneralController::LaunchShield()
+{
+	ResultState result = ResultState::Failed;
+	if (ASoldierAI* soldier = Cast<ASoldierAI>(GetPawn()); soldier)
+	{
+		if (soldier->ActivateAbilityLaunchShield())
+			result = ResultState::Success;
+	}
+	return result;
+}
+
+ResultState AAIGeneralController::RegenShield()
+{
+	ResultState result = ResultState::Failed;
+	if (ASoldierAI* soldier = Cast<ASoldierAI>(GetPawn()); soldier)
+	{
+		if (soldier->ActivateAbilityRegenShield())
+			result = ResultState::Success;
+	}
+	return result;
+}
+
+ResultState AAIGeneralController::OverHeat()
+{
+	ResultState result = ResultState::Failed;
+	if (ASoldierAI* soldier = Cast<ASoldierAI>(GetPawn()); soldier)
+	{
+		if (soldier->ActivateAbilityOverHeat())
+			result = ResultState::Success;
+	}
+	return result;
+}
+
+ResultState AAIGeneralController::LaunchMine()
+{
+	ResultState result = ResultState::Failed;
+	if (ASoldierAI* soldier = Cast<ASoldierAI>(GetPawn()); soldier)
+	{
+		if (soldier->ActivateAbilityLaunchMine())
+			result = ResultState::Success;
+	}
+	return result;
+}
+
 UBlackboardComponent* AAIGeneralController::get_blackboard() const
 {
 	return blackboard;
@@ -166,6 +252,9 @@ UBlackboardComponent* AAIGeneralController::get_blackboard() const
 void AAIGeneralController::ChooseState() {
 	if (m_state == AIBasicState::Attacking) {
 		AttackingState();
+	}
+	else if (m_state == AIBasicState::Capturing) {
+		CapturingState();
 	}
 	else if(m_state == AIBasicState::Patroling){
 		PatrolingState();
@@ -189,12 +278,14 @@ void AAIGeneralController::AttackingState() {
 	blackboard->SetValueAsBool("is_patroling", false);
 	blackboard->SetValueAsBool("is_attacking", true);
 	blackboard->SetValueAsBool("is_searching", false);
+	blackboard->SetValueAsBool("is_capturing", false);
 }
 void AAIGeneralController::PatrolingState() {
 	blackboard->SetValueAsBool("is_attacking", false);
 	blackboard->SetValueAsBool("is_patroling", true);
 	blackboard->SetValueAsBool("is_moving", false);
 	blackboard->SetValueAsBool("is_searching", false);
+	blackboard->SetValueAsBool("is_capturing", false);
 }
 void AAIGeneralController::MovingState() {
 	//Check if it's new or not
@@ -202,12 +293,21 @@ void AAIGeneralController::MovingState() {
 	blackboard->SetValueAsBool("is_moving", true);
 	blackboard->SetValueAsBool("is_patroling", false);
 	blackboard->SetValueAsBool("is_searching", false);
+	blackboard->SetValueAsBool("is_capturing", false);
 }
 void AAIGeneralController::SearchState() {
 	blackboard->SetValueAsBool("is_attacking", false);
 	blackboard->SetValueAsBool("is_moving", false);
 	blackboard->SetValueAsBool("is_patroling", false);
+	blackboard->SetValueAsBool("is_capturing", false);
 	blackboard->SetValueAsBool("is_searching", true);
+}
+void AAIGeneralController::CapturingState() {
+	blackboard->SetValueAsBool("is_attacking", false);
+	blackboard->SetValueAsBool("is_moving", false);
+	blackboard->SetValueAsBool("is_patroling", false);
+	blackboard->SetValueAsBool("is_searching", false);
+	blackboard->SetValueAsBool("is_capturing", true);
 }
 
 void AAIGeneralController::CheckIfNeedToStopCurrentBehavior()
@@ -317,14 +417,19 @@ void AAIGeneralController::UpdateSeenSoldier() {
 	}
 }
 
-void AAIGeneralController::SetMission(UMission* _Mission)
+void AAIGeneralController::UpdateSeenEnemySoldier()
 {
-	Mission = _Mission;
+	SeenEnemySoldier.Empty();
+	for (auto& Elem : SeenSoldier) {
+		if (Cast<ASoldier>(Elem)->GetTeam() != GetTeam()) {
+			SeenEnemySoldier.Add(Elem);
+		}
+	}
 }
 
-UMission* AAIGeneralController::GetMission()
+auto AAIGeneralController::GetMission()
 {
-	return Mission;
+	return 12;
 }
 
 void AAIGeneralController::Die() {
@@ -351,10 +456,24 @@ void AAIGeneralController::ResetBlackBoard()
 	blackboard->SetValueAsBool("is_moving", true);
 	blackboard->SetValueAsBool("is_patroling", false);
 	blackboard->SetValueAsBool("is_searching", false);
+	blackboard->SetValueAsBool("is_capturing", false);
 	blackboard->SetValueAsBool("need_GoBackward", false);
 	blackboard->SetValueAsBool("need_GoForward", false);
 	blackboard->SetValueAsObject("FocusActor", NULL);
-	tick_value = 0;
+}
+
+void AAIGeneralController::SetControlAreaBB(AControlArea* _controlArea) {
+	blackboard->SetValueAsObject("ControlArea", _controlArea);
+	ObjectifLocation = _controlArea->GetActorLocation();
+	blackboard->SetValueAsVector("VectorLocation", ObjectifLocation);
+	SetState(AIBasicState::Moving);
+}
+
+void AAIGeneralController::SetObjectifLocation(FVector _location) noexcept 
+{
+	ObjectifLocation = _location;
+	blackboard->SetValueAsVector("VectorLocation", ObjectifLocation);
+	SetState(AIBasicState::Moving);
 }
 
 /*
@@ -364,7 +483,9 @@ void AAIGeneralController::ResetBlackBoard()
 */
 EPathFollowingRequestResult::Type AAIGeneralController::MoveToActorLocation() {
 	AActor* _actor = Cast<AActor>(blackboard->GetValueAsObject("ActorLocation"));
-	EPathFollowingRequestResult::Type _movetoResult = MoveToActor(_actor);
+
+	EPathFollowingRequestResult::Type _movetoResult;
+	_movetoResult = MoveToActor(_actor, 1.f);
 
 	return _movetoResult;
 }
@@ -375,8 +496,10 @@ EPathFollowingRequestResult::Type AAIGeneralController::MoveToVectorLocation() {
 		return EPathFollowingRequestResult::Type::Failed;
 
 	//TO-DO : if follow an enemy be at the distance to shoot 
-	EPathFollowingRequestResult::Type _movetoResult = MoveToLocation(blackboard->GetValueAsVector("VectorLocation"), 50.f);
+	EPathFollowingRequestResult::Type _movetoResult;
+	_movetoResult = MoveToLocation(blackboard->GetValueAsVector("VectorLocation"), 50.f);
 	if (_movetoResult == EPathFollowingRequestResult::Type::AlreadyAtGoal) {
+		SetState(AIBasicState::Capturing);
 		blackboard->ClearValue("VectorLocation");
 		blackboard->ClearValue("need_GoBackward");
 	}
@@ -399,7 +522,8 @@ EPathFollowingRequestResult::Type AAIGeneralController::MoveToEnemyLocation() {
 		Run(_soldier, _soldier_enemy);
 
 		//TO-DO : if follow an enemy be at the distance to shoot 
-		EPathFollowingRequestResult::Type _movetoResult = MoveToLocation(_soldier_enemy->GetActorLocation(), m_distanceShootAndStop);
+		EPathFollowingRequestResult::Type _movetoResult;
+		_movetoResult = MoveToLocation(_soldier_enemy->GetActorLocation(), m_distanceShootAndStop);
 
 		return _movetoResult;
 	}
@@ -415,7 +539,8 @@ EPathFollowingRequestResult::Type AAIGeneralController::MoveToSearchEnemy() {
 	ASoldierAI* soldier = Cast<ASoldierAI>(GetPawn());
 	soldier->CancelAbilityRun();
 
-	EPathFollowingRequestResult::Type _movetoResult = MoveToLocation(location_, 5.f);
+	EPathFollowingRequestResult::Type _movetoResult;
+	_movetoResult = MoveToLocation(location_, 5.f);
 
 	return _movetoResult;
 }
@@ -445,8 +570,8 @@ ResultState AAIGeneralController::ShootEnemy() {
 }
 
 EPathFollowingRequestResult::Type AAIGeneralController::FollowFlocking() {
-	EPathFollowingRequestResult::Type _movetoResult = MoveToLocation(blackboard->GetValueAsVector("FlockingLocation"), 5.f);
-
+	EPathFollowingRequestResult::Type _movetoResult;
+	_movetoResult = MoveToLocation(blackboard->GetValueAsVector("FlockingLocation"), 5.f);
 	return _movetoResult;
 }
 
@@ -455,7 +580,7 @@ void AAIGeneralController::SetPatrolPoint()
 	FVector PatrolPos;
 	PatrolPos.X = FMath::FRandRange(-HalfRadiusPatrol, HalfRadiusPatrol);
 	PatrolPos.Y = FMath::FRandRange(-HalfRadiusPatrol, HalfRadiusPatrol);
-	PatrolPos.Z = FMath::FRandRange(-HalfRadiusPatrol, HalfRadiusPatrol);
+	PatrolPos.Z = 0;
 
 	FVector HitLocation{};
 
@@ -485,4 +610,24 @@ ResultState AAIGeneralController::EndTheResearch() {
 	m_state = m_old_state;
 	blackboard->ClearValue("EnemyLocation");
 	return ResultState::Success;
+}
+
+ResultState AAIGeneralController::Capturing() {
+	if (m_state != AIBasicState::Capturing)
+		return ResultState::Failed;
+
+	AControlArea* control_area = Cast<AControlArea>(blackboard->GetValueAsObject("ControlArea"));
+	if (control_area) {
+		if (auto value = control_area->TeamData.Find(GetTeam())) {
+			if ((*value)->controlValue >= control_area->maxControlValue) {
+				m_missionList->EndMission();
+				m_mission_changed = true;
+				return ResultState::Success;
+			}
+			else
+				return ResultState::InProgress;
+		}
+	}
+	return ResultState::Failed;
+
 }
