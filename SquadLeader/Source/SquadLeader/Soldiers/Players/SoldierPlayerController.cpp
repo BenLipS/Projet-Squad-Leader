@@ -97,15 +97,7 @@ void ASoldierPlayerController::Tick(float _deltaTime)
 	Super::Tick(_deltaTime);
 
 	if (ASL_HUD* CurrentHUD = GetHUD<ASL_HUD>(); CurrentHUD && GetTeam())
-	{
-		TArray<FVector2D> SoldierPositions{};
-
-		for (ASoldier* Soldier : GetTeam()->GetSoldierList())
-		{
-			SoldierPositions.Add(FVector2D{ Soldier->GetActorLocation().X, Soldier->GetActorLocation().Y });
-		}
 		CurrentHUD->OnUpdateTeamPositions();
-	}
 }
 
 void ASoldierPlayerController::SetupInputComponent()
