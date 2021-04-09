@@ -473,7 +473,7 @@ FVector ASoldier::GetLookingAtPosition(const float _MaxRange) const
 // through a GE. It should use the execalculation to consider all the buffs/debbufs
 bool ASoldier::StartRunning()
 {
-	AttributeSet->SetMoveSpeedMultiplier(3.f);
+	AttributeSet->SetMoveSpeedMultiplier(1.8f);
 	return true;
 }
 

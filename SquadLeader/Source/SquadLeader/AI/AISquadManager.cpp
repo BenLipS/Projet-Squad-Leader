@@ -148,7 +148,7 @@ void AAISquadManager::UpdateMission(const MissionType _MissionType, const FVecto
 			AISquad->get_blackboard()->SetValueAsBool("IsInFormation", isInFormation);
 
 			UPatrolMission* _patrolMisssion = Cast<UPatrolMission>(NewObject<UPatrolMission>(this, UPatrolMission::StaticClass()));
-			_patrolMisssion->InitPatrolMission(1, MissionPriority::eBASIC);
+			_patrolMisssion->InitPatrolMission(1, MissionPriority::eURGENT);
 			AISquad->SetMission<UPatrolMission*>(_patrolMisssion);
 			if (isInFormation)
 				AISquad->FormationState();
@@ -161,12 +161,12 @@ void AAISquadManager::UpdateMission(const MissionType _MissionType, const FVecto
 
 		for (AAISquadController* AISquad : AISquadList) {
 			AISquad->StopCurrentBehavior = true;
-			AISquad->get_blackboard()->SetValueAsBool("HasOrder", true);
+			AISquad->get_blackboard()->SetValueAsBool("HasOrder", false);
 			AISquad->SetState(AIBasicState::Moving);
-			AISquad->get_blackboard()->SetValueAsBool("IsInFormation", false);
+			AISquad->get_blackboard()->SetValueAsBool("IsInFormation", true);
 			AISquad->FormationState();
 			UFormationMission* _formationMission = Cast<UFormationMission>(NewObject<UFormationMission>(this, UFormationMission::StaticClass()));
-			_formationMission->InitFormation(1, MissionPriority::eBASIC, _Location);
+			_formationMission->InitFormation(1, MissionPriority::eMIDDLE, _Location);
 			AISquad->SetMission<UFormationMission*>(_formationMission);
 		}
 		m_inFormation = true;

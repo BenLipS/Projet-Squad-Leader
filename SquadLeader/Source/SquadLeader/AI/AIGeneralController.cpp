@@ -597,7 +597,7 @@ void AAIGeneralController::SetPatrolPoint()
 
 ResultState AAIGeneralController::ArriveAtDestination() {
 	if ( GetPawn() && FVector::Dist(GetPawn()->GetActorLocation(), GetObjectifLocation()) < 300.f) {
-		SetState(AIBasicState::Capturing);
+		SetState(AIBasicState::Patroling);
 		return ResultState::Success;
 	}
 	if (m_state == AIBasicState::Attacking)
