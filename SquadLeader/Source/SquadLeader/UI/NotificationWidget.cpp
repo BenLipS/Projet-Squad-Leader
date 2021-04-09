@@ -17,24 +17,25 @@ UNotificationWidget::UNotificationWidget(const FObjectInitializer& ObjectInitial
 	
 }
 
-void UNotificationWidget::NativeConstruct()
+void UNotificationWidget::AddNotification(UNotificationWidgetElement* newWidget)
 {
-	Super::NativeConstruct();
-}
+	if (!newWidget)
+		return;
 
-void UNotificationWidget::AddNotification(FString textNotification)
-{
-	FTextBlockSlot newSlot;
-	newSlot.TextBlock = WidgetTree->ConstructWidget<UTextBlock>();
-	newSlot.TextBlock->SetJustification(ETextJustify::Right);
-	newSlot.TextBlock->SetText(FText::FromString(textNotification));
+	//if (IsInViewport())
+	newWidget->AddToViewport();
 
-	newSlot.Slot = MainPanel->AddChildToCanvas(newSlot.TextBlock);
-	newSlot.Slot->SetAnchors(FAnchors(1.f, 0.7f, 1.f, 0.7f));
-	newSlot.Slot->SetPosition(FVector2D(-5.f, 0.f));
-	newSlot.Slot->SetAlignment(FVector2D(1.f, 1.f));
-	newSlot.Slot->SetAutoSize(true);
-	Items.EmplaceAt(0, newSlot);
+	FNotificationWidgetSlot newItemSlot;
+	newItemSlot.Widget = newWidget;
+
+	newItemSlot.Slot = MainPanel->AddChildToCanvas(newItemSlot.Widget);
+
+	newItemSlot.Slot->SetAnchors(FAnchors(0.f, 0.f, 0.f, 0.f));
+	newItemSlot.Slot->SetPosition(FVector2D(0.f, 0.f));
+	newItemSlot.Slot->SetAlignment(FVector2D(0.f, 0.f));
+	newItemSlot.Slot->SetAutoSize(true);
+
+	Items.EmplaceAt(0, newItemSlot);
 
 	UpdateNotificationsPosition();
 }
@@ -45,13 +46,13 @@ void UNotificationWidget::UpdateNotificationsPosition()
 	while (MaxItem > 0 && Items.Num() > MaxItem)
 	{
 		auto remove = Items.Pop();
-		WidgetTree->RemoveWidget(remove.TextBlock);
+		WidgetTree->RemoveWidget(remove.Widget);
 	}
 
 	int nbElement = 0;
 	float YPosition = 0.f;
 
-	for (FTextBlockSlot pair : Items)
+	for (auto pair : Items)
 	{
 		pair.Slot->SetPosition(FVector2D(0.f, YPosition));
 		YPosition -= pair.Slot->GetSize().Y;
@@ -68,5 +69,7 @@ void UNotificationWidget::SetupDelegateToObject(UObject* ObjectIn)
 
 void UNotificationWidget::OnTextNotification_Received(FString textNotification)
 {
-	AddNotification(textNotification);
+	UNotificationWidgetElementText* newTextElement = CreateWidget<UNotificationWidgetElementText>(GetWorld(), TextElementClass);
+	newTextElement->InitText(textNotification);
+	AddNotification(newTextElement);
 }

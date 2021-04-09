@@ -3,13 +3,8 @@
 
 #include "NotificationWidgetElementText.h"
 
-void UNotificationWidgetElementText::NativeOnListItemObjectSet(UObject* ListItemObject)
-{
-	UNotificationWidgetElement::NativeOnListItemObjectSet(ListItemObject);
-}
-
-void UNotificationWidgetElementText::InitText(FText newText)
+void UNotificationWidgetElementText::InitText(FString newText)
 {
 	if(TextNotification)
-		TextNotification->SetText(FText::FromString("fonctionnel"));
+		TextNotification->SetText(FText::FromString(newText));
 }

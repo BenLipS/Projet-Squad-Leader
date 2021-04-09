@@ -4,18 +4,28 @@
 
 #include "CoreMinimal.h"
 #include "SL_UserWidget.h"
-#include "Blueprint/IUserObjectListEntry.h"
 #include "NotificationWidgetElement.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class SQUADLEADER_API UNotificationWidgetElement : public USL_UserWidget, public IUserObjectListEntry
+class SQUADLEADER_API UNotificationWidgetElement : public USL_UserWidget
 {
 	GENERATED_BODY()
-	
-	//-----IUserObjectListEntry-----
+
 protected:
-	virtual void NativeOnListItemObjectSet(UObject* ListItemObject);
+	class UNotificationWidget* NotificationWidget;
+	
+public:
+	UFUNCTION(BlueprintCallable)
+	UNotificationWidget* GetNotificationWidget();
+
+	void BindItemToNotification(class UNotificationWidget* newNotificationWidget);
+
+protected:
+	/*Called when added to a notification list*/
+	UFUNCTION(BlueprintNativeEvent, Category = "NotificationWidgetElement")
+	void OnItemAddedToNotificationEvent(class UNotificationWidget* newNotificationWidget);
+	virtual void OnItemAddedToNotificationEvent_Implementation(class UNotificationWidget* newNotificationWidget);
 };

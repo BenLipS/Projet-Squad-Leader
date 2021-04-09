@@ -34,6 +34,13 @@ ImpactHitFXScale{FVector{1.f}}
 	CurrentWeaponTag = FGameplayTag::RequestGameplayTag(FName("Weapon.Equipped.None"));
 }
 
+void ASoldier::Destroyed()
+{
+	if (GetTeam())
+		GetTeam()->RemoveSoldierList(this);
+	Super::Destroyed();
+}
+
 /*
 * On the Server, Possession happens before BeginPlay.
 * On the Client, BeginPlay happens before Possession.
@@ -53,15 +60,17 @@ void ASoldier::BeginPlay()
 		setToThirdCameraPerson();
 
 	// Teams
-	if (GetLocalRole() == ROLE_Authority) {
-		// init team:
+	// TODO: Clients must be aware of their team. If we really want a security with the server, we should call this function
+	// from the server only, have a test to determine wheter we can change the team, then use a ClientSetTeam to replicate the change
+	//if (GetLocalRole() == ROLE_Authority)
+	{
+		// Init team
 		if (InitialTeam && !(GetTeam()))
 			SetTeam(InitialTeam);
 
-		// add this to the team data
-		if (GetTeam()) {
+		// Add this to the team data
+		if (GetTeam())
 			GetTeam()->AddSoldierList(this);
-		}
 	}
 
 	if (StartGameMontage)
@@ -119,7 +128,7 @@ void ASoldier::Tick(float DeltaTime)
 
 		m_package.m_type = Type::Soldier;
 		GM->InfluenceMap->ReceivedMessage(m_package);
-	}	
+	}
 }
 
 void ASoldier::InitCameras()
@@ -273,6 +282,18 @@ void ASoldier::InitializeTagChangeCallbacks()
 void ASoldier::InitializeAttributeChangeCallbacks()
 {
 	HealthChangedDelegateHandle = AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetHealthAttribute()).AddUObject(this, &ASoldier::HealthChanged);
+}
+
+bool ASoldier::IsInCooldown(const FGameplayTag& _Tag)
+{
+	if (AbilitySystemComponent)
+	{
+		float RemainTime = 0.00f;
+		const bool bTagFoundAsCooldown = AbilitySystemComponent->GetCooldownRemainingForTag(_Tag, RemainTime);
+
+		return bTagFoundAsCooldown && (RemainTime > 0.00f);
+	}
+	return false;
 }
 
 void ASoldier::DeadTagChanged(const FGameplayTag _CallbackTag, int32 _NewCount)
@@ -823,7 +844,10 @@ ASoldierTeam* ASoldier::GetTeam()
 
 bool ASoldier::SetTeam(ASoldierTeam* _Team)
 {
-	if (GetLocalRole() == ROLE_Authority) {  // only the server is allowed to change the team of a player
+	// TODO: Clients must be aware of their team. If we really want a security with the server, we should call this function
+	// from the server only, have a test to determine wheter we can change the team, then use a ClientSetTeam to replicate the change
+	//if (GetLocalRole() == ROLE_Authority)
+	{  
 		Team = _Team;
 		return true;
 	}
@@ -864,4 +888,16 @@ void ASoldier::OnRespawnMontageCompleted(UAnimMontage* _Montage, bool _bInterrup
 void ASoldier::ShowImpactHitEffect()
 {
 	UParticleSystemComponent* LaserParticle = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactHitFX, GetActorLocation(), FRotator(), ImpactHitFXScale);
+}
+
+FVector ASoldier::GetLookingDirection()
+{
+	if (CurrentCameraComponent)
+	{
+		return CurrentCameraComponent->GetForwardVector();
+	}
+	else
+	{
+		return GetActorForwardVector();
+	}
 }

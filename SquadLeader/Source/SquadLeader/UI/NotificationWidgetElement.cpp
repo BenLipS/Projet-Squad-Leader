@@ -1,9 +1,18 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "NotificationWidgetElement.h"
+#include "NotificationWidget.h"
 
-void UNotificationWidgetElement::NativeOnListItemObjectSet(UObject* ListItemObject)
+UNotificationWidget* UNotificationWidgetElement::GetNotificationWidget()
 {
-	IUserObjectListEntry::NativeOnListItemObjectSet(ListItemObject);
+	return NotificationWidget;
+}
+
+void UNotificationWidgetElement::BindItemToNotification(UNotificationWidget* newNotificationWidget)
+{
+	NotificationWidget = newNotificationWidget;
+	OnItemAddedToNotificationEvent(newNotificationWidget);
+}
+
+void UNotificationWidgetElement::OnItemAddedToNotificationEvent_Implementation(class UNotificationWidget* newNotificationWidget)
+{
+
 }

@@ -21,7 +21,7 @@ ASL_Weapon::ASL_Weapon() :
 	AimingSpreadMod{ 1.f },
 	TargetingSpreadIncrement{ 0.f },
 	TargetingSpreadMax{ 0.f },
-	CollisionProfileName{ FName{"Soldier"} }
+	CollisionProfileName{ FName{"InstantWeaponFire"} }
 
 {
 	PrimaryActorTick.bCanEverTick = false;

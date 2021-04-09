@@ -16,6 +16,13 @@ class SQUADLEADER_API UMoveToLocationBTTaskNode : public UBTTaskNode
 public:
 	UMoveToLocationBTTaskNode();
 
+	UPROPERTY(Category = Node, EditAnywhere, meta = (ClampMin = "0.0", UIMin = "0.0"))
+		float AcceptableRadius;
+
+	/** blackboard key selector */
+	UPROPERTY(EditAnywhere, Category = Blackboard)
+		struct FBlackboardKeySelector BlackboardKey;
+
 	/*Is going to be called the first time we run the node (he can return Succeded, Faile or InProgressed)*/
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 	/*Is going to be called every Tick*/
