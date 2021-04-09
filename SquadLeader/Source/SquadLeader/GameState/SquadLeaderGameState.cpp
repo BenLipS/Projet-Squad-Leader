@@ -1,6 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "SquadLeaderGameState.h"
 
 ASquadLeaderGameState::ASquadLeaderGameState()
@@ -18,6 +15,7 @@ void ASquadLeaderGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 void ASquadLeaderGameState::AddSoldierTeam(ASoldierTeam* _SoldierTeam)
 {
 	SoldierTeamCollection.AddUnique(_SoldierTeam);
+	OnSoldierTeamAddedToList.Broadcast(_SoldierTeam);
 }
 
 TArray<ASoldierTeam*> ASquadLeaderGameState::GetSoldierTeamCollection()
