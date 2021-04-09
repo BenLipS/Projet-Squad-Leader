@@ -118,7 +118,7 @@ bool ASoldierAI::ActivateAbilityRegenShield()
 
 bool ASoldierAI::ActivateAbilityLaunchMine()
 {
-	return ActivateAbility(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Grenade")));
+	return ActivateAbility(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Grenade.Heavy")));
 }
 
 bool ASoldierAI::ActivateAbilityOverHeat()
