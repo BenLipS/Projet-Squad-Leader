@@ -1,7 +1,6 @@
 #include "GA_GiveOrder.h"
 #include "../../../Soldiers/Players/SoldierPlayer.h"
 #include "../../../Soldiers/Players/SoldierPlayerController.h"
-#include "../../../UI/PlayerHUD.h"
 #include "SquadLeader/AI/AISquadManager.h"
 
 UGA_GiveOrder::UGA_GiveOrder()

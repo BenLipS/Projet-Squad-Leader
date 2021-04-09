@@ -13,11 +13,12 @@
 UCLASS()
 class SQUADLEADER_API UPlayerOrderWheelElement : public UWheelWidgetElement
 {
+	friend class UPlayerOrderWheelWidget;
 	GENERATED_BODY()
 
 protected:
 
-	UPROPERTY(EditDefaultsOnly, Category = "Wheel order")
+	UPROPERTY(EditAnywhere, Category = "Widget Wheel", BlueprintReadWrite, meta = (ExposeOnSpawn = "true"))
 	MissionType Order;
 	
 public:
