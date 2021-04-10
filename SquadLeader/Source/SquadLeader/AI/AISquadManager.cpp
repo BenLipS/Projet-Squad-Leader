@@ -108,6 +108,7 @@ void AAISquadManager::UpdateFormation()
 		UpdateCircleFormation();
 		break;
 	case FormationType::Arrow:
+		UpdateArrowFormation();
 		break;
 	default: 
 		if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Wrong Formation Type"));
@@ -138,6 +139,27 @@ void AAISquadManager::UpdateCircleFormation()
 		});
 }
 
+void AAISquadManager::UpdateArrowFormation()
+{
+	FVector DirPlayer = Leader->GetActorForwardVector();
+	//DirPlayer = -DirPlayer;
+	FVector LocPlayer = Leader->GetActorLocation();
+	float angle = FMath::RadiansToDegrees(FGenericPlatformMath::Acos(FVector::DotProduct({ 1,0,0 }, DirPlayer) / (1 * DirPlayer.Size())));
+	if (DirPlayer.Y < 0) angle = -angle;
+	float AnglePerAI = 180 / (AISquadList.Num() - 1);
+	FormationPos.Empty();
+	std::for_each(AISquadList.begin(), AISquadList.end(), [&](AAISquadController* BoidController) {
+		FVector Pos{};
+		FVector Offset{ 0.f, -1.f, 0.f };
+		Offset = Offset.RotateAngleAxis(angle, { 0, 0, 1 });
+		Offset = Offset.RotateAngleAxis(AnglePerAI * AISquadList.IndexOfByKey(BoidController), { 0, 0, 1 });
+		float CoefToGetCloser =FMath::Abs(90 - AnglePerAI * AISquadList.IndexOfByKey(BoidController)) / 90;
+		Pos = LocPlayer + Offset * 200 * (1 - CoefToGetCloser + 1.5f);
+		//DrawDebugPoint(Leader->GetWorld(), Pos, 20, FColor::Yellow);
+		FormationPos.Add(Pos);
+		});
+}
+
 void AAISquadManager::UpdateMission(const MissionType _MissionType, const FVector& _Location)
 {
 	auto for_each_sqaud = [&](bool hasOrder, bool isInFormation) {
@@ -157,7 +179,7 @@ void AAISquadManager::UpdateMission(const MissionType _MissionType, const FVecto
 
 	switch (_MissionType)
 	{
-	case MissionType::Formation:
+	case MissionType::FormationCircle:
 
 		for (AAISquadController* AISquad : AISquadList) {
 			AISquad->StopCurrentBehavior = true;
@@ -168,6 +190,22 @@ void AAISquadManager::UpdateMission(const MissionType _MissionType, const FVecto
 			UFormationMission* _formationMission = Cast<UFormationMission>(NewObject<UFormationMission>(this, UFormationMission::StaticClass()));
 			_formationMission->InitFormation(1, MissionPriority::eMIDDLE, _Location);
 			AISquad->SetMission<UFormationMission*>(_formationMission);
+			TypeOfFormation = FormationType::Circle;
+		}
+		m_inFormation = true;
+		break;
+	case MissionType::FormationArrow:
+
+		for (AAISquadController* AISquad : AISquadList) {
+			AISquad->StopCurrentBehavior = true;
+			AISquad->get_blackboard()->SetValueAsBool("HasOrder", false);
+			AISquad->SetState(AIBasicState::Moving);
+			AISquad->get_blackboard()->SetValueAsBool("IsInFormation", true);
+			AISquad->FormationState();
+			UFormationMission* _formationMission = Cast<UFormationMission>(NewObject<UFormationMission>(this, UFormationMission::StaticClass()));
+			_formationMission->InitFormation(1, MissionPriority::eMIDDLE, _Location);
+			AISquad->SetMission<UFormationMission*>(_formationMission);
+			TypeOfFormation = FormationType::Arrow;
 		}
 		m_inFormation = true;
 		break;

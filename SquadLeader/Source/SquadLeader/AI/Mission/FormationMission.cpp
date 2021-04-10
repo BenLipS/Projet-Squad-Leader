@@ -9,5 +9,5 @@ void UFormationMission::InitFormation(int _id, MissionPriority _p, FVector _posi
 	Super::Init(_id, _p);
 	m_position = _position;
 	m_state = MissionState::eRUNNING;
-	m_type = MissionType::Formation;
+	m_type = MissionType::FormationCircle;
 }

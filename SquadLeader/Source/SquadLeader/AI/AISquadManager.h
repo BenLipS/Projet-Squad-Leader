@@ -61,6 +61,12 @@ public:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	TSubclassOf<ASoldierAI> ClassAI;
 
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+		int MaxAIInSquad = 3;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+		int MinAIInSquad = 5;
+
 	UFUNCTION()
 	void Init(ASoldierTeam* _Team, ASoldierPlayer* _Player);
 	
@@ -85,6 +91,9 @@ public:
 
 	UFUNCTION()
 	void UpdateCircleFormation();
+
+	UFUNCTION()
+		void UpdateArrowFormation();
 
 	UPROPERTY()
 	UMission* Mission;
