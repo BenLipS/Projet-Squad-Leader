@@ -49,6 +49,9 @@ public:
 	UPROPERTY()
 		TArray<AAISquadManager*> ListAISquadManagers;
 
+	UFUNCTION(Exec)
+		void AddAnAIToIndexSquad(int index);
+
 	UPROPERTY()
 		AInfluenceMapGrid* InfluenceMap;
 	UFUNCTION()

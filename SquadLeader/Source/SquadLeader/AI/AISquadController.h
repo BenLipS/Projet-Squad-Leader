@@ -36,7 +36,7 @@ public:
 	float HysteresisDistanceForFormation = 300.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Formation Behaviour")
-	float StopHysteresisDistanceForFormation = 150.f;
+	float StopHysteresisDistanceForFormation = 50.f;
 
 /////////// Respawn
 public:

@@ -59,7 +59,19 @@ public:
 	void BeginPlay() override;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-	TSubclassOf<ASoldierAI> ClassAI;
+		TSubclassOf<ASoldierAI> ClassAI1;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+		TSubclassOf<ASoldierAI> ClassAI2;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+		TSubclassOf<ASoldierAI> ClassAI3;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+		TSubclassOf<ASoldierAI> ClassAI4;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+		TSubclassOf<ASoldierAI> ClassAI5;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 		int MaxAIInSquad = 3;
@@ -75,6 +87,9 @@ public:
 
 	UPROPERTY()
 	ASoldierPlayer* Leader;
+
+	UFUNCTION()
+	void AddAnAIToSquad();
 
 	// Check whether this manager controls the given soldier
 	bool HasSoldier(const ASoldier* _Soldier) const;
