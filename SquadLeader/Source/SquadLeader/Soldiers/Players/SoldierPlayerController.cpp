@@ -97,7 +97,7 @@ void ASoldierPlayerController::Tick(float _deltaTime)
 	Super::Tick(_deltaTime);
 
 	if (ASL_HUD* CurrentHUD = GetHUD<ASL_HUD>(); CurrentHUD && GetTeam())
-		CurrentHUD->OnUpdateTeamPositions();
+		CurrentHUD->OnUpdatePOIs();
 }
 
 void ASoldierPlayerController::SetupInputComponent()

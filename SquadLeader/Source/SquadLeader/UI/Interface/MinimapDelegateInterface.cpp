@@ -18,11 +18,19 @@ void IMinimapDelegateInterface::OnSoldierRemovedFromTeam(ASoldier* _Soldier)
 	}
 }
 
-void IMinimapDelegateInterface::OnUpdateTeamPositions()
+void IMinimapDelegateInterface::OnControlAreaAdded(AControlArea* _ControlArea)
 {
 	for (auto MinimapInterface : MinimapDelegates)
 	{
-		MinimapInterface->OnUpdateTeamPositions();
+		MinimapInterface->OnControlAreaAdded(_ControlArea);
+	}
+}
+
+void IMinimapDelegateInterface::OnUpdatePOIs()
+{
+	for (auto MinimapInterface : MinimapDelegates)
+	{
+		MinimapInterface->OnUpdatePOIs();
 	}
 }
 

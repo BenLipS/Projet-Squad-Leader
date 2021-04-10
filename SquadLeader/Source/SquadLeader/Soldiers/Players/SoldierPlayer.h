@@ -14,7 +14,7 @@ class SQUADLEADER_API ASoldierPlayer : public ASoldier
 public:
 	ASoldierPlayer(const FObjectInitializer& _ObjectInitializer);
 
-protected:
+public:
 	virtual void BeginPlay() override;
 	void PossessedBy(AController* _newController) override;
 	void OnRep_PlayerState() override;

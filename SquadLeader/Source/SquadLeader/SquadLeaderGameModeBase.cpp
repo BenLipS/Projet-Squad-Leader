@@ -27,7 +27,6 @@ ASquadLeaderGameModeBase::ASquadLeaderGameModeBase() : RespawnDelay{ 3.f }
 	UAbilitySystemGlobals::Get().InitGlobalData();
 }
 
-
 void ASquadLeaderGameModeBase::InitGameWithGameState() {
 	// set parameters for GameState's spawn
 	FActorSpawnParameters SpawnInfo;
@@ -52,9 +51,9 @@ void ASquadLeaderGameModeBase::InitGameWithGameState() {
 
 void ASquadLeaderGameModeBase::StartPlay() {
 	// Set the GameState
-	InitGameWithGameState();
+	//InitGameWithGameState();
 
-	// launch the game initialization from the GameState 
+	// Launch the game initialization from the GameState 
 	if (auto SLInitGameState = Cast<ASquadLeaderInitGameState>(GameState); SLInitGameState) {
 		SLInitGameState->InitMapAndData();
 	}
