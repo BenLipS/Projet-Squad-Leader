@@ -34,13 +34,17 @@ void UMinimapWidget::OnSoldierAddedToTeam(ASoldier* _Soldier)
 	{
 		POI = CreateWidget<UPointOfInterestWidget>(MinimapSoldierOverlay, EnnemyIconWidgetClass);
 	}
-	else if (Player->GetSquadManager()->HasSoldier(_Soldier)) // Soldier is part of the player's squad
+	else if (!!Cast<ASoldierPlayer>(_Soldier))// Soldier is a allie player
+	{
+		POI = CreateWidget<UPointOfInterestWidget>(MinimapSoldierOverlay, PlayerAllieIconWidgetClass);
+	}
+	else if (Player->GetSquadManager()->HasSoldier(_Soldier)) // Soldier is part of the player's squad - // TODO: Review the test
 	{
 		POI = CreateWidget<UPointOfInterestWidget>(MinimapSoldierOverlay, SquadIconWidgetClass);
 	}
-	else // Soldier is an allie - not in player's squad
+	else // Soldier is an AI allie
 	{
-		POI = CreateWidget<UPointOfInterestWidget>(MinimapSoldierOverlay, AllieIconWidgetClass);
+		POI = CreateWidget<UPointOfInterestWidget>(MinimapSoldierOverlay, AIAllieIconWidgetClass);
 	}
 
 	if (POI)

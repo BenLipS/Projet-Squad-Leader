@@ -51,9 +51,13 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "PointOfInterest")
 	TSubclassOf<UPointOfInterestWidget> SquadIconWidgetClass;
 
-// Allies
+// Player Allies
 	UPROPERTY(EditDefaultsOnly, Category = "PointOfInterest")
-	TSubclassOf<UPointOfInterestWidget> AllieIconWidgetClass;
+	TSubclassOf<UPointOfInterestWidget> PlayerAllieIconWidgetClass;
+
+// AI Allies
+	UPROPERTY(EditDefaultsOnly, Category = "PointOfInterest")
+	TSubclassOf<UPointOfInterestWidget> AIAllieIconWidgetClass;
 
 // Ennemies
 	UPROPERTY(EditDefaultsOnly, Category = "PointOfInterest")
