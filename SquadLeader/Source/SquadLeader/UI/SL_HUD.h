@@ -45,6 +45,7 @@ public:
 	void SetAIStateLink();
 
 	void BindSoldierTeamChanges();
+	void BindControlAreas();
 
 /*********************************
 *****INTERFACE IMPLEMENTATION*****
@@ -88,5 +89,6 @@ public:
 public:
 	//void OnSoldierAddedToTeam(ASoldier* _Soldier) override;
 	//void OnSoldierRemovedFromTeam() override;
-	//void OnUpdateTeamPositions() override;
+	//void OnUpdatePOIs() override;
+	//void OnControlAreaAdded() override;
 };

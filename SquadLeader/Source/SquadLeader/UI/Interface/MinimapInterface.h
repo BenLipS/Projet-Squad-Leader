@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
 #include "SquadLeader/Soldiers/Soldier.h"
+#include "SquadLeader/ControlArea/ControlArea.h"
 #include "MinimapInterface.generated.h"
 
 // This class does not need to be modified.
@@ -24,5 +25,8 @@ public:
 	virtual void OnSoldierRemovedFromTeam(ASoldier* _Soldier) = 0;
 
 	UFUNCTION()
-	virtual void OnUpdateTeamPositions() = 0;
+	virtual void OnControlAreaAdded(AControlArea* _ControlArea) = 0;
+
+	UFUNCTION()
+	virtual void OnUpdatePOIs() = 0;
 };
