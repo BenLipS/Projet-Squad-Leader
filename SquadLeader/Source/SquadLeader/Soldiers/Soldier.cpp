@@ -51,10 +51,6 @@ void ASoldier::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// Weapon
-	WeaponMesh->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, WeaponAttachPoint);
-	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
 	// Cameras
 	if (bIsFirstPerson)
 	{
@@ -176,9 +172,6 @@ void ASoldier::InitMeshes()
 	FirstPersonMesh->CastShadow = false;
 
 	// 3rd person mesh - already defined with ACharacter
-
-	// Weapon
-	WeaponMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WeaponMesh"));
 
 	// Montage Delegates
 	StartGame_SoldierMontageEndedDelegate.BindUObject(this, &ASoldier::OnStartGameMontageCompleted);
@@ -564,7 +557,7 @@ bool ASoldier::AddWeaponToInventory(ASL_Weapon* _NewWeapon, const bool _bEquipWe
 	}
 
 	Inventory.Weapons.Add(_NewWeapon);
-	_NewWeapon->SetOwningCharacter(this);
+	_NewWeapon->SetOwningSoldier(this);
 	_NewWeapon->AddAbilities();
 
 	if (_bEquipWeapon)
@@ -634,11 +627,14 @@ void ASoldier::SetCurrentWeapon(ASL_Weapon* _NewWeapon, ASL_Weapon* _LastWeapon)
 
 		// Weapons coming from OnRep_CurrentWeapon won't have the owner set
 		CurrentWeapon = _NewWeapon;
-		CurrentWeapon->SetOwningCharacter(this);
+		CurrentWeapon->SetOwningSoldier(this);
 		CurrentWeaponTag = CurrentWeapon->WeaponTag;
 
 		if (AbilitySystemComponent)
 			AbilitySystemComponent->AddLooseGameplayTag(CurrentWeaponTag);
+
+		CurrentWeapon->GetWeaponMesh()->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, WeaponAttachPoint);
+		CurrentWeapon->GetWeaponMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 		// TODO: Do update for HUD through player controller here
 

@@ -224,9 +224,6 @@ public:
 	UPROPERTY(VisibleDefaultsOnly, Category = "Mesh")
 	USkeletalMeshComponent* FirstPersonMesh;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Mesh")
-	UStaticMeshComponent* WeaponMesh;
-
 	UPROPERTY(EditDefaultsOnly, Category = "Mesh")
 	FName WeaponAttachPoint;
 
