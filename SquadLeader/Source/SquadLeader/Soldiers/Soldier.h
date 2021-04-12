@@ -224,6 +224,9 @@ public:
 	UPROPERTY(VisibleDefaultsOnly, Category = "Mesh")
 	USkeletalMeshComponent* FirstPersonMesh;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Mesh")
+	FName WeaponAttachPoint;
+
 //////////////// Movement
 	// Move direction
 	UFUNCTION()
