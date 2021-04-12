@@ -9,6 +9,7 @@
 #include "Mission/PatrolMission.h"
 #include "NavigationSystem.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "NavigationSystem.h"
 
 #include<algorithm>
 // temp include, need to be replace by more robust code
@@ -166,7 +167,9 @@ void AAISquadManager::UpdateFormation()
 	}
 
 	for (int i = 0; i < AISquadList.Num(); i++) {
-		AISquadList[i]->UpdateFormation(FormationPos[i]);
+		FVector FormationPosAI = FormationPos[i];
+		FormationPosAI = UNavigationSystemV1::ProjectPointToNavigation(GetWorld(), FormationPosAI);
+		AISquadList[i]->UpdateFormation(FormationPosAI);
 	}
 }
 

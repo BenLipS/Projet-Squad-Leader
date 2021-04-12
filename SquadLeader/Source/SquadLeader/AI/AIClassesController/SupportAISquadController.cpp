@@ -14,8 +14,8 @@ ASupportAISquadController::ASupportAISquadController() {
 }
 
 void ASupportAISquadController::CheckIfLaunchHeal() {
-	int TotalHealth = 0;
-	int TotalMaxHealth = 0;
+	float TotalHealth = 0;
+	float TotalMaxHealth = 0;
 	float RatioHealth = 0;
 
 	bool IsAnAllyHealthVeryLow = false;
