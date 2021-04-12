@@ -19,8 +19,6 @@
 #include "Mission.h"
 #include "AIBasicManager.h"
 
-
-
 AAIBasicController::AAIBasicController()
 {
 	setup_BehaviorTree();
@@ -29,6 +27,15 @@ AAIBasicController::AAIBasicController()
 void AAIBasicController::BeginPlay() {
 	Super::BeginPlay();
 	Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode())->AddAIBasicToManager(this);
+}
+
+void AAIBasicController::Init() {
+	Super::Init();
+
+	m_state = AIBasicState::Patroling;
+	m_old_state = m_state;
+	blackboard->SetValueAsBool("is_patroling", true);
+	blackboard->SetValueAsVector("VectorLocation", GetPawn()->GetActorLocation());
 }
 
 void AAIBasicController::setup_BehaviorTree() {

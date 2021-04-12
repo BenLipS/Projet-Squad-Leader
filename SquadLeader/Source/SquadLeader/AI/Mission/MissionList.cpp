@@ -20,13 +20,11 @@ auto FMissionAction::operator()(UPatrolMission* _mission)const
 {
 	GEngine->AddOnScreenDebugMessage(50, 10.f, FColor::Blue, TEXT("Mission de type UPatrolMission"));
 	_mission->SetState(MissionState::eRUNNING);
-	//m_ai_controller->SetObjectifLocation(m_ai_controller->GetPawn()->GetActorLocation());
 }
 auto FMissionAction::operator()(UFormationMission* _mission)const
 {
 	GEngine->AddOnScreenDebugMessage(50, 10.f, FColor::Blue, TEXT("Mission de type UFormationMission"));
 	_mission->SetState(MissionState::eRUNNING);
-	m_ai_controller->SetObjectifLocation(_mission->GetPosition());
 }
 
 UMissionList::UMissionList() : m_ai_controller{} {
@@ -35,6 +33,7 @@ UMissionList::UMissionList() : m_ai_controller{} {
 void UMissionList::Init(AAIGeneralController* _ai_controller) {
 	m_ai_controller = _ai_controller;
 	m_action = FMissionAction{ m_ai_controller };
+	m_stateChange = FAIState{ m_ai_controller };
 	m_compare = FCompareMission{};
 }
 
@@ -67,4 +66,13 @@ void UMissionList::EndMission() {
 	if (m_missions.Num() > 1) {
 		m_missions.RemoveAt(m_index_current_mission);
 	}
+}
+
+void UMissionList::StateChange(){
+	/*if(m_missions.Num() > 0)
+		Visit(m_stateChange, m_missions[m_index_current_mission]);*/
+}
+
+void UMissionList::Empty() {
+	m_missions.Empty();
 }
