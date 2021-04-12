@@ -31,6 +31,7 @@ void ASL_HUD::BeginPlay()
 	}
 	SetPlayerStateLink();
 	SetAIStateLink();
+	OnStatInfoReceived("Fabien", "Beau gosse");
 }
 
 void ASL_HUD::SetPlayerStateLink()

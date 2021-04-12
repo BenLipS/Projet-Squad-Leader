@@ -41,7 +41,6 @@ void UNotificationWidget::AddNotification(UNotificationWidgetElement* newWidget)
 
 void UNotificationWidget::UpdateNotificationsPosition()
 {
-
 	while (MaxItem > 0 && Items.Num() > MaxItem)
 	{
 		auto remove = Items.Pop();
@@ -58,7 +57,7 @@ void UNotificationWidget::UpdateNotificationsPosition()
 	}
 }
 
-void UNotificationWidget::SetupDelegateToObject(UObject* ObjectIn)
+void UNotificationWidget::SetupDelegateToObject_Implementation(UObject* ObjectIn)
 {
 	if (INotificationDelegateInterface* NotificationDelegateInterface = Cast<INotificationDelegateInterface>(ObjectIn); NotificationDelegateInterface)
 	{

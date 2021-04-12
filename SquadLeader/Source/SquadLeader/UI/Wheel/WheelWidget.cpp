@@ -201,7 +201,7 @@ int32 UWheelWidget::NativePaint(const FPaintArgs& Args, const FGeometry& Allotte
 	return Super::NativePaint(Args, AllottedGeometry, MyCullingRect, OutDrawElements, LayerId, InWidgetStyle, bParentEnabled);
 }
 
-void UWheelWidget::SetupDelegateToObject(UObject* ObjectIn)
+void UWheelWidget::SetupDelegateToObject_Implementation(UObject* ObjectIn)
 {
 	if (IOrderDelegateInterface* OrderDelegateInterface = Cast<IOrderDelegateInterface>(ObjectIn); OrderDelegateInterface)
 	{

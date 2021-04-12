@@ -17,20 +17,25 @@ UMenuWidget* UMenuLayoutWidget::GetMenu()
 void UMenuLayoutWidget::SynchronizeProperties()
 {
 	Super::SynchronizeProperties();
+}
+
+void UMenuLayoutWidget::SynchronizeAllMenuItem()
+{
 	if (MenuSlot)
 	{
 		SynchronizeAllMenuItem(MenuSlot->GetAllChildren());
 	}
 }
 
-void UMenuLayoutWidget::SynchronizeAllMenuItem(TArray<UWidget*> WidgetList)
+void UMenuLayoutWidget::SynchronizeAllMenuItem(TArray<UWidget*> ListChildren)
 {
-	for (UWidget* Widget : WidgetList)
+	for (UWidget* Widget : ListChildren)
 	{
 		if (UMenuItemWidget* MenuItem = Cast<UMenuItemWidget>(Widget); MenuItem)
 		{
 			MenuItems.AddUnique(MenuItem);
 			MenuItem->MenuLayout = this;
+			MenuItem->OnItemAddedToLayout();
 		}
 		else if (UPanelWidget* MenuGroup = Cast<UPanelWidget>(Widget); MenuGroup)
 		{

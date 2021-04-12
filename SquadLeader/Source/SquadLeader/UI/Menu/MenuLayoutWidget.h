@@ -39,7 +39,8 @@ protected:
 	virtual void SynchronizeProperties() override;
 
 private:
-	void SynchronizeAllMenuItem(TArray<class UWidget*> WidgetList);
+	void SynchronizeAllMenuItem();
+	void SynchronizeAllMenuItem(TArray<UWidget*> ListChildren);
 
 public:
 	FString GetLayoutID();

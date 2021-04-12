@@ -21,7 +21,7 @@ class SQUADLEADER_API UWheelWidget : public USL_UserWidget, public IOrderInterfa
 
 public:
 	UWheelWidget(const FObjectInitializer& ObjectInitializer);
-	void SetupDelegateToObject(UObject* ObjectIn) override;
+	void SetupDelegateToObject_Implementation(UObject* ObjectIn) override;
 
 protected:
 	virtual void SynchronizeProperties() override;

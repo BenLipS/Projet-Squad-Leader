@@ -15,7 +15,7 @@ void UNotificationWidgetElement::BindItemToNotification(UNotificationWidget* new
 	OnItemAddedToNotificationEvent(newNotificationWidget);
 }
 
-void UNotificationWidgetElement::OnItemAddedToNotificationEvent_Implementation(class UNotificationWidget* newNotificationWidget)
+void UNotificationWidgetElement::OnItemAddedToNotificationEvent_Implementation(UNotificationWidget* newNotificationWidget)
 {
 
 }

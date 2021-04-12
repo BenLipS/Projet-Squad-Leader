@@ -8,3 +8,7 @@ UMenuLayoutWidget* UMenuItemWidget::GetMenuLayout()
 {
 	return MenuLayout;
 }
+
+void UMenuItemWidget::OnItemAddedToLayout_Implementation()
+{
+}

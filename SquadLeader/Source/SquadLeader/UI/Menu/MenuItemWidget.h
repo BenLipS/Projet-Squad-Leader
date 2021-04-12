@@ -20,4 +20,10 @@ protected:
 public:
 	UFUNCTION(BlueprintCallable)
 	class UMenuLayoutWidget* GetMenuLayout();
+
+protected:
+	/*Called after a MenuLayout is binded*/
+	UFUNCTION(BlueprintNativeEvent, Category = "MenuWidgetItem")
+	void OnItemAddedToLayout();
+	virtual void OnItemAddedToLayout_Implementation();
 };
