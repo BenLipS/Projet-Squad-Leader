@@ -7,6 +7,7 @@
 #include "Mission/DefendMission.h"
 #include "Mission/CaptureMission.h"
 #include "Mission/PatrolMission.h"
+#include "NavigationSystem.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
 #include<algorithm>
@@ -94,9 +95,9 @@ void AAISquadManager::Tick(float DeltaTime)
 		
 }
 
-void AAISquadManager::AddAnAIToSquad()
+void AAISquadManager::AddAnAIToSquad_Implementation()
 {
-	if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("AAAAAAAAAAAAAAAAAAAAAAAAA"));
+	//if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("AAAAAAAAAAAAAAAAAAAAAAAAA"));
 	TSubclassOf<ASoldierAI> ClassAI;
 	switch (AISquadList.Num()) {
 	case 0:
@@ -120,6 +121,15 @@ void AAISquadManager::AddAnAIToSquad()
 	FTransform PlayerTransform = Leader->GetTransform();
 	FTransform LocationAI;
 	LocationAI.SetLocation(PlayerTransform.GetLocation() - Leader->GetActorForwardVector() * 500);
+
+	UNavigationSystemV1* navSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
+
+	FVector HitLocation{};
+
+	if (navSys->NavigationRaycast(GetWorld(), PlayerTransform.GetLocation(), LocationAI.GetLocation(), HitLocation)) {
+		LocationAI.SetLocation(HitLocation);
+	}
+
 	ASoldierAI* SquadAI = GetWorld()->SpawnActorDeferred<ASoldierAI>(ClassAI, LocationAI, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 	if (SquadAI) {
 		SquadAI->SpawnDefaultController();

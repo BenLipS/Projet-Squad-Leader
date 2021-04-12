@@ -88,8 +88,9 @@ public:
 	UPROPERTY()
 	ASoldierPlayer* Leader;
 
-	UFUNCTION()
+	UFUNCTION(Server, Reliable)
 	void AddAnAIToSquad();
+	void AddAnAIToSquad_Implementation();
 
 	// Check whether this manager controls the given soldier
 	bool HasSoldier(const ASoldier* _Soldier) const;

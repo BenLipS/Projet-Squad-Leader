@@ -118,6 +118,13 @@ public:
 	void OnOrderGiven(MissionType Order, FVector Pos);
 	void OnOrderGiven_Implementation(MissionType Order, FVector Pos);
 
+	UFUNCTION(Server, Reliable)
+	void AddAnAIToIndexSquad();
+	void AddAnAIToIndexSquad_Implementation();
+
+	UFUNCTION(Exec)
+	void Cheat_AddAISquad();
+
 	UFUNCTION()
 	void BroadCastManagerData();
 

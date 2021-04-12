@@ -104,12 +104,6 @@ void ASquadLeaderGameModeBase::AddAIBasicToManager(AAIBasicController* AIBasic)
 	}
 }
 
-void ASquadLeaderGameModeBase::AddAnAIToIndexSquad(int index)
-{
-	if(ListAISquadManagers.Num() > index)
-		ListAISquadManagers[index]->AddAnAIToSquad();
-}
-
 void ASquadLeaderGameModeBase::InitInfluenceMap() {
 	FTransform LocationTemp{ {0.f, 0.f, 0.f}, {0.f,0.f,0.f} };
 	AInfluenceMapGrid* _InfluenceMap = GetWorld()->SpawnActorDeferred<AInfluenceMapGrid>(InfluenceMapClass, LocationTemp, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
