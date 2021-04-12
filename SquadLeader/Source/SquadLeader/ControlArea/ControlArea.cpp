@@ -1,8 +1,8 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #include "ControlArea.h"
+#include "../GameState/SquadLeaderGameState.h"
 #include "../SquadLeaderGameModeBase.h"
 #include "../Soldiers/Soldier.h"
+#include "ControlAreaManager.h"
 
 
 // Sets default values
@@ -10,8 +10,7 @@ AControlArea::AControlArea()
 {
 	initCollideElement();
 
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 	bReplicates = true;
 }
 
@@ -24,12 +23,6 @@ void AControlArea::initCollideElement() {
 void AControlArea::BeginPlay()
 {
 	Super::BeginPlay();
-}
-
-// Called every frame
-void AControlArea::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
 }
 
 void AControlArea::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -47,17 +40,18 @@ void AControlArea::PreInitialisation()
 
 	timeBetweenCalcuation = 0.5;
 
-	if (auto gameMode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode()); gameMode) {
+	if (auto GS = GetWorld()->GetGameState<ASquadLeaderGameState>(); GS) {
 		// add this to the game mode collection
-		gameMode->ControlAreaManager.GetDefaultObject()->AddControlArea(this);
+		auto test = GS->GetControlAreaManager();
+		test->AddControlArea(this);
 
 		UpdateTeamData();
 	}
 }
 
-int AControlArea::getpriority()
+int AControlArea::GetPriority() const
 {
-	return 1;
+	return 2;
 }
 
 
@@ -109,8 +103,8 @@ void AControlArea::calculateControlValue()
 
 		// check info about the differents teams on point
 		int nbTeamOnPoint = 0;
-		TSubclassOf<ASoldierTeam> presentTeam;
-		for (auto team : TeamData) {
+		ASoldierTeam* presentTeam = nullptr;
+		for (TPair<ASoldierTeam*, AControlAreaTeamStat*> team : TeamData) {
 			if (team.Value->presenceTeam > 0) {
 				nbTeamOnPoint++;
 				presentTeam = team.Key;
@@ -118,7 +112,7 @@ void AControlArea::calculateControlValue()
 		}
 
 		// handling teams information
-		if (nbTeamOnPoint == 1) {
+		if (presentTeam && nbTeamOnPoint == 1) {
 			if (TeamData[presentTeam]->controlValue < maxControlValue) {
 				bool needToDecreaseOtherPresenceFirst = false;
 				for (auto& otherTeam : TeamData) {  // reduce the control value in each other team by the number of teamate
@@ -148,7 +142,7 @@ void AControlArea::calculateControlValue()
 						isTakenBy = presentTeam;
 						TeamData[presentTeam]->ChangeSpawnState(true);
 						// notify here the changement if needed
-						GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("ControlArea : Team control =" + presentTeam.GetDefaultObject()->TeamName));
+						GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("ControlArea : Team control =" + presentTeam->TeamName));
 
 						// check the victory condition
 						if (auto gameMode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode()); gameMode) {
@@ -159,7 +153,23 @@ void AControlArea::calculateControlValue()
 			}
 			else { // stop the timer
 				GetWorld()->GetTimerManager().ClearTimer(timerCalculationControlValue);
-				GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("ControlArea : Max control for " + presentTeam.GetDefaultObject()->TeamName));
+				GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("ControlArea : Max control for " + presentTeam->TeamName));
+
+				auto GM = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
+				FGridPackage m_package;
+				m_package.m_location_on_map = GetActorLocation();
+				switch (presentTeam->Id) {
+				case 1:
+					m_package.team_value = 1;
+					break;
+				case 2:
+					m_package.team_value = 2;
+					break;
+				default:
+					break;
+				}
+				m_package.m_type = Type::ControlArea;
+				GM->InfluenceMap->ReceivedMessage(m_package);
 			}
 		}
 		else {  // too much teams on points or nobody
@@ -173,31 +183,33 @@ void AControlArea::calculateControlValue()
 
 void AControlArea::UpdateTeamData()
 {
-	if (auto gameMode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode()); gameMode) {  // only for the server
-		auto teamCollection = gameMode->SoldierTeamCollection;
+	if (GetLocalRole() == ROLE_Authority) {  // only for the server
+		if (auto GS = GetWorld()->GetGameState<ASquadLeaderGameState>(); GS) {
+			auto teamCollection = GS->GetSoldierTeamCollection();
 
-		TArray<TSubclassOf<ASoldierTeam>> keyToRemove;  // remove element
-		for (auto team : TeamData) {
-			if (!teamCollection.Contains(team.Key)) {
-				keyToRemove.Add(team.Key);
-				//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("ControlArea Update : Unknown team removed : " + team.Key.GetDefaultObject()->TeamName));
+			TArray<ASoldierTeam*> keyToRemove;  // remove element
+			for (TPair<ASoldierTeam*, AControlAreaTeamStat*> team : TeamData) {
+				if (!teamCollection.Contains(team.Key)) {
+					keyToRemove.Add(team.Key);
+					//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("ControlArea Update : Unknown team removed : " + team.Key.GetDefaultObject()->TeamName));
+				}
 			}
-		}
-		for (auto key : keyToRemove) {
-			TeamData.Remove(key);
-		}
-
-		for (auto team : teamCollection) {  // add element
-			if (!TeamData.Contains(team)) {
-				TeamData.Add(team, NewObject<AControlAreaTeamStat>());
-				//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("ControlArea Update : Unknown team added : " + team.GetDefaultObject()->TeamName));
+			for (auto key : keyToRemove) {
+				TeamData.Remove(key);
 			}
-		}
 
-		for (auto& team : TeamData) {  // update spawn state
-			if (team.Value) {
-				team.Value->ChangeSpawnState(isTakenBy == team.Key);
-				team.Value->ChangeSpawnTeam(team.Key);
+			for (auto team : teamCollection) {  // add element
+				if (!TeamData.Contains(team)) {
+					TeamData.Add(team, NewObject<AControlAreaTeamStat>());
+					//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("ControlArea Update : Unknown team added : " + team.GetDefaultObject()->TeamName));
+				}
+			}
+
+			for (auto& team : TeamData) {  // update spawn state
+				if (team.Value) {
+					team.Value->ChangeSpawnState(isTakenBy == team.Key);
+					team.Value->ChangeSpawnTeam(team.Key);
+				}
 			}
 		}
 	}

@@ -3,6 +3,10 @@
 
 #include "AISquadManager.h"
 #include "DrawDebugHelpers.h"
+#include "Mission/FormationMission.h"
+#include "Mission/DefendMission.h"
+#include "Mission/CaptureMission.h"
+#include "Mission/PatrolMission.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
 #include<algorithm>
@@ -19,7 +23,7 @@ void AAISquadManager::BeginPlay()
 	Super::BeginPlay();
 }
 
-void AAISquadManager::Init(TSubclassOf<ASoldierTeam> _Team, ASoldierPlayer* _Player)
+void AAISquadManager::Init(ASoldierTeam* _Team, ASoldierPlayer* _Player)
 {
 	Team = _Team;
 	Leader = _Player;
@@ -74,8 +78,7 @@ void AAISquadManager::Init(TSubclassOf<ASoldierTeam> _Team, ASoldierPlayer* _Pla
 		Cast<AAISquadController>(SquadAI2->Controller)->SquadManager = this;
 	}
 
-	Mission = NewObject<UMission>(this, UMission::StaticClass());
-	Mission->Type = MissionType::Formation;
+	m_inFormation = true;
 	TypeOfFormation = FormationType::Circle;
 }
 
@@ -83,12 +86,19 @@ void AAISquadManager::Tick(float DeltaTime)
 {
 	//if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Black, FString::Printf(TEXT("Tick for: %s"), *Leader->GetName()));
 
-	if (Mission->Type == MissionType::Formation) {
+	if (m_inFormation) {
 		UpdateFormation();
 	}
-
+	
 	Super::Tick(DeltaTime);
 		
+}
+
+bool AAISquadManager::HasSoldier(const ASoldier* _Soldier) const
+{
+	if (AAISquadController* SC = Cast<AAISquadController>(_Soldier->GetController()))
+		return AISquadList.Find(SC) != INDEX_NONE;
+	return false;
 }
 
 void AAISquadManager::UpdateFormation()
@@ -104,7 +114,7 @@ void AAISquadManager::UpdateFormation()
 	}
 
 	for (int i = 0; i < AISquadList.Num(); i++) {
-		AISquadList[i]->get_blackboard()->SetValueAsVector("FormationLocation", FormationPos[i]);
+		AISquadList[i]->UpdateFormation(FormationPos[i]);
 	}
 }
 
@@ -130,41 +140,62 @@ void AAISquadManager::UpdateCircleFormation()
 
 void AAISquadManager::UpdateMission(const MissionType _MissionType, const FVector& _Location)
 {
-	Mission->Type = _MissionType;
-	Mission->Location = _Location;
+	auto for_each_sqaud = [&](bool hasOrder, bool isInFormation) {
+		for (AAISquadController* AISquad : AISquadList) {
+			AISquad->SetObjectifLocation(_Location);
+			AISquad->StopCurrentBehavior = true;
+			AISquad->get_blackboard()->SetValueAsBool("HasOrder", hasOrder);
+			AISquad->get_blackboard()->SetValueAsBool("IsInFormation", isInFormation);
 
-	for (AAISquadController* AISquad : AISquadList) {
-		AISquad->SetMission(Mission);
-		if(Mission->Type == MissionType::Formation){
-			AISquad->get_blackboard()->SetValueAsBool("IsInFormation", true);
-			AISquad->get_blackboard()->SetValueAsBool("HasOrder", false);
+			UPatrolMission* _patrolMisssion = Cast<UPatrolMission>(NewObject<UPatrolMission>(this, UPatrolMission::StaticClass()));
+			_patrolMisssion->InitPatrolMission(1, MissionPriority::eURGENT);
+			AISquad->SetMission<UPatrolMission*>(_patrolMisssion);
+			if (isInFormation)
+				AISquad->FormationState();
 		}
-		else if (Mission->Type != MissionType::None) {
-			AISquad->get_blackboard()->SetValueAsBool("IsInFormation", false);
-			AISquad->get_blackboard()->SetValueAsBool("HasOrder", true);
-		}
-	}
+	};
 
-	// Sorry for that...
-	switch (Mission->Type)
+	switch (_MissionType)
 	{
-	case MissionType::Defence:
-		GEngine->AddOnScreenDebugMessage(4563, 4.f, FColor::Red, FString::Printf(TEXT("Order Defence on (%s,%s,%s) from %s"), *FString::SanitizeFloat(Mission->Location.X), *FString::SanitizeFloat(Mission->Location.Y), *FString::SanitizeFloat(Mission->Location.Z), *Leader->GetName()));
+	case MissionType::Formation:
+
+		for (AAISquadController* AISquad : AISquadList) {
+			AISquad->StopCurrentBehavior = true;
+			AISquad->get_blackboard()->SetValueAsBool("HasOrder", false);
+			AISquad->SetState(AIBasicState::Moving);
+			AISquad->get_blackboard()->SetValueAsBool("IsInFormation", true);
+			AISquad->FormationState();
+			UFormationMission* _formationMission = Cast<UFormationMission>(NewObject<UFormationMission>(this, UFormationMission::StaticClass()));
+			_formationMission->InitFormation(1, MissionPriority::eMIDDLE, _Location);
+			AISquad->SetMission<UFormationMission*>(_formationMission);
+		}
+		m_inFormation = true;
 		break;
-	case MissionType::Attack:
-		GEngine->AddOnScreenDebugMessage(4563, 4.f, FColor::Red, FString::Printf(TEXT("Order Attack on (%s,%s,%s) from %s"), *FString::SanitizeFloat(Mission->Location.X), *FString::SanitizeFloat(Mission->Location.Y), *FString::SanitizeFloat(Mission->Location.Z), *Leader->GetName()));
+	case MissionType::eDEFEND:
+		for_each_sqaud(true, false);
+		m_inFormation = false;
+		GEngine->AddOnScreenDebugMessage(4563, 4.f, FColor::Red, FString::Printf(TEXT("Order Defence on (%s,%s,%s) from %s"), *FString::SanitizeFloat(_Location.X), *FString::SanitizeFloat(_Location.Y), *FString::SanitizeFloat(_Location.Z), *Leader->GetName()));
 		break;
-	case MissionType::MoveTo:
-		GEngine->AddOnScreenDebugMessage(4563, 4.f, FColor::Red, FString::Printf(TEXT("Order MoveTo on (%s,%s,%s) from %s"), *FString::SanitizeFloat(Mission->Location.X), *FString::SanitizeFloat(Mission->Location.Y), *FString::SanitizeFloat(Mission->Location.Z), *Leader->GetName()));
+	case MissionType::eATTACK:
+		for_each_sqaud(true, false);
+		m_inFormation = false;
+		GEngine->AddOnScreenDebugMessage(4563, 4.f, FColor::Red, FString::Printf(TEXT("Order Attack on (%s,%s,%s) from %s"), *FString::SanitizeFloat(_Location.X), *FString::SanitizeFloat(_Location.Y), *FString::SanitizeFloat(_Location.Z), *Leader->GetName()));
+		break;
+	case MissionType::ePATROL:
+		for_each_sqaud(true, false);
+		m_inFormation = false;
+		GEngine->AddOnScreenDebugMessage(4563, 4.f, FColor::Red, FString::Printf(TEXT("Order MoveTo on (%s,%s,%s) from %s"), *FString::SanitizeFloat(_Location.X), *FString::SanitizeFloat(_Location.Y), *FString::SanitizeFloat(_Location.Z), *Leader->GetName()));
 		break;
 	default:
-		GEngine->AddOnScreenDebugMessage(4563, 4.f, FColor::Red, FString::Printf(TEXT("Order Unknown on (%s,%s,%s) from %s"), *FString::SanitizeFloat(Mission->Location.X), *FString::SanitizeFloat(Mission->Location.Y), *FString::SanitizeFloat(Mission->Location.Z), *Leader->GetName()));
+		for_each_sqaud(true, false);
+		m_inFormation = false;
+		GEngine->AddOnScreenDebugMessage(4563, 4.f, FColor::Red, FString::Printf(TEXT("Order Unknown on (%s,%s,%s) from %s"), *FString::SanitizeFloat(_Location.X), *FString::SanitizeFloat(_Location.Y), *FString::SanitizeFloat(_Location.Z), *Leader->GetName()));
 		break;
 	}
 }
 
 // temp include, need to be replace by more robust code
-void AAISquadManager::UpdateSquadTeam(TSubclassOf<ASoldierTeam> _NewTeam)
+void AAISquadManager::UpdateSquadTeam(ASoldierTeam* _NewTeam)
 {
 	Team = _NewTeam;
 	for (auto SquadIA : AISquadList) {

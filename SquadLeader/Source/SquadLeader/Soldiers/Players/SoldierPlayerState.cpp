@@ -1,6 +1,5 @@
 #include "SoldierPlayerState.h"
 #include "SoldierPlayerController.h"
-#include "../../UI/PlayerHUD.h"
 
 ASoldierPlayerState::ASoldierPlayerState()
 {
@@ -10,6 +9,7 @@ ASoldierPlayerState::ASoldierPlayerState()
 	AttributeSet = CreateDefaultSubobject<UAttributeSetSoldier>(TEXT("Attribute Set"));
 
 	bReplicates = true;
+	NetUpdateFrequency = 100.0f;
 }
 
 void ASoldierPlayerState::BeginPlay()
@@ -34,26 +34,21 @@ void ASoldierPlayerState::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	// everyone
-	DOREPLIFETIME(ASoldierPlayerState, Team);
+	//DOREPLIFETIME(ASoldierPlayerState, var);
 }
 
-TSubclassOf<ASoldierTeam> ASoldierPlayerState::GetTeam()
+ASoldierTeam* ASoldierPlayerState::GetTeam()
 {
-	return Team;
+	if (auto soldier = Cast<ASoldier>(GetPawn()); soldier) {
+		return soldier->GetTeam();
+	}
+	return nullptr;
 }
 
-bool ASoldierPlayerState::SetTeam(TSubclassOf<ASoldierTeam> _Team)
+bool ASoldierPlayerState::SetTeam(ASoldierTeam* _Team)
 {
-	if (GetLocalRole() == ROLE_Authority) {  // only server can change team
-		if (auto soldier = Cast<ASoldier>(GetPawn()); soldier) {
-			if (Team)
-				Team.GetDefaultObject()->RemoveSoldierList(soldier);
-			if (_Team)
-				_Team.GetDefaultObject()->AddSoldierList(soldier);
-		}
-
-		Team = _Team;
-		return true;
+	if (auto soldier = Cast<ASoldier>(GetPawn()); soldier) {
+		return soldier->SetTeam(_Team);
 	}
 	return false;
 }

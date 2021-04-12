@@ -31,31 +31,71 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Flocking Behaviour")
 		float CohesionWeight{ 1.f };
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Flocking Behaviour")
+		float CohesionMaxSize{ 3.f };
+
 	/* The weight of the Collision vector component */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Flocking Behaviour")
 		float SeparationWeight{ 5.f };
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Flocking Behaviour")
+	float SeparationMaxSize{ 2.f };
+
+	/* The weight of the wall avoidance vector component */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Flocking Behaviour")
+		float WallAvoidanceWeight{ 5.f };
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Flocking Behaviour")
+		float WallAvoidanceMaxSize{ 0.5f };
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Flocking Behaviour")
 		float ObjectifWeight{ 2.5f };
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Flocking Behaviour")
+		float ShootingPositionWeight{ 1.f };
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Flocking Behaviour")
+		float FollowFormationWeight{ 1.f };
 
 	/* less sacades but more unprecise the greater it gets*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Flocking Behaviour")
-		float MovementVectorScale{ 2.f };
+		float MovementVectorScale{ 300.f };
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Flocking Behaviour")
+		int NumberOfRayForWallAvoidance{ 4 };
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Flocking Behaviour")
+		float RadiusForWallAvoidance{ 300.f };
+
+	UPROPERTY()
 		FVector SeparationVector{ 0.f, 0.f, 0.f };
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Flocking Behaviour")
+	UPROPERTY()
+		FVector WallAvoidanceVector{ 0.f, 0.f, 0.f };
+
+	UPROPERTY()
 		FVector CohesionVector{ 0.f, 0.f, 0.f };
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Flocking Behaviour")
+	UPROPERTY()
 		FVector AlignementVector{ 0.f, 0.f, 0.f };
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Flocking Behaviour")
+	UPROPERTY()
 		FVector ObjectifVector{ 0.f, 0.f, 0.f };
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Flocking Behaviour")
+	UPROPERTY()
+		FVector ShootingPositionVector{ 0.f, 0.f, 0.f };
+
+	UPROPERTY()
+		FVector FollowFormationVector{ 0.f, 0.f, 0.f };
+
+	UPROPERTY()
 		FVector MovementVector{ 0.f, 0.f, 0.f };
+
+	UPROPERTY()
+		FVector PreviousMovementVector{ 0.f, 0.f, 0.f };
+
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Flocking Behaviour")
+	//	float SeparationRange = 400.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Flocking Behaviour")
 		float DefaultNormalizeVectorTolerance = 0.0001f;
@@ -75,7 +115,7 @@ protected:
 	UFUNCTION()
 		void UpdateNeighbourhood();
 
-	/*Update and normalize vectors*/
+	/*Update*/
 	UFUNCTION()
 		void UpdateCohesionVector();
 
@@ -89,7 +129,16 @@ protected:
 		void UpdateObjectifVector();
 
 	UFUNCTION()
+		void UpdateShootingPositionVector();
+
+	UFUNCTION()
 		void UpdateMovementVector();
+
+	UFUNCTION()
+		void UpdateWallAvoidanceVector();
+
+	UFUNCTION()
+		void UpdateFollowFormationVector();
 
 	UFUNCTION()
 		void DrawDebug();
@@ -105,4 +154,7 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 		
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Navigation")
+		TSubclassOf<UNavigationQueryFilter> m_filter;
 };

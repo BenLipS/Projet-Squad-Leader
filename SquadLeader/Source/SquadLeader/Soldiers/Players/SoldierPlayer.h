@@ -14,7 +14,7 @@ class SQUADLEADER_API ASoldierPlayer : public ASoldier
 public:
 	ASoldierPlayer(const FObjectInitializer& _ObjectInitializer);
 
-protected:
+public:
 	virtual void BeginPlay() override;
 	void PossessedBy(AController* _newController) override;
 	void OnRep_PlayerState() override;
@@ -40,10 +40,6 @@ public:
 	virtual void LookUp(const float _Val) override;
 	virtual void Turn(const float _Val) override;
 
-//////////////// Teamable
-public:
-	virtual TSubclassOf<ASoldierTeam> GetTeam() override;
-	virtual bool SetTeam(TSubclassOf<ASoldierTeam> _Team) override;
 
 	virtual void cycleBetweenTeam() override;
 

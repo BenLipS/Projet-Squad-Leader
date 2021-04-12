@@ -7,7 +7,7 @@ UGA_LaunchGrenade::UGA_LaunchGrenade()
 
 	AbilityInputID = ESoldierAbilityInputID::None; // Must be defined in the BP subclasses
 	AbilityID = ESoldierAbilityInputID::None;
-	AbilityTags.AddTag(ASoldier::SkillGrenadeTag); // Must define another tag in the BP subclasses to be more specific
+	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Grenade"))); // Must define another tag in the BP subclasses to be more specific
 }
 
 void UGA_LaunchGrenade::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)

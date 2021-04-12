@@ -20,7 +20,7 @@ void ASoldierPrimarySpawn::BeginPlay() {
 void ASoldierPrimarySpawn::Destroyed()
 {
 	if (GetLocalRole() == ROLE_Authority && teamOwner) {
-		teamOwner.GetDefaultObject()->RemoveSpawn(this);
+		teamOwner->RemoveSpawn(this);
 	}
 	Super::Destroyed();
 }
@@ -38,9 +38,9 @@ void ASoldierPrimarySpawn::PreInitialisation()
 	UpdateTeamOwner();
 }
 
-int ASoldierPrimarySpawn::getpriority()
+int ASoldierPrimarySpawn::GetPriority() const
 {
-	return 1;
+	return 2;
 }
 
 
@@ -59,20 +59,20 @@ void ASoldierPrimarySpawn::OnRep_ChangeTeamOwner() {
 	}
 }
 
-void ASoldierPrimarySpawn::ServerChangeTeamOwner_Implementation(TSubclassOf<ASoldierTeam> _teamOwner)
+void ASoldierPrimarySpawn::ServerChangeTeamOwner_Implementation(ASoldierTeam* _teamOwner)
 {
 	teamOwner = _teamOwner;
 }
 
-bool ASoldierPrimarySpawn::ServerChangeTeamOwner_Validate(TSubclassOf<ASoldierTeam> _teamOwner)
+bool ASoldierPrimarySpawn::ServerChangeTeamOwner_Validate(ASoldierTeam* _teamOwner)
 {
 	return true;
 }
 
 void ASoldierPrimarySpawn::UpdateTeamOwner() {
 	if (GetLocalRole() == ROLE_Authority && teamOwner && teamOwner != previousTeamOwner) {  // server only and if teamOwner exist and is changed
-		teamOwner.GetDefaultObject()->AddSpawn(this);
-		if (previousTeamOwner) previousTeamOwner.GetDefaultObject()->RemoveSpawn(this);
+		teamOwner->AddSpawn(this);
+		if (previousTeamOwner) previousTeamOwner->RemoveSpawn(this);
 		previousTeamOwner = teamOwner;
 	}
 }

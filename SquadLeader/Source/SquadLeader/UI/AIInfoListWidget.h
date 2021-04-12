@@ -6,13 +6,14 @@
 #include "SL_UserWidget.h"
 #include "Components/TileView.h"
 #include "../Soldiers/AIs/SoldierAI.h"
+#include "Interface/SquadInterface.h"
 #include "AIInfoListWidget.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class SQUADLEADER_API UAIInfoListWidget : public USL_UserWidget
+class SQUADLEADER_API UAIInfoListWidget : public USL_UserWidget, public ISquadInterface
 {
 	GENERATED_BODY()
 	
@@ -26,19 +27,17 @@ protected:
 public:
 	UAIInfoListWidget(const FObjectInitializer& ObjectInitializer);
 
-	//-----Squad-----
-	UFUNCTION()
-	void OnSquadChanged(const TArray<FSoldierAIData>& newValue);
+	void SetupDelegateToObject(UObject* ObjectIn) override;
 
-	UFUNCTION()
-	void OnSquadHealthChanged(int index, float newHealth);
+	//-----ISquadDelegateInterface-----
+public:
+	void OnSquadChanged(const TArray<FSoldierAIData>& newValue) override;
 
-	UFUNCTION()
-	void OnSquadMaxHealthChanged(int index, float newHealth);
+	void OnSquadHealthChanged(int index, float newHealth) override;
 
-	UFUNCTION()
-	void OnSquadShieldChanged(int index, float newShield);
+	void OnSquadMaxHealthChanged(int index, float newHealth) override;
 
-	UFUNCTION()
-	void OnSquadMaxShieldChanged(int index, float newMaxShield);
+	void OnSquadShieldChanged(int index, float newShield) override;
+
+	void OnSquadMaxShieldChanged(int index, float newMaxShield) override;
 };

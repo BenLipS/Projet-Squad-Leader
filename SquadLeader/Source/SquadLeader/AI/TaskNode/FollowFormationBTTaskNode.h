@@ -23,4 +23,6 @@ public:
 	virtual void TickTask(class UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 
 	virtual FString GetStaticDescription() const override;
+
+	bool HysteresisDoFollow;
 };
