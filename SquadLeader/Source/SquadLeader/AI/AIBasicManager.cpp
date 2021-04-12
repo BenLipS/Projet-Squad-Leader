@@ -81,7 +81,6 @@ void AAIBasicManager::Tick(float DeltaSeconds) {
 	Super::Tick(DeltaSeconds);
 	/*if (GEngine)
 		GEngine->AddOnScreenDebugMessage(80, 2.f, FColor::Black, TEXT("I'm the AIBasicManager"));*/
-	
 }
 
 void AAIBasicManager::InitValue() {

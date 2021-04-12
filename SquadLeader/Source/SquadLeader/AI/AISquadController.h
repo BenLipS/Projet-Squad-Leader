@@ -47,7 +47,7 @@ public:
 	virtual void BeginPlay() override;
 
 	/*not used*/
-	void Init();
+	virtual void Init() override;
 
 	UPROPERTY()
 	AAISquadManager* SquadManager;
@@ -67,4 +67,11 @@ public:
 
 	UFUNCTION()
 		void UpdateFormation(const FVector _position);
+
+	UFUNCTION()
+		void SetUpMission(bool hasOrder, bool isInFormation, FVector _Location);
+
+protected:
+	
+	virtual void ChooseState() override;
 };
