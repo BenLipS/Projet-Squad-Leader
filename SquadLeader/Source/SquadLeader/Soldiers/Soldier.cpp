@@ -18,8 +18,9 @@
 
 ASoldier::ASoldier(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer.SetDefaultSubobjectClass<USoldierMovementComponent>(ACharacter::CharacterMovementComponentName)),
 bAbilitiesInitialized{ false },
+WeaponAttachPoint{ FName("WeaponSocket") },
 bChangedWeaponLocally{ false },
-FieldOfViewNormal{90.f},
+FieldOfViewNormal{ 90.f },
 ImpactHitFXScale{FVector{1.f}}
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -49,6 +50,10 @@ void ASoldier::Destroyed()
 void ASoldier::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// Weapon
+	WeaponMesh->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, WeaponAttachPoint);
+	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	// Cameras
 	if (bIsFirstPerson)
@@ -171,6 +176,9 @@ void ASoldier::InitMeshes()
 	FirstPersonMesh->CastShadow = false;
 
 	// 3rd person mesh - already defined with ACharacter
+
+	// Weapon
+	WeaponMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WeaponMesh"));
 
 	// Montage Delegates
 	StartGame_SoldierMontageEndedDelegate.BindUObject(this, &ASoldier::OnStartGameMontageCompleted);
