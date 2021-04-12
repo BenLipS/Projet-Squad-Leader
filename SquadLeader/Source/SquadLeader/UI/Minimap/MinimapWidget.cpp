@@ -1,6 +1,7 @@
 #include "MinimapWidget.h"
 #include "PointOfInterestWidget.h"
 #include "SquadLeader/GameState/SquadLeaderGameState.h"
+#include "SquadLeader/ControlArea/ControlArea.h"
 #include "SquadLeader/Soldiers/Players/SoldierPlayer.h"
 #include "Components/OverlaySlot.h"
 #include "SquadLeader/AI/AISquadManager.h"
@@ -31,27 +32,50 @@ void UMinimapWidget::OnSoldierAddedToTeam(ASoldier* _Soldier)
 
 	if (_Soldier->GetTeam() != Player->GetTeam()) // Soldier is an enemy
 	{
-		POI = CreateWidget<UPointOfInterestWidget>(MinimapOverlay, EnnemyIconWidgetClass);
+		POI = CreateWidget<UPointOfInterestWidget>(MinimapSoldierOverlay, EnnemyIconWidgetClass);
 	}
-	else if (Player->GetSquadManager()->HasSoldier(_Soldier)) // Soldier is part of the player's squad
+	else if (!!Cast<ASoldierPlayer>(_Soldier))// Soldier is a allie player
 	{
-		POI = CreateWidget<UPointOfInterestWidget>(MinimapOverlay, SquadIconWidgetClass);
+		POI = CreateWidget<UPointOfInterestWidget>(MinimapSoldierOverlay, PlayerAllieIconWidgetClass);
 	}
-	else // Soldier is an allie - not in player's squad
+	else if (Player->GetSquadManager()->HasSoldier(_Soldier)) // Soldier is part of the player's squad - // TODO: Review the test
 	{
-		POI = CreateWidget<UPointOfInterestWidget>(MinimapOverlay, AllieIconWidgetClass);
+		POI = CreateWidget<UPointOfInterestWidget>(MinimapSoldierOverlay, SquadIconWidgetClass);
+	}
+	else // Soldier is an AI allie
+	{
+		POI = CreateWidget<UPointOfInterestWidget>(MinimapSoldierOverlay, AIAllieIconWidgetClass);
 	}
 
 	if (POI)
 	{
 		// Put the POI to the center of the minimap as the base position
-		if (UOverlaySlot* OverlaySlot = Cast<UOverlaySlot>(MinimapOverlay->AddChild(POI)); OverlaySlot)
+		if (UOverlaySlot* OverlaySlot = Cast<UOverlaySlot>(MinimapSoldierOverlay->AddChild(POI)); OverlaySlot)
 		{
 			OverlaySlot->SetHorizontalAlignment(EHorizontalAlignment::HAlign_Center);
 			OverlaySlot->SetVerticalAlignment(EVerticalAlignment::VAlign_Center);
 		}
 		
-		POI->OwningSoldier = _Soldier;
+		POI->OwningActor = _Soldier;
+		POIList.Add(POI);
+	}
+}
+
+void UMinimapWidget::OnControlAreaAdded(AControlArea* _ControlArea)
+{
+	UPointOfInterestWidget* POI = CreateWidget<UPointOfInterestWidget>(MinimapControlAreaOverlay, ControlAreaIconWidgetClass);
+
+	if (POI)
+	{
+		// Put the POI to the center of the minimap as the base position
+		if (UOverlaySlot* OverlaySlot = Cast<UOverlaySlot>(MinimapControlAreaOverlay->AddChild(POI)); OverlaySlot)
+		{
+			OverlaySlot->SetHorizontalAlignment(EHorizontalAlignment::HAlign_Center);
+			OverlaySlot->SetVerticalAlignment(EVerticalAlignment::VAlign_Center);
+		}
+
+		POI->OwningActor = _ControlArea;
+
 		POIList.Add(POI);
 	}
 }
@@ -59,12 +83,12 @@ void UMinimapWidget::OnSoldierAddedToTeam(ASoldier* _Soldier)
 void UMinimapWidget::OnSoldierRemovedFromTeam(ASoldier* _Soldier)
 {
 	// Remove any widget whose actor ref match _Soldier
-	POIList.RemoveAll([&_Soldier](UPointOfInterestWidget* POI) { return POI->OwningSoldier == _Soldier; });
+	POIList.RemoveAll([&_Soldier](UPointOfInterestWidget* POI) { return POI->OwningActor == _Soldier; });
 
 	// TODO do I have to remove from viewport ?
 }
 
-void UMinimapWidget::OnUpdateTeamPositions()
+void UMinimapWidget::OnUpdatePOIs()
 {
 	APawn* Player = GetOwningPlayerPawn();
 	
@@ -75,16 +99,16 @@ void UMinimapWidget::OnUpdateTeamPositions()
 
 	for (UPointOfInterestWidget* POI : POIList)
 	{
-		const FVector2D SoldierPosition = FVector2D{ POI->OwningSoldier->GetActorLocation().X, POI->OwningSoldier->GetActorLocation().Y };
+		const FVector2D ActorPosition = FVector2D{ POI->OwningActor->GetActorLocation().X, POI->OwningActor->GetActorLocation().Y };
 
 		// Diff position between soldier and player
 		const float Coeff = Dimensions * Zoom / MinimapImage->GetDesiredSize().X; // Assume MinimapImage is 
-		const float DiffX = (PlayerPosition.X - SoldierPosition.X) / Coeff;
-		const float DiffY = (SoldierPosition.Y - PlayerPosition.Y) / Coeff; // Implicit * -1
+		const float DiffX = (PlayerPosition.X - ActorPosition.X) / Coeff;
+		const float DiffY = (ActorPosition.Y - PlayerPosition.Y) / Coeff; // Implicit * -1
 		const FVector2D DiffVec = { DiffX, DiffY };
 
 		// The POI is too far from the player
-		if (DiffVec.Size() > IconMaxLengthVisibility)
+		if (!POI->bPersistant && DiffVec.Size() > IconMaxLengthVisibility)
 		{
 			POI->SetVisibility(ESlateVisibility::Collapsed);
 			continue;

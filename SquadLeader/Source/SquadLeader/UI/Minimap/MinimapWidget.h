@@ -10,6 +10,7 @@
 #include "MinimapWidget.generated.h"
 
 class ASoldier;
+class AControlArea;
 class UPointOfInterestWidget;
 
 // !! WARNING !!
@@ -28,7 +29,10 @@ protected:
 	float Zoom;
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	UOverlay* MinimapOverlay;
+	UOverlay* MinimapSoldierOverlay;
+
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UOverlay* MinimapControlAreaOverlay;
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UImage* MinimapImage;
@@ -41,20 +45,27 @@ protected:
 	float IconMaxLengthVisibility;
 
 //////////////// Points of interest
-	// List of points of interest
 	TArray<UPointOfInterestWidget*> POIList;
 
 // Squad
 	UPROPERTY(EditDefaultsOnly, Category = "PointOfInterest")
 	TSubclassOf<UPointOfInterestWidget> SquadIconWidgetClass;
 
-// Allies
+// Player Allies
 	UPROPERTY(EditDefaultsOnly, Category = "PointOfInterest")
-	TSubclassOf<UPointOfInterestWidget> AllieIconWidgetClass;
+	TSubclassOf<UPointOfInterestWidget> PlayerAllieIconWidgetClass;
+
+// AI Allies
+	UPROPERTY(EditDefaultsOnly, Category = "PointOfInterest")
+	TSubclassOf<UPointOfInterestWidget> AIAllieIconWidgetClass;
 
 // Ennemies
 	UPROPERTY(EditDefaultsOnly, Category = "PointOfInterest")
 	TSubclassOf<UPointOfInterestWidget> EnnemyIconWidgetClass;
+
+// Control Area
+	UPROPERTY(EditDefaultsOnly, Category = "PointOfInterest")
+	TSubclassOf<UPointOfInterestWidget> ControlAreaIconWidgetClass;
 
 public:
 	UMinimapWidget(const FObjectInitializer& _ObjectInitializer);
@@ -64,6 +75,7 @@ public:
 	//-----IMinimapDelegateInterface-----
 	virtual void OnSoldierAddedToTeam(ASoldier* _Soldier) override;
 	virtual void OnSoldierRemovedFromTeam(ASoldier* _Soldier) override;
+	virtual void OnControlAreaAdded(AControlArea* _ControlArea) override;
 
-	virtual void OnUpdateTeamPositions() override;
+	virtual void OnUpdatePOIs() override;
 };

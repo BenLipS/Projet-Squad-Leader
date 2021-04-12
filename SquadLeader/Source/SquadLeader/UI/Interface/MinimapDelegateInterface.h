@@ -22,7 +22,8 @@ private:
 public:
 	virtual void OnSoldierAddedToTeam(ASoldier* _Soldier);
 	virtual void OnSoldierRemovedFromTeam(ASoldier* _Soldier);
-	virtual void OnUpdateTeamPositions();
+	virtual void OnControlAreaAdded(AControlArea* _ControlArea);
+	virtual void OnUpdatePOIs();
 
 	void AddMinimapDelegate(IMinimapInterface* _NewDelegate);
 	void RemoveMinimapDelegate(IMinimapInterface* _RemoveDelegate);

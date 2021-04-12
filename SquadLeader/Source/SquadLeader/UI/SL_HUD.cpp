@@ -5,6 +5,8 @@
 #include "../Soldiers/Players/SoldierPlayerState.h"
 
 #include "SquadLeader/GameState/SquadLeaderGameState.h"
+#include "SquadLeader/ControlArea/ControlAreaManager.h"
+#include "SquadLeader/ControlArea/ControlArea.h"
 #include "../Weapons/SL_Weapon.h"
 
 void ASL_HUD::BeginPlay()
@@ -26,6 +28,7 @@ void ASL_HUD::BeginPlay()
 	SetPlayerStateLink();
 	SetAIStateLink();
 	BindSoldierTeamChanges();
+	BindControlAreas();
 }
 
 void ASL_HUD::SetPlayerStateLink()
@@ -74,8 +77,25 @@ void ASL_HUD::BindSoldierTeamChanges()
 	{
 		for (ASoldierTeam* Team : GS->GetSoldierTeamCollection())
 		{
+			// Get current soldiers
+			for (ASoldier* Soldier : Team->GetSoldierList())
+				OnSoldierAddedToTeam(Soldier);
+
+			// Bind future SoldierTeam changes
 			Team->OnSoldierAddedToList.AddDynamic(this, &ASL_HUD::OnSoldierAddedToTeam);
 			Team->OnSoldierRemovedFromList.AddDynamic(this, &ASL_HUD::OnSoldierRemovedFromTeam);
+		}
+	}
+}
+
+void ASL_HUD::BindControlAreas()
+{
+	if (ASquadLeaderGameState* GS = GetWorld()->GetGameState<ASquadLeaderGameState>(); GS)
+	{
+		// Get current control areas - TODO: Bindfuture changes
+		for (AControlArea* ControlArea : GS->GetControlAreaManager()->GetControlArea())
+		{
+			OnControlAreaAdded(ControlArea);
 		}
 	}
 }
