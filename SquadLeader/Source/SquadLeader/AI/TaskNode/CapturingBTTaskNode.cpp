@@ -24,7 +24,7 @@ void UCapturingBTTaskNode::TickTask(class UBehaviorTreeComponent& OwnerComp, uin
 	ResultState result = m_ai->Capturing();
 	if (result == ResultState::Success)
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
-	else if (result == ResultState::Failed)
+	else if (result == ResultState::Failed || Cast<AAIGeneralController>(OwnerComp.GetOwner())->StopCurrentBehavior)
 		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
 	else
 		FinishLatentTask(OwnerComp, EBTNodeResult::InProgress);

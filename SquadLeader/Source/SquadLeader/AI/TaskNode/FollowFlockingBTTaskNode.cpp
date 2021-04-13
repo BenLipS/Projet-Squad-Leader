@@ -55,7 +55,7 @@ void UFollowFlockingBTTaskNode::TickTask(class UBehaviorTreeComponent& OwnerComp
 
 	if(arrive == ResultState::Success)
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
-	if(arrive == ResultState::Failed)
+	if(arrive == ResultState::Failed || Cast<AAIGeneralController>(OwnerComp.GetOwner())->StopCurrentBehavior)
 		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
 
 	else if (AAISquadController* AISquadController = Cast<AAISquadController>(OwnerComp.GetOwner()); AISquadController && AISquadController->get_blackboard()->GetValueAsBool("IsInFormation") == true) {
