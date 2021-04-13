@@ -196,23 +196,25 @@ void AAISquadManager::UpdateCircleFormation()
 
 void AAISquadManager::UpdateArrowFormation()
 {
-	FVector DirPlayer = Leader->GetActorForwardVector();
-	//DirPlayer = -DirPlayer;
-	FVector LocPlayer = Leader->GetActorLocation();
-	float angle = FMath::RadiansToDegrees(FGenericPlatformMath::Acos(FVector::DotProduct({ 1,0,0 }, DirPlayer) / (1 * DirPlayer.Size())));
-	if (DirPlayer.Y < 0) angle = -angle;
-	float AnglePerAI = 180 / (AISquadList.Num() - 1);
-	FormationPos.Empty();
-	std::for_each(AISquadList.begin(), AISquadList.end(), [&](AAISquadController* BoidController) {
-		FVector Pos{};
-		FVector Offset{ 0.f, -1.f, 0.f };
-		Offset = Offset.RotateAngleAxis(angle, { 0, 0, 1 });
-		Offset = Offset.RotateAngleAxis(AnglePerAI * AISquadList.IndexOfByKey(BoidController), { 0, 0, 1 });
-		float CoefToGetCloser =FMath::Abs(90 - AnglePerAI * AISquadList.IndexOfByKey(BoidController)) / 90;
-		Pos = LocPlayer + Offset * 200 * (1 - CoefToGetCloser + 1.5f);
-		//DrawDebugPoint(Leader->GetWorld(), Pos, 20, FColor::Yellow);
-		FormationPos.Add(Pos);
-		});
+	if (AISquadList.Num() > 1) {
+		FVector DirPlayer = Leader->GetActorForwardVector();
+		//DirPlayer = -DirPlayer;
+		FVector LocPlayer = Leader->GetActorLocation();
+		float angle = FMath::RadiansToDegrees(FGenericPlatformMath::Acos(FVector::DotProduct({ 1,0,0 }, DirPlayer) / (1 * DirPlayer.Size())));
+		if (DirPlayer.Y < 0) angle = -angle;
+		float AnglePerAI = 180 / (AISquadList.Num() - 1);
+		FormationPos.Empty();
+		std::for_each(AISquadList.begin(), AISquadList.end(), [&](AAISquadController* BoidController) {
+			FVector Pos{};
+			FVector Offset{ 0.f, -1.f, 0.f };
+			Offset = Offset.RotateAngleAxis(angle, { 0, 0, 1 });
+			Offset = Offset.RotateAngleAxis(AnglePerAI * AISquadList.IndexOfByKey(BoidController), { 0, 0, 1 });
+			float CoefToGetCloser = FMath::Abs(90 - AnglePerAI * AISquadList.IndexOfByKey(BoidController)) / 90;
+			Pos = LocPlayer + Offset * 200 * (1 - CoefToGetCloser + 1.5f);
+			//DrawDebugPoint(Leader->GetWorld(), Pos, 20, FColor::Yellow);
+			FormationPos.Add(Pos);
+			});
+	}
 }
 
 void AAISquadManager::UpdateMission(const MissionType _MissionType, const FVector& _Location)
