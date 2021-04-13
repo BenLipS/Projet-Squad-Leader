@@ -80,7 +80,7 @@ void AAISquadController::Init()
 void AAISquadController::FollowFormation() {
 	GetValidFormationPos();
 	//EPathFollowingRequestResult::Type _movetoResult = MoveToLocation(blackboard->GetValueAsVector("FormationLocation"), 5.f);
-	DrawDebugPoint(GetWorld(), blackboard->GetValueAsVector("FormationLocation"), 12, FColor::Purple);
+	//DrawDebugPoint(GetWorld(), blackboard->GetValueAsVector("FormationLocation"), 12, FColor::Purple);
 }
 
 void AAISquadController::Die() {
