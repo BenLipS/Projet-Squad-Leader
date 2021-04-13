@@ -27,10 +27,10 @@ public:
 		bool HysteresisDoRunningFormation = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Formation Behaviour")
-		float HysteresisRunningDistanceForFormation = 500.f;
+		float HysteresisRunningDistanceForFormation = 300.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Formation Behaviour")
-		float StopHysteresisRunningDistanceForFormation = 300.f;
+		float StopHysteresisRunningDistanceForFormation = 200.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Formation Behaviour")
 	float HysteresisDistanceForFormation = 300.f;
