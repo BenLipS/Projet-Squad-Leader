@@ -65,7 +65,9 @@ void UGA_FireWeaponInstant::FireBullet()
 	}
 
 	// Too soon to shoot or is reloading
-	if (FMath::Abs(UGameplayStatics::GetTimeSeconds(GetWorld()) - TimeOfLastShoot) < SourceWeapon->GetTimeBetweenShots()
+	const constexpr float epsilon = 0.01; // Error tolerance
+
+	if (FMath::Abs(UGameplayStatics::GetTimeSeconds(GetWorld()) - TimeOfLastShoot) - epsilon < SourceWeapon->GetTimeBetweenShots()
 		|| SourceSoldier->GetAbilitySystemComponent()->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("State.ReloadingWeapon"))))
 	{
 		// Wait for the next fire
