@@ -311,3 +311,17 @@ void ASoldierPlayerController::ServerCheat_Die_Implementation()
 {
 	Cheat_Die();
 }
+
+void ASoldierPlayerController::Cheat_SuperDamage()
+{
+	if (GetLocalRole() < ROLE_Authority)
+		ServerCheat_SuperDamage();
+	
+	if (ASoldierPlayer* Soldier = GetPawn<ASoldierPlayer>(); Soldier && Soldier->GetCurrentWeapon())
+		Soldier->GetCurrentWeapon()->SetWeaponDamage(999999.f);
+}
+
+void ASoldierPlayerController::ServerCheat_SuperDamage_Implementation()
+{
+	Cheat_SuperDamage();
+}

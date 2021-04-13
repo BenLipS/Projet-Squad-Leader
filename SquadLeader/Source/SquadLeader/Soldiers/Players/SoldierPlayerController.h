@@ -135,4 +135,11 @@ public:
 	UFUNCTION(Server, Reliable)
 	void ServerCheat_Die();
 	void ServerCheat_Die_Implementation();
+
+	UFUNCTION(exec)
+	void Cheat_SuperDamage();
+
+	UFUNCTION(Server, Reliable)
+	void ServerCheat_SuperDamage();
+	void ServerCheat_SuperDamage_Implementation();
 };
