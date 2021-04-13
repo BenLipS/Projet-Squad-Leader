@@ -4,10 +4,14 @@
 #include "../../Soldiers/Soldier.h"
 #include "GameplayEffects/States/GE_StateFighting.h"
 #include "GameplayEffects/GE_UpdateStats.h"
+#include "SquadLeader/SquadLeaderGameModeBase.h"
 
-UAttributeSetSoldier::UAttributeSetSoldier(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer)
+UAttributeSetSoldier::UAttributeSetSoldier(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer),
+CharacterLevel{ 1.f },
+MaxLevel{ 10.f },
+EXP{ 0.f },
+MoveSpeedMultiplier{ 1.f }
 {
-	CharacterLevel = 1.f;
 }
 
 void UAttributeSetSoldier::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -15,6 +19,8 @@ void UAttributeSetSoldier::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(UAttributeSetSoldier, CharacterLevel);
+	DOREPLIFETIME(UAttributeSetSoldier, EXP);
+	DOREPLIFETIME(UAttributeSetSoldier, EXPLevelUp);
 	DOREPLIFETIME(UAttributeSetSoldier, Health);
 	DOREPLIFETIME(UAttributeSetSoldier, MaxHealth);
 	DOREPLIFETIME(UAttributeSetSoldier, HealthRegenRate);
@@ -33,6 +39,10 @@ bool UAttributeSetSoldier::PreGameplayEffectExecute(FGameplayEffectModCallbackDa
 void UAttributeSetSoldier::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
 {
 	Super::PreAttributeChange(Attribute, NewValue);
+
+	// We don't want stat changes if the soldier is dead
+	if (GetOwningAbilitySystemComponent()->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("State.Dead"))))
+		return;
 
 	if (Attribute == GetMaxHealthAttribute())
 		AdjustAttributeForMaxChange(Health, MaxHealth, NewValue, GetHealthAttribute());
@@ -76,11 +86,8 @@ void UAttributeSetSoldier::PostGameplayEffectExecute(const FGameplayEffectModCal
 			}
 			if (!TargetSoldier->IsAlive()) // The soldier has been killed
 			{
-				// TODO: SourceSoldier should get prestige/experience after killing. Then, in attributeSet we handle leveling up based on exp value
-				if (SourceSoldier)
-				{
-					SourceSoldier->LevelUp();
-				}
+				if (ASquadLeaderGameModeBase* GameMode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode()); GameMode)
+					GameMode->NotifySoldierKilled(TargetSoldier, SourceSoldier);
 			}
 			else if (SourceASC)
 			{
@@ -110,14 +117,9 @@ void UAttributeSetSoldier::AdjustAttributeForMaxChange(FGameplayAttributeData& A
 	}
 }
 
-// TODO: See what to do with basic AIs and squad AIs. 
-// Should they solo level up ? Do their levels depend of the leader of squad ?
-// Do the Basic AIs have the same than the lower player/squad leader ?
 void UAttributeSetSoldier::LevelUp()
 {
 	UAbilitySystemComponent* ASC = GetOwningAbilitySystemComponent();
-	if (!ASC)
-		return;
 
 	if (ASoldier* Soldier = Cast<ASoldier>(ASC->AbilityActorInfo->AvatarActor.Get()); Soldier)
 	{
@@ -130,9 +132,32 @@ void UAttributeSetSoldier::LevelUp()
 	}
 }
 
+void UAttributeSetSoldier::GrantEXP(const float _EXP)
+{
+	UAbilitySystemComponent* ASC = GetOwningAbilitySystemComponent();
+	
+	if (ASoldier* Soldier = Cast<ASoldier>(ASC->AbilityActorInfo->AvatarActor.Get()); Soldier)
+	{
+		ASC->ApplyModToAttributeUnsafe(GetEXPAttribute(), EGameplayModOp::Additive, _EXP);
+
+		while (GetEXP() >= GetEXPLevelUp() && !FMath::IsNearlyEqual(GetCharacterLevel(), MaxLevel, 0.1f))
+			Soldier->LevelUp();
+	}
+}
+
 void UAttributeSetSoldier::OnRep_CharacterLevel(const FGameplayAttributeData& _OldCharacterLevel)
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAttributeSetSoldier, CharacterLevel, _OldCharacterLevel);
+}
+
+void UAttributeSetSoldier::OnRep_EXP(const FGameplayAttributeData& _OldEXP)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAttributeSetSoldier, EXP, _OldEXP);
+}
+
+void UAttributeSetSoldier::OnRep_EXPLevelUp(const FGameplayAttributeData& _OldEXPLevelUp)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAttributeSetSoldier, EXPLevelUp, _OldEXPLevelUp);
 }
 
 void UAttributeSetSoldier::OnRep_Health(const FGameplayAttributeData& _OldHealth)

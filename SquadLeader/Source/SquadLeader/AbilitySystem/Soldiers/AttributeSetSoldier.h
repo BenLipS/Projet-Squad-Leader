@@ -35,9 +35,25 @@ public:
 	FGameplayAttributeData CharacterLevel;
 	ATTRIBUTE_ACCESSORS(UAttributeSetSoldier, CharacterLevel)
 
+	UPROPERTY(BlueprintReadOnly)
+	float MaxLevel;
+
+	// EXP
+	UPROPERTY(BlueprintReadOnly, Category = "Attributes | EXP", ReplicatedUsing = OnRep_EXP)
+	FGameplayAttributeData EXP;
+	ATTRIBUTE_ACCESSORS(UAttributeSetSoldier, EXP)
+
+	// EXPLevelUp
+	UPROPERTY(BlueprintReadOnly, Category = "Attributes | EXPLevelUp", ReplicatedUsing = OnRep_EXPLevelUp)
+	FGameplayAttributeData EXPLevelUp;
+	ATTRIBUTE_ACCESSORS(UAttributeSetSoldier, EXPLevelUp)
+
 public:
 	UFUNCTION()
 	void LevelUp();
+
+	UFUNCTION()
+	void GrantEXP(const float _EXP);
 
 public: // TODO: Should the attributes be public ?
 	// Damage is a meta attribute used by the DamageExecution to calculate final damage, which then turns into -Health
@@ -89,6 +105,12 @@ public: // TODO: Should the attributes be public ?
 protected:
 	UFUNCTION()
 	virtual void OnRep_CharacterLevel(const FGameplayAttributeData& _OldCharacterLevel);
+	
+	UFUNCTION()
+	virtual void OnRep_EXP(const FGameplayAttributeData& _OldEXP);
+	
+	UFUNCTION()
+	virtual void OnRep_EXPLevelUp(const FGameplayAttributeData& _OldEXPLevelUp);
 
 	UFUNCTION()
 	virtual void OnRep_Health(const FGameplayAttributeData& _OldHealth);

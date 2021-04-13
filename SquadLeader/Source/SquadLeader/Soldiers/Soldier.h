@@ -171,7 +171,7 @@ public:
 	FDelegateHandle HealthChangedDelegateHandle;
 	virtual void HealthChanged(const FOnAttributeChangeData& _Data);
 
-	void LevelUp();
+	virtual void LevelUp();
 	virtual void Die();
 	virtual void Respawn();
 	virtual void OnReceiveDamage(const FVector& _ImpactPoint, const FVector& _SourcePoint);

@@ -68,13 +68,11 @@ void ASoldier::BeginPlay()
 	// from the server only, have a test to determine wheter we can change the team, then use a ClientSetTeam to replicate the change
 	//if (GetLocalRole() == ROLE_Authority)
 	{
-		// Init team
-		if (InitialTeam && !(GetTeam()))
-			SetTeam(InitialTeam);
-
-		// Add this to the team data
+		// Add this to the team data or use the default team
 		if (GetTeam())
 			GetTeam()->AddSoldierList(this);
+		else if (InitialTeam)
+			SetTeam(InitialTeam);
 	}
 
 	if (StartGameMontage)
