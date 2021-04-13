@@ -1,6 +1,7 @@
 #include "SoldierAI.h"
 #include "../../AI/AIGeneralController.h"
 #include "../../AI/AISquadController.h"
+#include "BehaviorTree/BlackboardComponent.h"
 
 ASoldierAI::ASoldierAI(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer)
 {
@@ -145,6 +146,16 @@ void ASoldierAI::Respawn() {
 	auto AIController = Cast<AAIGeneralController>(GetController());
 	if (AIController)
 		AIController->Respawn();
+}
+
+void ASoldierAI::OnReceiveDamage(const FVector& _ImpactPoint, const FVector& _SourcePoint)
+{
+	//Init GetHit Behaviour
+	if (AAIGeneralController* AIController = Cast<AAIGeneralController>(GetController()); AIController && AIController->GetSeenEnemySoldier().Num() == 0) {
+		AIController->StopCurrentBehavior = true;
+		AIController->get_blackboard()->SetValueAsBool("IsHit", true);
+		AIController->get_blackboard()->SetValueAsVector("IsHitEnemyLocation", _SourcePoint);
+	}
 }
 
 void ASoldierAI::InitializeAttributeChangeCallbacks()
