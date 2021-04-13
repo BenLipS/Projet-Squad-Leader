@@ -74,5 +74,6 @@ void UMissionList::StateChange(){
 }
 
 void UMissionList::Empty() {
+	m_index_current_mission = 0;
 	m_missions.Empty();
 }

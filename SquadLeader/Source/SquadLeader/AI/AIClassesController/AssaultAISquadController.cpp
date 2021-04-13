@@ -34,6 +34,7 @@ void AAssaultAISquadController::Tick(float DeltaSeconds) {
 	}
 
 	//TODO Make a function with that OverHeat()
+	bool test = !Cast<ASoldier>(GetPawn())->IsInCooldown(FGameplayTag::RequestGameplayTag(FName("Cooldown.Ability.OverheatingWeapon")));
 	if (SeenEnemySoldier.Num() >= NUmberOfEnemyToOverHeat && !Cast<ASoldier>(GetPawn())->IsInCooldown(FGameplayTag::RequestGameplayTag(FName("Cooldown.Ability.OverheatingWeapon")))) {
 		StopCurrentBehavior = true;
 		Blackboard->SetValueAsBool("OverHeat", true);
