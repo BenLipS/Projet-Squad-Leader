@@ -21,6 +21,9 @@ bAbilitiesInitialized{ false },
 WeaponAttachPoint{ FName("WeaponSocket") },
 bChangedWeaponLocally{ false },
 FieldOfViewNormal{ 90.f },
+LevelUpFXRelativeLocation{ FVector{0.f} },
+LevelUpFXRotator{ FRotator{} },
+LevelUpFXScale{ FVector{1.f} },
 ImpactHitFXScale{FVector{1.f}}
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -743,14 +746,8 @@ void ASoldier::LevelUp()
 {
 	AttributeSet->LevelUp();
 
-	// TODO: Review the particle application here. I did this because the level up only is triggered on server due to the weapon fire working on server only
-	if (LevelUpFX)
-	{
-		if (GetLocalRole() == ROLE_Authority)
-			ClientSpawnLevelUpParticle(); 
-		else
-			UParticleSystemComponent* LaserParticle = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), LevelUpFX, GetActorLocation(), GetActorRotation());
-	}
+	if (LevelUpFX && (GetLocalRole() == ROLE_Authority))
+		ClientSpawnLevelUpParticle(); 
 }
 
 void ASoldier::Die()
@@ -892,7 +889,8 @@ uint8 ASoldier::GetInfluenceRadius() const noexcept{
 
 void ASoldier::ClientSpawnLevelUpParticle_Implementation()
 {
-	UParticleSystemComponent* LaserParticle = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), LevelUpFX, GetActorLocation(), GetActorRotation());
+	UParticleSystemComponent* LevelUpParticle = UGameplayStatics::SpawnEmitterAttached(LevelUpFX, GetMesh(), FName{ "Pelvis" }, LevelUpFXRelativeLocation, LevelUpFXRotator, EAttachLocation::SnapToTarget);
+	LevelUpParticle->SetWorldScale3D(LevelUpFXScale);
 }
 
 bool ASoldier::ClientSpawnLevelUpParticle_Validate()

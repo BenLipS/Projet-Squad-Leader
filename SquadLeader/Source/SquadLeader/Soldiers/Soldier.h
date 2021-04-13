@@ -369,6 +369,15 @@ protected:
 	UParticleSystem* LevelUpFX;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Animation | Particles")
+	FVector LevelUpFXRelativeLocation;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Animation | Particles")
+	FRotator LevelUpFXRotator;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Animation | Particles")
+	FVector LevelUpFXScale;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Animation | Particles")
 	UParticleSystem* ImpactHitFX;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Animation | Particles")
