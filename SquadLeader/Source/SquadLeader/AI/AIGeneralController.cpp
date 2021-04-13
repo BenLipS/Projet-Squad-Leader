@@ -23,6 +23,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Math/RandomStream.h"
 #include "../ControlArea/ControlArea.h"
+#include "AISquadController.h"
 
 AAIGeneralController::AAIGeneralController(FObjectInitializer const& object_initializer)
 {
@@ -446,6 +447,8 @@ void AAIGeneralController::Respawn()
 	//ResetBlackBoard() shall not
 	SetState(AIBasicState::Moving);
 	SeenSoldier.Empty();
+	if(AAISquadController* AISquad = Cast<AAISquadController>(this); AISquad)
+		SetState(AIBasicState::Formation);
 	PerceptionComponent->ForgetAll();
 }
 

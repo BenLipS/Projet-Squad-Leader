@@ -6,6 +6,7 @@
 #include "Mission/FormationMission.h"
 #include "Mission/DefendMission.h"
 #include "Mission/CaptureMission.h"
+#include "AISquadController.h"
 #include "Mission/PatrolMission.h"
 #include "NavigationSystem.h"
 #include "BehaviorTree/BlackboardComponent.h"
@@ -88,9 +89,9 @@ void AAISquadManager::Tick(float DeltaTime)
 {
 	//if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Black, FString::Printf(TEXT("Tick for: %s"), *Leader->GetName()));
 
-	if (m_inFormation) {
-		UpdateFormation();
-	}
+	//if (m_inFormation) {
+	UpdateFormation();
+	//}
 	
 	Super::Tick(DeltaTime);
 		
