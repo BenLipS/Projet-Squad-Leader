@@ -62,6 +62,10 @@ void ASquadLeaderGameModeBase::StartPlay() {
 	InitInfluenceMap();
 	InitAIManagers();
 
+	// Start timer for the granted EXP over time
+	FTimerHandle Handle{};
+	GetWorldTimerManager().SetTimer(Handle, this, &ASquadLeaderGameModeBase::GrantOverTimeEXPToSoldier, TimeBetweenGrantedEXP, true);
+
 	Super::StartPlay();
 }
 
@@ -166,6 +170,18 @@ void ASquadLeaderGameModeBase::EndGame()
 		}
 	}
 	//FGenericPlatformMisc::RequestExit(false);
+}
+
+void ASquadLeaderGameModeBase::GrantOverTimeEXPToSoldier()
+{
+	for (ASoldierTeam* Team : Cast<ASquadLeaderGameState>(GameState)->GetSoldierTeamCollection())
+	{
+		for (ASoldier* Soldier : Team->GetSoldierList())
+		{
+			if (Soldier->IsA<ASoldierPlayer>())
+				Soldier->GetAttributeSet()->GrantEXP(EXP_OverTime);
+		}
+	}
 }
 
 void ASquadLeaderGameModeBase::NotifySoldierKilled(ASoldier* _DeadSoldier, ASoldier* _Killer)

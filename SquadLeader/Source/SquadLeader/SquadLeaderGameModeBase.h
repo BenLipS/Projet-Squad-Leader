@@ -25,7 +25,7 @@ public:
 
 protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Respawn")
-		float RespawnDelay;
+	float RespawnDelay;
 	
 public:
 	void SoldierDied(AController* _Controller);
@@ -36,40 +36,44 @@ public:
 
 protected:
 	UPROPERTY(EditDefaultsOnly)
-		TSubclassOf<AAIBasicManager> AIBasicManagerClass;
+	TSubclassOf<AAIBasicManager> AIBasicManagerClass;
 
 	UPROPERTY(EditDefaultsOnly)
-		TSubclassOf<AInfluenceMapGrid> InfluenceMapClass;
+	TSubclassOf<AInfluenceMapGrid> InfluenceMapClass;
 
 public:
 	UPROPERTY()
-		TMap<class ASoldierTeam*, AAIBasicManager*> AIBasicManagerCollection;
+	TMap<class ASoldierTeam*, AAIBasicManager*> AIBasicManagerCollection;
 	UFUNCTION()
-		void InitAIManagers();
+	void InitAIManagers();
 
 	UPROPERTY()
-		TArray<AAISquadManager*> ListAISquadManagers;
+	TArray<AAISquadManager*> ListAISquadManagers;
 
 	UPROPERTY()
-		AInfluenceMapGrid* InfluenceMap;
+	AInfluenceMapGrid* InfluenceMap;
 	UFUNCTION()
-		void InitInfluenceMap();
+	void InitInfluenceMap();
 
 	/*
 	* For AI placed via drag and drop
 	*/
 	UFUNCTION()
-		void AddAIBasicToManager(AAIBasicController* AIBasic);
+	void AddAIBasicToManager(AAIBasicController* AIBasic);
 
 	UFUNCTION()
-		TArray<AAISquadManager*> GetSquadManagers() { return ListAISquadManagers; }
+	TArray<AAISquadManager*> GetSquadManagers() { return ListAISquadManagers; }
 
 //////////////// EXP Rules
 public:
+	void GrantOverTimeEXPToSoldier();
 	void NotifySoldierKilled(ASoldier* _DeadSoldier, ASoldier* _Killer);
 	void NotifyControlAreaCaptured(AControlArea* _ControlArea);
 
 protected:
+	UPROPERTY(EditDefaultsOnly, Category = "EXP Soldiers")
+	float TimeBetweenGrantedEXP = 10.f;
+
 	UPROPERTY(EditDefaultsOnly, Category = "EXP Soldiers")
 	float EXP_Kill = 50.f;
 

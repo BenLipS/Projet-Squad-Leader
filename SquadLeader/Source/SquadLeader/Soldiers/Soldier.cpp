@@ -108,7 +108,7 @@ void ASoldier::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifeti
 void ASoldier::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	auto GM = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
+	ASquadLeaderGameModeBase* GM = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
 
 	if (GetTeam() && GM && GM->InfluenceMap) {
 		FGridPackage m_package;
