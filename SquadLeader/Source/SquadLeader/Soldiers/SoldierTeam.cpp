@@ -59,15 +59,13 @@ TSubclassOf<class ASoldierAI> ASoldierTeam::GetClassBasicAIHeavy()
 void ASoldierTeam::AddSoldierList(ASoldier* NewSoldier)
 {
 	SoldierList.AddUnique(NewSoldier);
+	OnSoldierAddedToList.Broadcast(NewSoldier);
 }
 
 void ASoldierTeam::RemoveSoldierList(ASoldier* NewSoldier)
 {
-	if (SoldierList.Contains(NewSoldier))
-	{
-		SoldierList.Remove(NewSoldier);
-		OnSoldierRemovedFromList.Broadcast(NewSoldier);
-	}
+	SoldierList.Remove(NewSoldier);
+	OnSoldierRemovedFromList.Broadcast(NewSoldier);
 }
 
 void ASoldierTeam::CleanSoldierList()

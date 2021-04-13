@@ -107,7 +107,6 @@ void UGA_FireWeaponInstant::HandleTargetData(const FGameplayAbilityTargetDataHan
 
 	FGameplayEffectSpecHandle DamageEffectSpecHandle = MakeOutgoingGameplayEffectSpec(GE_DamageClass, GetAbilityLevel());
 	DamageEffectSpecHandle.Data->SetSetByCallerMagnitude(FGameplayTag::RequestGameplayTag(FName("Data.Damage")), SourceWeapon->GetWeaponDamage());
-
 	const FGameplayAbilityTargetData* Data = _Data.Get(0);
 
 	for (TWeakObjectPtr<AActor> Actor : Data->GetActors())
@@ -116,15 +115,23 @@ void UGA_FireWeaponInstant::HandleTargetData(const FGameplayAbilityTargetDataHan
 		{
 			ApplyDamages(_Data, DamageEffectSpecHandle, TargetSoldier->GetAbilitySystemComponent());
 			TargetSoldier->OnReceiveDamage(Data->GetHitResult()->ImpactPoint, Data->GetHitResult()->TraceStart);
+			break;
 		}
 		else if (AShield* Shield = Cast<AShield>(Actor); Shield)
+		{
 			ApplyDamages(Shield, SourceWeapon->GetWeaponDamage());
+		}
 	}
 
+	// Gameplay cue
+	FGameplayEffectContextHandle EffectContext = DamageEffectSpecHandle.Data->GetEffectContext();
+	EffectContext.AddHitResult(*_Data.Get(0)->GetHitResult());
+
 	FGameplayCueParameters GC_Parameters;
-	GC_Parameters.EffectContext = DamageEffectSpecHandle.Data->GetEffectContext();
-	GC_Parameters.Instigator = CurrentActorInfo->AvatarActor.Get();
-	K2_ExecuteGameplayCueWithParams(FGameplayTag::RequestGameplayTag(FName("GameplayCue.FireWeapon.Instant")), GC_Parameters);
+	GC_Parameters.Instigator = SourceSoldier;
+	GC_Parameters.SourceObject = SourceWeapon;
+	GC_Parameters.EffectContext = EffectContext;
+	SourceSoldier->GetAbilitySystemComponent()->ExecuteGameplayCue(FGameplayTag::RequestGameplayTag(FName("GameplayCue.FireWeapon.Instant")), GC_Parameters);
 }
 
 void UGA_FireWeaponInstant::ApplyEffectsToSource()
@@ -139,9 +146,6 @@ void UGA_FireWeaponInstant::ApplyDamages(const FGameplayAbilityTargetDataHandle&
 {
 	if (Cast<ASoldier>(_TargetASC->GetAvatarActor())->GetTeam() != SourceSoldier->GetTeam())
 		SourceSoldier->GetAbilitySystemComponent()->ApplyGameplayEffectSpecToTarget(*_DamageEffectSpecHandle.Data.Get(), _TargetASC);
-
-	FGameplayEffectContextHandle EffectContext = _DamageEffectSpecHandle.Data->GetEffectContext();
-	EffectContext.AddHitResult(*_Data.Get(0)->GetHitResult());
 }
 
 void UGA_FireWeaponInstant::ApplyDamages(AShield* _Shield, const float _Damages)

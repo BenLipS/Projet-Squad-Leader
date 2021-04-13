@@ -1,6 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "SquadLeaderInitGameState.h"
 #include "../SquadLeaderGameModeBase.h"
 #include "../Interface/PreInitable.h"
@@ -58,10 +55,13 @@ void ASquadLeaderInitGameState::InitActorInWorld()
 	ensure(ControlAreaManager->GetControlArea().Num() >= 1);  // check if ControlAreaManager exist and have at least one ControlArea
 }
 
-
-void ASquadLeaderInitGameState::PlaceActorInWorld() {
+void ASquadLeaderInitGameState::PlaceActorInWorld()
+{
 	// Place ControlAreaManager in world
-	AControlAreaManager* CAM = GetWorld()->SpawnActor<AControlAreaManager>();
+
+	FActorSpawnParameters SpawnInfo;
+	SpawnInfo.Owner = this;
+	AControlAreaManager* CAM = GetWorld()->SpawnActor<AControlAreaManager>(SpawnInfo);
 
 	// more spawn if needed
 }
