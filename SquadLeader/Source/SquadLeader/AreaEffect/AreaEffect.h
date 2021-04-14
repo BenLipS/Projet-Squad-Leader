@@ -11,15 +11,15 @@
 #include "AbilitySystemComponent.h"
 #include "AreaEffect.generated.h"
 
+class ASoldier;
+
 UCLASS()
 class SQUADLEADER_API AAreaEffect : public AActor, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
 public:	
-	// Sets default values for this actor's properties
 	AAreaEffect();
-	AAreaEffect(AActor* realOwnerIn);
 
 public:
 	UAbilitySystemComponentAreaEffect* GetAbilitySystemComponent() const override;
@@ -29,8 +29,10 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	ASoldier* SourceSoldier = nullptr;
+
 	//Finish the areaEffect
-	void finishAreaEffect();
+	void FinishAreaEffect();
 
 	void InitializeAttributes();
 
@@ -48,14 +50,12 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Abilities")
 	TArray<TSubclassOf<class UGameplayEffect>> ExplosionEffects;
 
-	AActor* realOwner;
-
-	bool realOwnerHasASC;
-
 	void OnAreaTick();
+	void ShowEffects();
+	void ApplyEffects(UAbilitySystemComponent* _TargetASC);
 
-	FTimerHandle areaTimer;
-	FTimerHandle periodTimer;
+	FTimerHandle AreaTimer;
+	FTimerHandle PeriodTimer;
 
 //////////////// Collision
 public:

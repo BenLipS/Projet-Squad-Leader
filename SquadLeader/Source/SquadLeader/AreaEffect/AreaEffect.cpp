@@ -4,7 +4,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h"
 
-AAreaEffect::AAreaEffect() : realOwner{ this }, realOwnerHasASC{ true }
+AAreaEffect::AAreaEffect()
 {
 	PrimaryActorTick.bCanEverTick = false;
 	bReplicates = true;
@@ -13,25 +13,6 @@ AAreaEffect::AAreaEffect() : realOwner{ this }, realOwnerHasASC{ true }
 	AbilitySystemComponent->SetIsReplicated(true);
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
 	AttributeSet = CreateDefaultSubobject<UAttributeSetAreaEffect>(TEXT("Attribute Set"));
-}
-
-AAreaEffect::AAreaEffect(AActor* realOwnerIn) : realOwner{ realOwnerIn }
-{
-	PrimaryActorTick.bCanEverTick = false;
-
-	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponentAreaEffect>(TEXT("Ability System Component"));
-	AbilitySystemComponent->SetIsReplicated(true);
-	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
-	AttributeSet = CreateDefaultSubobject<UAttributeSetAreaEffect>(TEXT("Attribute Set"));
-
-	if (Cast<IAbilitySystemInterface>(realOwner))
-	{
-		realOwnerHasASC = true;
-	}
-	else
-	{
-		realOwnerHasASC = false;
-	}
 }
 
 UAbilitySystemComponentAreaEffect* AAreaEffect::GetAbilitySystemComponent() const
@@ -48,46 +29,31 @@ void AAreaEffect::BeginPlay()
 {
 	Super::BeginPlay();
 
+	SourceSoldier = Cast<ASoldier>(GetInstigator());
+
 	InitializeAttributes();
 	OnAreaTick();
 
 	if (AttributeSet->GetDuration() > 0.f)
 	{
-		UParticleSystemComponent* LevelUpParticle = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), AreaFX, FTransform{ FQuat{AreaFXRotator}, GetActorLocation() + AreaFXRelativeLocation, AreaFXScale});
+		if (!PeriodTimer.IsValid())
+			GetWorldTimerManager().SetTimer(PeriodTimer, this, &AAreaEffect::OnAreaTick, AttributeSet->GetInterval(), true);
 
-#ifdef UE_BUILD_DEBUG
-		if (bDebugTrace)
-			DrawDebugSphere(GetWorld(), GetActorLocation(), AttributeSet->GetRadius(), 50, FColor::Blue, false, AttributeSet->GetDuration());
-#endif
-
-		if (!periodTimer.IsValid()) {
-			GetWorldTimerManager().SetTimer(periodTimer, this, &AAreaEffect::OnAreaTick, AttributeSet->GetInterval(), true);
-		}
-		if (!areaTimer.IsValid()) {
-			GetWorldTimerManager().SetTimer(areaTimer, this, &AAreaEffect::finishAreaEffect, AttributeSet->GetDuration(), false);
-		}
+		if (!AreaTimer.IsValid())
+			GetWorldTimerManager().SetTimer(AreaTimer, this, &AAreaEffect::FinishAreaEffect, AttributeSet->GetDuration(), false);
 	}
 	else
-	{
-		UParticleSystemComponent* LevelUpParticle = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), AreaFX, FTransform{ FQuat{AreaFXRotator}, GetActorLocation() + AreaFXRelativeLocation, AreaFXScale });
-
-#ifdef UE_BUILD_DEBUG
-		if (bDebugTrace)
-			DrawDebugSphere(GetWorld(), GetActorLocation(), AttributeSet->GetRadius(), 50, FColor::Red, false, 0.5f);
-#endif
-
-		finishAreaEffect();
-	}
+		FinishAreaEffect();
 }
 
-void AAreaEffect::finishAreaEffect()
+void AAreaEffect::FinishAreaEffect()
 {
-	if (areaTimer.IsValid()) {
-		GetWorld()->GetTimerManager().ClearTimer(areaTimer);
-	}
-	if (periodTimer.IsValid()) {
-		GetWorld()->GetTimerManager().ClearTimer(periodTimer);
-	}
+	if (AreaTimer.IsValid())
+		GetWorld()->GetTimerManager().ClearTimer(AreaTimer);
+
+	if (PeriodTimer.IsValid())
+		GetWorld()->GetTimerManager().ClearTimer(PeriodTimer);
+
 	Destroy();
 }
 
@@ -101,61 +67,60 @@ void AAreaEffect::InitializeAttributes()
 
 	FGameplayEffectSpecHandle NewHandle = AbilitySystemComponent->MakeOutgoingSpec(DefaultAttributeEffects, 1.f, EffectContext);
 	if (NewHandle.IsValid())
-	{
 		FActiveGameplayEffectHandle ActiveGEHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*NewHandle.Data.Get());
-	}
 }
 
 void AAreaEffect::OnAreaTick()
 {
-	//Test Actors in area
-	FCollisionShape collisionShape;
-	collisionShape.ShapeType = ECollisionShape::Sphere;
-	collisionShape.SetSphere(AttributeSet->GetRadius());
+	ShowEffects();
 
-	TArray<FHitResult> hitActors;
+	if (!SourceSoldier)
+		return;
 
-	FVector startTrace = GetActorLocation();
-	FVector endTrace = startTrace;
+	FCollisionShape CollisionShape;
+	CollisionShape.ShapeType = ECollisionShape::Sphere;
+	CollisionShape.SetSphere(AttributeSet->GetRadius());
 
-	//Apply effects
-	if (GetWorld()->SweepMultiByChannel(hitActors, startTrace, endTrace, FQuat::FQuat(), ECC_WorldStatic, collisionShape))
+	TArray<FHitResult> HitActors;
+	FVector StartTrace = GetActorLocation();
+	FVector EndTrace = StartTrace;
+
+	if (GetWorld()->SweepMultiByChannel(HitActors, StartTrace, EndTrace, FQuat::FQuat(), ECC_WorldStatic, CollisionShape))
 	{
-		for (auto actor = hitActors.CreateIterator(); actor; ++actor)
+		for (auto Actor = HitActors.CreateIterator(); Actor; ++Actor)
 		{
-			if (actor->Actor == nullptr)
+			if (Actor->Actor == nullptr)
 				continue;
 
-			ASoldier* soldier = Cast<ASoldier>((*actor).GetActor());
+			if (ASoldier* TargetSoldier = Cast<ASoldier>((*Actor).GetActor()); TargetSoldier && TargetSoldier->GetAbilitySystemComponent())
+				ApplyEffects(TargetSoldier->GetAbilitySystemComponent());
+		}
+	}
+}
 
-			if (soldier)
-			{
-				UAbilitySystemComponent* ASC;
-				FGameplayEffectContextHandle EffectContext;
-				if (realOwnerHasASC)
-				{
-					ASC = Cast<IAbilitySystemInterface>(realOwner)->GetAbilitySystemComponent();
-					EffectContext = ASC->MakeEffectContext();
-					EffectContext.AddSourceObject(realOwner);
-				}
-				else
-				{
-					ASC = soldier->GetAbilitySystemComponent();
-					EffectContext = ASC->MakeEffectContext();
-					EffectContext.AddSourceObject(soldier);
-				}
-				for (auto effect : ExplosionEffects)
-				{
-					auto realEffect = Cast<UGameplayEffect>(effect);
-					realEffect;
-					FGameplayEffectSpecHandle NewHandle = ASC->MakeOutgoingSpec(effect, 1.f, EffectContext);
+void AAreaEffect::ShowEffects()
+{
+	UParticleSystemComponent* LevelUpParticle = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), AreaFX, FTransform{ FQuat{AreaFXRotator}, GetActorLocation() + AreaFXRelativeLocation, AreaFXScale });
 
-					if (NewHandle.IsValid())
-					{
-						ASC->ApplyGameplayEffectSpecToTarget(*NewHandle.Data.Get(), soldier->GetAbilitySystemComponent());
-					}
-				}
-			}
+#ifdef UE_BUILD_DEBUG
+	if (bDebugTrace)
+		DrawDebugSphere(GetWorld(), GetActorLocation(), AttributeSet->GetRadius(), 50, FColor::Blue, false, AttributeSet->GetDuration());
+#endif
+}
+
+void AAreaEffect::ApplyEffects(UAbilitySystemComponent* _TargetASC)
+{
+	if (UAbilitySystemComponent* ASC = SourceSoldier->GetAbilitySystemComponent(); ASC)
+	{
+		FGameplayEffectContextHandle EffectContext = ASC->MakeEffectContext();
+		EffectContext.AddSourceObject(SourceSoldier);
+
+		for (TSubclassOf<UGameplayEffect> ExplosionEffect : ExplosionEffects)
+		{
+			FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(ExplosionEffect, SourceSoldier->GetCharacterLevel(), EffectContext);
+
+			if (EffectSpecHandle.IsValid())
+				ASC->ApplyGameplayEffectSpecToTarget(*EffectSpecHandle.Data.Get(), _TargetASC);
 		}
 	}
 }
