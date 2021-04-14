@@ -48,7 +48,15 @@ public:
 	FGameplayAttributeData EXPLevelUp;
 	ATTRIBUTE_ACCESSORS(UAttributeSetSoldier, EXPLevelUp)
 
+protected:
+	// Accumulated EXP from the previous levels
+	UPROPERTY(BlueprintReadOnly, Category = "Attributes | EXPAccumulated", Replicated)
+	float EXPAccumulated;
+
 public:
+	UFUNCTION()
+	float GetEXPAccumulated() const;
+
 	UFUNCTION()
 	void LevelUp();
 

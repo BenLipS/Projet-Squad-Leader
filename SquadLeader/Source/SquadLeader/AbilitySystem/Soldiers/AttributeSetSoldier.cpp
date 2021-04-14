@@ -18,6 +18,9 @@ void UAttributeSetSoldier::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
+	DOREPLIFETIME(UAttributeSetSoldier, EXPAccumulated);
+
+	// Attributes
 	DOREPLIFETIME(UAttributeSetSoldier, CharacterLevel);
 	DOREPLIFETIME(UAttributeSetSoldier, EXP);
 	DOREPLIFETIME(UAttributeSetSoldier, EXPLevelUp);
@@ -117,6 +120,11 @@ void UAttributeSetSoldier::AdjustAttributeForMaxChange(FGameplayAttributeData& A
 	}
 }
 
+float UAttributeSetSoldier::GetEXPAccumulated() const
+{
+	return EXPAccumulated;
+}
+
 void UAttributeSetSoldier::LevelUp()
 {
 	UAbilitySystemComponent* ASC = GetOwningAbilitySystemComponent();
@@ -125,6 +133,9 @@ void UAttributeSetSoldier::LevelUp()
 	{
 		// Increase level by 1
 		ASC->ApplyModToAttributeUnsafe(GetCharacterLevelAttribute(), EGameplayModOp::Additive, 1);
+
+		// Update accumulated EXP
+		EXPAccumulated = GetEXPLevelUp();
 
 		// Grant new attribute values
 		FGameplayEffectSpecHandle Handle = ASC->MakeOutgoingSpec(Soldier->GetStatAttributeEffects(), GetCharacterLevel(), ASC->MakeEffectContext());

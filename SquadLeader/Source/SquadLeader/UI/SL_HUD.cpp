@@ -52,11 +52,15 @@ void ASL_HUD::SetPlayerStateLink()
 			PS->OnMaxHealthChanged.RemoveAll(this);
 			PS->OnShieldChanged.RemoveAll(this);
 			PS->OnMaxShieldChanged.RemoveAll(this);
+			PS->OnEXPChanged.RemoveAll(this);
+			PS->OnEXPLevelUpChanged.RemoveAll(this);
 
 			PS->OnHealthChanged.AddDynamic(this, &ASL_HUD::OnPlayerHealthChanged);
 			PS->OnMaxHealthChanged.AddDynamic(this, &ASL_HUD::OnPlayerMaxHealthChanged);
 			PS->OnShieldChanged.AddDynamic(this, &ASL_HUD::OnPlayerShieldChanged);
 			PS->OnMaxShieldChanged.AddDynamic(this, &ASL_HUD::OnPlayerMaxShieldChanged);
+			PS->OnEXPChanged.AddDynamic(this, &ASL_HUD::OnPlayerPrestigeChanged);
+			PS->OnEXPLevelUpChanged.AddDynamic(this, &ASL_HUD::OnPlayerPrestigeLevelUpChanged);
 
 			PS->BroadCastAllDatas();
 		}
