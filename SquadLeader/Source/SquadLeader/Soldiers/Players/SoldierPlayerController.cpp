@@ -1,14 +1,14 @@
 #include "SoldierPlayerController.h"
 #include "SoldierPlayerState.h"
-#include "../Soldier.h"
+#include "SoldierPlayer.h"
 #include "AbilitySystemComponent.h"
+#include "SquadLeader/Weapons/SL_Weapon.h"
+#include "../SoldierTeam.h"
+#include "../../AI/AISquadManager.h"
 #include "../../UI/SL_HUD.h"
 
 //TODO: rmove next include -> only use for the team init -> only use on temporary debug
 #include "../../GameState/SquadLeaderGameState.h"
-#include "../Players/SoldierPlayer.h"
-#include "../../AI/AISquadManager.h"
-#include "SquadLeader/Weapons/SL_Weapon.h"
 
 ASoldierPlayerController::ASoldierPlayerController()
 {
@@ -95,6 +95,9 @@ void ASoldierPlayerController::OnRep_PlayerState()
 void ASoldierPlayerController::Tick(float _deltaTime)
 {
 	Super::Tick(_deltaTime);
+
+	if (ASL_HUD* CurrentHUD = GetHUD<ASL_HUD>(); CurrentHUD && GetTeam())
+		CurrentHUD->OnUpdatePOIs();
 }
 
 void ASoldierPlayerController::SetupInputComponent()
@@ -259,10 +262,29 @@ void ASoldierPlayerController::OnOrderGiven_Implementation(MissionType Order, FV
 	}
 }
 
+void ASoldierPlayerController::AddAnAIToIndexSquad()
+{
+	if (GetLocalRole() < ROLE_Authority)
+		ServerAddAnAIToIndexSquad_Implementation();
+
+	if (Cast<ASoldierPlayer>(GetPawn())->GetSquadManager())
+		Cast<ASoldierPlayer>(GetPawn())->GetSquadManager()->AddAnAIToSquad();
+}
+
+void ASoldierPlayerController::ServerAddAnAIToIndexSquad_Implementation()
+{
+	AddAnAIToIndexSquad();
+}
+
 void ASoldierPlayerController::BroadCastManagerData()
 {
 	if (ASL_HUD* CurrentHUD = GetHUD<ASL_HUD>(); CurrentHUD)
 		CurrentHUD->OnSquadChanged(SquadManagerData.SquadData);
+}
+
+void ASoldierPlayerController::Cheat_AddAISquad()
+{
+	AddAnAIToIndexSquad();
 }
 
 void ASoldierPlayerController::Cheat_SuperSoldier()
@@ -307,4 +329,32 @@ void ASoldierPlayerController::Cheat_Die()
 void ASoldierPlayerController::ServerCheat_Die_Implementation()
 {
 	Cheat_Die();
+}
+
+void ASoldierPlayerController::Cheat_SuperDamage()
+{
+	if (GetLocalRole() < ROLE_Authority)
+		ServerCheat_SuperDamage();
+	
+	if (ASoldierPlayer* Soldier = GetPawn<ASoldierPlayer>(); Soldier && Soldier->GetCurrentWeapon())
+		Soldier->GetCurrentWeapon()->SetWeaponDamage(999999.f);
+}
+
+void ASoldierPlayerController::ServerCheat_SuperDamage_Implementation()
+{
+	Cheat_SuperDamage();
+}
+
+void ASoldierPlayerController::Cheat_LevelUp()
+{
+	if (GetLocalRole() < ROLE_Authority)
+		ServerCheat_LevelUp();
+
+	if (ASoldierPlayer* Soldier = GetPawn<ASoldierPlayer>(); Soldier)
+		Soldier->GrantEXP(Soldier->GetRemainEXPForLevelUp());
+}
+
+void ASoldierPlayerController::ServerCheat_LevelUp_Implementation()
+{
+	Cheat_LevelUp();
 }

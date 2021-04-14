@@ -34,15 +34,34 @@ public:
 	virtual void PreReplication(IRepChangedPropertyTracker& _ChangedPropertyTracker) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+	UFUNCTION(BlueprintCallable)
+	virtual void ResetWeapon();
+
+//////////////// Mesh
+protected:
+	UPROPERTY(EditDefaultsOnly, Category = "Mesh")
+	UStaticMeshComponent* WeaponMesh;
+
+public:
+	UFUNCTION(BlueprintCallable)
+	UStaticMeshComponent* GetWeaponMesh() const;
+
+protected:
+	UPROPERTY(EditDefaultsOnly, Category = "Mesh")
+	FName MuzzleAttachPoint;
+
+public:
+	UFUNCTION(BlueprintCallable, Category = "Mesh")
+	FName GetMuzzleAttachPoint() const;
+
+//////////////// Owning Soldier
+
 protected:
 	UPROPERTY(BlueprintReadOnly, Replicated)
 	ASoldier* OwningSoldier;
 
 public:
-	void SetOwningCharacter(ASoldier* _InOwningCharacter);
-	
-	UFUNCTION(BlueprintCallable)
-	virtual void ResetWeapon();
+	void SetOwningSoldier(ASoldier* _InOwningCharacter);
 
 //////////////// Ability System
 protected:
@@ -80,7 +99,7 @@ protected:
 protected:
 // Damage
 	UPROPERTY(BluePrintReadWrite, EditAnywhere, Category = "Stats|Damage")
-	float Damage;
+	FScalableFloat  Damage;
 
 // Range
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Stats")
@@ -190,7 +209,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Stats|Accuracy")
 	float GetTargetingSpreadMax() const noexcept;
 
-// Collision
+//////////////// Collision
 public:
 	// Collision profile - See Preset in Engine - Collision 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Collision")

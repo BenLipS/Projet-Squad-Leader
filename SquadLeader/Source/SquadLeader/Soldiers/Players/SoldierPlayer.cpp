@@ -8,7 +8,9 @@
 #include "../../Spawn/SoldierSpawn.h"
 #include "DrawDebugHelpers.h"
 
-ASoldierPlayer::ASoldierPlayer(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer), ASCInputBound{ false }
+ASoldierPlayer::ASoldierPlayer(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer),
+ASCInputBound{ false },
+NbAIsForNextLevelUp{ 0.f }
 {
 }
 
@@ -143,6 +145,17 @@ void ASoldierPlayer::cycleBetweenTeam()
 		SquadManager->UpdateSquadTeam(GetTeam());
 	}
 	else ServerCycleBetweenTeam();
+}
+
+void ASoldierPlayer::LevelUp()
+{
+	Super::LevelUp();
+
+	if (ASoldierPlayerController* PC = GetController<ASoldierPlayerController>(); PC)
+	{
+		for (int i = 0; i < NbAIsForNextLevelUp.GetValueAtLevel(GetCharacterLevel()); ++i)
+			PC->AddAnAIToIndexSquad();
+	}
 }
 
 FVector ASoldierPlayer::GetRespawnPoint()

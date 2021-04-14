@@ -21,11 +21,22 @@ protected:
 
 	bool GetValidFormationPos();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Formation Behaviour")
-	float RuningDistanceForFormation = 100.f;
+public:
+
+	UPROPERTY()
+		bool HysteresisDoRunningFormation = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Formation Behaviour")
-	float StopRuningDistanceForFormation = 50.f;
+		float HysteresisRunningDistanceForFormation = 300.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Formation Behaviour")
+		float StopHysteresisRunningDistanceForFormation = 200.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Formation Behaviour")
+	float HysteresisDistanceForFormation = 300.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Formation Behaviour")
+	float StopHysteresisDistanceForFormation = 100.f;
 
 /////////// Respawn
 public:
@@ -36,7 +47,7 @@ public:
 	virtual void BeginPlay() override;
 
 	/*not used*/
-	void Init();
+	virtual void Init() override;
 
 	UPROPERTY()
 	AAISquadManager* SquadManager;
@@ -46,11 +57,21 @@ public:
 public:
 	/* For BT Task  */
 	UFUNCTION(BlueprintCallable, Category = "Formation Behaviour")
-	EPathFollowingRequestResult::Type FollowFormation();
+	void FollowFormation();
 
 	virtual void Die() override;
 
 	virtual void ResetBlackBoard() override;
 
 	void FormationState();
+
+	UFUNCTION()
+		void UpdateFormation(const FVector _position);
+
+	UFUNCTION()
+		void SetUpMission(bool hasOrder, bool isInFormation, FVector _Location);
+
+protected:
+	
+	virtual void ChooseState() override;
 };

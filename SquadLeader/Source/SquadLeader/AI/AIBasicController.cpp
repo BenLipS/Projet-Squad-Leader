@@ -17,25 +17,25 @@
 #include "../SquadLeaderGameModeBase.h"
 #include "../Spawn/SoldierSpawn.h"
 #include "Mission.h"
-
+#include "AIBasicManager.h"
 
 AAIBasicController::AAIBasicController()
 {
 	setup_BehaviorTree();
 }
 
-
 void AAIBasicController::BeginPlay() {
 	Super::BeginPlay();
 	Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode())->AddAIBasicToManager(this);
 }
 
-void AAIBasicController::UpdateMission()
-{
-	if (Mission) {
-		if (Mission->Type == MissionType::MoveTo)
-			ObjectifLocation = Mission->Location;
-	}
+void AAIBasicController::Init() {
+	Super::Init();
+
+	m_state = AIBasicState::Patroling;
+	m_old_state = m_state;
+	blackboard->SetValueAsBool("is_patroling", true);
+	blackboard->SetValueAsVector("VectorLocation", GetPawn()->GetActorLocation());
 }
 
 void AAIBasicController::setup_BehaviorTree() {
@@ -46,7 +46,6 @@ void AAIBasicController::setup_BehaviorTree() {
 
 void AAIBasicController::Tick(float DeltaSeconds) {
 	Super::Tick(DeltaSeconds);
-	UpdateMission();
 }
 
 FVector AAIBasicController::GetRespawnPoint()  // TODO : Change this function to adapt the squad AI respawn
@@ -84,4 +83,8 @@ void AAIBasicController::ResetBlackBoard() {
 	Super::ResetBlackBoard();
 	blackboard->SetValueAsBool("DoFlocking", true);
 	blackboard->SetValueAsVector("FlockingLocation", Cast<ASoldierAI>(GetPawn())->GetLocation());
+}
+
+void AAIBasicController::SetManager(AAIBasicManager* _manager) noexcept {
+	m_manager = _manager;
 }

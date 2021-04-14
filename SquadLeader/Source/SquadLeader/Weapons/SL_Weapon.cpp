@@ -10,7 +10,8 @@
 #include "../UI/SL_HUD.h"
 
 ASL_Weapon::ASL_Weapon() :
-	Damage{ 10.f },
+	MuzzleAttachPoint{ FName("Muzzle") },
+	Damage{ FScalableFloat{1.f} },
 	MaxRange{ 999'999.f },
 	FieldOfViewAim {50.f},
 	TimeBetweenShots { 0.1f },
@@ -22,13 +23,16 @@ ASL_Weapon::ASL_Weapon() :
 	TargetingSpreadIncrement{ 0.f },
 	TargetingSpreadMax{ 0.f },
 	CollisionProfileName{ FName{"InstantWeaponFire"} }
-
 {
 	PrimaryActorTick.bCanEverTick = false;
 	bReplicates = true;
 	bNetUseOwnerRelevancy = true;
 	NetUpdateFrequency = 100.0f; // TODO: Tweak it
 
+	// Mesh
+	WeaponMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WeaponMesh"));
+
+	// Tags
 	WeaponAbilityTag = FGameplayTag::RequestGameplayTag("Ability.Skill.FireWeapon");
 	WeaponIsFiringTag = FGameplayTag::RequestGameplayTag("Weapon.IsFiring");
 	FireMode = FGameplayTag::RequestGameplayTag("Weapon.FireMode.Automatic");
@@ -67,13 +71,23 @@ void ASL_Weapon::PreReplication(IRepChangedPropertyTracker& ChangedPropertyTrack
 	Super::PreReplication(ChangedPropertyTracker);
 }
 
-void ASL_Weapon::SetOwningCharacter(ASoldier* _InOwningCharacter)
+void ASL_Weapon::SetOwningSoldier(ASoldier* _InOwningCharacter)
 {
 	OwningSoldier = _InOwningCharacter;
 
 	AbilitySystemComponent = OwningSoldier ? Cast<UAbilitySystemSoldier>(OwningSoldier->GetAbilitySystemComponent()) : nullptr;
 	SetOwner(OwningSoldier);
 	SetInstigator(OwningSoldier);
+}
+
+UStaticMeshComponent* ASL_Weapon::GetWeaponMesh() const
+{
+	return WeaponMesh;
+}
+
+FName ASL_Weapon::GetMuzzleAttachPoint() const
+{
+	return MuzzleAttachPoint;
 }
 
 void ASL_Weapon::ResetWeapon()
@@ -131,7 +145,7 @@ float ASL_Weapon::GetMaxRange() const noexcept
 
 float ASL_Weapon::GetWeaponDamage() const noexcept
 {
-	return Damage;
+	return IsValid(OwningSoldier) ? Damage.GetValueAtLevel(OwningSoldier->GetCharacterLevel()) : 1.f;
 }
 
 void ASL_Weapon::SetWeaponDamage(const float _Damage) noexcept

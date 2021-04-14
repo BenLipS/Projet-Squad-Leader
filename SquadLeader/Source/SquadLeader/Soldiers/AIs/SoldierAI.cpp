@@ -1,6 +1,7 @@
 #include "SoldierAI.h"
 #include "../../AI/AIGeneralController.h"
 #include "../../AI/AISquadController.h"
+#include "BehaviorTree/BlackboardComponent.h"
 
 ASoldierAI::ASoldierAI(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer)
 {
@@ -96,6 +97,36 @@ void ASoldierAI::CancelAbilityRun()
 	CancelAbility(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Run")));
 }
 
+bool ASoldierAI::ActivateAbilityLaunchGrenade()
+{
+	return ActivateAbility(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Grenade.Assault")));
+}
+
+bool ASoldierAI::ActivateAbilityLaunchHeal()
+{
+	return ActivateAbility(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.AreaEffectFromSelf.Instant.Heal")));
+}
+
+bool ASoldierAI::ActivateAbilityLaunchShield()
+{
+	return ActivateAbility(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.SpawnPhysicalShield")));
+}
+
+bool ASoldierAI::ActivateAbilityRegenShield()
+{
+	return ActivateAbility(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.AreaEffectFromSelf.Temporary.MaxShield")));
+}
+
+bool ASoldierAI::ActivateAbilityLaunchMine()
+{
+	return ActivateAbility(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Grenade.Heavy")));
+}
+
+bool ASoldierAI::ActivateAbilityOverHeat()
+{
+	return ActivateAbility(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.OverheatingWeapon")));
+}
+
 FVector ASoldierAI::GetRespawnPoint()
 {
 	if (auto AIController = Cast<AAIGeneralController>(GetController()); AIController) {
@@ -115,6 +146,16 @@ void ASoldierAI::Respawn() {
 	auto AIController = Cast<AAIGeneralController>(GetController());
 	if (AIController)
 		AIController->Respawn();
+}
+
+void ASoldierAI::OnReceiveDamage(const FVector& _ImpactPoint, const FVector& _SourcePoint)
+{
+	//Init GetHit Behaviour
+	if (AAIGeneralController* AIController = Cast<AAIGeneralController>(GetController()); AIController && AIController->GetSeenEnemySoldier().Num() == 0) {
+		AIController->StopCurrentBehavior = true;
+		AIController->get_blackboard()->SetValueAsBool("IsHit", true);
+		AIController->get_blackboard()->SetValueAsVector("IsHitEnemyLocation", _SourcePoint);
+	}
 }
 
 void ASoldierAI::InitializeAttributeChangeCallbacks()

@@ -27,7 +27,6 @@ ASquadLeaderGameModeBase::ASquadLeaderGameModeBase() : RespawnDelay{ 3.f }
 	UAbilitySystemGlobals::Get().InitGlobalData();
 }
 
-
 void ASquadLeaderGameModeBase::InitGameWithGameState() {
 	// set parameters for GameState's spawn
 	FActorSpawnParameters SpawnInfo;
@@ -52,9 +51,9 @@ void ASquadLeaderGameModeBase::InitGameWithGameState() {
 
 void ASquadLeaderGameModeBase::StartPlay() {
 	// Set the GameState
-	InitGameWithGameState();
+	//InitGameWithGameState();
 
-	// launch the game initialization from the GameState 
+	// Launch the game initialization from the GameState 
 	if (auto SLInitGameState = Cast<ASquadLeaderInitGameState>(GameState); SLInitGameState) {
 		SLInitGameState->InitMapAndData();
 	}
@@ -62,6 +61,10 @@ void ASquadLeaderGameModeBase::StartPlay() {
 	//Init for AI
 	InitInfluenceMap();
 	InitAIManagers();
+
+	// Start timer for the granted EXP over time
+	FTimerHandle Handle{};
+	GetWorldTimerManager().SetTimer(Handle, this, &ASquadLeaderGameModeBase::GrantOverTimeEXPToSoldier, TimeBetweenGrantedEXP, true);
 
 	Super::StartPlay();
 }
@@ -160,11 +163,59 @@ void ASquadLeaderGameModeBase::CheckTeamTicketsVictoryCondition()
 void ASquadLeaderGameModeBase::EndGame()
 {
 	for (auto Teams : Cast<ASquadLeaderGameState>(GameState)->GetSoldierTeamCollection()) {
-		for (auto Soldiers : Teams->soldierList) {
+		for (auto Soldiers : Teams->GetSoldierList()) {
 			if (auto PlayerControler = Cast<ASoldierPlayerController>(Soldiers->GetController()); PlayerControler) {
 				PlayerControler->ClientSendCommand("EXIT", true);
 			}
 		}
 	}
 	//FGenericPlatformMisc::RequestExit(false);
+}
+
+void ASquadLeaderGameModeBase::GrantOverTimeEXPToSoldier()
+{
+	for (ASoldierTeam* Team : Cast<ASquadLeaderGameState>(GameState)->GetSoldierTeamCollection())
+	{
+		for (ASoldier* Soldier : Team->GetSoldierList())
+		{
+			if (Soldier->IsA<ASoldierPlayer>())
+				Soldier->GrantEXP(EXP_OverTime);
+		}
+	}
+}
+
+void ASquadLeaderGameModeBase::NotifySoldierKilled(ASoldier* _DeadSoldier, ASoldier* _Killer)
+{
+	// Grant EXP to the killed player
+	if (ASoldierPlayer* _DeadSoldierPlayer = Cast<ASoldierPlayer>(_DeadSoldier); _DeadSoldierPlayer)
+		_DeadSoldierPlayer->GrantEXP(EXP_Death);
+
+	// Grant EXP to the killer player
+	if (ASoldierPlayer* _KillerPlayer = Cast<ASoldierPlayer>(_Killer); _KillerPlayer)
+	{
+		_Killer->GrantEXP(EXP_Kill);
+	}
+	// Grant EXP to the leader if the killer is a squad AI
+	else if (ASoldierAI* _KillerAI = Cast<ASoldierAI>(_Killer); _KillerAI) 
+	{
+		AAISquadController* SquadController = Cast<AAISquadController>(_KillerAI->GetController());
+		if (SquadController && SquadController->SquadManager)
+		{
+			if (ASoldierPlayer* Leader = SquadController->SquadManager->Leader; Leader)
+				Leader->GrantEXP(EXP_KillSquad);
+		}
+	}
+}
+
+void ASquadLeaderGameModeBase::NotifyControlAreaCaptured(AControlArea* _ControlArea)
+{
+	if (ASoldierTeam* Team = _ControlArea->IsTakenBy; Team)
+	{
+		for (ASoldier* Soldier : Team->GetSoldierList())
+		{
+			if (Soldier->IsA<ASoldierPlayer>())
+				Soldier->GrantEXP(EXP_ControlAreaCaptured);
+		}
+		CheckControlAreaVictoryCondition();
+	}
 }
