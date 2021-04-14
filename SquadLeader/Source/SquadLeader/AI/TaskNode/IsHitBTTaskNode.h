@@ -4,20 +4,26 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/BTTaskNode.h"
-#include "OverHeatBTTaskNode.generated.h"
+#include "IsHitBTTaskNode.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class SQUADLEADER_API UOverHeatBTTaskNode : public UBTTaskNode
+class SQUADLEADER_API UIsHitBTTaskNode : public UBTTaskNode
 {
 	GENERATED_BODY()
 public:
-	UOverHeatBTTaskNode();
+	UIsHitBTTaskNode();
 
 	/*Is going to be called the first time we run the node (he can return Succeded, Faile or InProgressed)*/
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 
+	FVector IsHitLocation;
+
+	/*Is going to be called every Tick*/
+	virtual void TickTask(class UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
+
 	virtual FString GetStaticDescription() const override;
+	
 };

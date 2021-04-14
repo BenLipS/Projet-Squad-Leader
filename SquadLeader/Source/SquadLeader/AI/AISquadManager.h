@@ -59,7 +59,25 @@ public:
 	void BeginPlay() override;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-	TSubclassOf<ASoldierAI> ClassAI;
+		TSubclassOf<ASoldierAI> ClassAI1;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+		TSubclassOf<ASoldierAI> ClassAI2;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+		TSubclassOf<ASoldierAI> ClassAI3;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+		TSubclassOf<ASoldierAI> ClassAI4;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+		TSubclassOf<ASoldierAI> ClassAI5;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+		int MaxAIInSquad = 3;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+		int MinAIInSquad = 5;
 
 	UFUNCTION()
 	void Init(ASoldierTeam* _Team, ASoldierPlayer* _Player);
@@ -69,6 +87,10 @@ public:
 
 	UPROPERTY()
 	ASoldierPlayer* Leader;
+
+	UFUNCTION(Server, Reliable)
+	void AddAnAIToSquad();
+	void AddAnAIToSquad_Implementation();
 
 	// Check whether this manager controls the given soldier
 	bool HasSoldier(const ASoldier* _Soldier) const;
@@ -85,6 +107,9 @@ public:
 
 	UFUNCTION()
 	void UpdateCircleFormation();
+
+	UFUNCTION()
+		void UpdateArrowFormation();
 
 	UPROPERTY()
 	UMission* Mission;

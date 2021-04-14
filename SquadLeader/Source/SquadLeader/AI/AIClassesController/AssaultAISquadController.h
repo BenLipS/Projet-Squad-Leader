@@ -13,5 +13,17 @@ UCLASS()
 class SQUADLEADER_API AAssaultAISquadController : public AAISquadController
 {
 	GENERATED_BODY()
-	
+public:
+	AAssaultAISquadController();
+
+	virtual void Tick(float DeltaSeconds) override;
+
+	virtual void setup_BehaviorTree() override;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Grenade")
+		int NUmberOfEnemyToLaunchAGrenade = 2;
+
+	UPROPERTY(BlueprintReadWrite, Category = "OverHeat")
+		int NUmberOfEnemyToOverHeat = 2;
+
 };

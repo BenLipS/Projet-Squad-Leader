@@ -6,6 +6,8 @@
 #include "DrawDebugHelpers.h"
 #include "GenericPlatform/GenericPlatformMath.h"
 #include "BehaviorTree/BehaviorTree.h"
+#include "MineTargetPoint.h"
+#include "EngineUtils.h"
 #include "../../Soldiers/Soldier.h"
 
 AHeavyAISquadController::AHeavyAISquadController() {
@@ -23,6 +25,22 @@ void AHeavyAISquadController::Tick(float DeltaSeconds) {
 	Super::Tick(DeltaSeconds);
 
 	CheckIfRegenShield();
+
+	//Check if launch Mine
+	if (Blackboard->GetValueAsBool("is_patroling") && !Blackboard->GetValueAsBool("LaunchMine") && !Cast<ASoldier>(GetPawn())->IsInCooldown(FGameplayTag::RequestGameplayTag(FName("Cooldown.LaunchProjectile.Mine")))) {
+		TArray<AMineTargetPoint*> ListMinePos;
+		for (TActorIterator<AMineTargetPoint> It(GetWorld()); It; ++It) {
+			AMineTargetPoint* MinePose = *It;
+			if ((MinePose->GetActorLocation() - Cast<ASoldier>(GetPawn())->GetActorLocation()).Size() < HalfRadiusPatrol)
+				ListMinePos.Add(MinePose);
+		}
+		if (ListMinePos.Num() > 0) {
+			int index = FMath::RandRange(0, ListMinePos.Num() - 1);
+			Blackboard->SetValueAsVector("MinePosition", ListMinePos[index]->GetActorLocation());
+			Blackboard->SetValueAsBool("LaunchMine", true);
+			//StopCurrentBehavior = true;
+		}
+	}
 
 }
 

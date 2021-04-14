@@ -26,6 +26,7 @@ enum AIBasicState {
 	Search UMETA(DisplayName = "Searching"),
 	Defend UMETA(DisplayName = "Defending"),
 	Moving UMETA(DisplayName = "Moving"),
+	Formation UMETA(DisplayName = "Formation"),
 };
 
 /*
@@ -110,7 +111,7 @@ public:
 	virtual void BeginPlay();
 
 	UFUNCTION()
-		void Init();
+		virtual void Init();
 
 	UFUNCTION()
 		void InitMissionList();
@@ -216,7 +217,7 @@ protected:
 	/*
 	* This function will decide wich state the AI shool run
 	*/
-	void ChooseState();
+	virtual void ChooseState();
 
 	/*
 	* Will sort the Actor with catch with
@@ -454,6 +455,10 @@ public:	//Mission
 	*/
 	auto GetMission();
 
+	/*
+	* Empty the mission list
+	*/
+	void EmptyMissionList();
 	/*
 	* Set a control area as the destination for the AI
 	*/

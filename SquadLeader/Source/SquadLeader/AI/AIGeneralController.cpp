@@ -23,6 +23,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Math/RandomStream.h"
 #include "../ControlArea/ControlArea.h"
+#include "AISquadController.h"
 
 AAIGeneralController::AAIGeneralController(FObjectInitializer const& object_initializer)
 {
@@ -37,16 +38,12 @@ void AAIGeneralController::BeginPlay() {
 	Super::BeginPlay();
 	RunBehaviorTree(m_behaviorTree);
 	Init();
-
 }
 
 void AAIGeneralController::Init() {
 	FlockingComponent = NewObject<UFlockingComponent>(this, ClassFlockingComponent);
 	blackboard = BrainComponent->GetBlackboardComponent();
 
-	m_state = AIBasicState::Moving;
-	m_old_state = m_state;
-	blackboard->SetValueAsBool("is_moving", true);
 	if (m_missionList == nullptr)
 		InitMissionList();
 }
@@ -67,7 +64,6 @@ void AAIGeneralController::Tick(float DeltaSeconds) {
 
 	CheckIfNeedToStopCurrentBehavior();
 	//Act will also be done in the behavior tree
-
 }
 
 void AAIGeneralController::Sens() {
@@ -432,6 +428,10 @@ auto AAIGeneralController::GetMission()
 	return 12;
 }
 
+void AAIGeneralController::EmptyMissionList() {
+	m_missionList->Empty();
+}
+
 void AAIGeneralController::Die() {
 	//ResetBlackBoard();
 	SeenSoldier.Empty();
@@ -447,6 +447,8 @@ void AAIGeneralController::Respawn()
 	//ResetBlackBoard() shall not
 	SetState(AIBasicState::Moving);
 	SeenSoldier.Empty();
+	if(AAISquadController* AISquad = Cast<AAISquadController>(this); AISquad)
+		SetState(AIBasicState::Formation);
 	PerceptionComponent->ForgetAll();
 }
 
@@ -597,6 +599,7 @@ void AAIGeneralController::SetPatrolPoint()
 
 ResultState AAIGeneralController::ArriveAtDestination() {
 	if ( GetPawn() && FVector::Dist(GetPawn()->GetActorLocation(), GetObjectifLocation()) < 300.f) {
+		m_missionList->StateChange();
 		SetState(AIBasicState::Patroling);
 		return ResultState::Success;
 	}
@@ -622,6 +625,7 @@ ResultState AAIGeneralController::Capturing() {
 			if ((*value)->controlValue >= control_area->maxControlValue) {
 				m_missionList->EndMission();
 				m_mission_changed = true;
+				SetState(AIBasicState::Patroling);
 				return ResultState::Success;
 			}
 			else
