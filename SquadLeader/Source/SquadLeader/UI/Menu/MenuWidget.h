@@ -28,9 +28,6 @@ protected:
 	UPROPERTY(BlueprintReadWrite, meta = (ExposeOnSpawn = true), EditAnywhere, Category = "Menu")
 	FString DefaultLayout = "";
 
-	/*UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Menu | Debug")
-	bool ShowAllLayout = false;*/
-
 	UPROPERTY(BlueprintReadOnly)
 	class UMenuLayoutWidget* CurrentLayout;
 
