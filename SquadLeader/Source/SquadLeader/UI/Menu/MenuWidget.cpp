@@ -30,7 +30,7 @@ void UMenuWidget::SynchronizeProperties()
 				MenuLayouts.AddUnique(MenuLayout);
 				MenuLayout->Menu = this;
 				MenuLayout->SynchronizeAllMenuItem();
-				if (MenuLayout->GetLayoutID() != DefaultLayout && !ShowAllLayout)
+				if (MenuLayout->GetLayoutID() != DefaultLayout && !IsDesignTime())
 				{
 					MenuLayout->SetVisibility(ESlateVisibility::Collapsed);
 				}
@@ -47,7 +47,7 @@ void UMenuWidget::SetCurrentLayout(FString newlayoutID)
 {
 	if (int32 index = MenuLayouts.FindLastByPredicate([&newlayoutID](UMenuLayoutWidget* layout) {return layout->GetLayoutID() == newlayoutID; }); index != INDEX_NONE)
 	{
-		if(CurrentLayout && !ShowAllLayout)
+		if(CurrentLayout && !IsDesignTime())
 			CurrentLayout->SetVisibility(ESlateVisibility::Collapsed);
 
 		CurrentLayout = MenuLayouts[index];
