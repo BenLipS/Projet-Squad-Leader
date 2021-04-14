@@ -46,7 +46,7 @@ public:
 		int controlValueToTake;
 public:
 	UPROPERTY(VisibleAnywhere, Replicated, Category = "IsTaken")
-		ASoldierTeam* isTakenBy;
+		ASoldierTeam* IsTakenBy;
 
 
 	/**

@@ -4,6 +4,7 @@
 #include "GameFramework/HUD.h"
 #include "Interface/PlayerHealthDelegateInterface.h"
 #include "Interface/PlayerShieldDelegateInterface.h"
+#include "Interface/PlayerPrestigeDelegateInterface.h"
 #include "Interface/SquadDelegateInterface.h"
 #include "Interface/WeaponDelegateInterface.h"
 #include "Interface/OrderDelegateInterface.h"
@@ -15,6 +16,7 @@ UCLASS()
 class SQUADLEADER_API ASL_HUD : public AHUD,
 	public IPlayerHealthDelegateInterface,
 	public IPlayerShieldDelegateInterface,
+	public IPlayerPrestigeDelegateInterface,
 	public ISquadDelegateInterface,
 	public IWeaponDelegateInterface,
 	public IOrderDelegateInterface,
@@ -91,4 +93,9 @@ public:
 	//void OnSoldierRemovedFromTeam() override;
 	//void OnUpdatePOIs() override;
 	//void OnControlAreaAdded() override;
+
+//-----IPlayerPrestigeDelegateInterface-----
+public:
+	//void OnPlayerPrestigeChanged(float newValue) override;
+	//void OnPlayerPrestigeLevelUpChanged(float newValue) override;
 };

@@ -118,17 +118,20 @@ public:
 	void OnOrderGiven(MissionType Order, FVector Pos);
 	void OnOrderGiven_Implementation(MissionType Order, FVector Pos);
 
-	UFUNCTION(Server, Reliable)
+	UFUNCTION()
 	void AddAnAIToIndexSquad();
-	void AddAnAIToIndexSquad_Implementation();
 
-	UFUNCTION(Exec)
-	void Cheat_AddAISquad();
+	UFUNCTION(Server, Reliable)
+	void ServerAddAnAIToIndexSquad();
+	void ServerAddAnAIToIndexSquad_Implementation();
 
 	UFUNCTION()
 	void BroadCastManagerData();
 
 //////////////// Cheat
+	UFUNCTION(Exec)
+	void Cheat_AddAISquad();
+
 	UFUNCTION(exec)
 	void Cheat_SuperSoldier();
 
@@ -142,4 +145,18 @@ public:
 	UFUNCTION(Server, Reliable)
 	void ServerCheat_Die();
 	void ServerCheat_Die_Implementation();
+
+	UFUNCTION(exec)
+	void Cheat_SuperDamage();
+
+	UFUNCTION(Server, Reliable)
+	void ServerCheat_SuperDamage();
+	void ServerCheat_SuperDamage_Implementation();
+
+	UFUNCTION(exec)
+	void Cheat_LevelUp();
+
+	UFUNCTION(Server, Reliable)
+	void ServerCheat_LevelUp();
+	void ServerCheat_LevelUp_Implementation();
 };

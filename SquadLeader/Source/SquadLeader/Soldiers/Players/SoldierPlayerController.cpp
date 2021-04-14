@@ -262,23 +262,29 @@ void ASoldierPlayerController::OnOrderGiven_Implementation(MissionType Order, FV
 	}
 }
 
-void ASoldierPlayerController::AddAnAIToIndexSquad_Implementation()
+void ASoldierPlayerController::AddAnAIToIndexSquad()
 {
-	Cheat_AddAISquad();
+	if (GetLocalRole() < ROLE_Authority)
+		ServerAddAnAIToIndexSquad_Implementation();
+
+	if (Cast<ASoldierPlayer>(GetPawn())->GetSquadManager())
+		Cast<ASoldierPlayer>(GetPawn())->GetSquadManager()->AddAnAIToSquad();
 }
 
-void ASoldierPlayerController::Cheat_AddAISquad()
+void ASoldierPlayerController::ServerAddAnAIToIndexSquad_Implementation()
 {
-	if (GetLocalRole() < ROLE_Authority) 
-		AddAnAIToIndexSquad();
-	if(Cast<ASoldierPlayer>(GetPawn())->GetSquadManager())
-		Cast<ASoldierPlayer>(GetPawn())->GetSquadManager()->AddAnAIToSquad();
+	AddAnAIToIndexSquad();
 }
 
 void ASoldierPlayerController::BroadCastManagerData()
 {
 	if (ASL_HUD* CurrentHUD = GetHUD<ASL_HUD>(); CurrentHUD)
 		CurrentHUD->OnSquadChanged(SquadManagerData.SquadData);
+}
+
+void ASoldierPlayerController::Cheat_AddAISquad()
+{
+	AddAnAIToIndexSquad();
 }
 
 void ASoldierPlayerController::Cheat_SuperSoldier()
@@ -323,4 +329,32 @@ void ASoldierPlayerController::Cheat_Die()
 void ASoldierPlayerController::ServerCheat_Die_Implementation()
 {
 	Cheat_Die();
+}
+
+void ASoldierPlayerController::Cheat_SuperDamage()
+{
+	if (GetLocalRole() < ROLE_Authority)
+		ServerCheat_SuperDamage();
+	
+	if (ASoldierPlayer* Soldier = GetPawn<ASoldierPlayer>(); Soldier && Soldier->GetCurrentWeapon())
+		Soldier->GetCurrentWeapon()->SetWeaponDamage(999999.f);
+}
+
+void ASoldierPlayerController::ServerCheat_SuperDamage_Implementation()
+{
+	Cheat_SuperDamage();
+}
+
+void ASoldierPlayerController::Cheat_LevelUp()
+{
+	if (GetLocalRole() < ROLE_Authority)
+		ServerCheat_LevelUp();
+
+	if (ASoldierPlayer* Soldier = GetPawn<ASoldierPlayer>(); Soldier)
+		Soldier->GrantEXP(Soldier->GetRemainEXPForLevelUp());
+}
+
+void ASoldierPlayerController::ServerCheat_LevelUp_Implementation()
+{
+	Cheat_LevelUp();
 }
