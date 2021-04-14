@@ -120,6 +120,11 @@ void UAttributeSetSoldier::AdjustAttributeForMaxChange(FGameplayAttributeData& A
 	}
 }
 
+float UAttributeSetSoldier::GetRemainEXPForLevelUp() const
+{
+	return GetEXPLevelUp() - GetEXP();
+}
+
 float UAttributeSetSoldier::GetEXPAccumulated() const
 {
 	return EXPAccumulated;

@@ -71,7 +71,7 @@ public:
 	void NotifyControlAreaCaptured(AControlArea* _ControlArea);
 
 protected:
-	UPROPERTY(EditDefaultsOnly, Category = "EXP Soldiers")
+	UPROPERTY(EditDefaultsOnly, Category = "EXP Soldiers|Time")
 	float TimeBetweenGrantedEXP = 10.f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "EXP Soldiers")
@@ -89,7 +89,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "EXP Soldiers")
 	float EXP_ControlAreaCaptured = 30.f;
 
-	UPROPERTY(EditDefaultsOnly, Category = "EXP Soldiers")
+	UPROPERTY(EditDefaultsOnly, Category = "EXP Soldiers|Time")
 	float EXP_OverTime = 5.f;
 
 public:

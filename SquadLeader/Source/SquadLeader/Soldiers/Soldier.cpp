@@ -694,6 +694,27 @@ int32 ASoldier::GetCharacterLevel() const
 	return -1;
 }
 
+float ASoldier::GetEXP() const
+{
+	return AttributeSet ? AttributeSet->GetEXP() : -1.0f;
+}
+
+float ASoldier::GetEXPLevelUp() const
+{
+	return AttributeSet ? AttributeSet->GetEXPLevelUp() : -1.0f;
+}
+
+float ASoldier::GetRemainEXPForLevelUp() const
+{
+	return AttributeSet ? AttributeSet->GetRemainEXPForLevelUp() : -1.0f;
+}
+
+void ASoldier::GrantEXP(const float _EXP)
+{
+	if (AttributeSet)
+		AttributeSet->GrantEXP(_EXP);
+}
+
 float ASoldier::GetHealth() const
 {
 	return AttributeSet ? AttributeSet->GetHealth() : -1.0f;

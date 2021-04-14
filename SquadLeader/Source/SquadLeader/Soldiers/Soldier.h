@@ -138,6 +138,18 @@ public:
 	int32 GetCharacterLevel() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
+	float GetEXP() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
+	float GetEXPLevelUp() const;
+	
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
+	float GetRemainEXPForLevelUp() const;
+	
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
+	void GrantEXP(const float _EXP);
+
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
 	float GetHealth() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
