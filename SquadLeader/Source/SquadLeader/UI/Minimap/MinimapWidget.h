@@ -70,7 +70,7 @@ protected:
 public:
 	UMinimapWidget(const FObjectInitializer& _ObjectInitializer);
 
-	void SetupDelegateToObject(UObject* _ObjectIn) override;
+	void SetupDelegateToObject_Implementation(UObject* _ObjectIn) override;
 
 	//-----IMinimapDelegateInterface-----
 	virtual void OnSoldierAddedToTeam(ASoldier* _Soldier) override;

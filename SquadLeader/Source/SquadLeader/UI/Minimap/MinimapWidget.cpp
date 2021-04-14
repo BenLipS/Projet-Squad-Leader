@@ -14,7 +14,7 @@ POIList{}
 {
 }
 
-void UMinimapWidget::SetupDelegateToObject(UObject* _ObjectIn)
+void UMinimapWidget::SetupDelegateToObject_Implementation(UObject* _ObjectIn)
 {
 	if (IMinimapDelegateInterface* MinimapDelegateInterface = Cast<IMinimapDelegateInterface>(_ObjectIn); MinimapDelegateInterface)
 	{
