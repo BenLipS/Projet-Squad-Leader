@@ -54,7 +54,7 @@ protected:
 
 	//-----USL_UserWidget-----
 public:
-	virtual void SetupDelegateToObject(UObject* ObjectIn);
+	virtual void SetupDelegateToObject_Implementation(UObject* ObjectIn);
 
 	//-----INotificationInterface-----
 	void OnTextNotification_Received(FString textNotification) override;

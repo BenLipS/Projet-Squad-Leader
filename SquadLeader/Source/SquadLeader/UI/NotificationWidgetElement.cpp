@@ -1,4 +1,5 @@
 #include "NotificationWidgetElement.h"
+#include "NotificationWidgetElement.h"
 #include "NotificationWidget.h"
 
 UNotificationWidget* UNotificationWidgetElement::GetNotificationWidget()
@@ -12,7 +13,7 @@ void UNotificationWidgetElement::BindItemToNotification(UNotificationWidget* new
 	OnItemAddedToNotificationEvent(newNotificationWidget);
 }
 
-void UNotificationWidgetElement::OnItemAddedToNotificationEvent_Implementation(class UNotificationWidget* newNotificationWidget)
+void UNotificationWidgetElement::OnItemAddedToNotificationEvent_Implementation(UNotificationWidget* newNotificationWidget)
 {
 
 }

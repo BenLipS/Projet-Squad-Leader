@@ -7,7 +7,7 @@ UHealthWidget::UHealthWidget(const FObjectInitializer& ObjectInitializer) : USL_
 {
 }
 
-void UHealthWidget::SetupDelegateToObject(UObject* ObjectIn)
+void UHealthWidget::SetupDelegateToObject_Implementation(UObject* ObjectIn)
 {
 	if (IPlayerHealthDelegateInterface* PlayerHealthDelegateInterface = Cast<IPlayerHealthDelegateInterface>(ObjectIn); PlayerHealthDelegateInterface)
 	{

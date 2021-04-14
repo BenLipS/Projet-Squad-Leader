@@ -22,7 +22,7 @@ void UShieldWidget::OnPlayerMaxShieldChanged(float newValue)
 	TextShield->SetText(FText::FromString(FString::SanitizeFloat(Shield, 0) + "/" + FString::SanitizeFloat(MaxShield, 0)));
 }
 
-void UShieldWidget::SetupDelegateToObject(UObject* ObjectIn)
+void UShieldWidget::SetupDelegateToObject_Implementation(UObject* ObjectIn)
 {
 	if (IPlayerShieldDelegateInterface* PlayerShieldDelegateInterface = Cast<IPlayerShieldDelegateInterface>(ObjectIn); PlayerShieldDelegateInterface)
 	{

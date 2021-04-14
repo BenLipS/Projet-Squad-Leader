@@ -61,7 +61,7 @@ void UAIInfoListWidget::OnSquadMaxShieldChanged(int index, float newMaxShield)
 	}
 }
 
-void UAIInfoListWidget::SetupDelegateToObject(UObject* ObjectIn)
+void UAIInfoListWidget::SetupDelegateToObject_Implementation(UObject* ObjectIn)
 {
 	if (ISquadDelegateInterface* SquadDelegateInterface = Cast<ISquadDelegateInterface>(ObjectIn); SquadDelegateInterface)
 	{

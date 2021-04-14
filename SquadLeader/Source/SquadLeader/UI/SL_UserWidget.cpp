@@ -12,6 +12,6 @@ void USL_UserWidget::AddToViewport(int32 ZOrder)
 	Super::AddToViewport(ZOrder);
 }
 
-void USL_UserWidget::SetupDelegateToObject(UObject* ObjectIn)
+void USL_UserWidget::SetupDelegateToObject_Implementation(UObject* ObjectIn)
 {
 }
