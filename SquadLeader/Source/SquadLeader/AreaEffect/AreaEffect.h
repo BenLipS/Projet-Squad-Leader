@@ -56,4 +56,23 @@ protected:
 
 	FTimerHandle areaTimer;
 	FTimerHandle periodTimer;
+
+//////////////// Collision
+public:
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Collision")
+	bool bDebugTrace = false;
+
+//////////////// Particles
+protected:
+	UPROPERTY(EditDefaultsOnly, Category = "Animation|Particles")
+	UParticleSystem* AreaFX;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Animation|Particles")
+	FVector AreaFXRelativeLocation;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Animation|Particles")
+	FRotator AreaFXRotator;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Animation|Particles")
+	FVector AreaFXScale;
 };

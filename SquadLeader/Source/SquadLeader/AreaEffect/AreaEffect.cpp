@@ -1,10 +1,13 @@
 #include "AreaEffect.h"
-#include "DrawDebugHelpers.h"
 #include "../Soldiers/Soldier.h"
+#include "Particles/ParticleSystemComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "DrawDebugHelpers.h"
 
 AAreaEffect::AAreaEffect() : realOwner{ this }, realOwnerHasASC{ true }
 {
 	PrimaryActorTick.bCanEverTick = false;
+	bReplicates = true;
 
 	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponentAreaEffect>(TEXT("Ability System Component"));
 	AbilitySystemComponent->SetIsReplicated(true);
@@ -50,7 +53,13 @@ void AAreaEffect::BeginPlay()
 
 	if (AttributeSet->GetDuration() > 0.f)
 	{
-		DrawDebugSphere(GetWorld(), GetActorLocation(), AttributeSet->GetRadius(), 50, FColor::Blue, false, AttributeSet->GetDuration());
+		UParticleSystemComponent* LevelUpParticle = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), AreaFX, FTransform{ FQuat{AreaFXRotator}, GetActorLocation() + AreaFXRelativeLocation, AreaFXScale});
+
+#ifdef UE_BUILD_DEBUG
+		if (bDebugTrace)
+			DrawDebugSphere(GetWorld(), GetActorLocation(), AttributeSet->GetRadius(), 50, FColor::Blue, false, AttributeSet->GetDuration());
+#endif
+
 		if (!periodTimer.IsValid()) {
 			GetWorldTimerManager().SetTimer(periodTimer, this, &AAreaEffect::OnAreaTick, AttributeSet->GetInterval(), true);
 		}
@@ -60,7 +69,13 @@ void AAreaEffect::BeginPlay()
 	}
 	else
 	{
-		DrawDebugSphere(GetWorld(), GetActorLocation(), AttributeSet->GetRadius(), 50, FColor::Red, false, 0.5f);
+		UParticleSystemComponent* LevelUpParticle = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), AreaFX, FTransform{ FQuat{AreaFXRotator}, GetActorLocation() + AreaFXRelativeLocation, AreaFXScale });
+
+#ifdef UE_BUILD_DEBUG
+		if (bDebugTrace)
+			DrawDebugSphere(GetWorld(), GetActorLocation(), AttributeSet->GetRadius(), 50, FColor::Red, false, 0.5f);
+#endif
+
 		finishAreaEffect();
 	}
 }

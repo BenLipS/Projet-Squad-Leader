@@ -63,13 +63,18 @@ void ASL_Projectile::BeginPlay()
 
 void ASL_Projectile::OnExplode()
 {
-	for (auto areaEffect : ExplosionAreaEffect)
+	for (auto AreaEffectClass : ExplosionAreaEffect)
 	{
-		FActorSpawnParameters SpawnInfo;
-		SpawnInfo.Owner = GetOwner();
-		SpawnInfo.Instigator = GetInstigator();
-		SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-		GetWorld()->SpawnActor<AAreaEffect>(areaEffect, GetActorLocation(), GetActorRotation(), SpawnInfo);
+		AAreaEffect* AreaEffect = GetWorld()->SpawnActorDeferred<AAreaEffect>(AreaEffectClass, FTransform{GetActorRotation(), GetActorLocation()}, GetOwner(), GetInstigator(), ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+
+		if (AreaEffect)
+		{
+#ifdef UE_BUILD_DEBUG
+			AreaEffect->bDebugTrace = bDebugTraceExplosion;
+#endif
+			AreaEffect->FinishSpawning(FTransform{ GetActorRotation(), GetActorLocation() });
+		}
+
 	}
 	DeleteProjectile();
 }
@@ -106,7 +111,6 @@ void ASL_Projectile::InitVelocity()
 			YawAdjust = AI->LaunchProjectileYawAdjust;
 		}
 	}	
-
 
 	Azimuth += PitchAdjust;
 	if (Azimuth > 180.f)

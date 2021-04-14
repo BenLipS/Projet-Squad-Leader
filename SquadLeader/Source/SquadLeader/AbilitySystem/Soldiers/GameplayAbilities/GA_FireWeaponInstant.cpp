@@ -187,7 +187,7 @@ void UGA_FireWeaponInstant::ConfigLineTrace()
 	LineTrace->TargetingSpreadMax = SourceWeapon->GetTargetingSpreadMax();
 	LineTrace->SetShouldProduceTargetDataOnServer(!CurrentActorInfo->PlayerController.Get()); // Produce Target Data On Server only if the controller is an AI
 
-#if ENABLE_DRAW_DEBUG
+#if UE_BUILD_DEBUG
 	LineTrace->bDebug = SourceWeapon->bDebugTrace;
 #endif
 }

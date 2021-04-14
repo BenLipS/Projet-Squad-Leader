@@ -1,10 +1,10 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "SL_Projectile.generated.h"
+
+class AAreaEffect;
 
 UENUM()
 	enum class ContactPolicy {
@@ -55,7 +55,7 @@ protected:
 
 	// AreaEffect to apply on contact/explosion
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Projectile")
-	TArray<TSubclassOf<class AAreaEffect>> ExplosionAreaEffect;
+	TArray<TSubclassOf<AAreaEffect>> ExplosionAreaEffect;
 
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Projectile")
@@ -87,4 +87,9 @@ public:
 
 	UFUNCTION()
 	virtual void OnStick();
+
+//////////////// Collision
+public:
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Collision")
+	bool bDebugTraceExplosion = false;
 };
