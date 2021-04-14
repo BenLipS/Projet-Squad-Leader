@@ -45,7 +45,7 @@ void UGA_WallVision::ActivateAbility(const FGameplayAbilitySpecHandle Handle, co
 			if (ASoldierPlayerController* PC = Soldier->GetController< ASoldierPlayerController>(); PC)
 			{
 				PC->OnWallVisionActivate();
-				UAbilityTask_WaitDelay* TaskWaitDelay = UAbilityTask_WaitDelay::WaitDelay(this, 2.f);
+				UAbilityTask_WaitDelay* TaskWaitDelay = UAbilityTask_WaitDelay::WaitDelay(this, 10.f);
 				TaskWaitDelay->Activate();
 				TaskWaitDelay->OnFinish.AddDynamic(this, &UGA_WallVision::EndWallVision);
 			}
