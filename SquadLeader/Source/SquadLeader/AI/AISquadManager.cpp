@@ -144,6 +144,8 @@ void AAISquadManager::AddAnAIToSquad_Implementation()
 		SquadAI->SetTeam(Team);
 		AISquadList.Add(Cast<AAISquadController>(SquadAI->Controller));
 		Cast<AAISquadController>(SquadAI->Controller)->SquadManager = this;
+
+		BroadCastSquadData();
 	}
 }
 
