@@ -8,21 +8,15 @@ AAreaEffect::AAreaEffect()
 {
 	PrimaryActorTick.bCanEverTick = false;
 	bReplicates = true;
-
-	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponentAreaEffect>(TEXT("Ability System Component"));
-	AbilitySystemComponent->SetIsReplicated(true);
-	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
-	AttributeSet = CreateDefaultSubobject<UAttributeSetAreaEffect>(TEXT("Attribute Set"));
 }
 
-UAbilitySystemComponentAreaEffect* AAreaEffect::GetAbilitySystemComponent() const
+void AAreaEffect::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
-	return AbilitySystemComponent;
-}
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-UAttributeSetAreaEffect* AAreaEffect::GetAttributeSet() const
-{
-	return AttributeSet;
+	DOREPLIFETIME(AAreaEffect, Duration);
+	DOREPLIFETIME(AAreaEffect, Radius);
+	DOREPLIFETIME(AAreaEffect, Interval);
 }
 
 void AAreaEffect::BeginPlay()
@@ -30,56 +24,30 @@ void AAreaEffect::BeginPlay()
 	Super::BeginPlay();
 
 	SourceSoldier = Cast<ASoldier>(GetInstigator());
-
-	InitializeAttributes();
 	OnAreaTick();
 
-	if (AttributeSet->GetDuration() > 0.f)
+	if (Duration > 0.f)
 	{
 		if (!PeriodTimer.IsValid())
-			GetWorldTimerManager().SetTimer(PeriodTimer, this, &AAreaEffect::OnAreaTick, AttributeSet->GetInterval(), true);
+			GetWorldTimerManager().SetTimer(PeriodTimer, this, &AAreaEffect::OnAreaTick, Interval, true);
 
 		if (!AreaTimer.IsValid())
-			GetWorldTimerManager().SetTimer(AreaTimer, this, &AAreaEffect::FinishAreaEffect, AttributeSet->GetDuration(), false);
+			GetWorldTimerManager().SetTimer(AreaTimer, this, &AAreaEffect::FinishAreaEffect, Duration, false);
 	}
 	else
 		FinishAreaEffect();
 }
 
-void AAreaEffect::FinishAreaEffect()
-{
-	if (AreaTimer.IsValid())
-		GetWorld()->GetTimerManager().ClearTimer(AreaTimer);
-
-	if (PeriodTimer.IsValid())
-		GetWorld()->GetTimerManager().ClearTimer(PeriodTimer);
-
-	Destroy();
-}
-
-void AAreaEffect::InitializeAttributes()
-{
-	if (!AbilitySystemComponent || !DefaultAttributeEffects)
-		return;
-
-	FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
-	EffectContext.AddSourceObject(this);
-
-	FGameplayEffectSpecHandle NewHandle = AbilitySystemComponent->MakeOutgoingSpec(DefaultAttributeEffects, 1.f, EffectContext);
-	if (NewHandle.IsValid())
-		FActiveGameplayEffectHandle ActiveGEHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*NewHandle.Data.Get());
-}
-
 void AAreaEffect::OnAreaTick()
 {
-	ShowEffects();
+	ShowAnimation();
 
 	if (!SourceSoldier)
 		return;
 
 	FCollisionShape CollisionShape;
 	CollisionShape.ShapeType = ECollisionShape::Sphere;
-	CollisionShape.SetSphere(AttributeSet->GetRadius());
+	CollisionShape.SetSphere(Radius);
 
 	TArray<FHitResult> HitActors;
 	FVector StartTrace = GetActorLocation();
@@ -98,14 +66,15 @@ void AAreaEffect::OnAreaTick()
 	}
 }
 
-void AAreaEffect::ShowEffects()
+void AAreaEffect::FinishAreaEffect()
 {
-	UParticleSystemComponent* LevelUpParticle = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), AreaFX, FTransform{ FQuat{AreaFXRotator}, GetActorLocation() + AreaFXRelativeLocation, AreaFXScale });
+	if (AreaTimer.IsValid())
+		GetWorld()->GetTimerManager().ClearTimer(AreaTimer);
 
-#ifdef UE_BUILD_DEBUG
-	if (bDebugTrace)
-		DrawDebugSphere(GetWorld(), GetActorLocation(), AttributeSet->GetRadius(), 50, FColor::Blue, false, AttributeSet->GetDuration());
-#endif
+	if (PeriodTimer.IsValid())
+		GetWorld()->GetTimerManager().ClearTimer(PeriodTimer);
+
+	Destroy();
 }
 
 void AAreaEffect::ApplyEffects(UAbilitySystemComponent* _TargetASC)
@@ -123,4 +92,14 @@ void AAreaEffect::ApplyEffects(UAbilitySystemComponent* _TargetASC)
 				ASC->ApplyGameplayEffectSpecToTarget(*EffectSpecHandle.Data.Get(), _TargetASC);
 		}
 	}
+}
+
+void AAreaEffect::ShowAnimation()
+{
+	UParticleSystemComponent* LevelUpParticle = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), AreaFX, FTransform{ FQuat{AreaFXRotator}, GetActorLocation() + AreaFXRelativeLocation, AreaFXScale });
+
+#ifdef UE_BUILD_DEBUG
+	if (bDebugTrace)
+		DrawDebugSphere(GetWorld(), GetActorLocation(), Radius, 50, FColor::Blue, false, Duration);
+#endif
 }

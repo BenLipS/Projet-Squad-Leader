@@ -3,67 +3,56 @@
 #include "Core.h"
 #include "GameFramework/Actor.h"
 #include "GameplayEffect.h"
-#include "GameplayEffectExtension.h"
-#include "../AbilitySystem/AreaEffect/AttributeSetAreaEffect.h"
-#include "../AbilitySystem/AreaEffect/GameplayEffects/GE_Default_Stats_AreaEffect.h"
-#include "../AbilitySystem/AreaEffect/AbilitySystemComponentAreaEffect.h"
-#include "AbilitySystemInterface.h"
-#include "AbilitySystemComponent.h"
+#include "Net/UnrealNetwork.h"
 #include "AreaEffect.generated.h"
 
 class ASoldier;
 
 UCLASS()
-class SQUADLEADER_API AAreaEffect : public AActor, public IAbilitySystemInterface
+class SQUADLEADER_API AAreaEffect : public AActor
 {
 	GENERATED_BODY()
 
 public:	
 	AAreaEffect();
-
-public:
-	UAbilitySystemComponentAreaEffect* GetAbilitySystemComponent() const override;
-	UAttributeSetAreaEffect* GetAttributeSet() const;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 	ASoldier* SourceSoldier = nullptr;
 
-	//Finish the areaEffect
-	void FinishAreaEffect();
+	void OnAreaTick();
 
-	void InitializeAttributes();
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ability System Component", meta = (AllowPrivateAccess = "true"))
-	UAbilitySystemComponentAreaEffect* AbilitySystemComponent;
-
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Attribute Set", meta = (AllowPrivateAccess = "true"))
-	UAttributeSetAreaEffect* AttributeSet;
-
-	// Define the default stats
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Attribute Set")
-	TSubclassOf<class UGE_Default_Stats_AreaEffect> DefaultAttributeEffects;
-
-	// Define the effect applied by explosion
+	// Define the effects applied by explosion
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Abilities")
 	TArray<TSubclassOf<class UGameplayEffect>> ExplosionEffects;
 
-	void OnAreaTick();
-	void ShowEffects();
+	void FinishAreaEffect();
 	void ApplyEffects(UAbilitySystemComponent* _TargetASC);
 
 	FTimerHandle AreaTimer;
 	FTimerHandle PeriodTimer;
+
+//////////////// Stats
+	UPROPERTY(EditDefaultsOnly, Category = "Stats|Duration", Replicated)
+	float Duration = 0.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Stats|Radius", Replicated)
+	float Radius = 100.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Stats|Interval", Replicated)
+	float Interval = 0.f;
 
 //////////////// Collision
 public:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Collision")
 	bool bDebugTrace = false;
 
-//////////////// Particles
+//////////////// Animation
 protected:
+	void ShowAnimation();
+
 	UPROPERTY(EditDefaultsOnly, Category = "Animation|Particles")
 	UParticleSystem* AreaFX;
 
