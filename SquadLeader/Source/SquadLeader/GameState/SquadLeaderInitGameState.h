@@ -18,5 +18,8 @@ public:
 	ASquadLeaderInitGameState();
 
 	void InitMapAndData();
+
+protected:
 	void InitActorInWorld();
+	void PlaceActorInWorld();
 };

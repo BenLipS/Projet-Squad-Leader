@@ -3,6 +3,9 @@
 
 #include "MoveToLocationBTTaskNode.h"
 #include "../../AI/AIGeneralController.h"
+#include "BehaviorTree/Blackboard/BlackboardKeyType_Vector.h"
+#include "BehaviorTree/Blackboard/BlackboardKeyType_Object.h"
+#include "BehaviorTree/BlackboardComponent.h"
 
 UMoveToLocationBTTaskNode::UMoveToLocationBTTaskNode() {
 	NodeName = "MoveToVectorLocation";
@@ -13,21 +16,20 @@ EBTNodeResult::Type UMoveToLocationBTTaskNode::ExecuteTask(UBehaviorTreeComponen
 	AAIGeneralController* _controller = Cast<AAIGeneralController>(OwnerComp.GetOwner());
 
 	EBTNodeResult::Type NodeResult = EBTNodeResult::InProgress;
-	EPathFollowingRequestResult::Type MoveToActorResult = _controller->MoveToVectorLocation();
 
-	if (MoveToActorResult == EPathFollowingRequestResult::AlreadyAtGoal)
-		NodeResult = EBTNodeResult::Succeeded;
 	return NodeResult;
 }
 
 void UMoveToLocationBTTaskNode::TickTask(class UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) {
 	AAIGeneralController* _controller = Cast<AAIGeneralController>(OwnerComp.GetOwner());
 
-	EPathFollowingRequestResult::Type MoveToActorResult = _controller->MoveToVectorLocation();
+	const FVector LocationGoal = _controller->get_blackboard()->GetValueAsVector(BlackboardKey.SelectedKeyName);
+
+	EPathFollowingRequestResult::Type MoveToActorResult = _controller->MoveToLocation(LocationGoal, AcceptableRadius, true, true, true);
 
 	if (MoveToActorResult == EPathFollowingRequestResult::AlreadyAtGoal)
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
-	if(MoveToActorResult == EPathFollowingRequestResult::Failed)
+	if(MoveToActorResult == EPathFollowingRequestResult::Failed || _controller->StopCurrentBehavior)
 		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
 }
 

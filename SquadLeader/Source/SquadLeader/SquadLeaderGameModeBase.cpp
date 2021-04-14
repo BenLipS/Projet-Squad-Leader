@@ -28,7 +28,6 @@ ASquadLeaderGameModeBase::ASquadLeaderGameModeBase() : RespawnDelay{ 3.f }
 	UAbilitySystemGlobals::Get().InitGlobalData();
 }
 
-
 void ASquadLeaderGameModeBase::InitGameWithGameState() {
 	// set parameters for GameState's spawn
 	FActorSpawnParameters SpawnInfo;
@@ -103,9 +102,9 @@ void ASquadLeaderGameModeBase::Logout(AController* Exiting)
 
 void ASquadLeaderGameModeBase::StartPlay() {
 	// Set the GameState
-	InitGameWithGameState();
+	//InitGameWithGameState();
 
-	// launch the game initialization from the GameState 
+	// Launch the game initialization from the GameState 
 	if (auto SLInitGameState = Cast<ASquadLeaderInitGameState>(GameState); SLInitGameState) {
 		SLInitGameState->InitMapAndData();
 	}
@@ -211,7 +210,7 @@ void ASquadLeaderGameModeBase::CheckTeamTicketsVictoryCondition()
 void ASquadLeaderGameModeBase::EndGame()
 {
 	for (auto Teams : Cast<ASquadLeaderGameState>(GameState)->GetSoldierTeamCollection()) {
-		for (auto Soldiers : Teams->soldierList) {
+		for (auto Soldiers : Teams->GetSoldierList()) {
 			if (auto PlayerControler = Cast<ASoldierPlayerController>(Soldiers->GetController()); PlayerControler) {
 				PlayerControler->ClientSendCommand("EXIT", true);
 			}

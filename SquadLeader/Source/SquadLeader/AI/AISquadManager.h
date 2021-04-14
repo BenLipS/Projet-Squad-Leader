@@ -49,17 +49,35 @@ public:
 
 public:
 	AAISquadManager();
+	virtual void Tick(float DeltaTime) override;
 
 public:
 	UPROPERTY(BlueprintReadOnly)
 	TArray<AAISquadController*> AISquadList;
 
 public:
-
 	void BeginPlay() override;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-	TSubclassOf<ASoldierAI> ClassAI;
+		TSubclassOf<ASoldierAI> ClassAI1;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+		TSubclassOf<ASoldierAI> ClassAI2;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+		TSubclassOf<ASoldierAI> ClassAI3;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+		TSubclassOf<ASoldierAI> ClassAI4;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+		TSubclassOf<ASoldierAI> ClassAI5;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+		int MaxAIInSquad = 3;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+		int MinAIInSquad = 5;
 
 	UFUNCTION()
 	void Init(ASoldierTeam* _Team, ASoldierPlayer* _Player);
@@ -70,10 +88,14 @@ public:
 	UPROPERTY()
 	ASoldierPlayer* Leader;
 
-	virtual void Tick(float DeltaTime) override;
+	UFUNCTION(Server, Reliable)
+	void AddAnAIToSquad();
+	void AddAnAIToSquad_Implementation();
 
-	UFUNCTION()
-	UMission* GetMission() { return Mission; };
+	// Check whether this manager controls the given soldier
+	bool HasSoldier(const ASoldier* _Soldier) const;
+
+	auto GetMission() { return Mission; };
 
 	//For Formation
 	TArray<FVector> FormationPos;
@@ -86,6 +108,8 @@ public:
 	UFUNCTION()
 	void UpdateCircleFormation();
 
+	UFUNCTION()
+		void UpdateArrowFormation();
 
 	UPROPERTY()
 	UMission* Mission;
@@ -110,4 +134,15 @@ public:
 
 	UFUNCTION()
 	void OnSquadMemberMaxShieldChange(float newValue, AAISquadController* SoldierController);
+
+	//for healing coordination
+	UPROPERTY()
+	bool IsASquadMemberHealing = false;
+
+	//for shielding coordination
+	UPROPERTY()
+	bool IsASquadMemberShielding = false;
+
+protected:
+	bool m_inFormation = false;
 };

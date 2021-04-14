@@ -6,6 +6,7 @@
 #include "UObject/NoExportTypes.h"
 #include "AIBasicController.h"
 #include "../ControlArea/ControlAreaManager.h"
+#include "NavFilters/NavigationQueryFilter.h"
 #include "AIBasicManager.generated.h"
 
 /**
@@ -69,5 +70,12 @@ private:
 
 	UPROPERTY()
 		AControlAreaManager* m_controlAreaManager;
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Navigation")
+		TSubclassOf<UNavigationQueryFilter> m_queryFilter_team1;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Navigation")
+		TSubclassOf<UNavigationQueryFilter> m_queryFilter_team2;
 
 };

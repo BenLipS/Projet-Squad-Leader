@@ -1,6 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "SoldierTeam.h"
 #include "Soldier.h"
 #include "../Spawn/SoldierSpawn.h"
@@ -20,7 +17,7 @@ void ASoldierTeam::PreInitialisation()
 	}
 }
 
-int ASoldierTeam::getpriority()
+int ASoldierTeam::GetPriority() const
 {
 	return 1;
 }
@@ -35,9 +32,10 @@ void ASoldierTeam::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(ASoldierTeam, NbAIBasic);
+	DOREPLIFETIME(ASoldierTeam, NbAIBasicAssault);
+	DOREPLIFETIME(ASoldierTeam, NbAIBasicHeavy);
 	DOREPLIFETIME(ASoldierTeam, TeamName);
-	DOREPLIFETIME(ASoldierTeam, soldierList);
+	DOREPLIFETIME(ASoldierTeam, SoldierList);
 	DOREPLIFETIME(ASoldierTeam, mainSpawnPoints);
 	DOREPLIFETIME(ASoldierTeam, Tickets);
 
@@ -48,20 +46,31 @@ TSubclassOf<ASoldierAI> ASoldierTeam::GetClassBasicAI()
 	return ClassBasicAI;
 }
 
-void ASoldierTeam::AddSoldierList(ASoldier* newSoldier)
+TSubclassOf<class ASoldierAI> ASoldierTeam::GetClassBasicAIAssault()
 {
-	soldierList.AddUnique(newSoldier);
+	return ClassBasicAIAssault;
 }
 
-void ASoldierTeam::RemoveSoldierList(ASoldier* newSoldier)
+TSubclassOf<class ASoldierAI> ASoldierTeam::GetClassBasicAIHeavy()
 {
-	if (soldierList.Contains(newSoldier))
-		soldierList.Remove(newSoldier);
+	return ClassBasicAIHeavy;
+}
+
+void ASoldierTeam::AddSoldierList(ASoldier* NewSoldier)
+{
+	SoldierList.AddUnique(NewSoldier);
+	OnSoldierAddedToList.Broadcast(NewSoldier);
+}
+
+void ASoldierTeam::RemoveSoldierList(ASoldier* NewSoldier)
+{
+	SoldierList.Remove(NewSoldier);
+	OnSoldierRemovedFromList.Broadcast(NewSoldier);
 }
 
 void ASoldierTeam::CleanSoldierList()
 {
-	soldierList.RemoveAll([](ASoldier* element) {return element == nullptr; });
+	SoldierList.RemoveAll([](ASoldier* element) {return element == nullptr; });
 }
 
 
@@ -94,6 +103,10 @@ TArray<ASoldierSpawn*> ASoldierTeam::GetUsableSpawnPoints()
 	return result;
 }
 
+TArray<ASoldier*> ASoldierTeam::GetSoldierList() const
+{
+	return SoldierList;
+}
 
 void ASoldierTeam::RemoveOneTicket()
 {

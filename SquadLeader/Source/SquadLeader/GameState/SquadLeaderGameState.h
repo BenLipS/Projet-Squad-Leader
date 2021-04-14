@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 class AControlAreaManager;
@@ -8,15 +6,10 @@ class ASoldierTeam;
 #include "Core.h"
 #include "Net/UnrealNetwork.h"
 #include "GameFramework/GameStateBase.h"
-
-//#include "../ControlArea/ControlAreaManager.h"
-//#include "../Soldiers/SoldierTeam.h"
-
 #include "SquadLeaderGameState.generated.h"
 
-/**
- * 
- */
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSoldierTeamAddedToList, ASoldierTeam*, NewSoldierTeam);
+
 UCLASS()
 class SQUADLEADER_API ASquadLeaderGameState : public AGameStateBase
 {
@@ -28,13 +21,12 @@ public:
 	// for replication purpose
 	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 
-
 protected:
 	// storage of global data for all the game
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Replicated, Category = "GameModeData")
-		AControlAreaManager* ControlAreaManager;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Replicated, Category = "GameModeData")
-		TArray<ASoldierTeam*> SoldierTeamCollection;
+	UPROPERTY(BlueprintReadWrite, Replicated, Category = "GameModeData")
+	AControlAreaManager* ControlAreaManager;
+	UPROPERTY(BlueprintReadWrite, Replicated, Category = "GameModeData")
+	TArray<ASoldierTeam*> SoldierTeamCollection;
 
 public:
 	UFUNCTION()
@@ -45,4 +37,7 @@ public:
 	void SetControlAreaManager(AControlAreaManager* _ControlAreaManager);
 	UFUNCTION()
 	AControlAreaManager* GetControlAreaManager();
+
+	UPROPERTY()
+	FSoldierTeamAddedToList OnSoldierTeamAddedToList;
 };

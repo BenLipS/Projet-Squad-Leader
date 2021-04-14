@@ -9,7 +9,31 @@
  */
 
 UENUM()
-enum class MissionType : uint8 { None, Defence, Attack, MoveTo, Formation };
+enum class MissionState : uint8{
+	eNOT_STARTED_YET,
+	eRUNNING,
+	ePAUSED,
+	eCOMPLETED,
+	eFAILED
+};
+
+UENUM()
+enum class MissionType : uint8 {
+	eATTACK,
+	eDEFEND,
+	ePATROL,
+	eCAPTURE,
+	None,
+	FormationCircle,
+	FormationArrow
+};
+
+UENUM()
+enum class MissionPriority : uint8{ 
+	eBASIC,
+	eMIDDLE,
+	eURGENT
+};
 
 UCLASS()
 class SQUADLEADER_API UMission : public UObject
@@ -18,10 +42,36 @@ class SQUADLEADER_API UMission : public UObject
 
 public:
 	UMission();
+	UMission(int _id, MissionPriority _p);
+	virtual ~UMission() = default;
+
+	MissionPriority GetPriority() const noexcept { return m_priority; }
+
+	int GetId() const noexcept { return m_id; }
+
+	MissionState GetMissionState() const noexcept { return m_state; }
+
+	void Init(int _id, MissionPriority _p);
+
+	void SetState(MissionState _state) noexcept { m_state = _state; }
+
+	auto GetMissionType() const noexcept { return m_type; }
+
+protected:
 
 	UPROPERTY()
-	MissionType Type;
+		MissionState m_state;
 
 	UPROPERTY()
-	FVector Location;
+		int m_id;
+
+	UPROPERTY()
+		MissionPriority m_priority;
+
+	UPROPERTY()
+		MissionType m_type;
+
+private:
+	void SetPriority(MissionPriority _p) noexcept { m_priority = _p; }
+	void SetId(int _id) noexcept { m_id = _id; }
 };

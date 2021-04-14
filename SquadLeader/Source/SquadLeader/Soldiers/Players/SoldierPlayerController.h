@@ -4,7 +4,6 @@
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "camera/cameracomponent.h"
-#include "../../UI/HUDWidget.h"
 #include "../Interface/Teamable.h"
 #include "../../AI/AISquadManager.h"
 #include "../AIs/SoldierAI.h"
@@ -111,9 +110,20 @@ public:
 	void OnSquadMemberMaxShieldChanged(int index, float newMaxShield);
 	void OnSquadMemberMaxShieldChanged_Implementation(int index, float newMaxShield);
 
+	UFUNCTION(Client, Reliable)
+	void OnTextNotification_Received(const FString& notificationString);
+	void OnTextNotification_Received_Implementation(const FString& notificationString);
+
 	UFUNCTION(Server, Reliable)
 	void OnOrderGiven(MissionType Order, FVector Pos);
 	void OnOrderGiven_Implementation(MissionType Order, FVector Pos);
+
+	UFUNCTION(Server, Reliable)
+	void AddAnAIToIndexSquad();
+	void AddAnAIToIndexSquad_Implementation();
+
+	UFUNCTION(Exec)
+	void Cheat_AddAISquad();
 
 	UFUNCTION()
 	void BroadCastManagerData();

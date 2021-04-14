@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 // forward declaration
 class ASoldier;
@@ -8,14 +6,11 @@ class ASoldierSpawn;
 #include "CoreMinimal.h"
 #include "GameFramework/Info.h"
 #include "../Interface/PreInitable.h"
-//#include "Soldier.h"
-//#include "../ControlArea/ControlArea.h"
 #include "SoldierTeam.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSoldierAddedToList, ASoldier*, NewSoldier);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSoldierRemovedFromList, ASoldier*, NewSoldier);
 
-/**
- * 
- */
 UCLASS(Blueprintable)
 class SQUADLEADER_API ASoldierTeam : public AInfo, public IPreInitable
 {
@@ -26,7 +21,7 @@ public:
 
 	// Pre init launch by the gameMode before the BeginPlay() function
 	virtual void PreInitialisation() override;
-	virtual int getpriority() override;
+	virtual int GetPriority() const override;
 
 protected:
 	virtual void BeginPlay() override;
@@ -43,28 +38,51 @@ public:
 		int Id = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "GlobalTeamData")
-		int NbAIBasic = 6;
+		int NbAIBasicAssault = 6;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "GlobalTeamData")
+		int NbAIBasicHeavy = 6;
 
-public:  // Soldier List
+protected:  // Soldier List
 	UPROPERTY(BlueprintReadOnly, Replicated, Category = "SoldierList")
-		TArray<ASoldier*> soldierList;
+		TArray<ASoldier*> SoldierList;
+
+public:
+	UFUNCTION(BlueprintCallable, Category = "SoldierList")
+		TArray<ASoldier*> GetSoldierList() const;
 
 protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "SoldierList")
 		TSubclassOf<class ASoldierAI> ClassBasicAI;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "SoldierList")
+		TSubclassOf<class ASoldierAI> ClassBasicAIAssault;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "SoldierList")
+		TSubclassOf<class ASoldierAI> ClassBasicAIHeavy;
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "SoldierList")
 		TSubclassOf<class ASoldierAI> GetClassBasicAI();
 
 	UFUNCTION(BlueprintCallable, Category = "SoldierList")
-		void AddSoldierList(ASoldier* newSoldier);
+		TSubclassOf<class ASoldierAI> GetClassBasicAIAssault();
+
 	UFUNCTION(BlueprintCallable, Category = "SoldierList")
-		void RemoveSoldierList(ASoldier* newSoldier);
+		TSubclassOf<class ASoldierAI> GetClassBasicAIHeavy();
+
+	UFUNCTION(BlueprintCallable, Category = "SoldierList")
+		void AddSoldierList(ASoldier* NewSoldier);
+	UFUNCTION(BlueprintCallable, Category = "SoldierList")
+		void RemoveSoldierList(ASoldier* NewSoldier);
 	UFUNCTION(BlueprintCallable, Category = "SoldierList")
 		void CleanSoldierList();
 
+	UPROPERTY()
+		FSoldierAddedToList OnSoldierAddedToList;
+
+	UPROPERTY()
+		FSoldierRemovedFromList OnSoldierRemovedFromList;
 
 protected: // Spawn points
 	UPROPERTY(VisibleAnywhere, Replicated, Category = "SpawnPoints")
@@ -78,7 +96,6 @@ public:
 		void CleanSpawnPoints();
 	UFUNCTION(BlueprintCallable, Category = "SpawnPoints")
 		TArray<ASoldierSpawn*> GetUsableSpawnPoints();
-
 
 protected:  // Tickets
 	UPROPERTY(EditAnywhere, Replicated, Category = "Tickets")

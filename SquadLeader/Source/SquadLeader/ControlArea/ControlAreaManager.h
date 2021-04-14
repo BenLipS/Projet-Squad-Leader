@@ -20,6 +20,7 @@ class SQUADLEADER_API AControlAreaManager : public AInfo, public IPreInitable
 public:
 	// Sets default values for this actor's properties
 	AControlAreaManager();
+
 protected:
 	UPROPERTY(VisibleAnywhere, Replicated, Category = "ControlList")
 		TArray <AControlArea*> ControlAreaList;  // private because it must not be edited elsewhere
@@ -27,16 +28,18 @@ protected:
 public:
 	// Pre init launch by the gameMode before the BeginPlay() function
 	virtual void PreInitialisation() override;
-	virtual int getpriority() override;
+	virtual int GetPriority() const override;
 	
 public:
 	// for replication purpose
 	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 
 	UFUNCTION()
-		void AddControlArea(AControlArea* _NewArea);
+	void AddControlArea(AControlArea* _NewArea);
+
 	UFUNCTION()
-		TArray <AControlArea*> GetControlArea() { return ControlAreaList; }
+	TArray <AControlArea*> GetControlArea() const { return ControlAreaList; }
+
 	UFUNCTION()
 	void CleanControlAreaList();
 

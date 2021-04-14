@@ -1,15 +1,13 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "SL_HUD.h"
 #include "SL_UserWidget.h"
 
 #include "../Soldiers/Players/SoldierPlayerController.h"
 #include "../Soldiers/Players/SoldierPlayerState.h"
 
-ASL_HUD::ASL_HUD()
-{
-}
+#include "SquadLeader/GameState/SquadLeaderGameState.h"
+#include "SquadLeader/ControlArea/ControlAreaManager.h"
+#include "SquadLeader/ControlArea/ControlArea.h"
+#include "../Weapons/SL_Weapon.h"
 
 void ASL_HUD::BeginPlay()
 {
@@ -29,6 +27,8 @@ void ASL_HUD::BeginPlay()
 	}
 	SetPlayerStateLink();
 	SetAIStateLink();
+	BindSoldierTeamChanges();
+	BindControlAreas();
 }
 
 void ASL_HUD::SetPlayerStateLink()
@@ -36,6 +36,14 @@ void ASL_HUD::SetPlayerStateLink()
 	ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(GetOwningPlayerController());
 	if (PC)
 	{
+		if (ASoldier* Soldier = PC->GetPawn<ASoldier>(); Soldier)
+		{
+			if (ASL_Weapon* Weapon = Soldier->GetCurrentWeapon(); Weapon)
+			{
+				Weapon->SetCurrentAmmo(Weapon->GetCurrentAmmo());
+				Weapon->SetMaxAmmo(Weapon->GetMaxAmmo());
+			}
+		}
 		ASoldierPlayerState* PS = PC->GetPlayerState<ASoldierPlayerState>();
 		if (PS)
 		{
@@ -60,5 +68,34 @@ void ASL_HUD::SetAIStateLink()
 	if (ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(GetOwningPlayerController()); PC)
 	{
 		PC->BroadCastManagerData();
+	}
+}
+
+void ASL_HUD::BindSoldierTeamChanges()
+{
+	if (ASquadLeaderGameState* GS = GetWorld()->GetGameState<ASquadLeaderGameState>(); GS)
+	{
+		for (ASoldierTeam* Team : GS->GetSoldierTeamCollection())
+		{
+			// Get current soldiers
+			for (ASoldier* Soldier : Team->GetSoldierList())
+				OnSoldierAddedToTeam(Soldier);
+
+			// Bind future SoldierTeam changes
+			Team->OnSoldierAddedToList.AddDynamic(this, &ASL_HUD::OnSoldierAddedToTeam);
+			Team->OnSoldierRemovedFromList.AddDynamic(this, &ASL_HUD::OnSoldierRemovedFromTeam);
+		}
+	}
+}
+
+void ASL_HUD::BindControlAreas()
+{
+	if (ASquadLeaderGameState* GS = GetWorld()->GetGameState<ASquadLeaderGameState>(); GS)
+	{
+		// Get current control areas - TODO: Bindfuture changes
+		for (AControlArea* ControlArea : GS->GetControlAreaManager()->GetControlArea())
+		{
+			OnControlAreaAdded(ControlArea);
+		}
 	}
 }

@@ -1,6 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "SquadLeaderInitGameState.h"
 #include "../SquadLeaderGameModeBase.h"
 #include "../Interface/PreInitable.h"
@@ -36,6 +33,8 @@ void ASquadLeaderInitGameState::InitMapAndData()
 
 void ASquadLeaderInitGameState::InitActorInWorld()
 {
+	PlaceActorInWorld();
+
 	TArray<IPreInitable*> InitList;
 	for (auto SceneActors : GetWorld()->PersistentLevel->Actors)  // cycle each actor
 	{
@@ -46,7 +45,7 @@ void ASquadLeaderInitGameState::InitActorInWorld()
 
 	//sort the list using priority
 	Algo::Sort(InitList, [](IPreInitable* a, IPreInitable* b) {
-		return a->getpriority() < b->getpriority();
+		return a->GetPriority() < b->GetPriority();
 		});
 
 	for (IPreInitable* Element:InitList) {
@@ -54,4 +53,15 @@ void ASquadLeaderInitGameState::InitActorInWorld()
 	}
 	ensure(SoldierTeamCollection.Num() >= 2);  // check if TeamCollection have at least 2 elements
 	ensure(ControlAreaManager->GetControlArea().Num() >= 1);  // check if ControlAreaManager exist and have at least one ControlArea
+}
+
+void ASquadLeaderInitGameState::PlaceActorInWorld()
+{
+	// Place ControlAreaManager in world
+
+	FActorSpawnParameters SpawnInfo;
+	SpawnInfo.Owner = this;
+	AControlAreaManager* CAM = GetWorld()->SpawnActor<AControlAreaManager>(SpawnInfo);
+
+	// more spawn if needed
 }

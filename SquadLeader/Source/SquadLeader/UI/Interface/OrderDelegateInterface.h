@@ -19,8 +19,9 @@ class UOrderDelegateInterface : public UOrderInterface
 class SQUADLEADER_API IOrderDelegateInterface : public IOrderInterface
 {
 	GENERATED_BODY()
-protected:
+private:
 	TArray<IOrderInterface*> OrderDelegates;
+
 public:
 	virtual void OnOrderInputPressed();
 

@@ -1,14 +1,14 @@
 #include "SoldierPlayerController.h"
 #include "SoldierPlayerState.h"
-#include "../Soldier.h"
+#include "SoldierPlayer.h"
 #include "AbilitySystemComponent.h"
+#include "SquadLeader/Weapons/SL_Weapon.h"
+#include "../SoldierTeam.h"
+#include "../../AI/AISquadManager.h"
 #include "../../UI/SL_HUD.h"
 
 //TODO: rmove next include -> only use for the team init -> only use on temporary debug
 #include "../../GameState/SquadLeaderGameState.h"
-#include "../Players/SoldierPlayer.h"
-#include "../../AI/AISquadManager.h"
-#include "SquadLeader/Weapons/SL_Weapon.h"
 
 ASoldierPlayerController::ASoldierPlayerController()
 {
@@ -95,6 +95,9 @@ void ASoldierPlayerController::OnRep_PlayerState()
 void ASoldierPlayerController::Tick(float _deltaTime)
 {
 	Super::Tick(_deltaTime);
+
+	if (ASL_HUD* CurrentHUD = GetHUD<ASL_HUD>(); CurrentHUD && GetTeam())
+		CurrentHUD->OnUpdatePOIs();
 }
 
 void ASoldierPlayerController::SetupInputComponent()
@@ -240,6 +243,14 @@ void ASoldierPlayerController::OnSquadMemberMaxShieldChanged_Implementation(int 
 	// Erreur syncronisation client / serveur
 }
 
+void ASoldierPlayerController::OnTextNotification_Received_Implementation(const FString& notificationString)
+{
+	if (ASL_HUD* CurrentHUD = GetHUD<ASL_HUD>(); CurrentHUD)
+	{
+		CurrentHUD->OnTextNotification_Received(notificationString);
+	}
+}
+
 void ASoldierPlayerController::OnOrderGiven_Implementation(MissionType Order, FVector Pos)
 {
 	if (ASoldierPlayer* Soldier = GetPawn<ASoldierPlayer>(); Soldier)
@@ -249,6 +260,19 @@ void ASoldierPlayerController::OnOrderGiven_Implementation(MissionType Order, FV
 			SquadManager->UpdateMission(Order, Pos);
 		}
 	}
+}
+
+void ASoldierPlayerController::AddAnAIToIndexSquad_Implementation()
+{
+	Cheat_AddAISquad();
+}
+
+void ASoldierPlayerController::Cheat_AddAISquad()
+{
+	if (GetLocalRole() < ROLE_Authority) 
+		AddAnAIToIndexSquad();
+	if(Cast<ASoldierPlayer>(GetPawn())->GetSquadManager())
+		Cast<ASoldierPlayer>(GetPawn())->GetSquadManager()->AddAnAIToSquad();
 }
 
 void ASoldierPlayerController::BroadCastManagerData()

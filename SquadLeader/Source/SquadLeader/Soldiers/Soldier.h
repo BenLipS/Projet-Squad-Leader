@@ -37,6 +37,7 @@ class SQUADLEADER_API ASoldier : public ACharacter, public IAbilitySystemInterfa
 
 public:
 	ASoldier(const FObjectInitializer& _ObjectInitializer);
+	virtual void Destroyed() override;
 
 protected:
 	virtual void BeginPlay() override;
@@ -97,6 +98,9 @@ protected:
 	void AddStartupEffects();
 	void InitializeTagChangeCallbacks();
 	virtual void InitializeAttributeChangeCallbacks();
+
+public:
+	bool IsInCooldown(const FGameplayTag& _Tag);
 
 //////////////// Tag Change Callbacks
 public:
@@ -220,13 +224,28 @@ public:
 	UPROPERTY(VisibleDefaultsOnly, Category = "Mesh")
 	USkeletalMeshComponent* FirstPersonMesh;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Mesh")
+	FName WeaponAttachPoint;
+
 //////////////// Movement
 	// Move direction
 	UFUNCTION()
 	void MoveForward(const float _Val);
 
+	UPROPERTY(EditDefaultsOnly, Meta = (ClampMin = 0.0f, ClamMax = 1.0f), Category = "Movement")
+	float MaxInputForward;
+
+	UPROPERTY(EditDefaultsOnly, Meta = (ClampMin = -1.0f, ClamMax = 0.0f), Category = "Movement")
+	float MaxInputBackward;
+
 	UFUNCTION()
 	void MoveRight(const float _Val);
+
+	UPROPERTY(EditDefaultsOnly, Meta = (ClampMin = -1.0f, ClamMax = 0.0f), Category = "Movement")
+	float MaxInputLeft;
+
+	UPROPERTY(EditDefaultsOnly, Meta = (ClampMin = 0.0f, ClamMax = 1.0f), Category = "Movement")
+	float MaxInputRight;
 
 	// Looking direction
 	UFUNCTION()
@@ -336,7 +355,8 @@ public:
 //////////////// Teamable
 protected:
 	UPROPERTY(replicated)
-		ASoldierTeam* Team;
+	ASoldierTeam* Team;
+
 public:
 	virtual ASoldierTeam* GetTeam() override;
 	virtual bool SetTeam(ASoldierTeam* _Team) override;
@@ -376,6 +396,8 @@ public:
 	UAnimMontage* WeaponFireMontage;
 
 protected:
+	void HandleDeathMontage();
+
 	// Callbacks
 	FOnMontageEnded StartGame_SoldierMontageEndedDelegate;
 	FOnMontageEnded Respawn_SoldierMontageEndedDelegate;
@@ -389,4 +411,8 @@ protected:
 public:
 	UFUNCTION()
 	void ShowImpactHitEffect();
+
+	// Projectile forwardVector to launch from
+	UFUNCTION()
+	virtual FVector GetLookingDirection();
 };
