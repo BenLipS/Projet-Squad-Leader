@@ -235,8 +235,20 @@ public:
 	UFUNCTION()
 	void MoveForward(const float _Val);
 
+	UPROPERTY(EditDefaultsOnly, Meta = (ClampMin = 0.0f, ClamMax = 1.0f), Category = "Movement")
+	float MaxInputForward;
+
+	UPROPERTY(EditDefaultsOnly, Meta = (ClampMin = -1.0f, ClamMax = 0.0f), Category = "Movement")
+	float MaxInputBackward;
+
 	UFUNCTION()
 	void MoveRight(const float _Val);
+
+	UPROPERTY(EditDefaultsOnly, Meta = (ClampMin = -1.0f, ClamMax = 0.0f), Category = "Movement")
+	float MaxInputLeft;
+
+	UPROPERTY(EditDefaultsOnly, Meta = (ClampMin = 0.0f, ClamMax = 1.0f), Category = "Movement")
+	float MaxInputRight;
 
 	// Looking direction
 	UFUNCTION()

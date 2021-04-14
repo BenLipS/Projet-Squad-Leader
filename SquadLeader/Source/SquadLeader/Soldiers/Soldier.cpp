@@ -19,12 +19,16 @@
 ASoldier::ASoldier(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer.SetDefaultSubobjectClass<USoldierMovementComponent>(ACharacter::CharacterMovementComponentName)),
 bAbilitiesInitialized{ false },
 WeaponAttachPoint{ FName("WeaponSocket") },
+MaxInputForward{ 1.0f },
+MaxInputBackward{ -0.5f },
+MaxInputLeft{ -0.7f },
+MaxInputRight{ 0.7f },
 bChangedWeaponLocally{ false },
 FieldOfViewNormal{ 90.f },
 LevelUpFXRelativeLocation{ FVector{0.f} },
 LevelUpFXRotator{ FRotator{} },
 LevelUpFXScale{ FVector{1.f} },
-ImpactHitFXScale{FVector{1.f}}
+ImpactHitFXScale{ FVector{1.f} }
 {
 	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
@@ -418,13 +422,13 @@ void ASoldier::setToThirdCameraPerson()
 void ASoldier::MoveForward(const float _Val)
 {
 	if (_Val != 0.0f)
-		AddMovementInput(UKismetMathLibrary::GetForwardVector(FRotator(0, GetControlRotation().Yaw, 0)), _Val);
+		AddMovementInput(UKismetMathLibrary::GetForwardVector(FRotator(0, GetControlRotation().Yaw, 0)), FMath::Clamp(_Val, MaxInputBackward, MaxInputForward));
 }
 
 void ASoldier::MoveRight(const float _Val)
 {
 	if (_Val != 0.0f)
-		AddMovementInput(UKismetMathLibrary::GetRightVector(FRotator(0, GetControlRotation().Yaw, 0)), _Val);
+		AddMovementInput(UKismetMathLibrary::GetRightVector(FRotator(0, GetControlRotation().Yaw, 0)), FMath::Clamp(_Val, MaxInputLeft, MaxInputRight));
 }
 
 void ASoldier::LookUp(const float _Val)
