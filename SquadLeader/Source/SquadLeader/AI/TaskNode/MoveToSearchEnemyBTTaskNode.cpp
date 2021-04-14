@@ -3,6 +3,7 @@
 
 #include "MoveToSearchEnemyBTTaskNode.h"
 #include "../../AI/AIGeneralController.h"
+#include "BehaviorTree/BlackboardComponent.h"
 
 UMoveToSearchEnemyBTTaskNode::UMoveToSearchEnemyBTTaskNode() {
 	NodeName = "Search Enemy Location";
@@ -29,6 +30,12 @@ void UMoveToSearchEnemyBTTaskNode::TickTask(class UBehaviorTreeComponent& OwnerC
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	if (MoveToActorResult == EPathFollowingRequestResult::Failed)
 		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+	if (_controller->StopCurrentBehavior) {
+		_controller->get_blackboard()->SetValueAsVector("EnemyLocation", FVector());
+		_controller->get_blackboard()->SetValueAsBool("is_searching", false);
+		_controller->get_blackboard()->SetValueAsObject("FocusActor", NULL);
+		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+	}
 }
 
 FString UMoveToSearchEnemyBTTaskNode::GetStaticDescription() const {

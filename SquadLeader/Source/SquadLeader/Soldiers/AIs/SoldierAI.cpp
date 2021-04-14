@@ -1,6 +1,7 @@
 #include "SoldierAI.h"
 #include "../../AI/AIGeneralController.h"
 #include "../../AI/AISquadController.h"
+#include "BehaviorTree/BlackboardComponent.h"
 
 ASoldierAI::ASoldierAI(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer)
 {
@@ -58,29 +59,11 @@ void ASoldierAI::BeginPlay()
 	InitializeAttributes();
 	InitializeAbilities();
 	AddStartupEffects();
-	InitWeapons();
 }
 
-FVector ASoldierAI::lookingAtPosition()
+FVector ASoldierAI::GetLookingAtPosition(const float _MaxRange) const
 {
 	return LookingAtPosition;
-}
-
-
-TSubclassOf<ASoldierTeam> ASoldierAI::GetTeam()
-{
-	if (auto AIController = Cast<AAIGeneralController>(GetController()); AIController) {
-		return AIController->GetTeam();
-	}
-	return nullptr; // else return default
-}
-
-bool ASoldierAI::SetTeam(TSubclassOf<ASoldierTeam> _Team)
-{
-	if (auto AIController = Cast<AAIGeneralController>(GetController()); AIController) {
-		return AIController->SetTeam(_Team);
-	}
-	return false; // else return default
 }
 
 void ASoldierAI::SetLookingAtPosition(const FVector &_LookingAtPosition)
@@ -96,22 +79,52 @@ void ASoldierAI::SetLookingAtPosition(const FVector &_LookingAtPosition)
 
 bool ASoldierAI::ActivateAbilityFire()
 {
-	return ActivateAbility(ASoldier::SkillFireWeaponTag);
+	return ActivateAbility(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.FireWeapon")));
 }
 
 void ASoldierAI::CancelAbilityFire()
 {
-	CancelAbility(ASoldier::SkillFireWeaponTag);
+	CancelAbility(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.FireWeapon")));
 }
 
 bool ASoldierAI::ActivateAbilityRun()
 {
-	return ActivateAbility(ASoldier::SkillRunTag);
+	return ActivateAbility(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Run")));
 }
 
 void ASoldierAI::CancelAbilityRun()
 {
-	CancelAbility(ASoldier::SkillRunTag);
+	CancelAbility(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Run")));
+}
+
+bool ASoldierAI::ActivateAbilityLaunchGrenade()
+{
+	return ActivateAbility(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Grenade.Assault")));
+}
+
+bool ASoldierAI::ActivateAbilityLaunchHeal()
+{
+	return ActivateAbility(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.AreaEffectFromSelf.Instant.Heal")));
+}
+
+bool ASoldierAI::ActivateAbilityLaunchShield()
+{
+	return ActivateAbility(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.SpawnPhysicalShield")));
+}
+
+bool ASoldierAI::ActivateAbilityRegenShield()
+{
+	return ActivateAbility(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.AreaEffectFromSelf.Temporary.MaxShield")));
+}
+
+bool ASoldierAI::ActivateAbilityLaunchMine()
+{
+	return ActivateAbility(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Grenade.Heavy")));
+}
+
+bool ASoldierAI::ActivateAbilityOverHeat()
+{
+	return ActivateAbility(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.OverheatingWeapon")));
 }
 
 FVector ASoldierAI::GetRespawnPoint()
@@ -133,6 +146,16 @@ void ASoldierAI::Respawn() {
 	auto AIController = Cast<AAIGeneralController>(GetController());
 	if (AIController)
 		AIController->Respawn();
+}
+
+void ASoldierAI::OnReceiveDamage(const FVector& _ImpactPoint, const FVector& _SourcePoint)
+{
+	//Init GetHit Behaviour
+	if (AAIGeneralController* AIController = Cast<AAIGeneralController>(GetController()); AIController && AIController->GetSeenEnemySoldier().Num() == 0) {
+		AIController->StopCurrentBehavior = true;
+		AIController->get_blackboard()->SetValueAsBool("IsHit", true);
+		AIController->get_blackboard()->SetValueAsVector("IsHitEnemyLocation", _SourcePoint);
+	}
 }
 
 void ASoldierAI::InitializeAttributeChangeCallbacks()

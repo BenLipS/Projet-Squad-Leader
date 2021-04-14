@@ -7,6 +7,36 @@
 #include "GameFramework/Info.h"
 #include "InfluenceMapGrid.generated.h"
 
+USTRUCT()
+struct SQUADLEADER_API FNeighboor {
+
+	GENERATED_USTRUCT_BODY()
+
+	FNeighboor() {
+	}
+
+	TArray<int> m_neighboor;
+
+};
+
+UENUM()
+enum Type {
+	Soldier UMETA(DisplayName = "Soldier"),
+	ControlArea UMETA(DisplayName = "ControlArea"),
+	Projectile UMETA(DisplayName = "Projectile"),
+};
+
+USTRUCT()
+struct SQUADLEADER_API FGridPackage {
+
+	GENERATED_USTRUCT_BODY()
+		FGridPackage() {}
+
+	int team_value = 0;
+	FVector m_location_on_map;
+	TEnumAsByte<Type> m_type;
+};
+
 /*
 * This struct represent a Tile-Base for the grid
 * it contains a value, a location and the information of witch team they are of the influence
@@ -19,23 +49,18 @@ struct SQUADLEADER_API FTileBase {
 	FTileBase() {
 	}
 
+	//value of the tile
 	float m_value = 0.f;
+	//the position of the tile in the world
 	FVector m_location;
+	//wich team possess this tile
 	int m_team = -1;
+	//the type of the tile (Soldier, COntrolArea, Projectile, etc.)
+	TEnumAsByte<Type> m_type;
 
+	bool in_update = false;
 };
 
-USTRUCT()
-struct SQUADLEADER_API FNeighboor {
-
-	GENERATED_USTRUCT_BODY()
-
-	FNeighboor() {
-	}
-
-	TArray<int> m_neighboor;
-
-};
 
 
 /**
@@ -54,6 +79,8 @@ public:
 
 	virtual void Tick(float DeltaSeconds) override;
 
+	void ReceivedMessage(FGridPackage _message);
+
 private:
 	/*
 	* will initialize the array with the tile needed
@@ -71,13 +98,6 @@ private:
 	* only use this for debug
 	*/
 	void DrawGrid() const;
-
-	/*
-	* Reset all the grid
-	* the value of a tile is reset to 0
-	* the team of a tile is reset to none
-	*/
-	void ResetGrid() noexcept;
 
 	/*
 	* Update the grid with world information
@@ -113,34 +133,50 @@ private:
 	* Algorithm recursif
 	* calculate the influence of player on the grid
 	*/
-	void Influence(int index, int start_index, int source_index, int distance) noexcept;
-
-
-	/*
-	* Update all the players for the grid
-	*/
-	void UpdatePlayers() noexcept;
+	void InfluenceSoldier(int index, int start_index, int source_index, int distance) noexcept;
 
 	/*
-	* Update the information of control area in the influence map
+	* Calculate the influence of a control area
 	*/
-	void UpdateControlArea() noexcept;
+	void InfluenceControlArea(int index, int start_index, int source_index, int distance, int value) noexcept;
+
+	/*
+	* Calculate the time of execution of a function
+	*/
+	void TimeFunction();
+
+	void UpdateTile(int index, float value, int team, Type type) noexcept;
 
 public:
 
 	//Dimension of the grid
-	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Grid")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
 		int m_grid_width = 100000;
 
-	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Grid")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
 		int m_grid_height = 100000;
 
 	//Dimension of a tile-base
-	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Grid")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tile")
 		int m_tile_width = 200;
 
-	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Grid")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tile")
 		int m_tile_height = 200;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tile")
+		float m_height = 10.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
+		FVector m_startLocation = FVector{ 0.f,0.f,0.f };
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
+		TArray<float> m_heightList;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug")
+		bool m_DrawAllGrid = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug")
+		bool m_DrawCharacterInfluence = false;
 
 private:
 
@@ -159,6 +195,14 @@ private:
 	UPROPERTY()
 		TArray<FNeighboor> m_neighboors;
 
+	/*
+	* Will contains the index of the tile that need
+	* to be update
+	* with that we don't need tu update all the grid
+	* we pop out an index when he's update value is down to 0
+	*/
+	UPROPERTY()
+		TArray<int> m_index_update;
 
 	int value_tick = 0;
 	/*class UMyThreadManager* m_ThreadManager;*/

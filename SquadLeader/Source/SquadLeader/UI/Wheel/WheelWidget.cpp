@@ -9,6 +9,8 @@
 
 #include "../Interface/OrderDelegateInterface.h"
 
+#include "Components/CanvasPanelSlot.h"
+#include "Blueprint/WidgetTree.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -22,7 +24,6 @@ UWheelWidget::UWheelWidget(const FObjectInitializer& ObjectInitializer) : Super(
 void UWheelWidget::SynchronizeProperties()
 {
 	Super::SynchronizeProperties();
-	NbElement = ItemsDefault.Num();
 	if (Background)
 	{
 		auto mat = Background->GetDynamicMaterial();
@@ -39,14 +40,36 @@ void UWheelWidget::SynchronizeProperties()
 		ImageBox->SetWidthOverride(OutterCircleRadius*2);
 	}
 
-	for (TSubclassOf<UWheelWidgetElement> DefaultItem : ItemsDefault)
+	ListItems = {};
+
+	for (UWidget* Item : WheelElements->GetAllChildren())
 	{
-		UWheelWidgetElement* newItem = CreateWidget<UWheelWidgetElement>(GetWorld(), DefaultItem);
-		//newItem->SetRenderTransformPivot(FVector2D(0.f));
-		OnVisibilityChanged.AddDynamic(newItem, &UWheelWidgetElement::SetVisibility);
-		ListItems.Add(newItem);
+		if (UWheelWidgetElement* WheelItem = Cast<UWheelWidgetElement>(Item); Item)
+		{
+			ListItems.Add(WheelItem);
+			if (UCanvasPanelSlot* PanelSlot = Cast<UCanvasPanelSlot>(WheelItem->Slot); PanelSlot)
+			{
+				PanelSlot->SetAnchors(FAnchors(0.5f));
+				PanelSlot->SetPosition(FVector2D(0.f));
+				PanelSlot->SetAlignment(FVector2D(0.5f));
+			}
+		}
 	}
-	SetVisibility(ESlateVisibility::Hidden);
+
+	NbElement = ListItems.Num();
+
+	float AngleSection = 360.f / float(NbElement);
+	float Angle = AngleSection / 2.f;
+
+	for (int i = 0; i < ListItems.Num(); ++i)
+	{
+		float NextAngle = Angle + AngleSection;
+		ListItems[i]->SetRenderTranslation(FVector2D(UKismetMathLibrary::DegCos(Angle), UKismetMathLibrary::DegSin(Angle)) * (InnerCircleRadius + ((OutterCircleRadius - InnerCircleRadius) / 2.f)));
+		Angle = NextAngle;
+	}
+
+	if(!IsDesignTime())
+		SetVisibility(ESlateVisibility::Hidden);
 }
 
 const TArray<class UWheelWidgetElement*>& UWheelWidget::GetItems()
@@ -66,11 +89,7 @@ void UWheelWidget::AddToViewport(int32 ZOrder)
 	for (int i = 0; i < ListItems.Num(); ++i)
 	{
 		float NextAngle = Angle + AngleSection;
-		if (!ListItems[i]->IsInViewport())
-		{
-			ListItems[i]->SetRenderTranslation(FVector2D(UKismetMathLibrary::DegCos(Angle), UKismetMathLibrary::DegSin(Angle)) * (InnerCircleRadius + ((OutterCircleRadius - InnerCircleRadius) / 2.f)));
-			ListItems[i]->AddToViewport();
-		}
+		ListItems[i]->SetRenderTranslation(FVector2D(UKismetMathLibrary::DegCos(Angle), UKismetMathLibrary::DegSin(Angle)) * (InnerCircleRadius + ((OutterCircleRadius - InnerCircleRadius) / 2.f)));
 		Angle = NextAngle;
 	}
 }
@@ -78,10 +97,6 @@ void UWheelWidget::AddToViewport(int32 ZOrder)
 void UWheelWidget::RemoveFromViewport()
 {
 	Super::RemoveFromViewport();
-	for (auto Item : ListItems)
-	{
-		Item->RemoveFromViewport();
-	}
 }
 
 void UWheelWidget::OnOrderInputPressed()
@@ -100,7 +115,8 @@ void UWheelWidget::OnOrderInputPressed()
 
 void UWheelWidget::OnOrderInputReleased()
 {
-	SetVisibility(ESlateVisibility::Hidden);
+	if (!IsDesignTime())
+		SetVisibility(ESlateVisibility::Hidden);
 	if (ASoldierPlayerController* PC = GetOwningPlayer<ASoldierPlayerController>(); PC)
 	{
 		PC->SetShowMouseCursor(false);
@@ -201,7 +217,7 @@ int32 UWheelWidget::NativePaint(const FPaintArgs& Args, const FGeometry& Allotte
 	return Super::NativePaint(Args, AllottedGeometry, MyCullingRect, OutDrawElements, LayerId, InWidgetStyle, bParentEnabled);
 }
 
-void UWheelWidget::SetupDelegateToObject(UObject* ObjectIn)
+void UWheelWidget::SetupDelegateToObject_Implementation(UObject* ObjectIn)
 {
 	if (IOrderDelegateInterface* OrderDelegateInterface = Cast<IOrderDelegateInterface>(ObjectIn); OrderDelegateInterface)
 	{

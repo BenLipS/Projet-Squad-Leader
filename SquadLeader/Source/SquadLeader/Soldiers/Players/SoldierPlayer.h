@@ -14,7 +14,7 @@ class SQUADLEADER_API ASoldierPlayer : public ASoldier
 public:
 	ASoldierPlayer(const FObjectInitializer& _ObjectInitializer);
 
-protected:
+public:
 	virtual void BeginPlay() override;
 	void PossessedBy(AController* _newController) override;
 	void OnRep_PlayerState() override;
@@ -25,11 +25,16 @@ protected:
 	virtual void UnLockControls() override;
 
 //////////////// Squad
+protected:
 	UPROPERTY(EditDefaultsOnly, Category = "SquadManager")
 	TSubclassOf<class AAISquadManager> AISquadManagerClass;
 
 	UPROPERTY(BlueprintReadOnly, Category = "SquadManager")
 	class AAISquadManager* SquadManager;
+
+	// Number of AIs to add for the next level up
+	UPROPERTY(EditDefaultsOnly, Category = "SquadManager")
+	FScalableFloat NbAIsForNextLevelUp;
 
 public:
 	UFUNCTION()
@@ -40,10 +45,6 @@ public:
 	virtual void LookUp(const float _Val) override;
 	virtual void Turn(const float _Val) override;
 
-//////////////// Teamable
-public:
-	virtual TSubclassOf<ASoldierTeam> GetTeam() override;
-	virtual bool SetTeam(TSubclassOf<ASoldierTeam> _Team) override;
 
 	virtual void cycleBetweenTeam() override;
 
@@ -54,6 +55,8 @@ protected:
 	void BindASCInput();
 
 	bool ASCInputBound;
+
+	virtual void LevelUp() override;
 
 public:  // Respawn
 	virtual FVector GetRespawnPoint() override;

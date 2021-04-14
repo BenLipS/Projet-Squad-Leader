@@ -9,6 +9,7 @@ ASoldierPlayerState::ASoldierPlayerState()
 	AttributeSet = CreateDefaultSubobject<UAttributeSetSoldier>(TEXT("Attribute Set"));
 
 	bReplicates = true;
+	NetUpdateFrequency = 100.0f;
 }
 
 void ASoldierPlayerState::BeginPlay()
@@ -25,6 +26,8 @@ void ASoldierPlayerState::InitializeAttributeChangeCallbacks()
 		MaxHealthChangedDelegateHandle = AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetMaxHealthAttribute()).AddUObject(this, &ASoldierPlayerState::MaxHealthChanged);
 		ShieldChangedDelegateHandle = AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetShieldAttribute()).AddUObject(this, &ASoldierPlayerState::ShieldChanged);
 		MaxShieldChangedDelegateHandle = AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetMaxShieldAttribute()).AddUObject(this, &ASoldierPlayerState::MaxShieldChanged);
+		EXPChangedDelegateHandle = AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetEXPAttribute()).AddUObject(this, &ASoldierPlayerState::EXPChanged);
+		EXPLevelUpChangedDelegateHandle = AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetEXPLevelUpAttribute()).AddUObject(this, &ASoldierPlayerState::EXPLevelUpChanged);
 	}
 }
 
@@ -33,26 +36,21 @@ void ASoldierPlayerState::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	// everyone
-	DOREPLIFETIME(ASoldierPlayerState, Team);
+	//DOREPLIFETIME(ASoldierPlayerState, var);
 }
 
-TSubclassOf<ASoldierTeam> ASoldierPlayerState::GetTeam()
+ASoldierTeam* ASoldierPlayerState::GetTeam()
 {
-	return Team;
+	if (auto soldier = Cast<ASoldier>(GetPawn()); soldier) {
+		return soldier->GetTeam();
+	}
+	return nullptr;
 }
 
-bool ASoldierPlayerState::SetTeam(TSubclassOf<ASoldierTeam> _Team)
+bool ASoldierPlayerState::SetTeam(ASoldierTeam* _Team)
 {
-	if (GetLocalRole() == ROLE_Authority) {  // only server can change team
-		if (auto soldier = Cast<ASoldier>(GetPawn()); soldier) {
-			if (Team)
-				Team.GetDefaultObject()->RemoveSoldierList(soldier);
-			if (_Team)
-				_Team.GetDefaultObject()->AddSoldierList(soldier);
-		}
-
-		Team = _Team;
-		return true;
+	if (auto soldier = Cast<ASoldier>(GetPawn()); soldier) {
+		return soldier->SetTeam(_Team);
 	}
 	return false;
 }
@@ -87,6 +85,16 @@ float ASoldierPlayerState::GetMaxShield() const
 	return AttributeSet->GetMaxShield();
 }
 
+float ASoldierPlayerState::GetEXP() const
+{
+	return AttributeSet->GetEXP();
+}
+
+float ASoldierPlayerState::GetEXPLevelUp() const
+{
+	return AttributeSet->GetEXPLevelUp();
+}
+
 void ASoldierPlayerState::HealthChanged(const FOnAttributeChangeData& Data)
 {
 	OnHealthChanged.Broadcast(Data.NewValue);
@@ -107,10 +115,22 @@ void ASoldierPlayerState::MaxShieldChanged(const FOnAttributeChangeData& Data)
 	OnMaxShieldChanged.Broadcast(Data.NewValue);
 }
 
+void ASoldierPlayerState::EXPChanged(const FOnAttributeChangeData& Data)
+{
+	OnEXPChanged.Broadcast(Data.NewValue);
+}
+
+void ASoldierPlayerState::EXPLevelUpChanged(const FOnAttributeChangeData& Data)
+{
+	OnEXPLevelUpChanged.Broadcast(Data.NewValue);
+}
+
 void ASoldierPlayerState::BroadCastAllDatas()
 {
 	OnHealthChanged.Broadcast(GetHealth());
 	OnMaxHealthChanged.Broadcast(GetMaxHealth());
 	OnShieldChanged.Broadcast(GetShield());
 	OnMaxShieldChanged.Broadcast(GetMaxShield());
+	OnEXPChanged.Broadcast(GetEXP());
+	OnEXPLevelUpChanged.Broadcast(GetEXPLevelUp());
 }

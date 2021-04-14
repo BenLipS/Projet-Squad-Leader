@@ -40,7 +40,7 @@ FVector AAISquadController::GetRespawnPoint()  // TODO : Change this function to
 {
 	if (ASoldier* soldier = Cast<ASoldier>(GetPawn()); soldier) {
 		if (soldier->GetTeam()) {
-			auto AvailableSpawnPoints = soldier->GetTeam().GetDefaultObject()->GetUsableSpawnPoints();
+			auto AvailableSpawnPoints = soldier->GetTeam()->GetUsableSpawnPoints();
 			if (AvailableSpawnPoints.Num() > 0) {
 
 				FVector OptimalPosition = AvailableSpawnPoints[0]->GetActorLocation();
@@ -72,29 +72,70 @@ void AAISquadController::BeginPlay()
 
 void AAISquadController::Init()
 {
-
+	Super::Init();
+	SetState(AIBasicState::Formation);
+	FormationState();
 }
 
-EPathFollowingRequestResult::Type AAISquadController::FollowFormation() {
-
+void AAISquadController::FollowFormation() {
 	GetValidFormationPos();
-	EPathFollowingRequestResult::Type _movetoResult = MoveToLocation(blackboard->GetValueAsVector("FormationLocation"), 5.f);
-	DrawDebugPoint(GetWorld(), blackboard->GetValueAsVector("FormationLocation"), 12, FColor::Purple);
-	if ((blackboard->GetValueAsVector("FormationLocation") - GetPawn()->GetActorLocation()).Size() >= RuningDistanceForFormation)
-		Cast<ASoldierAI>(GetPawn())->ActivateAbilityRun();
-	else
-		Cast<ASoldierAI>(GetPawn())->CancelAbilityRun();
-
-	return _movetoResult;
+	//EPathFollowingRequestResult::Type _movetoResult = MoveToLocation(blackboard->GetValueAsVector("FormationLocation"), 5.f);
+	//DrawDebugPoint(GetWorld(), blackboard->GetValueAsVector("FormationLocation"), 12, FColor::Purple);
 }
 
 void AAISquadController::Die() {
 	Super::Die();
 }
 
-void AAISquadController::ResetBlackBoard() const {
+void AAISquadController::ResetBlackBoard() {
 	Super::ResetBlackBoard();
 	blackboard->SetValueAsVector("FormationLocation", Cast<ASoldier>(GetPawn())->GetLocation());
 	blackboard->SetValueAsBool("HasOrder", false);
 	blackboard->SetValueAsBool("IsInFormation", true);
+}
+
+void AAISquadController::FormationState() {
+	blackboard->SetValueAsBool("is_attacking", false);
+	blackboard->SetValueAsBool("is_moving", false);
+	blackboard->SetValueAsBool("is_patroling", false);
+	blackboard->SetValueAsBool("is_searching", false);
+	blackboard->SetValueAsBool("is_capturing", false);
+	blackboard->SetValueAsBool("IsInFormation", true);
+}
+
+void AAISquadController::UpdateFormation(const FVector _position) {
+	get_blackboard()->SetValueAsVector("FormationLocation", _position);
+}
+
+void AAISquadController::SetUpMission(bool hasOrder, bool isInFormation, FVector _Location){
+	StopCurrentBehavior = true;
+	get_blackboard()->SetValueAsBool("HasOrder", hasOrder);
+	get_blackboard()->SetValueAsBool("IsInFormation", isInFormation);
+	if (isInFormation) {
+		SetState(AIBasicState::Formation);
+	}
+	else {
+		SetState(AIBasicState::Moving);
+	}
+}
+
+void AAISquadController::ChooseState() {
+	if (m_state == AIBasicState::Attacking) {
+		AttackingState();
+	}
+	else if (m_state == AIBasicState::Capturing) {
+		CapturingState();
+	}
+	else if (m_state == AIBasicState::Patroling) {
+		PatrolingState();
+	}
+	else if (m_state == AIBasicState::Search) {
+		SearchState();
+	}
+	else if (m_state == AIBasicState::Formation) {
+		FormationState();
+	}
+	else {
+		MovingState();
+	}
 }

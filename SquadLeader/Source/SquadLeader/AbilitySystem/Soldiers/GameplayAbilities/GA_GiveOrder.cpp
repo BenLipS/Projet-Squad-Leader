@@ -1,7 +1,6 @@
 #include "GA_GiveOrder.h"
 #include "../../../Soldiers/Players/SoldierPlayer.h"
 #include "../../../Soldiers/Players/SoldierPlayerController.h"
-#include "../../../UI/PlayerHUD.h"
 #include "SquadLeader/AI/AISquadManager.h"
 
 UGA_GiveOrder::UGA_GiveOrder()
@@ -10,8 +9,8 @@ UGA_GiveOrder::UGA_GiveOrder()
 
 	AbilityInputID = ESoldierAbilityInputID::GiveOrder;
 	AbilityID = ESoldierAbilityInputID::None;
-	AbilityTags.AddTag(ASoldier::SkillGiveOrderTag);
-	ActivationOwnedTags.AddTag(ASoldier::StateGivingOrderTag);
+	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.GiveOrder")));
+	ActivationOwnedTags.AddTag(FGameplayTag::RequestGameplayTag(FName("State.GivingOrder")));
 }
 
 void UGA_GiveOrder::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
@@ -21,18 +20,18 @@ void UGA_GiveOrder::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 		if (!CommitAbility(Handle, ActorInfo, ActivationInfo))
 			EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
 
-		/*if (ASoldierPlayer* Soldier = Cast<ASoldierPlayer>(ActorInfo->AvatarActor.Get()); Soldier)
+		if (ASoldierPlayer* Soldier = Cast<ASoldierPlayer>(ActorInfo->AvatarActor.Get()); Soldier)
 		{
 			if (Soldier->GetLocalRole() == ROLE_Authority)
 			{
-				if (Soldier->GetSquadManager()->GetMission()->Type != MissionType::Formation)
-				{
+				//if (Soldier->GetSquadManager()->GetMissionType() != MissionType::Formation)
+				//{
+				//	
+				//}
+				Soldier->GetSquadManager()->UpdateMission(MissionType::FormationCircle, FVector{ 0, 0, 0 });
 
-					Soldier->GetSquadManager()->UpdateMission(MissionType::Formation, FVector{ 0, 0, 0 });
-
-					CancelAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true);
-					return;
-				}
+				CancelAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true);
+				return;
 			}
 
 			// Init task
@@ -55,7 +54,7 @@ void UGA_GiveOrder::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 			FGameplayAbilityTargetingLocationInfo TargetingLocationInfo = MakeTargetLocationInfoFromOwnerActor();
 			TargetingLocationInfo.LiteralTransform.SetLocation(Soldier->GetActorForwardVector() * 200 + TargetingLocationInfo.LiteralTransform.GetLocation());
 			SpawnedActor->StartLocation = TargetingLocationInfo;
-		}*/
+		}
 		//Call affichage
 	}
 }
@@ -78,7 +77,7 @@ void UGA_GiveOrder::OnOrderValid(const FGameplayAbilityTargetDataHandle& _Data)
 		if (Soldier->GetLocalRole() == ROLE_Authority)
 		{
 			FVector_NetQuantize Location = _Data.Data[0]->GetHitResult()->Location;
-			Soldier->GetSquadManager()->UpdateMission(MissionType::Attack, FVector{ Location.X, Location.Y, Location.Z });
+			Soldier->GetSquadManager()->UpdateMission(MissionType::eATTACK, FVector{ Location.X, Location.Y, Location.Z });
 		}
 	}
 	CancelAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true);

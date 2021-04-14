@@ -28,5 +28,5 @@ public:
 
 	void ChangeSpawnState(bool state);
 
-	void ChangeSpawnTeam(TSubclassOf<ASoldierTeam> _teamOwner);
+	void ChangeSpawnTeam(ASoldierTeam* _teamOwner);
 };

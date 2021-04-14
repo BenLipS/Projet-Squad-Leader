@@ -3,7 +3,14 @@
 
 #include "AISquadManager.h"
 #include "DrawDebugHelpers.h"
+#include "Mission/FormationMission.h"
+#include "Mission/DefendMission.h"
+#include "Mission/CaptureMission.h"
+#include "AISquadController.h"
+#include "Mission/PatrolMission.h"
+#include "NavigationSystem.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "NavigationSystem.h"
 
 #include<algorithm>
 // temp include, need to be replace by more robust code
@@ -19,7 +26,7 @@ void AAISquadManager::BeginPlay()
 	Super::BeginPlay();
 }
 
-void AAISquadManager::Init(TSubclassOf<ASoldierTeam> _Team, ASoldierPlayer* _Player)
+void AAISquadManager::Init(ASoldierTeam* _Team, ASoldierPlayer* _Player)
 {
 	Team = _Team;
 	Leader = _Player;
@@ -37,7 +44,7 @@ void AAISquadManager::Init(TSubclassOf<ASoldierTeam> _Team, ASoldierPlayer* _Pla
 
 	FActorSpawnParameters SpawnInfo;
 	SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn; // La maniere de faire le respawn
-	ASoldierAI* SquadAI = GetWorld()->SpawnActorDeferred<ASoldierAI>(ClassAI, LocationAI, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn); 
+	ASoldierAI* SquadAI = GetWorld()->SpawnActorDeferred<ASoldierAI>(ClassAI1, LocationAI, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn); 
 	if (SquadAI) {
 		SquadAI->SpawnDefaultController();
 		SquadAI->OnHealthChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberHealthChange);
@@ -49,7 +56,7 @@ void AAISquadManager::Init(TSubclassOf<ASoldierTeam> _Team, ASoldierPlayer* _Pla
 		AISquadList.Add(Cast<AAISquadController>(SquadAI->Controller));
 		Cast<AAISquadController>(SquadAI->Controller)->SquadManager = this;
 	}
-	ASoldierAI* SquadAI1 = GetWorld()->SpawnActorDeferred<ASoldierAI>(ClassAI, LocationAI1, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+	ASoldierAI* SquadAI1 = GetWorld()->SpawnActorDeferred<ASoldierAI>(ClassAI2, LocationAI1, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 	if (SquadAI1) {
 		SquadAI1->SpawnDefaultController();
 		SquadAI1->OnHealthChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberHealthChange);
@@ -61,7 +68,7 @@ void AAISquadManager::Init(TSubclassOf<ASoldierTeam> _Team, ASoldierPlayer* _Pla
 		AISquadList.Add(Cast<AAISquadController>(SquadAI1->Controller));
 		Cast<AAISquadController>(SquadAI1->Controller)->SquadManager = this;
 	}
-	ASoldierAI* SquadAI2 = GetWorld()->SpawnActorDeferred<ASoldierAI>(ClassAI, LocationAI2, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+	ASoldierAI* SquadAI2 = GetWorld()->SpawnActorDeferred<ASoldierAI>(ClassAI3, LocationAI2, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 	if (SquadAI2) {
 		SquadAI2->SpawnDefaultController();
 		SquadAI2->OnHealthChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberHealthChange);
@@ -74,8 +81,7 @@ void AAISquadManager::Init(TSubclassOf<ASoldierTeam> _Team, ASoldierPlayer* _Pla
 		Cast<AAISquadController>(SquadAI2->Controller)->SquadManager = this;
 	}
 
-	Mission = NewObject<UMission>(this, UMission::StaticClass());
-	Mission->Type = MissionType::Formation;
+	m_inFormation = true;
 	TypeOfFormation = FormationType::Circle;
 }
 
@@ -83,12 +89,69 @@ void AAISquadManager::Tick(float DeltaTime)
 {
 	//if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Black, FString::Printf(TEXT("Tick for: %s"), *Leader->GetName()));
 
-	if (Mission->Type == MissionType::Formation) {
-		UpdateFormation();
-	}
-
+	//if (m_inFormation) {
+	UpdateFormation();
+	//}
+	
 	Super::Tick(DeltaTime);
 		
+}
+
+void AAISquadManager::AddAnAIToSquad_Implementation()
+{
+	//if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("AAAAAAAAAAAAAAAAAAAAAAAAA"));
+	TSubclassOf<ASoldierAI> ClassAI;
+	switch (AISquadList.Num()) {
+	case 0:
+		ClassAI = ClassAI1;
+		break;
+	case 1:
+		ClassAI = ClassAI2;
+		break;
+	case 2:
+		ClassAI = ClassAI3;
+		break;
+	case 3:
+		ClassAI = ClassAI4;
+		break;
+	case 4:
+		ClassAI = ClassAI5;
+		break;
+	default:
+		ClassAI = ClassAI1;
+	}
+	FTransform PlayerTransform = Leader->GetTransform();
+	FTransform LocationAI;
+	LocationAI.SetLocation(PlayerTransform.GetLocation() - Leader->GetActorForwardVector() * 500);
+
+	UNavigationSystemV1* navSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
+
+	FVector HitLocation{};
+
+	if (navSys->NavigationRaycast(GetWorld(), PlayerTransform.GetLocation(), LocationAI.GetLocation(), HitLocation)) {
+		LocationAI.SetLocation(HitLocation);
+	}
+
+	ASoldierAI* SquadAI = GetWorld()->SpawnActorDeferred<ASoldierAI>(ClassAI, LocationAI, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+	if (SquadAI) {
+		SquadAI->SpawnDefaultController();
+		SquadAI->OnHealthChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberHealthChange);
+		SquadAI->OnMaxHealthChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberMaxHealthChange);
+		SquadAI->OnShieldChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberShieldChange);
+		SquadAI->OnMaxShieldChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberMaxShieldChange);
+		SquadAI->FinishSpawning(LocationAI);
+		SquadAI->BroadCastDatas();
+		SquadAI->SetTeam(Team);
+		AISquadList.Add(Cast<AAISquadController>(SquadAI->Controller));
+		Cast<AAISquadController>(SquadAI->Controller)->SquadManager = this;
+	}
+}
+
+bool AAISquadManager::HasSoldier(const ASoldier* _Soldier) const
+{
+	if (AAISquadController* SC = Cast<AAISquadController>(_Soldier->GetController()))
+		return AISquadList.Find(SC) != INDEX_NONE;
+	return false;
 }
 
 void AAISquadManager::UpdateFormation()
@@ -98,13 +161,16 @@ void AAISquadManager::UpdateFormation()
 		UpdateCircleFormation();
 		break;
 	case FormationType::Arrow:
+		UpdateArrowFormation();
 		break;
 	default: 
 		if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Wrong Formation Type"));
 	}
 
 	for (int i = 0; i < AISquadList.Num(); i++) {
-		AISquadList[i]->get_blackboard()->SetValueAsVector("FormationLocation", FormationPos[i]);
+		FVector FormationPosAI = FormationPos[i];
+		FormationPosAI = UNavigationSystemV1::ProjectPointToNavigation(GetWorld(), FormationPosAI);
+		AISquadList[i]->UpdateFormation(FormationPosAI);
 	}
 }
 
@@ -128,43 +194,96 @@ void AAISquadManager::UpdateCircleFormation()
 		});
 }
 
+void AAISquadManager::UpdateArrowFormation()
+{
+	if (AISquadList.Num() > 1) {
+		FVector DirPlayer = Leader->GetActorForwardVector();
+		//DirPlayer = -DirPlayer;
+		FVector LocPlayer = Leader->GetActorLocation();
+		float angle = FMath::RadiansToDegrees(FGenericPlatformMath::Acos(FVector::DotProduct({ 1,0,0 }, DirPlayer) / (1 * DirPlayer.Size())));
+		if (DirPlayer.Y < 0) angle = -angle;
+		float AnglePerAI = 180 / (AISquadList.Num() - 1);
+		FormationPos.Empty();
+		std::for_each(AISquadList.begin(), AISquadList.end(), [&](AAISquadController* BoidController) {
+			FVector Pos{};
+			FVector Offset{ 0.f, -1.f, 0.f };
+			Offset = Offset.RotateAngleAxis(angle, { 0, 0, 1 });
+			Offset = Offset.RotateAngleAxis(AnglePerAI * AISquadList.IndexOfByKey(BoidController), { 0, 0, 1 });
+			float CoefToGetCloser = FMath::Abs(90 - AnglePerAI * AISquadList.IndexOfByKey(BoidController)) / 90;
+			Pos = LocPlayer + Offset * 200 * (1 - CoefToGetCloser + 1.5f);
+			//DrawDebugPoint(Leader->GetWorld(), Pos, 20, FColor::Yellow);
+			FormationPos.Add(Pos);
+			});
+	}
+}
+
 void AAISquadManager::UpdateMission(const MissionType _MissionType, const FVector& _Location)
 {
-	Mission->Type = _MissionType;
-	Mission->Location = _Location;
+	auto for_each_sqaud = [&](bool hasOrder, bool isInFormation) {
+		for (AAISquadController* AISquad : AISquadList) {
 
-	for (AAISquadController* AISquad : AISquadList) {
-		AISquad->SetMission(Mission);
-		if(Mission->Type == MissionType::Formation){
-			AISquad->get_blackboard()->SetValueAsBool("IsInFormation", true);
-			AISquad->get_blackboard()->SetValueAsBool("HasOrder", false);
-		}
-		else if (Mission->Type != MissionType::None) {
-			AISquad->get_blackboard()->SetValueAsBool("IsInFormation", false);
-			AISquad->get_blackboard()->SetValueAsBool("HasOrder", true);
-		}
-	}
+			UPatrolMission* _patrolMisssion = Cast<UPatrolMission>(NewObject<UPatrolMission>(this, UPatrolMission::StaticClass()));
+			_patrolMisssion->InitPatrolMission(1, MissionPriority::eMIDDLE);
+			AISquad->SetMission<UPatrolMission*>(_patrolMisssion);
+			AISquad->SetObjectifLocation(_Location);
 
-	// Sorry for that...
-	switch (Mission->Type)
+			AISquad->SetUpMission(true, false, _Location);
+		}
+	};
+
+	switch (_MissionType)
 	{
-	case MissionType::Defence:
-		GEngine->AddOnScreenDebugMessage(4563, 4.f, FColor::Red, FString::Printf(TEXT("Order Defence on (%s,%s,%s) from %s"), *FString::SanitizeFloat(Mission->Location.X), *FString::SanitizeFloat(Mission->Location.Y), *FString::SanitizeFloat(Mission->Location.Z), *Leader->GetName()));
+	case MissionType::FormationCircle:
+
+		for (AAISquadController* AISquad : AISquadList) {
+			AISquad->EmptyMissionList();
+			UFormationMission* _formationMission = Cast<UFormationMission>(NewObject<UFormationMission>(this, UFormationMission::StaticClass()));
+			_formationMission->InitFormation(1, MissionPriority::eBASIC, _Location);
+			AISquad->SetMission<UFormationMission*>(_formationMission);
+			TypeOfFormation = FormationType::Circle;
+			
+			AISquad->SetUpMission(false, true, _Location);
+		}
+		m_inFormation = true;
 		break;
-	case MissionType::Attack:
-		GEngine->AddOnScreenDebugMessage(4563, 4.f, FColor::Red, FString::Printf(TEXT("Order Attack on (%s,%s,%s) from %s"), *FString::SanitizeFloat(Mission->Location.X), *FString::SanitizeFloat(Mission->Location.Y), *FString::SanitizeFloat(Mission->Location.Z), *Leader->GetName()));
+	case MissionType::FormationArrow:
+
+		for (AAISquadController* AISquad : AISquadList) {
+			AISquad->EmptyMissionList();
+			UFormationMission* _formationMission = Cast<UFormationMission>(NewObject<UFormationMission>(this, UFormationMission::StaticClass()));
+			_formationMission->InitFormation(1, MissionPriority::eBASIC, _Location);
+			AISquad->SetMission<UFormationMission*>(_formationMission);
+			TypeOfFormation = FormationType::Arrow;
+
+			AISquad->SetUpMission(false, true, _Location);
+		}
+		m_inFormation = true;
 		break;
-	case MissionType::MoveTo:
-		GEngine->AddOnScreenDebugMessage(4563, 4.f, FColor::Red, FString::Printf(TEXT("Order MoveTo on (%s,%s,%s) from %s"), *FString::SanitizeFloat(Mission->Location.X), *FString::SanitizeFloat(Mission->Location.Y), *FString::SanitizeFloat(Mission->Location.Z), *Leader->GetName()));
+	case MissionType::eDEFEND:
+		for_each_sqaud(true, false);
+		m_inFormation = false;
+		GEngine->AddOnScreenDebugMessage(4563, 4.f, FColor::Red, FString::Printf(TEXT("Order Defence on (%s,%s,%s) from %s"), *FString::SanitizeFloat(_Location.X), *FString::SanitizeFloat(_Location.Y), *FString::SanitizeFloat(_Location.Z), *Leader->GetName()));
+		break;
+	case MissionType::eATTACK:
+		for_each_sqaud(true, false);
+		m_inFormation = false;
+		GEngine->AddOnScreenDebugMessage(4563, 4.f, FColor::Red, FString::Printf(TEXT("Order Attack on (%s,%s,%s) from %s"), *FString::SanitizeFloat(_Location.X), *FString::SanitizeFloat(_Location.Y), *FString::SanitizeFloat(_Location.Z), *Leader->GetName()));
+		break;
+	case MissionType::ePATROL:
+		for_each_sqaud(true, false);
+		m_inFormation = false;
+		GEngine->AddOnScreenDebugMessage(4563, 4.f, FColor::Red, FString::Printf(TEXT("Order MoveTo on (%s,%s,%s) from %s"), *FString::SanitizeFloat(_Location.X), *FString::SanitizeFloat(_Location.Y), *FString::SanitizeFloat(_Location.Z), *Leader->GetName()));
 		break;
 	default:
-		GEngine->AddOnScreenDebugMessage(4563, 4.f, FColor::Red, FString::Printf(TEXT("Order Unknown on (%s,%s,%s) from %s"), *FString::SanitizeFloat(Mission->Location.X), *FString::SanitizeFloat(Mission->Location.Y), *FString::SanitizeFloat(Mission->Location.Z), *Leader->GetName()));
+		for_each_sqaud(true, false);
+		m_inFormation = false;
+		GEngine->AddOnScreenDebugMessage(4563, 4.f, FColor::Red, FString::Printf(TEXT("Order Unknown on (%s,%s,%s) from %s"), *FString::SanitizeFloat(_Location.X), *FString::SanitizeFloat(_Location.Y), *FString::SanitizeFloat(_Location.Z), *Leader->GetName()));
 		break;
 	}
 }
 
 // temp include, need to be replace by more robust code
-void AAISquadManager::UpdateSquadTeam(TSubclassOf<ASoldierTeam> _NewTeam)
+void AAISquadManager::UpdateSquadTeam(ASoldierTeam* _NewTeam)
 {
 	Team = _NewTeam;
 	for (auto SquadIA : AISquadList) {

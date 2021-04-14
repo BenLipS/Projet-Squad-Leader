@@ -1,26 +1,31 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/HUD.h"
+
 #include "Interface/PlayerHealthDelegateInterface.h"
 #include "Interface/PlayerShieldDelegateInterface.h"
+#include "Interface/PlayerPrestigeDelegateInterface.h"
 #include "Interface/SquadDelegateInterface.h"
 #include "Interface/WeaponDelegateInterface.h"
 #include "Interface/OrderDelegateInterface.h"
+#include "Interface/NotificationDelegateInterface.h"
+#include "Interface/StatInfoDelegateInterface.h"
+#include "Interface/MinimapDelegateInterface.h"
 #include "SL_HUD.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class SQUADLEADER_API ASL_HUD : public AHUD,
 	public IPlayerHealthDelegateInterface,
 	public IPlayerShieldDelegateInterface,
+	public IPlayerPrestigeDelegateInterface,
 	public ISquadDelegateInterface,
 	public IWeaponDelegateInterface,
-	public IOrderDelegateInterface
+	public IOrderDelegateInterface,
+	public INotificationDelegateInterface,
+	public IStatInfoDelegateInterface,
+	public IMinimapDelegateInterface
+
 {
 	GENERATED_BODY()
 	
@@ -32,7 +37,7 @@ protected:
 	TArray<USL_UserWidget*> WidgetList;
 
 public:
-	ASL_HUD();
+	ASL_HUD() = default;
 
 protected:
 	virtual void BeginPlay() override;
@@ -43,6 +48,9 @@ public:
 	void SetPlayerStateLink();
 
 	void SetAIStateLink();
+
+	void BindSoldierTeamChanges();
+	void BindControlAreas();
 
 /*********************************
 *****INTERFACE IMPLEMENTATION*****
@@ -77,4 +85,24 @@ public:
 public:
 	//void OnOrderInputPressed() override;
 	//void OnOrderInputReleased() override;
+
+//-----INotificationDelegateInterface-----
+public:
+	//void OnTextNotification_Received(FText textNotification) override;
+
+//-----IStatInfoDelegateInterface-----
+public:
+	//void OnStatInfoReceived(TPair<FString, FString> Value) override;
+	//void OnStatsInfoReceived(TArray<TPair<FString, FString>> statsIn) override;
+//-----IMinimapInterface-----
+public:
+	//void OnSoldierAddedToTeam(ASoldier* _Soldier) override;
+	//void OnSoldierRemovedFromTeam() override;
+	//void OnUpdatePOIs() override;
+	//void OnControlAreaAdded() override;
+
+//-----IPlayerPrestigeDelegateInterface-----
+public:
+	//void OnPlayerPrestigeChanged(float newValue) override;
+	//void OnPlayerPrestigeLevelUpChanged(float newValue) override;
 };

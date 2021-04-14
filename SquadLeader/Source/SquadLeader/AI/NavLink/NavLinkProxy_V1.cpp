@@ -1,9 +1,7 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "NavLinkProxy_V1.h"
 #include "../../Soldiers/Soldier.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "SquadLeader/Soldiers/SoldierMovementComponent.h"
 
 ANavLinkProxy_V1::ANavLinkProxy_V1() {
 	PrimaryActorTick.bStartWithTickEnabled = true;
@@ -28,5 +26,5 @@ void ANavLinkProxy_V1::Jump(AActor* Agent, const FVector& Destination) {
 	_soldier->GetCharacterMovement()->Velocity = _soldier->GetActorForwardVector() * _soldier->GetCharacterMovement()->Velocity.Size();
 	_soldier->GetCharacterMovement()->JumpZVelocity = 1000.f;
 
-	_soldier->ActivateAbility(ASoldier::SkillJumpTag);
+	_soldier->ActivateAbility(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Jump")));
 }

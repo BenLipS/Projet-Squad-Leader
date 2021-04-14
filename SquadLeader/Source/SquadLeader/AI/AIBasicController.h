@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AIGeneralController.h"
+#include "Mission/CaptureMission.h"
 #include "AIBasicController.generated.h"
 
 /**
@@ -14,10 +15,13 @@ UCLASS()
 class SQUADLEADER_API AAIBasicController : public AAIGeneralController
 {
 	GENERATED_BODY()
-
+public:
 	AAIBasicController();
 
 protected:
+
+	UPROPERTY()
+		class AAIBasicManager* m_manager;
 
 	virtual void setup_BehaviorTree() override;
 
@@ -34,12 +38,14 @@ public:
 
 	void SetObjectifLocation(FVector _objLocation) noexcept;
 
-public://Mission
-	UFUNCTION()
-	void UpdateMission();
+public:
+
+	virtual void Init() override;
 
 	virtual void Die() override;
 
-	virtual void ResetBlackBoard() const override;
+	virtual void ResetBlackBoard() override;
+
+	void SetManager(AAIBasicManager* _manager) noexcept;
 
 };

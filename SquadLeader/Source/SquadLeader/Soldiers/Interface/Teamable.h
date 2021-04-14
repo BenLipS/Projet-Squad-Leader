@@ -24,8 +24,8 @@ class SQUADLEADER_API ITeamable
 
 public:
 	UFUNCTION()
-	virtual TSubclassOf<ASoldierTeam> GetTeam() = 0;
+	virtual ASoldierTeam* GetTeam() = 0;
 
 	UFUNCTION()
-	virtual bool SetTeam(TSubclassOf<ASoldierTeam> _Team) = 0;
+	virtual bool SetTeam(ASoldierTeam* _Team) = 0;
 };

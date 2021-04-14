@@ -6,6 +6,7 @@
 #include "UObject/NoExportTypes.h"
 #include "AIBasicController.h"
 #include "../ControlArea/ControlAreaManager.h"
+#include "NavFilters/NavigationQueryFilter.h"
 #include "AIBasicManager.generated.h"
 
 /**
@@ -20,7 +21,7 @@ public:
 	AAIBasicManager();
 
 	UFUNCTION()
-	void Init(TSubclassOf<ASoldierTeam> _Team);
+	void Init(ASoldierTeam* _Team);
 
 	virtual void Tick(float DeltaSeconds) override;
 
@@ -31,7 +32,7 @@ public:
 	TArray<AAIBasicController*> AIBasicList;
 
 	UPROPERTY()
-	TSubclassOf<ASoldierTeam> Team;
+	ASoldierTeam* Team;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	FVector InitSpawnDiameter = FVector{ 500.f, 0.f, 0.f };
@@ -51,7 +52,7 @@ private:
 	* Happend only once at the beginning
 	*/
 	UFUNCTION()
-		void ChooseCOntrolArea();
+		void ChooseControlArea();
 
 private:
 
@@ -69,5 +70,12 @@ private:
 
 	UPROPERTY()
 		AControlAreaManager* m_controlAreaManager;
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Navigation")
+		TSubclassOf<UNavigationQueryFilter> m_queryFilter_team1;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Navigation")
+		TSubclassOf<UNavigationQueryFilter> m_queryFilter_team2;
 
 };

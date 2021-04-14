@@ -63,18 +63,15 @@ public:
 	FAIFloatChangedController OnMaxHealthChanged;
 	FAIFloatChangedController OnShieldChanged;
 	FAIFloatChangedController OnMaxShieldChanged;
+
 protected:
-
 	virtual void BeginPlay() override;
-
-	virtual FVector lookingAtPosition() override;
 
 	FVector LookingAtPosition;
 
-//////////////// Teamable
 public:
-	virtual TSubclassOf<ASoldierTeam> GetTeam() override;
-	virtual bool SetTeam(TSubclassOf<ASoldierTeam> _Team) override;
+	virtual FVector GetLookingAtPosition(const float _MaxRange = 99999.f) const override;
+
 
 //////////////// Abilities
 public:
@@ -91,6 +88,30 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Abilities")
 	void CancelAbilityRun();
+
+	// LaunchGrenade
+	UFUNCTION(BlueprintCallable, Category = "Abilities")
+		bool ActivateAbilityLaunchGrenade();
+
+	// LaunchHeal
+	UFUNCTION(BlueprintCallable, Category = "Abilities")
+		bool ActivateAbilityLaunchHeal();
+
+	// LaunchShield
+	UFUNCTION(BlueprintCallable, Category = "Abilities")
+		bool ActivateAbilityLaunchShield();
+
+	// LaunchShield
+	UFUNCTION(BlueprintCallable, Category = "Abilities")
+		bool ActivateAbilityRegenShield();
+
+	// LaunchShield
+	UFUNCTION(BlueprintCallable, Category = "Abilities")
+		bool ActivateAbilityLaunchMine();
+
+	// LaunchShield
+	UFUNCTION(BlueprintCallable, Category = "Abilities")
+		bool ActivateAbilityOverHeat();
 
 	UFUNCTION(BlueprintCallable, Category = "Shoot")
 	void SetLookingAtPosition(const FVector& _LookingAtPosition);
@@ -115,5 +136,6 @@ protected:
 /////////// Respawn
 public:
 	virtual void Respawn() override;
+	virtual void OnReceiveDamage(const FVector& _ImpactPoint, const FVector& _SourcePoint) override;
 	virtual FVector GetRespawnPoint() override;
 };

@@ -21,6 +21,8 @@ public:
 	FFloatAttributeChanged OnMaxHealthChanged;
 	FFloatAttributeChanged OnShieldChanged;
 	FFloatAttributeChanged OnMaxShieldChanged;
+	FFloatAttributeChanged OnEXPChanged;
+	FFloatAttributeChanged OnEXPLevelUpChanged;
 
 public:
 	ASoldierPlayerState();
@@ -31,12 +33,9 @@ private:
 	void InitializeAttributeChangeCallbacks();
 
 //////////////// Teamable
-protected:
-	UPROPERTY(Replicated)
-		TSubclassOf<ASoldierTeam> Team = nullptr;  // only server can replicate it
 public:
-	virtual TSubclassOf<ASoldierTeam> GetTeam() override;
-	virtual bool SetTeam(TSubclassOf<ASoldierTeam> _Team) override;
+	virtual ASoldierTeam* GetTeam() override;
+	virtual bool SetTeam(ASoldierTeam* _Team) override;
 
 //////////////// Ability System
 protected:
@@ -64,16 +63,26 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
 	float GetMaxShield() const;
 
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
+	float GetEXP() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
+	float GetEXPLevelUp() const;
+
 protected:
 	FDelegateHandle HealthChangedDelegateHandle;
 	FDelegateHandle MaxHealthChangedDelegateHandle;
 	FDelegateHandle ShieldChangedDelegateHandle;
 	FDelegateHandle MaxShieldChangedDelegateHandle;
+	FDelegateHandle EXPChangedDelegateHandle;
+	FDelegateHandle EXPLevelUpChangedDelegateHandle;
 
 	virtual void HealthChanged(const FOnAttributeChangeData& Data);
 	virtual void MaxHealthChanged(const FOnAttributeChangeData& Data);
 	virtual void ShieldChanged(const FOnAttributeChangeData& Data);
 	virtual void MaxShieldChanged(const FOnAttributeChangeData& Data);
+	virtual void EXPChanged(const FOnAttributeChangeData& Data);
+	virtual void EXPLevelUpChanged(const FOnAttributeChangeData& Data);
 public:
 	void BroadCastAllDatas();
 };

@@ -4,7 +4,6 @@
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "camera/cameracomponent.h"
-#include "../../UI/HUDWidget.h"
 #include "../Interface/Teamable.h"
 #include "../../AI/AISquadManager.h"
 #include "../AIs/SoldierAI.h"
@@ -30,8 +29,8 @@ public:
 
 //////////////// Teamable
 public:
-	virtual TSubclassOf<ASoldierTeam> GetTeam() override;
-	virtual bool SetTeam(TSubclassOf<ASoldierTeam> _Team) override;
+	virtual ASoldierTeam* GetTeam() override;
+	virtual bool SetTeam(ASoldierTeam* _Team) override;
 
 // TODO: are the cameras necessary in controllers ?
 //////////////// Cameras
@@ -57,7 +56,6 @@ protected:
 	TSubclassOf<class AHUD> HUDClass;
 
 public:
-
 	UFUNCTION(Client, Reliable)
 	void CreateHUD();
 //////////////// Movements
@@ -111,9 +109,20 @@ public:
 	void OnSquadMemberMaxShieldChanged(int index, float newMaxShield);
 	void OnSquadMemberMaxShieldChanged_Implementation(int index, float newMaxShield);
 
+	UFUNCTION(Client, Reliable)
+	void OnTextNotification_Received(const FString& notificationString);
+	void OnTextNotification_Received_Implementation(const FString& notificationString);
+
 	UFUNCTION(Server, Reliable)
 	void OnOrderGiven(MissionType Order, FVector Pos);
 	void OnOrderGiven_Implementation(MissionType Order, FVector Pos);
+
+	UFUNCTION()
+	void AddAnAIToIndexSquad();
+
+	UFUNCTION(Server, Reliable)
+	void ServerAddAnAIToIndexSquad();
+	void ServerAddAnAIToIndexSquad_Implementation();
 
 	UFUNCTION()
 	void BroadCastManagerData();
@@ -127,4 +136,36 @@ public:
 	UFUNCTION(Client, Reliable)
 	void OnWallVisionDeactivate();
 	void OnWallVisionDeactivate_Implementation();
+
+//////////////// Cheat
+	UFUNCTION(Exec)
+	void Cheat_AddAISquad();
+
+	UFUNCTION(exec)
+	void Cheat_SuperSoldier();
+
+	UFUNCTION(Server, Reliable)
+	void ServerCheat_SuperSoldier();
+	void ServerCheat_SuperSoldier_Implementation();
+
+	UFUNCTION(exec)
+	void Cheat_Die();
+
+	UFUNCTION(Server, Reliable)
+	void ServerCheat_Die();
+	void ServerCheat_Die_Implementation();
+
+	UFUNCTION(exec)
+	void Cheat_SuperDamage();
+
+	UFUNCTION(Server, Reliable)
+	void ServerCheat_SuperDamage();
+	void ServerCheat_SuperDamage_Implementation();
+
+	UFUNCTION(exec)
+	void Cheat_LevelUp();
+
+	UFUNCTION(Server, Reliable)
+	void ServerCheat_LevelUp();
+	void ServerCheat_LevelUp_Implementation();
 };

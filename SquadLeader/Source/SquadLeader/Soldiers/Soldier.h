@@ -7,7 +7,7 @@
 #include "AbilitySystemInterface.h"
 #include "../AbilitySystem/Soldiers/AttributeSetSoldier.h"
 #include "../AbilitySystem/Soldiers/AbilitySystemSoldier.h"
-#include "../Weapons/Weapon.h"
+#include "../AbilitySystem/Soldiers/GameplayEffects/GE_UpdateStats.h"
 #include "Interface/Teamable.h"
 //
 #include "SoldierTeam.h"
@@ -15,6 +15,21 @@
 #include "Net/UnrealNetwork.h"
 #include "Soldier.generated.h"
 
+class ASL_Weapon;
+
+USTRUCT()
+struct SQUADLEADER_API FSoldier_Inventory
+{
+	GENERATED_USTRUCT_BODY()
+
+	FSoldier_Inventory() = default;
+
+	UPROPERTY()
+	TArray<ASL_Weapon*> Weapons;
+
+	// Consumable items ?
+	// Grenade ?
+};
 
 UCLASS()
 class SQUADLEADER_API ASoldier : public ACharacter, public IAbilitySystemInterface, public ITeamable
@@ -23,9 +38,11 @@ class SQUADLEADER_API ASoldier : public ACharacter, public IAbilitySystemInterfa
 
 public:
 	ASoldier(const FObjectInitializer& _ObjectInitializer);
+	virtual void Destroyed() override;
 
 protected:
 	virtual void BeginPlay() override;
+	virtual void PostInitializeComponents() override;
 
 public:
 	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
@@ -36,7 +53,9 @@ protected:
 	void InitCameras();
 	void InitMeshes();
 	void InitMovements();
-	virtual void InitWeapons();
+
+//////////////// Resets
+	void ResetWeapons();
 
 //////////////// Controllers
 protected:
@@ -53,7 +72,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ability System Component", meta = (AllowPrivateAccess = "true"))
 	UAbilitySystemSoldier* AbilitySystemComponent;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute Set", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Stat Attributes", meta = (AllowPrivateAccess = "true"))
 	UAttributeSetSoldier* AttributeSet;
 
 public:
@@ -61,11 +80,11 @@ public:
 	UAttributeSetSoldier* GetAttributeSet() const;
 
 protected:
-	// Define the default stats
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Abilities")
-	TSubclassOf<class UGameplayEffect> DefaultAttributeEffects;
+	// Define the stats for any level. It is call at the beginning and when leveling up
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Stat Attributes")
+	TSubclassOf<UGE_UpdateStats> StatAttributeEffects;
 
-	// Define the default abilities
+	// Define the start abilities
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Abilities")
 	TArray<TSubclassOf<class UGameplayAbilitySoldier>> CharacterDefaultAbilities;
 
@@ -81,42 +100,17 @@ protected:
 	void InitializeTagChangeCallbacks();
 	virtual void InitializeAttributeChangeCallbacks();
 
+public:
+	TSubclassOf<UGE_UpdateStats> GetStatAttributeEffects() const;
+	bool IsInCooldown(const FGameplayTag& _Tag);
+
 //////////////// Tag Change Callbacks
 public:
-	// States
-	static FGameplayTag StateDeadTag;
-	static FGameplayTag StateRunningTag;
-	static FGameplayTag StateJumpingTag;
-	static FGameplayTag StateCrouchingTag;
-	static FGameplayTag StateFightingTag;
-	static FGameplayTag StateAimingTag;
-	static FGameplayTag StateGivingOrderTag;
-	static FGameplayTag StateFiringTag;
-	static FGameplayTag StateReloadingWeaponTag;
-	static FGameplayTag StateDashingTag;
-
-	// Abilities
-	static FGameplayTag SkillRunTag;
-	static FGameplayTag SkillJumpTag;
-	static FGameplayTag SkillCrouchTag;
-	static FGameplayTag SkillFireWeaponTag;
-	static FGameplayTag SkillGrenadeTag;
-	static FGameplayTag SkillAimTag;
-	static FGameplayTag SkillAreaEffectFromSelfTag;
-	static FGameplayTag SkillGiveOrderTag;
-	static FGameplayTag SkillReloadWeaponTag;
-	static FGameplayTag SkillQuickDashTag;
+	// Weapon
+	FGameplayTag CurrentWeaponTag;
 
 protected:
 	virtual void DeadTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
-	virtual void RunningTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
-	virtual void JumpingTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
-	virtual void FightingTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
-	virtual void AimingTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
-	virtual void GivingOrderTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
-	virtual void FiringTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
-	virtual void ReloadingWeaponTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
-	virtual void DashingTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Abilities")
@@ -142,6 +136,18 @@ public:
 	// Getters
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
 	int32 GetCharacterLevel() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
+	float GetEXP() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
+	float GetEXPLevelUp() const;
+	
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
+	float GetRemainEXPForLevelUp() const;
+	
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
+	void GrantEXP(const float _EXP);
 
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
 	float GetHealth() const;
@@ -177,8 +183,10 @@ public:
 	FDelegateHandle HealthChangedDelegateHandle;
 	virtual void HealthChanged(const FOnAttributeChangeData& _Data);
 
+	virtual void LevelUp();
 	virtual void Die();
 	virtual void Respawn();
+	virtual void OnReceiveDamage(const FVector& _ImpactPoint, const FVector& _SourcePoint);
 
 //////////////// Cameras
 public:
@@ -231,13 +239,28 @@ public:
 	UPROPERTY(VisibleDefaultsOnly, Category = "Mesh")
 	USkeletalMeshComponent* FirstPersonMesh;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Mesh")
+	FName WeaponAttachPoint;
+
 //////////////// Movement
 	// Move direction
 	UFUNCTION()
 	void MoveForward(const float _Val);
 
+	UPROPERTY(EditDefaultsOnly, Meta = (ClampMin = 0.0f, ClamMax = 1.0f), Category = "Movement")
+	float MaxInputForward;
+
+	UPROPERTY(EditDefaultsOnly, Meta = (ClampMin = -1.0f, ClamMax = 0.0f), Category = "Movement")
+	float MaxInputBackward;
+
 	UFUNCTION()
 	void MoveRight(const float _Val);
+
+	UPROPERTY(EditDefaultsOnly, Meta = (ClampMin = -1.0f, ClamMax = 0.0f), Category = "Movement")
+	float MaxInputLeft;
+
+	UPROPERTY(EditDefaultsOnly, Meta = (ClampMin = 0.0f, ClamMax = 1.0f), Category = "Movement")
+	float MaxInputRight;
 
 	// Looking direction
 	UFUNCTION()
@@ -247,7 +270,7 @@ public:
 	virtual void Turn(const float _Val);
 
 	UFUNCTION(BlueprintCallable, Category = "Movement")
-	virtual FVector lookingAtPosition();
+	virtual FVector GetLookingAtPosition(const float _MaxRange = 99999.f) const;
 
 	// Run
 	UFUNCTION(BlueprintCallable, Category = "Movement")
@@ -261,19 +284,72 @@ public:
 
 	virtual void Landed(const FHitResult& _Hit) override;
 
-//////////////// Weapons
+//////////////// Inventory
 protected:
-	UPROPERTY(BlueprintReadOnly, Category = "Weapon")
-	bool wantsToFire = false;
+	void SpawnDefaultInventory();
+	
+	UPROPERTY(ReplicatedUsing = OnRep_Inventory)
+	FSoldier_Inventory Inventory;
+
+	UFUNCTION()
+	void OnRep_Inventory();
+
+//////////////// Weapons
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Inventory | Weapon")
+	TArray<TSubclassOf<ASL_Weapon>> DefaultInventoryWeaponClasses;
+
+	UPROPERTY(ReplicatedUsing = OnRep_CurrentWeapon)
+	ASL_Weapon* CurrentWeapon;
 
 public:
-	UFUNCTION(BlueprintCallable, Category = "Weapon")
-	bool GetWantsToFire() const;
+	UFUNCTION(BlueprintCallable, Category = "Inventory | Weapon")
+	ASL_Weapon* GetCurrentWeapon() const;
 
-	UFUNCTION(BlueprintCallable, Category = "Weapon")
-	void SetWantsToFire(const bool _want);
+	bool bChangedWeaponLocally;
 
-	void SetWantsToFire(const bool _want, const FGameplayEffectSpecHandle _damageEffectSpecHandle);
+	// Adds a new weapon to the inventory.
+	// Returns false if the weapon already exists in the inventory, true if it's a new weapon.
+	UFUNCTION(BlueprintCallable, Category = "Inventory | Weapon")
+	bool AddWeaponToInventory(ASL_Weapon* _NewWeapon, const bool _bEquipWeapon = false);
+
+	UFUNCTION(BlueprintCallable, Category = "Inventory | Weapon")
+	void EquipWeapon(ASL_Weapon* _NewWeapon);
+
+	UFUNCTION(Server, Reliable, Category = "Inventory | Weapon")
+	void ServerEquipWeapon(ASL_Weapon* _NewWeapon);
+	bool ServerEquipWeapon_Validate(ASL_Weapon* _NewWeapon);
+	void ServerEquipWeapon_Implementation(ASL_Weapon* _NewWeapon);
+
+protected:
+	bool DoesWeaponExistInInventory(ASL_Weapon* _Weapon);
+
+	void SetCurrentWeapon(ASL_Weapon* _NewWeapon, ASL_Weapon* _LastWeapon);
+
+	// Unequips the specified weapon. Used when OnRep_CurrentWeapon fires.
+	void UnEquipWeapon(ASL_Weapon* WeaponToUnEquip);
+
+	UFUNCTION()
+	void OnRep_CurrentWeapon(ASL_Weapon* _LastWeapon);
+
+	// The CurrentWeapon is only automatically replicated to simulated clients.
+	// The autonomous client can use this to request the proper CurrentWeapon from the server when it knows it may be
+	// out of sync with it from predictive client-side changes.
+	UFUNCTION(Server, Reliable, Category = "Inventory | Weapon")
+	void ServerSyncCurrentWeapon();
+	void ServerSyncCurrentWeapon_Implementation();
+	bool ServerSyncCurrentWeapon_Validate();
+
+	// The CurrentWeapon is only automatically replicated to simulated clients.
+	// Use this function to manually sync the autonomous client's CurrentWeapon when we're ready to.
+	// This allows us to predict weapon changes (changing weapons fast multiple times in a row so that the server doesn't replicate and clobber our CurrentWeapon).
+	UFUNCTION(Client, Reliable, Category = "Inventory | Weapon")
+	void ClientSyncCurrentWeapon(ASL_Weapon* _InWeapon);
+	void ClientSyncCurrentWeapon_Implementation(ASL_Weapon* _InWeapon);
+	bool ClientSyncCurrentWeapon_Validate(ASL_Weapon* _InWeapon);
+
+public:
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Stats")
+	float FieldOfViewNormal;
 
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	void StartAiming();
@@ -281,46 +357,24 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	void StopAiming();
 
-	UFUNCTION(BlueprintCallable, Category = "Weapon")
-	void ReloadWeapon();
-
-protected:
-	bool bDefaultWeaponsInitialized;
-
-	// Default inventory
-	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
-	TArray<TSubclassOf<class AWeapon>> DefaultWeaponClasses;
-
-	// Current inventory
-	UPROPERTY(Transient, Replicated)
-	TArray<class AWeapon*> Inventory;
-
-	UPROPERTY(Transient, ReplicatedUsing = OnRep_CurrentWeapon)
-	AWeapon* CurrentWeapon;
-
-	void AddToInventory(AWeapon* _Weapon);
-
-	void SetCurrentWeapon(class AWeapon* _NewWeapon, class AWeapon* _PreviousWeapon = nullptr);
-
-	UFUNCTION()
-	void OnRep_CurrentWeapon(class AWeapon* _LastWeapon);
-
-public:
-	AWeapon* getCurrentWeapon() const noexcept { return CurrentWeapon; }
-
-	//////////////// Soldier team
+//////////////// Soldier team
 	UPROPERTY(EditAnywhere, Category = "PlayerTeam")
-		TSubclassOf<ASoldierTeam> InitialTeam;  // for debug use
+	ASoldierTeam* InitialTeam;  // for debug use
 
 	UFUNCTION(Reliable, Server, WithValidation)
-		void ServerCycleBetweenTeam();
+	void ServerCycleBetweenTeam();
 
 	// Connected to the "L" key
 	virtual void cycleBetweenTeam();
-	
-	//////////////// Teamable
-	virtual TSubclassOf<ASoldierTeam> GetTeam() override { return nullptr; };  // function overide in SoldierPlayer and Soldier AI
-	virtual bool SetTeam(TSubclassOf<ASoldierTeam> _Team) override { return false; };  // function overide in SoldierPlayer and Soldier AI
+
+//////////////// Teamable
+protected:
+	UPROPERTY(replicated)
+	ASoldierTeam* Team;
+
+public:
+	virtual ASoldierTeam* GetTeam() override;
+	virtual bool SetTeam(ASoldierTeam* _Team) override;
 
 /////////////// Respawn
 public:
@@ -336,10 +390,27 @@ private:
 //////////////// Particles
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Animation | Particles")
+	UParticleSystem* LevelUpFX;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Animation | Particles")
+	FVector LevelUpFXRelativeLocation;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Animation | Particles")
+	FRotator LevelUpFXRotator;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Animation | Particles")
+	FVector LevelUpFXScale;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Animation | Particles")
 	UParticleSystem* ImpactHitFX;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Animation | Particles")
 	FVector ImpactHitFXScale;
+
+	UFUNCTION(Reliable, Client, WithValidation)
+	void ClientSpawnLevelUpParticle();
+	void ClientSpawnLevelUpParticle_Implementation();
+	bool ClientSpawnLevelUpParticle_Validate();
 
 //////////////// Montages
 public:
@@ -357,6 +428,8 @@ public:
 	UAnimMontage* WeaponFireMontage;
 
 protected:
+	void HandleDeathMontage();
+
 	// Callbacks
 	FOnMontageEnded StartGame_SoldierMontageEndedDelegate;
 	FOnMontageEnded Respawn_SoldierMontageEndedDelegate;
@@ -370,4 +443,8 @@ protected:
 public:
 	UFUNCTION()
 	void ShowImpactHitEffect();
+
+	// Projectile forwardVector to launch from
+	UFUNCTION()
+	virtual FVector GetLookingDirection();
 };

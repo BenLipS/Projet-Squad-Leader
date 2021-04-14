@@ -7,8 +7,10 @@
 #include "../Soldiers/Soldier.h"
 #include "../Soldiers/AIs/SoldierAI.h"
 #include "Perception/AIPerceptiontypes.h"
-#include "Mission.h"
 #include "../Soldiers/Interface/Teamable.h"
+#include "../ControlArea/ControlArea.h"
+#include "NavFilters/NavigationQueryFilter.h"
+#include "Mission/MissionList.h"
 #include "AIGeneralController.generated.h"
 
 class UFlockingComponent;
@@ -20,8 +22,11 @@ UENUM()
 enum AIBasicState {
 	Attacking UMETA(DisplayName = "Attacking"),
 	Patroling UMETA(DisplayName = "Patroling"),
+	Capturing UMETA(DisplayName = "Capturing"),
 	Search UMETA(DisplayName = "Searching"),
+	Defend UMETA(DisplayName = "Defending"),
 	Moving UMETA(DisplayName = "Moving"),
+	Formation UMETA(DisplayName = "Formation"),
 };
 
 /*
@@ -36,23 +41,22 @@ enum ResultState {
 };
 
 
-
-
 UCLASS()
 class SQUADLEADER_API AAIGeneralController : public AAIController, public ITeamable
 {
 	GENERATED_BODY()
 
 public:
+
 	AAIGeneralController(FObjectInitializer const& object_initializer = FObjectInitializer::Get());
 	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 
-//////////////// Teamable
 protected:
-	UPROPERTY(Replicated)
-		TSubclassOf<ASoldierTeam> Team = nullptr;  // only server can replicate it
 	UPROPERTY()
 	FVector ObjectifLocation{ 1000.f, 1000.f, 10.f };
+
+	UPROPERTY()
+	FVector TempObjectifLocation{ 1000.f, 1000.f, 10.f };
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Flocking Behaviour")
 	TSubclassOf<UFlockingComponent> ClassFlockingComponent;
@@ -62,10 +66,18 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		FVector GetObjectifLocation() { return ObjectifLocation + 100; };
+	UFUNCTION(BlueprintCallable)
+		FVector GetRealObjectifLocation() { return ObjectifLocation; };
 
-	/* For BT Task  */
+	UFUNCTION(BlueprintCallable)
+		FVector GetTempObjectifLocation() { return TempObjectifLocation; };
+	UFUNCTION(BlueprintCallable)
+		void SetTempObjectifLocation(FVector _Location) { TempObjectifLocation = _Location; };	/* For BT Task  */
 	UFUNCTION(BlueprintCallable, Category = "Flocking Behaviour")
 		EPathFollowingRequestResult::Type FollowFlocking();
+
+	UFUNCTION(BlueprintCallable, Category = "Flocking Behaviour")
+		void SetPatrolPoint();
 
 	/*
 	* When doing the flocking we'll check if the AI
@@ -76,9 +88,9 @@ public:
 	UFUNCTION()
 		ResultState ArriveAtDestination();
 
-
-	virtual TSubclassOf<ASoldierTeam> GetTeam() override;
-	virtual bool SetTeam(TSubclassOf<ASoldierTeam> _Team) override;
+	/////// Teamable
+	virtual ASoldierTeam* GetTeam() override;
+	virtual bool SetTeam(ASoldierTeam* _Team) override;
 
 
 	UFUNCTION()
@@ -97,6 +109,12 @@ public:
 
 	UFUNCTION()
 	virtual void BeginPlay();
+
+	UFUNCTION()
+		virtual void Init();
+
+	UFUNCTION()
+		void InitMissionList();
 	
 	/*Move to a location, the location must be an AActor*/
 	UFUNCTION(BlueprintCallable, Category = "SquadLeader")
@@ -114,6 +132,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "SquadLeader")
 		EPathFollowingRequestResult::Type MoveToSearchEnemy();
 
+	UPROPERTY(BlueprintReadWrite, Category = "Defense")
+	int HalfRadiusPatrol = 1600;
+
 	/*
 	* End the search of the enemy
 	* rest the state to the old one
@@ -126,6 +147,26 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Shoot")
 	ResultState ShootEnemy();
 
+	UFUNCTION(BlueprintCallable, Category = "Launch grenade")
+	ResultState LaunchGrenade();
+
+	UFUNCTION(BlueprintCallable, Category = "Launch heal")
+	ResultState LaunchHeal();
+
+	UFUNCTION(BlueprintCallable, Category = "Launch shield")
+	ResultState LaunchShield();
+
+	UFUNCTION(BlueprintCallable, Category = "RegenShield")
+		ResultState RegenShield();
+
+	UFUNCTION(BlueprintCallable, Category = "OverHeat")
+		ResultState OverHeat();
+
+	UFUNCTION(BlueprintCallable, Category = "Launch Mine")
+		ResultState LaunchMine();
+
+	UFUNCTION(BlueprintCallable, Category = "Capturing")
+		ResultState Capturing();
 	class UBlackboardComponent* get_blackboard() const;
 	
 	/*
@@ -138,18 +179,22 @@ public:
 
 	virtual void Respawn();
 
-	virtual void ResetBlackBoard() const;
+	virtual void ResetBlackBoard();
 
 	/*
 	* Set the state of an AI
 	*/
 	UFUNCTION()
 		void SetState(AIBasicState _state) noexcept;
+
+	UFUNCTION()
+		virtual void CheckIfRegenShield() {};
+
 protected:
 	/*Set-up the BehaviorTree at the construction*/
 	virtual void setup_BehaviorTree();
-private:
 
+protected:
 	/*
 	* The next two method are part of the 
 	* SENS-THINK-ACT
@@ -172,7 +217,7 @@ private:
 	/*
 	* This function will decide wich state the AI shool run
 	*/
-	void ChooseState();
+	virtual void ChooseState();
 
 	/*
 	* Will sort the Actor with catch with
@@ -181,6 +226,9 @@ private:
 	*/
 	UFUNCTION()
 		void UpdateSeenSoldier();
+
+	UFUNCTION()
+		void UpdateSeenEnemySoldier();
 
 	/*
 	* After sorting the Actor we see we will choose the enemy to kill
@@ -195,23 +243,26 @@ private:
 	UFUNCTION()
 		void Run(ASoldierAI* _soldier, ASoldier* _soldier_enemy);
 
-	/*
-	* Calculate the point where the AI is 
-	* in a good range 
-	* if the enemy is too close.
-	* This method is called only when the AI is in the Attack Behavior
-	*/
-	UFUNCTION()
-		void TooClose();
+	///*
+	//* Calculate the point where the AI is 
+	//* in a good range 
+	//* if the enemy is too close.
+	//* This method is called only when the AI is in the Attack Behavior
+	//*/
+	//UFUNCTION()
+	//	void TooClose();
 
-	/*
-	* Calculate the point where the AI is
-	* in a good range
-	* if the enemy is too far.
-	* This method is called only when the AI is in the Attack Behavior
-	*/	
+	///*
+	//* Calculate the point where the AI is
+	//* in a good range
+	//* if the enemy is too far.
+	//* This method is called only when the AI is in the Attack Behavior
+	//*/	
+	//UFUNCTION()
+	//	void TooFar();
+
 	UFUNCTION()
-		void TooFar();
+		void UpdateShootingPosition();
 
 	/*
 	* Make all in place for the state Attacking
@@ -234,6 +285,9 @@ private:
 	UFUNCTION()
 		void SearchState();
 
+	UFUNCTION()
+		void CapturingState();
+
 protected:
 	/*The behaviorTree that we are running*/
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))
@@ -244,6 +298,9 @@ protected:
 
 	UPROPERTY()
 	TArray<ASoldier*> SeenSoldier;
+
+	UPROPERTY()
+	TArray<ASoldier*> SeenEnemySoldier;
 
 	/*
 	* This here represent the state of an AI
@@ -258,14 +315,43 @@ protected:
 	UPROPERTY()
 		int m_old_state;
 
-private:
+protected:
 	class UAISenseConfig_Sight* sight_config;
 
 	UPROPERTY()
 	FVector m_destination;
 
+	UPROPERTY()
+		int tick_value = 0;
+
+	UPROPERTY()
+		int max_tick = 2;
+
 public:
+
+	UPROPERTY()
+		bool IsRunning = false;
+
+	UPROPERTY()
+		bool HysteresisDoRunningFlocking = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Flocking Behaviour")
+		float HysteresisRunningDistanceForFlocking = 2500.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Flocking Behaviour")
+		float StopHysteresisRunningDistanceForFlocking = 2000.f;
+
+	UPROPERTY()
+	bool StopCurrentBehavior = false;
+	UPROPERTY()
+	bool HasStopCurrentBehavior = false;
+
+	UFUNCTION()
+		void CheckIfNeedToStopCurrentBehavior();
+
 	TArray<ASoldier*> GetSeenSoldier() { return SeenSoldier; }
+
+	TArray<ASoldier*> GetSeenEnemySoldier() { return SeenEnemySoldier; }
 	/*
 	* The distance from where we can walk and shoot the enemy
 	*/
@@ -333,16 +419,78 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Perception")
 		bool m_DetectNeutrals = true;
 
+
+	UPROPERTY()
+		float LaunchProjectileYawAdjust = 0.f;
+
+	UPROPERTY()
+		float LaunchProjectilePitchAdjust = -30.f;
+
 /////////// Respawn
 public:
 	UFUNCTION()
 	virtual FVector GetRespawnPoint() { return FVector(0.f, 0.f, 1500.f); }  // function overide in in each controller
 
 public:	//Mission
-	void SetMission(UMission* _Mission);
-	UMission* GetMission();
+
+	/*
+	* Set a mission of type T
+	*/
+	template<class T>
+	void SetMission(T _mission)
+	{
+		//m_mission_type.Emplace<T>(_mission);
+		UMissionList::type_mission m_mission{};
+		m_mission.Emplace<T>(_mission);
+
+		if (m_missionList == nullptr)
+			InitMissionList();
+
+		m_missionList->Add(m_mission);
+		m_mission_changed = true;
+	}
+	
+	/*
+	* Return the current mission that the NPC is running
+	*/
+	auto GetMission();
+
+	/*
+	* Empty the mission list
+	*/
+	void EmptyMissionList();
+	/*
+	* Set a control area as the destination for the AI
+	*/
+	UFUNCTION()
+		void SetControlAreaBB(AControlArea* _controlArea);
+
+	/*
+	* Set the Objectif Location of the AI
+	* And it'll set the state to moving
+	*/
+	UFUNCTION(BlueprintCallable)
+		void SetObjectifLocation(FVector _location) noexcept;
 
 protected:
+
+	/*
+	* variables for the mission system
+	* represent a heap of mission
+	*/
 	UPROPERTY()
-	UMission* Mission;
+	class UMissionList* m_missionList;
+
+	bool m_mission_changed = false;
+
+	/*
+	* For the navigation
+	*/
+
+public:
+	UFUNCTION()
+		void SetQueryFilter(TSubclassOf<UNavigationQueryFilter> _filter) noexcept { DefaultNavigationFilterClass = _filter; }
+
+	UFUNCTION()
+		TSubclassOf<UNavigationQueryFilter> GetQueryFilter() const noexcept { return DefaultNavigationFilterClass; }
 };
