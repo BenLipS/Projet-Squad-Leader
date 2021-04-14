@@ -27,16 +27,16 @@ public:
 		bool HysteresisDoRunningFormation = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Formation Behaviour")
-		float HysteresisRunningDistanceForFormation = 500.f;
+		float HysteresisRunningDistanceForFormation = 300.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Formation Behaviour")
-		float StopHysteresisRunningDistanceForFormation = 300.f;
+		float StopHysteresisRunningDistanceForFormation = 200.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Formation Behaviour")
 	float HysteresisDistanceForFormation = 300.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Formation Behaviour")
-	float StopHysteresisDistanceForFormation = 150.f;
+	float StopHysteresisDistanceForFormation = 100.f;
 
 /////////// Respawn
 public:
@@ -47,7 +47,7 @@ public:
 	virtual void BeginPlay() override;
 
 	/*not used*/
-	void Init();
+	virtual void Init() override;
 
 	UPROPERTY()
 	AAISquadManager* SquadManager;
@@ -67,4 +67,11 @@ public:
 
 	UFUNCTION()
 		void UpdateFormation(const FVector _position);
+
+	UFUNCTION()
+		void SetUpMission(bool hasOrder, bool isInFormation, FVector _Location);
+
+protected:
+	
+	virtual void ChooseState() override;
 };

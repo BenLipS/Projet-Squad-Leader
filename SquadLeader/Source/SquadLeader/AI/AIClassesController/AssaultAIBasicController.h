@@ -23,4 +23,6 @@ public:
 	UPROPERTY(BlueprintReadWrite, Category = "Grenade")
 	int NUmberOfEnemyToLaunchAGrenade = 2;
 
+	UPROPERTY(BlueprintReadWrite, Category = "OverHeat")
+		int NUmberOfEnemyToOverHeat = 2;
 };

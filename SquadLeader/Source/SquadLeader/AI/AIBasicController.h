@@ -20,8 +20,6 @@ public:
 
 protected:
 
-protected:
-
 	UPROPERTY()
 		class AAIBasicManager* m_manager;
 
@@ -41,6 +39,8 @@ public:
 	void SetObjectifLocation(FVector _objLocation) noexcept;
 
 public:
+
+	virtual void Init() override;
 
 	virtual void Die() override;
 

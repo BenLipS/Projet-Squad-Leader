@@ -28,7 +28,7 @@ void UGA_GiveOrder::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 				//{
 				//	
 				//}
-				Soldier->GetSquadManager()->UpdateMission(MissionType::Formation, FVector{ 0, 0, 0 });
+				Soldier->GetSquadManager()->UpdateMission(MissionType::FormationCircle, FVector{ 0, 0, 0 });
 
 				CancelAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true);
 				return;

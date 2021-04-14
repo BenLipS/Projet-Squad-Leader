@@ -24,7 +24,8 @@ enum class MissionType : uint8 {
 	ePATROL,
 	eCAPTURE,
 	None,
-	Formation
+	FormationCircle,
+	FormationArrow
 };
 
 UENUM()

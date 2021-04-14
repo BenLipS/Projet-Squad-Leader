@@ -262,6 +262,19 @@ void ASoldierPlayerController::OnOrderGiven_Implementation(MissionType Order, FV
 	}
 }
 
+void ASoldierPlayerController::AddAnAIToIndexSquad_Implementation()
+{
+	Cheat_AddAISquad();
+}
+
+void ASoldierPlayerController::Cheat_AddAISquad()
+{
+	if (GetLocalRole() < ROLE_Authority) 
+		AddAnAIToIndexSquad();
+	if(Cast<ASoldierPlayer>(GetPawn())->GetSquadManager())
+		Cast<ASoldierPlayer>(GetPawn())->GetSquadManager()->AddAnAIToSquad();
+}
+
 void ASoldierPlayerController::BroadCastManagerData()
 {
 	if (ASL_HUD* CurrentHUD = GetHUD<ASL_HUD>(); CurrentHUD)
