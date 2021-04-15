@@ -45,10 +45,11 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Stats|Damage")
 	TSubclassOf<UGameplayEffect> GE_DamageClass;
 
+	// Damage to apply on the area effect. This only works with GE_DamageClass
 	UPROPERTY(EditDefaultsOnly, Category = "Stats|Damage")
-	float DamageBase = 50.f;
+	float DamageBase = 0.f;
 
-	// Determine the current damage multiplier based on distance from the center
+	// Determine the current damage multiplier based on distance from the center. This only works with GE_DamageClass
 	UPROPERTY(EditDefaultsOnly, Category = "Stats|Damage")
 	UCurveFloat* CurveDamage;
 
@@ -67,7 +68,7 @@ protected:
 	float Interval = 0.f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Stats|Impulse", Replicated)
-	float ImpulseStrenghBase = 10000.f;
+	float ImpulseStrenghBase = 0.f;
 
 	// Determine the current impulse strengh multiplier based on distance from the center
 	UPROPERTY(EditDefaultsOnly, Category = "Stats|Impulse", Replicated)

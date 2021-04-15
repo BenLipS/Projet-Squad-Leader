@@ -17,10 +17,16 @@ void UGA_AreaEffectFromSelf::ActivateAbility(const FGameplayAbilitySpecHandle Ha
 		if (!CommitAbility(Handle, ActorInfo, ActivationInfo))
 			EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
 
-		FActorSpawnParameters SpawnInfo;
-		SpawnInfo.Owner = ActorInfo->AvatarActor.Get();
-		SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-		AAreaEffect* NewAreaEffect = GetWorld()->SpawnActor<AAreaEffect>(AreaEffectClass, SpawnInfo.Owner->GetActorLocation(), FRotator(), SpawnInfo);
+		APawn* AreaEffectOwner = Cast<APawn>(ActorInfo->AvatarActor.Get());
+		AAreaEffect* AreaEffect = GetWorld()->SpawnActorDeferred<AAreaEffect>(AreaEffectClass,FTransform{ AreaEffectOwner->GetActorRotation(), AreaEffectOwner->GetActorLocation() }, AreaEffectOwner, AreaEffectOwner, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+
+		if (AreaEffect)
+		{
+#ifdef UE_BUILD_DEBUG
+			AreaEffect->bDebugTrace = bDebugTraceAreaEffect;
+#endif
+			AreaEffect->FinishSpawning(FTransform{ AreaEffectOwner->GetActorRotation(), AreaEffectOwner->GetActorLocation() });
+		}
 		CancelAbility(Handle, ActorInfo, ActivationInfo, true);
 	}
 }

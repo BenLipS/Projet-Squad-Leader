@@ -73,7 +73,6 @@ void AAreaEffect::OnReadyToApplyEffects()
 				UAbilitySystemComponent* TargetASC = TargetSoldier->GetAbilitySystemComponent();
 				ApplyDamages(TargetASC, DistActorArea);
 				ApplyGameplayEffects(TargetASC);
-				// TODO TargetASC->AddLooseGameplayTag();
 			}
 
 			ApplyImpulse(TargetActor, DistActorArea);
