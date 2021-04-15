@@ -12,9 +12,9 @@
 // Sets default values
 ASL_Projectile::ASL_Projectile()
 {
-	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 	bReplicates = true;
+	SetReplicateMovement(true);
 
 	CollisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
 	CollisionComp->BodyInstance.SetCollisionProfileName("Projectile");
@@ -63,7 +63,7 @@ void ASL_Projectile::BeginPlay()
 
 void ASL_Projectile::OnExplode()
 {
-	for (auto AreaEffectClass : ExplosionAreaEffect)
+	for (auto AreaEffectClass : AreaEffectList)
 	{
 		AAreaEffect* AreaEffect = GetWorld()->SpawnActorDeferred<AAreaEffect>(AreaEffectClass, FTransform{GetActorRotation(), GetActorLocation()}, GetOwner(), GetInstigator(), ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 

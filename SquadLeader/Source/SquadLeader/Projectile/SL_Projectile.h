@@ -55,8 +55,7 @@ protected:
 
 	// AreaEffect to apply on contact/explosion
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Projectile")
-	TArray<TSubclassOf<AAreaEffect>> ExplosionAreaEffect;
-
+	TArray<TSubclassOf<AAreaEffect>> AreaEffectList;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Projectile")
 	class UProjectileMovementComponent* ProjectileMovement;
