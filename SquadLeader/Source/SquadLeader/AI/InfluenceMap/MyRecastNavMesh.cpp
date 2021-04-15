@@ -7,9 +7,6 @@
 #include "Runtime/Navmesh/Public/Detour/DetourNavMeshQuery.h"
 #include "Runtime/Navmesh/Public/Detour/DetourNavMesh.h"
 #include "Runtime/Navmesh/Public/Detour/DetourCommon.h"
-
-const float TAB_VALUE[8]{ 12.f, 0.f, 7.f, 0.f,0.f, 16.f, 17.f, 10.f };
-
 /*
 * dtQueryFilter_SL CPP
 */
@@ -20,9 +17,17 @@ float dtQueryFilter_SL::getVirtualCost(const float* pa, const float* pb,
 	const float Cost = GetCostInfluenceMap();
 	return dtVdist(pa, pb) * Cost;
 }
+bool dtQueryFilter_SL::passVirtualFilter(const dtPolyRef ref, const dtMeshTile* tile,	const dtPoly* poly) const{
+	return passInlineFilter(ref, tile, poly);
+}
 float dtQueryFilter_SL::GetCostInfluenceMap() const{
-	auto index = FMath::RandRange(0, 7);
-	return TAB_VALUE[index];
+	if (InfluenceMap) {
+		return 1.f;
+	}
+	return 2.f;
+}
+void dtQueryFilter_SL::SetInfluenceMap(AInfluenceMapGrid* influenceMap) {
+	InfluenceMap = influenceMap;
 }
 
 
@@ -124,6 +129,7 @@ uint16 FRecatsQueryFilter_SL::GetExcludeFlags() const
 AMyRecastNavMesh::AMyRecastNavMesh(const FObjectInitializer& ObjectInitializer)
 {
 	PrimaryActorTick.bCanEverTick = true;
+	DefaultNavFilter = new FRecatsQueryFilter_SL{};
 }
 void AMyRecastNavMesh::BeginPlay() {
 	Super::BeginPlay();
@@ -132,10 +138,22 @@ void AMyRecastNavMesh::BeginPlay() {
 void AMyRecastNavMesh::Tick(float deltaTime)
 {
 	Super::Tick(deltaTime);
+	if (!InfluenceMap)
+		InitInfluenceMap();
 }
 void AMyRecastNavMesh::SetupCustomNavFilter() {
 	if (DefaultQueryFilter.IsValid())
 	{
-		DefaultQueryFilter->SetFilterImplementation(dynamic_cast<const INavigationQueryFilterInterface*>(&DefaultNavFilter));
+		DefaultQueryFilter->SetFilterImplementation(dynamic_cast<const INavigationQueryFilterInterface*>(DefaultNavFilter));
+	}
+}
+void AMyRecastNavMesh::InitInfluenceMap(){
+	TArray<AActor*> ActorList = GetLevel()->Actors;
+	auto functor = [](AActor* actor) { return actor->GetName() == "BP_InfluenceMap_C_0"; };
+	AActor* influenceMap = *(ActorList.FindByPredicate(functor));
+	if (influenceMap) {
+		InfluenceMap = Cast<AInfluenceMapGrid>(influenceMap);
+		DefaultNavFilter->SetInfluenceMap(InfluenceMap);
+		SetupCustomNavFilter();
 	}
 }

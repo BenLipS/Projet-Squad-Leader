@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Detour/DetourNavMeshQuery.h"
 #include "NavMesh/RecastNavMesh.h"
+#include "InfluenceMapGrid.h"
 #include "MyRecastNavMesh.generated.h"
 
 
@@ -20,10 +21,16 @@ protected:
 		const dtPolyRef curRef, const dtMeshTile* curTile, const dtPoly* curPoly,
 		const dtPolyRef nextRef, const dtMeshTile* nextTile, const dtPoly* nextPoly) const override;
 
+	virtual bool passVirtualFilter(const dtPolyRef ref,
+		const dtMeshTile* tile,
+		const dtPoly* poly) const override;
 private:
 	float GetCostInfluenceMap() const;
-};
 
+public:
+	AInfluenceMapGrid* InfluenceMap;
+	void SetInfluenceMap(AInfluenceMapGrid* influenceMap);
+};
 
 class SQUADLEADER_API FRecatsQueryFilter_SL : public INavigationQueryFilterInterface, public dtQueryFilter_SL {
 public:
@@ -53,7 +60,6 @@ public:
 
 	void SetIsVirtual(bool bIsVirtual);
 };
-
 /**
  * AMyRecastNavMesh 
  */
@@ -70,6 +76,10 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
-	FRecatsQueryFilter_SL DefaultNavFilter;
+	FRecatsQueryFilter_SL* DefaultNavFilter{};
 	void SetupCustomNavFilter();
+
+private:
+	AInfluenceMapGrid* InfluenceMap;
+	void InitInfluenceMap();
 };
