@@ -30,6 +30,7 @@ protected:
 
 	void FinishAreaEffect();
 	void ApplyEffects(UAbilitySystemComponent* _TargetASC);
+	void ApplyForce(AActor* _Actor);
 
 	FTimerHandle AreaTimer;
 	FTimerHandle PeriodTimer;
@@ -43,6 +44,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Stats|Interval", Replicated)
 	float Interval = 0.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Stats|Impulse", Replicated)
+	float StrenghImpulse = 1000.f;
 
 //////////////// Collision
 public:

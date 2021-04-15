@@ -2,7 +2,11 @@
 #include "../Soldiers/Soldier.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "GameFramework/CharacterMovementComponent.h"
+
+#ifdef UE_BUILD_DEBUG
 #include "DrawDebugHelpers.h"
+#endif
 
 AAreaEffect::AAreaEffect()
 {
@@ -55,13 +59,19 @@ void AAreaEffect::OnAreaTick()
 
 	if (GetWorld()->SweepMultiByChannel(HitActors, StartTrace, EndTrace, FQuat::FQuat(), ECC_WorldStatic, CollisionShape))
 	{
-		for (auto Actor = HitActors.CreateIterator(); Actor; ++Actor)
+		for (auto TartgetActor = HitActors.CreateIterator(); TartgetActor; ++TartgetActor)
 		{
-			if (Actor->Actor == nullptr)
+			if (TartgetActor->Actor == nullptr)
 				continue;
 
-			if (ASoldier* TargetSoldier = Cast<ASoldier>((*Actor).GetActor()); TargetSoldier && TargetSoldier->GetAbilitySystemComponent())
-				ApplyEffects(TargetSoldier->GetAbilitySystemComponent());
+			if (ASoldier* TargetSoldier = Cast<ASoldier>(TartgetActor->GetActor()); TargetSoldier && TargetSoldier->GetAbilitySystemComponent())
+			{
+				UAbilitySystemComponent* ASC = TargetSoldier->GetAbilitySystemComponent();
+				ApplyEffects(ASC);
+				//ASC->AddLooseGameplayTag();
+			}
+
+			ApplyForce(TartgetActor->GetActor());
 		}
 	}
 }
@@ -91,6 +101,26 @@ void AAreaEffect::ApplyEffects(UAbilitySystemComponent* _TargetASC)
 			if (EffectSpecHandle.IsValid())
 				ASC->ApplyGameplayEffectSpecToTarget(*EffectSpecHandle.Data.Get(), _TargetASC);
 		}
+	}
+}
+
+void AAreaEffect::ApplyForce(AActor* _Actor)
+{
+	if (ACharacter* Character = Cast<ACharacter>(_Actor); Character)
+	{
+		const FVector Impulse = FVector{ (_Actor->GetActorLocation() - GetActorLocation()) }.GetSafeNormal();
+		if (Impulse.IsNormalized())
+			Character->GetCharacterMovement()->AddImpulse(Impulse * StrenghImpulse);
+		else
+			Character->GetCharacterMovement()->AddImpulse(FVector{ 0.f, 0.f, StrenghImpulse }); // Default impulsion in case the areaeffect is applied from the actor location
+	}
+	else if (UStaticMeshComponent * SM = Cast<UStaticMeshComponent>(_Actor->GetRootComponent()); SM && SM->Mobility == EComponentMobility::Movable)
+	{
+		const FVector Impulse = FVector{ (_Actor->GetActorLocation() - GetActorLocation()) }.GetSafeNormal();
+		if (Impulse.IsNormalized())
+			SM->AddImpulse(Impulse * StrenghImpulse);
+		else
+			SM->AddImpulse(FVector{ 0.f, 0.f, StrenghImpulse }); // Default impulsion in case the areaeffect is applied from the actor location
 	}
 }
 
