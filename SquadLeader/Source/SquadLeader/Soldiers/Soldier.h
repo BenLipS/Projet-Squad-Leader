@@ -447,4 +447,10 @@ public:
 	// Projectile forwardVector to launch from
 	UFUNCTION()
 	virtual FVector GetLookingDirection();
+
+//////////////// TODO Review
+public:
+	// This need to use the new camera shake sequence. Matinee is deprecated 
+	UFUNCTION(BlueprintImplementableEvent)
+	void ShakeCamera();
 };

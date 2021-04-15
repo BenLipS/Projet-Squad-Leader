@@ -22,6 +22,7 @@ void AAreaEffect::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifet
 	DOREPLIFETIME(AAreaEffect, Lifetime);
 	DOREPLIFETIME(AAreaEffect, Radius);
 	DOREPLIFETIME(AAreaEffect, Interval);
+	DOREPLIFETIME(AAreaEffect, ImpulseStrenghBase);
 	DOREPLIFETIME(AAreaEffect, CurveImpulseStrengh);
 }
 
@@ -125,11 +126,14 @@ void AAreaEffect::ApplyDamages(UAbilitySystemComponent* _TargetASC, const float 
 
 void AAreaEffect::ApplyImpulse(AActor* _Actor, const float _DistActorArea)
 {
-	if (ACharacter* Character = Cast<ACharacter>(_Actor); Character)
-		Character->GetCharacterMovement()->AddImpulse(DetermineImpulse(_Actor, _DistActorArea));
+	if (ASoldier* Soldier = Cast<ASoldier>(_Actor); Soldier)
+	{
+		Soldier->GetCharacterMovement()->AddImpulse(DetermineImpulse(_Actor, _DistActorArea));
+		Soldier->ShakeCamera();
+	}
 
-	else if (UStaticMeshComponent * SM = Cast<UStaticMeshComponent>(_Actor->GetRootComponent()); SM && SM->Mobility == EComponentMobility::Movable)
-		SM->AddImpulse(DetermineImpulse(_Actor, _DistActorArea));
+	//else if (UStaticMeshComponent * SM = Cast<UStaticMeshComponent>(_Actor->GetRootComponent()); SM && SM->Mobility == EComponentMobility::Movable)
+	//	SM->AddImpulse(DetermineImpulse(_Actor, _DistActorArea));
 }
 
 float AAreaEffect::DetermineDamage(const float _DistActorArea) const
