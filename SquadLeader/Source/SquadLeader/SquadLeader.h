@@ -37,4 +37,6 @@ enum class ESoldierAbilityInputID : uint8
 	ReloadWeapon	UMETA(DisplayName = "ReloadWeapon"),
 	// Left Alt
 	QuickDash		UMETA(DisplayName = "QuickDash"),
+	// P
+	WallVision		UMETA(DisplayName = "WallVision"),
 };

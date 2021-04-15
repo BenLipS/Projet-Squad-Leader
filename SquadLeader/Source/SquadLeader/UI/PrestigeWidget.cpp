@@ -5,7 +5,7 @@ UPrestigeWidget::UPrestigeWidget(const FObjectInitializer& ObjectInitializer) : 
 {
 }
 
-void UPrestigeWidget::SetupDelegateToObject(UObject* ObjectIn)
+void UPrestigeWidget::SetupDelegateToObject_Implementation(UObject* ObjectIn)
 {
 	if (IPlayerPrestigeDelegateInterface* PlayerPrestigeDelegateInterface = Cast<IPlayerPrestigeDelegateInterface>(ObjectIn); PlayerPrestigeDelegateInterface)
 	{

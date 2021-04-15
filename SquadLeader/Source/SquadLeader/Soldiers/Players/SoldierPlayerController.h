@@ -56,7 +56,6 @@ protected:
 	TSubclassOf<class AHUD> HUDClass;
 
 public:
-
 	UFUNCTION(Client, Reliable)
 	void CreateHUD();
 //////////////// Movements
@@ -127,6 +126,16 @@ public:
 
 	UFUNCTION()
 	void BroadCastManagerData();
+
+	//-----ABILITY WALLVISION-----
+
+	UFUNCTION(Client, Reliable)
+	void OnWallVisionActivate();
+	void OnWallVisionActivate_Implementation();
+
+	UFUNCTION(Client, Reliable)
+	void OnWallVisionDeactivate();
+	void OnWallVisionDeactivate_Implementation();
 
 //////////////// Cheat
 	UFUNCTION(Exec)

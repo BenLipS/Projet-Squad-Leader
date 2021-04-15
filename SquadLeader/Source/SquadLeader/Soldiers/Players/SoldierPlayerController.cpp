@@ -282,6 +282,36 @@ void ASoldierPlayerController::BroadCastManagerData()
 		CurrentHUD->OnSquadChanged(SquadManagerData.SquadData);
 }
 
+void ASoldierPlayerController::OnWallVisionActivate_Implementation()
+{
+	for (AActor* Actor : GetWorld()->PersistentLevel->Actors)
+	{
+		if (ASoldier* Soldier = Cast<ASoldier>(Actor); Soldier)
+		{
+			auto team1 = Soldier->GetPlayerState();
+			auto team2 = GetTeam();
+			if (Soldier->GetTeam() != GetTeam())
+			{
+				Soldier->GetMesh()->SetRenderCustomDepth(true);
+			}
+		}
+	}
+}
+
+void ASoldierPlayerController::OnWallVisionDeactivate_Implementation()
+{
+	for (AActor* Actor : GetWorld()->PersistentLevel->Actors)
+	{
+		if (ASoldier* Soldier = Cast<ASoldier>(Actor); Soldier)
+		{
+			if (Soldier->GetMesh()->bRenderCustomDepth)
+			{
+				Soldier->GetMesh()->SetRenderCustomDepth(false);
+			}
+		}
+	}
+}
+
 void ASoldierPlayerController::Cheat_AddAISquad()
 {
 	AddAnAIToIndexSquad();

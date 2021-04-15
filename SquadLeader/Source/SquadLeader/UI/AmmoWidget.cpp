@@ -8,7 +8,7 @@ UAmmoWidget::UAmmoWidget(const FObjectInitializer& ObjectInitializer) : Super(Ob
 {
 }
 
-void UAmmoWidget::SetupDelegateToObject(UObject* ObjectIn)
+void UAmmoWidget::SetupDelegateToObject_Implementation(UObject* ObjectIn)
 {
 	if (IWeaponDelegateInterface* WeaponDelegateInterface = Cast<IWeaponDelegateInterface>(ObjectIn); WeaponDelegateInterface)
 	{

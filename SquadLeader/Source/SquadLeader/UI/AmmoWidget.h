@@ -33,7 +33,7 @@ protected:
 public:
 	UAmmoWidget(const FObjectInitializer& ObjectInitializer);
 
-	void SetupDelegateToObject(UObject* ObjectIn) override;
+	void SetupDelegateToObject_Implementation(UObject* ObjectIn) override;
 
 	//-----IWeaponInterface-----
 	void OnAmmoChanged(uint8 newValue) override;
