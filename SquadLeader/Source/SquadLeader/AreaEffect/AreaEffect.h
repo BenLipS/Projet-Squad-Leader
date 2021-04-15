@@ -23,36 +23,57 @@ protected:
 
 	ASoldier* SourceSoldier = nullptr;
 
-	void OnAreaTick();
+//////////////// Effects
+protected:
+	FTimerHandle LifetimeTimer;
+	FTimerHandle IntervalTimer;
 
-	// Define the effects applied by explosion
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Abilities")
+	void OnReadyToApplyEffects();
+	void DestroyAreaEffect();
+
+	void ApplyGameplayEffects(UAbilitySystemComponent* _TargetASC);
+	void ApplyDamages(UAbilitySystemComponent* _TargetASC, const float _DistActorArea);
+	void ApplyImpulse(AActor* _Actor, const float _DistActorArea);
+
+	// Define the effects to apply
+	UPROPERTY(EditDefaultsOnly, Category = "Effects")
 	TArray<TSubclassOf<class UGameplayEffect>> ExplosionEffects;
 
-	void FinishAreaEffect();
-	void ApplyEffects(UAbilitySystemComponent* _TargetASC);
-	void ApplyImpulse(AActor* _Actor);
-	FVector DetermineImpulse(FVector _ActorLocation) const;
-
-	FTimerHandle AreaTimer;
-	FTimerHandle PeriodTimer;
-
 //////////////// Stats
-	UPROPERTY(EditDefaultsOnly, Category = "Stats|Duration", Replicated)
-	float Duration = 0.f;
+protected:
+	// We can specifically define an execution GE for the damages. It will be combinated with the properties BaseDamage and CurveDamage so we can easily interpolate the damage. This is meant to be used with Soldier ASC
+	UPROPERTY(EditDefaultsOnly, Category = "Stats|Damage")
+	TSubclassOf<UGameplayEffect> GE_DamageClass;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Stats|Damage")
+	float DamageBase = 50.f;
+
+	// Determine the current damage multiplier based on distance from the center
+	UPROPERTY(EditDefaultsOnly, Category = "Stats|Damage")
+	UCurveFloat* CurveDamage;
+
+	float DetermineDamage(const float _DistActorArea) const;
+
+	// Lifetime before destroying this area effect. Last at least one frame for the animation
+	UPROPERTY(EditDefaultsOnly, Category = "Stats|Duration", Replicated)
+	float Lifetime = 0.f;
+
+	// Radius of the area effect
 	UPROPERTY(EditDefaultsOnly, Category = "Stats|Radius", Replicated)
 	float Radius = 100.f;
 
+	// If we want to repeat the effects. Set the interval of time before redoing th effects
 	UPROPERTY(EditDefaultsOnly, Category = "Stats|Interval", Replicated)
 	float Interval = 0.f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Stats|Impulse", Replicated)
 	float ImpulseStrenghBase = 10000.f;
 
-	// Determine the current impulse strengh based on distance from the center
+	// Determine the current impulse strengh multiplier based on distance from the center
 	UPROPERTY(EditDefaultsOnly, Category = "Stats|Impulse", Replicated)
 	UCurveFloat* CurveImpulseStrengh;
+
+	FVector DetermineImpulse(AActor* _Actor, const float _DistActorArea) const;
 
 //////////////// Collision
 public:
