@@ -3,6 +3,7 @@
 #include "Particles/ParticleSystemComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Math/UnrealMathUtility.h"
 
 #ifdef UE_BUILD_DEBUG
 #include "DrawDebugHelpers.h"
@@ -21,6 +22,7 @@ void AAreaEffect::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifet
 	DOREPLIFETIME(AAreaEffect, Duration);
 	DOREPLIFETIME(AAreaEffect, Radius);
 	DOREPLIFETIME(AAreaEffect, Interval);
+	DOREPLIFETIME(AAreaEffect, CurveImpulseStrengh);
 }
 
 void AAreaEffect::BeginPlay()
@@ -71,7 +73,7 @@ void AAreaEffect::OnAreaTick()
 				//ASC->AddLooseGameplayTag();
 			}
 
-			ApplyForce(TartgetActor->GetActor());
+			ApplyImpulse(TartgetActor->GetActor());
 		}
 	}
 }
@@ -104,24 +106,29 @@ void AAreaEffect::ApplyEffects(UAbilitySystemComponent* _TargetASC)
 	}
 }
 
-void AAreaEffect::ApplyForce(AActor* _Actor)
+void AAreaEffect::ApplyImpulse(AActor* _Actor)
 {
 	if (ACharacter* Character = Cast<ACharacter>(_Actor); Character)
-	{
-		const FVector Impulse = FVector{ (_Actor->GetActorLocation() - GetActorLocation()) }.GetSafeNormal();
-		if (Impulse.IsNormalized())
-			Character->GetCharacterMovement()->AddImpulse(Impulse * StrenghImpulse);
-		else
-			Character->GetCharacterMovement()->AddImpulse(FVector{ 0.f, 0.f, StrenghImpulse }); // Default impulsion in case the areaeffect is applied from the actor location
-	}
+		Character->GetCharacterMovement()->AddImpulse(DetermineImpulse(_Actor->GetActorLocation()));
+
 	else if (UStaticMeshComponent * SM = Cast<UStaticMeshComponent>(_Actor->GetRootComponent()); SM && SM->Mobility == EComponentMobility::Movable)
-	{
-		const FVector Impulse = FVector{ (_Actor->GetActorLocation() - GetActorLocation()) }.GetSafeNormal();
-		if (Impulse.IsNormalized())
-			SM->AddImpulse(Impulse * StrenghImpulse);
-		else
-			SM->AddImpulse(FVector{ 0.f, 0.f, StrenghImpulse }); // Default impulsion in case the areaeffect is applied from the actor location
-	}
+		SM->AddImpulse(DetermineImpulse(_Actor->GetRootComponent()->GetComponentLocation()));
+}
+
+FVector AAreaEffect::DetermineImpulse(FVector _ActorLocation) const
+{
+	if (ImpulseStrenghBase <= 0.0f)
+		return;
+
+	const FVector DirectionFromAreaToActor = FVector{ _ActorLocation - GetActorLocation() }.GetSafeNormal();
+	const FVector ImpulseDirection = DirectionFromAreaToActor.IsNormalized() ? DirectionFromAreaToActor : FVector{ 0.f, 0.f, 1.f };
+	const float DistActorArea = FVector::Dist(_ActorLocation, GetActorLocation());
+
+	FVector CurrentStrenghImpulse = ImpulseDirection * ImpulseStrenghBase;
+	if (CurveImpulseStrengh)
+		CurrentStrenghImpulse *= CurveImpulseStrengh->GetFloatValue(DistActorArea / Radius);
+
+	return CurrentStrenghImpulse;
 }
 
 void AAreaEffect::ShowAnimation()

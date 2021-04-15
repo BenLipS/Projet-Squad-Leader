@@ -4,6 +4,7 @@
 #include "GameFramework/Actor.h"
 #include "GameplayEffect.h"
 #include "Net/UnrealNetwork.h"
+#include "Curves/CurveFloat.h"
 #include "AreaEffect.generated.h"
 
 class ASoldier;
@@ -30,7 +31,8 @@ protected:
 
 	void FinishAreaEffect();
 	void ApplyEffects(UAbilitySystemComponent* _TargetASC);
-	void ApplyForce(AActor* _Actor);
+	void ApplyImpulse(AActor* _Actor);
+	FVector DetermineImpulse(FVector _ActorLocation) const;
 
 	FTimerHandle AreaTimer;
 	FTimerHandle PeriodTimer;
@@ -46,7 +48,11 @@ protected:
 	float Interval = 0.f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Stats|Impulse", Replicated)
-	float StrenghImpulse = 1000.f;
+	float ImpulseStrenghBase = 10000.f;
+
+	// Determine the current impulse strengh based on distance from the center
+	UPROPERTY(EditDefaultsOnly, Category = "Stats|Impulse", Replicated)
+	UCurveFloat* CurveImpulseStrengh;
 
 //////////////// Collision
 public:
