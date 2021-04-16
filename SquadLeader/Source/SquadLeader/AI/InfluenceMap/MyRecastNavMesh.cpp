@@ -14,17 +14,17 @@ float dtQueryFilter_SL::getVirtualCost(const float* pa, const float* pb,
 	const dtPolyRef prevRef, const dtMeshTile* prevTile, const dtPoly* prevPoly,
 	const dtPolyRef curRef, const dtMeshTile* curTile, const dtPoly* curPoly,
 	const dtPolyRef nextRef, const dtMeshTile* nextTile, const dtPoly* nextPoly) const {
-	const float Cost = GetCostInfluenceMap();
+	const float Cost = GetCostInfluenceMap(FVector2D(-pa[0], -pa[2]), FVector2D(-pb[0], -pb[2]));
 	return dtVdist(pa, pb) * Cost;
 }
 bool dtQueryFilter_SL::passVirtualFilter(const dtPolyRef ref, const dtMeshTile* tile,	const dtPoly* poly) const{
 	return passInlineFilter(ref, tile, poly);
 }
-float dtQueryFilter_SL::GetCostInfluenceMap() const{
-	if (InfluenceMap) {
-		return 1.f;
-	}
-	return 2.f;
+float dtQueryFilter_SL::GetCostInfluenceMap(const FVector2D StartPosition, const FVector2D EndPosition) const{
+	float Cost = 1.f;
+	if (InfluenceMap)
+		Cost = InfluenceMap->GetValue(EndPosition);
+	return Cost * 1.5f;
 }
 void dtQueryFilter_SL::SetInfluenceMap(AInfluenceMapGrid* influenceMap) {
 	InfluenceMap = influenceMap;

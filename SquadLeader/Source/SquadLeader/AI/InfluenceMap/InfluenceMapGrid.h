@@ -81,6 +81,8 @@ public:
 
 	void ReceivedMessage(FGridPackage _message);
 
+public:
+	float GetValue(const FVector2D Location);
 private:
 	/*
 	* will initialize the array with the tile needed

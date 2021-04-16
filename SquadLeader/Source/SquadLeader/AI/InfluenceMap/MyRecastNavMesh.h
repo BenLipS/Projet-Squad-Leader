@@ -25,7 +25,7 @@ protected:
 		const dtMeshTile* tile,
 		const dtPoly* poly) const override;
 private:
-	float GetCostInfluenceMap() const;
+	float GetCostInfluenceMap(const FVector2D StartPosition, const FVector2D EndPosition) const;
 
 public:
 	AInfluenceMapGrid* InfluenceMap;

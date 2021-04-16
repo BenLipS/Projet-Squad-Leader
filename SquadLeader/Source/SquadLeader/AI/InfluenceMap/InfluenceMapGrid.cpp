@@ -219,3 +219,12 @@ void AInfluenceMapGrid::UpdateTile(int index, float value, int team, Type type) 
 	m_influencemap[index].m_team = team;
 	m_influencemap[index].m_type = type;
 }
+
+float AInfluenceMapGrid::GetValue(const FVector2D Location) {
+	const int index = FindTileIndex({ Location.X, Location.Y, m_startLocation.Z });
+	float Cost = 0.f;
+	if (index > 1) {
+		Cost = m_influencemap[index].m_value;
+	}
+	return Cost;
+}
