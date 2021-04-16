@@ -28,7 +28,7 @@ void AControlArea::BeginPlay()
 void AControlArea::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME_CONDITION_NOTIFY(AControlArea, isTakenBy, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(AControlArea, IsTakenBy, COND_None, REPNOTIFY_Always);
 }
 
 
@@ -124,9 +124,9 @@ void AControlArea::calculateControlValue()
 						else {
 							otherTeam.Value->controlValue = 0;
 						}
-						if (isTakenBy == otherTeam.Key && otherTeam.Value->controlValue < controlValueToTake) {  // remove isTakenBy if needed
+						if (IsTakenBy == otherTeam.Key && otherTeam.Value->controlValue < controlValueToTake) {  // remove IsTakenBy if needed
 							// notify here the changement if needed
-							isTakenBy = nullptr;
+							IsTakenBy = nullptr;
 							otherTeam.Value->ChangeSpawnState(false);
 							GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("ControlArea : Team control = None"));
 						}
@@ -138,15 +138,14 @@ void AControlArea::calculateControlValue()
 					else
 						TeamData[presentTeam]->controlValue = maxControlValue;
 
-					if (isTakenBy != presentTeam && TeamData[presentTeam]->controlValue >= controlValueToTake) {  // take control of the point
-						isTakenBy = presentTeam;
+					if (IsTakenBy != presentTeam && TeamData[presentTeam]->controlValue >= controlValueToTake) {  // take control of the point
+						IsTakenBy = presentTeam;
 						TeamData[presentTeam]->ChangeSpawnState(true);
 						// notify here the changement if needed
 						GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("ControlArea : Team control =" + presentTeam->TeamName));
 
-						// check the victory condition
-						if (auto gameMode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode()); gameMode) {
-							gameMode->CheckControlAreaVictoryCondition();
+						if (ASquadLeaderGameModeBase* GameMode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode()); GameMode) {
+							GameMode->NotifyControlAreaCaptured(this);
 						}
 					}
 				}
@@ -207,7 +206,7 @@ void AControlArea::UpdateTeamData()
 
 			for (auto& team : TeamData) {  // update spawn state
 				if (team.Value) {
-					team.Value->ChangeSpawnState(isTakenBy == team.Key);
+					team.Value->ChangeSpawnState(IsTakenBy == team.Key);
 					team.Value->ChangeSpawnTeam(team.Key);
 				}
 			}
