@@ -84,8 +84,8 @@ void UGA_FireWeapon::HandleFire()
 		}
 
 		UAbilityTask_WaitDelay* Task = UAbilityTask_WaitDelay::WaitDelay(this, SourceWeapon->GetTimeBetweenShots());
-		Task->Activate();
 		Task->OnFinish.AddDynamic(GA_FireWeaponInstantInstance, &UGA_FireWeaponInstant::FireBullet);
+		Task->ReadyForActivation();
 	}
 }
 

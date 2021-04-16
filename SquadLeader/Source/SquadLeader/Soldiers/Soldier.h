@@ -295,27 +295,27 @@ protected:
 	void OnRep_Inventory();
 
 //////////////// Weapons
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Inventory | Weapon")
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Inventory|Weapon")
 	TArray<TSubclassOf<ASL_Weapon>> DefaultInventoryWeaponClasses;
 
 	UPROPERTY(ReplicatedUsing = OnRep_CurrentWeapon)
 	ASL_Weapon* CurrentWeapon;
 
 public:
-	UFUNCTION(BlueprintCallable, Category = "Inventory | Weapon")
+	UFUNCTION(BlueprintCallable, Category = "Inventory|Weapon")
 	ASL_Weapon* GetCurrentWeapon() const;
 
 	bool bChangedWeaponLocally;
 
 	// Adds a new weapon to the inventory.
 	// Returns false if the weapon already exists in the inventory, true if it's a new weapon.
-	UFUNCTION(BlueprintCallable, Category = "Inventory | Weapon")
+	UFUNCTION(BlueprintCallable, Category = "Inventory|Weapon")
 	bool AddWeaponToInventory(ASL_Weapon* _NewWeapon, const bool _bEquipWeapon = false);
 
-	UFUNCTION(BlueprintCallable, Category = "Inventory | Weapon")
+	UFUNCTION(BlueprintCallable, Category = "Inventory|Weapon")
 	void EquipWeapon(ASL_Weapon* _NewWeapon);
 
-	UFUNCTION(Server, Reliable, Category = "Inventory | Weapon")
+	UFUNCTION(Server, Reliable, Category = "Inventory|Weapon")
 	void ServerEquipWeapon(ASL_Weapon* _NewWeapon);
 	bool ServerEquipWeapon_Validate(ASL_Weapon* _NewWeapon);
 	void ServerEquipWeapon_Implementation(ASL_Weapon* _NewWeapon);
@@ -334,7 +334,7 @@ protected:
 	// The CurrentWeapon is only automatically replicated to simulated clients.
 	// The autonomous client can use this to request the proper CurrentWeapon from the server when it knows it may be
 	// out of sync with it from predictive client-side changes.
-	UFUNCTION(Server, Reliable, Category = "Inventory | Weapon")
+	UFUNCTION(Server, Reliable, Category = "Inventory|Weapon")
 	void ServerSyncCurrentWeapon();
 	void ServerSyncCurrentWeapon_Implementation();
 	bool ServerSyncCurrentWeapon_Validate();
@@ -342,7 +342,7 @@ protected:
 	// The CurrentWeapon is only automatically replicated to simulated clients.
 	// Use this function to manually sync the autonomous client's CurrentWeapon when we're ready to.
 	// This allows us to predict weapon changes (changing weapons fast multiple times in a row so that the server doesn't replicate and clobber our CurrentWeapon).
-	UFUNCTION(Client, Reliable, Category = "Inventory | Weapon")
+	UFUNCTION(Client, Reliable, Category = "Inventory|Weapon")
 	void ClientSyncCurrentWeapon(ASL_Weapon* _InWeapon);
 	void ClientSyncCurrentWeapon_Implementation(ASL_Weapon* _InWeapon);
 	bool ClientSyncCurrentWeapon_Validate(ASL_Weapon* _InWeapon);
@@ -389,22 +389,22 @@ private:
 
 //////////////// Particles
 protected:
-	UPROPERTY(EditDefaultsOnly, Category = "Animation | Particles")
+	UPROPERTY(EditDefaultsOnly, Category = "Animation|Particles")
 	UParticleSystem* LevelUpFX;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Animation | Particles")
+	UPROPERTY(EditDefaultsOnly, Category = "Animation|Particles")
 	FVector LevelUpFXRelativeLocation;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Animation | Particles")
+	UPROPERTY(EditDefaultsOnly, Category = "Animation|Particles")
 	FRotator LevelUpFXRotator;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Animation | Particles")
+	UPROPERTY(EditDefaultsOnly, Category = "Animation|Particles")
 	FVector LevelUpFXScale;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Animation | Particles")
+	UPROPERTY(EditDefaultsOnly, Category = "Animation|Particles")
 	UParticleSystem* ImpactHitFX;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Animation | Particles")
+	UPROPERTY(EditDefaultsOnly, Category = "Animation|Particles")
 	FVector ImpactHitFXScale;
 
 	UFUNCTION(Reliable, Client, WithValidation)
@@ -415,17 +415,25 @@ protected:
 //////////////// Montages
 public:
 	// Anim Montage
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Animation | Montages")
+	// Level start
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Animation|Montages")
 	UAnimMontage* StartGameMontage;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Animation | Montages")
+	// Death
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Animation|Montages")
 	UAnimMontage* DeathMontage;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Animation | Montages")
+	// Respawn
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Animation|Montages")
 	UAnimMontage* RespawnMontage;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Animation | Montages")
+	// Weapon fire
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Animation|Montages")
 	UAnimMontage* WeaponFireMontage;
+
+	// Reload weapon
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Animation|Montages")
+	UAnimMontage* ReloadWeaponMontage;
 
 protected:
 	void HandleDeathMontage();

@@ -50,10 +50,10 @@ void UGA_FireWeaponInstant::ActivateAbility(const FGameplayAbilitySpecHandle Han
 
 void UGA_FireWeaponInstant::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
-	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
-
 	if (ServerWaitForClientTargetDataTask && ServerWaitForClientTargetDataTask->IsActive())
 		ServerWaitForClientTargetDataTask->EndTask();
+
+	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
 void UGA_FireWeaponInstant::FireBullet()
@@ -72,8 +72,8 @@ void UGA_FireWeaponInstant::FireBullet()
 	{
 		// Wait for the next fire
 		UAbilityTask_WaitDelay* TaskWaitDelay = UAbilityTask_WaitDelay::WaitDelay(this, SourceWeapon->GetTimeBetweenShots());
-		TaskWaitDelay->Activate();
 		TaskWaitDelay->OnFinish.AddDynamic(this, &UGA_FireWeaponInstant::FireBullet);
+		TaskWaitDelay->ReadyForActivation();
 		return;
 	}
 
@@ -97,8 +97,8 @@ void UGA_FireWeaponInstant::FireBullet()
 
 	// Wait for the next fire
 	UAbilityTask_WaitDelay* TaskWaitDelay = UAbilityTask_WaitDelay::WaitDelay(this, SourceWeapon->GetTimeBetweenShots());
-	TaskWaitDelay->Activate();
 	TaskWaitDelay->OnFinish.AddDynamic(this, &UGA_FireWeaponInstant::FireBullet);
+	TaskWaitDelay->ReadyForActivation();
 
 	TimeOfLastShoot = UGameplayStatics::GetTimeSeconds(GetWorld());
 }
