@@ -111,10 +111,14 @@ private:
 	*/
 	int FindTileIndex(FVector _location) const noexcept;
 
+	bool FindIndexModify(const FVector2D Location, uint32& Index);
+
 	/*
 	* Check if _location is on the tile who's in tile_location
 	*/
 	bool IsOnTile(FVector _location, FVector tile_location) const noexcept;
+
+	bool IsOnTileUpdate(const FVector2D Location, const FVector TileLocation) const noexcept;
 
 	/*
 	* Find the neighboor for all tile
@@ -208,4 +212,5 @@ private:
 
 	int value_tick = 0;
 	/*class UMyThreadManager* m_ThreadManager;*/
+
 };

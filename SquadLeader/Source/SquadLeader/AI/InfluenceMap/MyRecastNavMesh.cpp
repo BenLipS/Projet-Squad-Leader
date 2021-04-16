@@ -134,7 +134,7 @@ float dtQueryFilter_SL_TeamOne::getVirtualCost(const float* pa, const float* pb,
 float dtQueryFilter_SL_TeamOne::GetCostInfluenceMap(const FVector2D StartPosition, const FVector2D EndPosition) const {
 	float Cost = 1.f;
 	if (InfluenceMap)
-		Cost = InfluenceMap->GetValue(StartPosition, 1);
+		Cost = InfluenceMap->GetValue(StartPosition, 2);
 	return Cost;
 }
 void dtQueryFilter_SL_TeamOne::SetInfluenceMap(AInfluenceMapGrid* influenceMap) {

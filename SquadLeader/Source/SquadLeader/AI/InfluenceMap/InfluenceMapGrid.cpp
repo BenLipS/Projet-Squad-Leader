@@ -109,6 +109,16 @@ int AInfluenceMapGrid::FindTileIndex(FVector _location) const noexcept {
 	return -1;
 }
 
+bool AInfluenceMapGrid::FindIndexModify(const FVector2D Location, uint32& Index){
+	for (int index : m_index_update) {
+		if (IsOnTileUpdate(Location, m_influencemap[index].m_location)) {
+			Index = index;
+			return true;
+		}
+	}
+	return false;
+}
+
 bool AInfluenceMapGrid::IsOnTile(FVector _location, FVector tile_location) const noexcept {
 	float width = m_tile_width / 2.f;
 	float height = m_tile_height / 2.f;
@@ -116,6 +126,16 @@ bool AInfluenceMapGrid::IsOnTile(FVector _location, FVector tile_location) const
 	bool on_axis_y = _location.Y <= tile_location.Y + height && _location.Y >= tile_location.Y - height;
 
 	return on_axis_x && on_axis_y;
+}
+
+bool AInfluenceMapGrid::IsOnTileUpdate(const FVector2D Location, const FVector TileLocation) const noexcept{
+	const float width = m_tile_width / 2.f;
+	const float height = m_tile_height / 2.f;
+
+	const bool AxisX = (Location.X <= TileLocation.X + width) && (Location.X >= TileLocation.X - width);
+	const bool AxisY = (Location.Y <= TileLocation.Y + height) && (Location.Y >= TileLocation.Y - height);
+
+	return AxisX && AxisY;
 }
 
 void AInfluenceMapGrid::Neighboors(int index) noexcept {
@@ -221,14 +241,10 @@ void AInfluenceMapGrid::UpdateTile(int index, float value, int team, Type type) 
 }
 
 float AInfluenceMapGrid::GetValue(const FVector2D Location, const uint8 Team) {
-	const int index = FindTileIndex({ Location.X, Location.Y, m_startLocation.Z });
+	uint32 index = -1;
 	float Cost = 1.f;
-	if (index > 1) {
-		Cost = m_influencemap[index].m_value;
-		if (m_influencemap[index].m_team != Team && m_influencemap[index].m_team != -1)
-			Cost *= 1.5f;
-		else
-			Cost *= 0.5f;
+	if (FindIndexModify(Location, index)) {
+		Cost += m_influencemap[index].m_value * 1.5f;
 	}
 	return Cost;
 }
