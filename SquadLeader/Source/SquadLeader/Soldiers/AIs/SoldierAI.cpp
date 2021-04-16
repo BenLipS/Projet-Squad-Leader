@@ -14,28 +14,16 @@ ASoldierAI::ASoldierAI(const FObjectInitializer& _ObjectInitializer) : Super(_Ob
 // TODO: See with AI team how to proceed
 void ASoldierAI::LockControls()
 {
-	//if (LastUnpossessedController = GetController(); LastUnpossessedController)
-		//LastUnpossessedController->UnPossess();
-	
-	/*if (auto AC = Cast<AAIController>(GetController()); AC)
-	{
-		if (AC->BrainComponent)
-			AC->BrainComponent->StopLogic("");
-	}*/
+	if (AAIGeneralController* AIController = Cast<AAIGeneralController>(GetController()); AIController) {
+		AIController->IsActivated = false;
+	}
 }
 
 void ASoldierAI::UnLockControls()
 {
-	/*if (LastUnpossessedController)
-	{
-		LastUnpossessedController->Possess(this);
-		LastUnpossessedController = nullptr;
-	}*/
-	/*if (auto AC = Cast<AAIController>(GetController()); AC)
-	{
-		if (AC->BrainComponent)
-			AC->BrainComponent->RestartLogic();
-	}	*/
+	if (AAIGeneralController* AIController = Cast<AAIGeneralController>(GetController()); AIController) {
+		AIController->IsActivated = true;
+	}
 }
 
 void ASoldierAI::BroadCastDatas()
