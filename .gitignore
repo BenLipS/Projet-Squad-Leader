@@ -77,6 +77,9 @@ Plugins//Intermediate/
 DerivedDataCache/*
 enc_temp_folder/
 
+# Individual data write on json files
+/SquadLeader/Config/userData.json
+
 Logs/
 Build/
 

@@ -28,10 +28,16 @@ protected:
 	FHttpModule* Http;
 
 	PlayerData UserData;
+
+	FString AuthToken;
 	
 public:
 	void HttpCallPing(FString BaseAdress);
+	void HttpCallCreateUser(FString BaseAdress);
+	void HttpCallConnectUser(FString BaseAdress);
 	
 protected:
 	void OnResponseReceivedPing(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
+	void OnResponseReceivedCreateUser(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
+	void OnResponseReceivedConnectUser(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 };

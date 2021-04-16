@@ -38,6 +38,11 @@ void PlayerData::LoadOrCreate(FString FileName) {
     ImportDataFromJson(FileContent);
 }
 
+void PlayerData::Save(FString FileName)
+{
+    WriteFile(FileName, ExportDataInJson());
+}
+
 
 FString PlayerData::ReadFile(FString FileName) {
     FString file = FPaths::ProjectConfigDir();

@@ -29,6 +29,7 @@ public:  // data for players
 	TArray<FString> Friend;
 	
 	void LoadOrCreate(FString FileName);
+	void Save(FString FileName);
 
 protected:  // utilitarian functions
 	FString ReadFile(FString FileName);
