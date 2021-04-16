@@ -40,10 +40,13 @@ public:
 
 
 	/** Control value variables */
-	UPROPERTY(BlueprintReadWrite, Category = "ControlValue")
-		int maxControlValue;
-	UPROPERTY(BlueprintReadWrite, Category = "ControlValue")
-		int controlValueToTake;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ControlValue")
+		int MaxControlValue = 20;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ControlValue")
+		int MinControlValueToControl = 0;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ControlValue")
+		int ControlValueToTake = 20;
+
 public:
 	UPROPERTY(VisibleAnywhere, Replicated, Category = "IsTaken")
 		ASoldierTeam* IsTakenBy;
@@ -64,8 +67,8 @@ public:
 
 protected:  // time value for calculation frequency
 	FTimerHandle timerCalculationControlValue;
-	UPROPERTY(BlueprintReadWrite, Category = "ControlValue")
-		float timeBetweenCalcuation;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ControlValue")
+		float timeBetweenCalcuation = 0.5;
 
 	UFUNCTION(BlueprintCallable, Category = "ControlValue")
 		void calculateControlValue();
@@ -77,6 +80,10 @@ public:
 protected:
 	UFUNCTION(Category = "ControlData")
 		void UpdateTeamData();
+public:
+	UFUNCTION(Client, Unreliable, Category = "ControlData")
+		void ClientNotifyValueChange(int Value, ASoldierTeam* ControlAreaOwner, ASoldierTeam* ControlAreaMaster);
+		void ClientNotifyValueChange_Implementation(int Value, ASoldierTeam* ControlAreaOwner, ASoldierTeam* ControlAreaMaster);
 
 protected:
 	UPROPERTY(EditInstanceOnly, Category = "InfluenceMap")

@@ -1,12 +1,20 @@
 #include "ControlAreaManager.h"
 #include "../GameState/SquadLeaderGameState.h"
 #include "../SquadLeaderGameModeBase.h"
+#include "../UI/SL_HUD.h"
+#include "../Soldiers/Players/SoldierPlayerController.h"
 
 AControlAreaManager::AControlAreaManager()
 {
 	bReplicates = true;
 }
 
+// Called when the game starts or when spawned
+void AControlAreaManager::BeginPlay()
+{
+	Super::BeginPlay();
+	ClientInitHUD();
+}
 
 void AControlAreaManager::PreInitialisation()
 {
@@ -76,4 +84,22 @@ ASoldierTeam* AControlAreaManager::GetTeamWithAllControl()
 		return ControlAreaList[0]->IsTakenBy;
 	}
 	return nullptr;
+}
+
+int AControlAreaManager::ControlAreaIndex(AControlArea* Element)
+{
+	int index = 0;
+	bool result = ControlAreaList.Find(Element, index);
+	if (result) {
+		return index;
+	}
+	return -1;
+}
+
+void AControlAreaManager::ClientInitHUD_Implementation() {
+	ASoldierPlayerController* playerController = GetWorld()->GetFirstPlayerController<ASoldierPlayerController>();
+	if (auto SLHUD = Cast<ASL_HUD>(playerController->GetHUD()); SLHUD) 
+	{
+		//SLHUD->OnControlAreaInit(ControlAreaList.Num());
+	}
 }
