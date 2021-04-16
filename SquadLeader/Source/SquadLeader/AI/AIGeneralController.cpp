@@ -573,7 +573,7 @@ ResultState AAIGeneralController::ShootEnemy() {
 
 EPathFollowingRequestResult::Type AAIGeneralController::FollowFlocking() {
 	EPathFollowingRequestResult::Type _movetoResult;
-	_movetoResult = MoveToLocation(blackboard->GetValueAsVector("FlockingLocation"), 5.f);
+	_movetoResult = MoveToLocation(blackboard->GetValueAsVector("FlockingLocation"), 5.f, true, true, false, true, DefaultNavigationFilterClass);
 	return _movetoResult;
 }
 
