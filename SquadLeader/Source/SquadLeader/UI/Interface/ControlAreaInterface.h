@@ -22,5 +22,5 @@ public:
 	virtual void OnControlAreaInit(unsigned int nbArea) = 0;
 	// Owner : -1 ennemy, 0 neutral, 1 ally
 	UFUNCTION()
-	virtual void OnAreaCaptureChanged(unsigned int index, int owner, float capturePercent) = 0;
+	virtual void OnAreaCaptureChanged(unsigned int index, int owner, int capturer, float capturePercent) = 0;
 };

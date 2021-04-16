@@ -30,6 +30,6 @@ public:
 	void AddControlAreaDelegate(IControlAreaInterface* newDelegate);
 	void RemoveControlAreaDelegate(IControlAreaInterface* removeDelegate);
 
-	virtual void OnControlAreaInit(unsigned int nbArea);
-	virtual void OnAreaCaptureChanged(unsigned int index, int owner, float capturePercent);
+	virtual void OnControlAreaInit(unsigned int nbArea) override;
+	virtual void OnAreaCaptureChanged(unsigned int index, int owner, int capturer, float capturePercent) override;
 };

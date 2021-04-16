@@ -12,6 +12,8 @@
 #include "Interface/NotificationDelegateInterface.h"
 #include "Interface/StatInfoDelegateInterface.h"
 #include "Interface/MinimapDelegateInterface.h"
+#include "Interface/ControlAreaDelegateInterface.h"
+
 #include "SL_HUD.generated.h"
 
 UCLASS()
@@ -24,7 +26,8 @@ class SQUADLEADER_API ASL_HUD : public AHUD,
 	public IOrderDelegateInterface,
 	public INotificationDelegateInterface,
 	public IStatInfoDelegateInterface,
-	public IMinimapDelegateInterface
+	public IMinimapDelegateInterface,
+	public IControlAreaDelegateInterface
 
 {
 	GENERATED_BODY()
@@ -105,4 +108,9 @@ public:
 public:
 	//void OnPlayerPrestigeChanged(float newValue) override;
 	//void OnPlayerPrestigeLevelUpChanged(float newValue) override;
+
+//-----IControlAreaDelegateInterface-----
+public:
+	//virtual void OnControlAreaInit(unsigned int nbArea) override;
+	//virtual void OnAreaCaptureChanged(unsigned int index, int owner, int capturer, float capturePercent) override;
 };
