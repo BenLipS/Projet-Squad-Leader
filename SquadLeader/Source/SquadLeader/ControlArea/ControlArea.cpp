@@ -2,6 +2,7 @@
 #include "../GameState/SquadLeaderGameState.h"
 #include "../SquadLeaderGameModeBase.h"
 #include "../Soldiers/Soldier.h"
+#include "../Soldiers/Players/SoldierPlayerController.h"
 #include "ControlAreaManager.h"
 
 
