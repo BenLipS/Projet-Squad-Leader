@@ -10,19 +10,19 @@
 #include "Net/UnrealNetwork.h"
 #include "ControlArea.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FControlAreaChanged, int, OwnerValue, int, CapturerValue, float, Percentage);
 
 UCLASS()
 class SQUADLEADER_API AControlArea : public AActor, public IPreInitable
 {
 	GENERATED_BODY()
+
+public:
+	FControlAreaChanged OnControlAreaChanged;
 	
 public:	
 	// Sets default values for this actor's properties
 	AControlArea();
-
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
 
 public:	
 	// for replication purpose
@@ -81,9 +81,8 @@ protected:
 	UFUNCTION(Category = "ControlData")
 		void UpdateTeamData();
 public:
-	UFUNCTION(Client, Unreliable, Category = "ControlData")
+	UFUNCTION(Category = "ControlData")
 		void ClientNotifyValueChange(int Value, ASoldierTeam* ControlAreaOwner, ASoldierTeam* ControlAreaMaster);
-		void ClientNotifyValueChange_Implementation(int Value, ASoldierTeam* ControlAreaOwner, ASoldierTeam* ControlAreaMaster);
 
 protected:
 	UPROPERTY(EditInstanceOnly, Category = "InfluenceMap")

@@ -8,14 +8,6 @@ AControlAreaManager::AControlAreaManager()
 {
 	bReplicates = true;
 }
-
-// Called when the game starts or when spawned
-void AControlAreaManager::BeginPlay()
-{
-	Super::BeginPlay();
-	ClientInitHUD();
-}
-
 void AControlAreaManager::PreInitialisation()
 {
 	if (auto GS = GetWorld()->GetGameState<ASquadLeaderGameState>(); GS) {
@@ -94,12 +86,4 @@ int AControlAreaManager::ControlAreaIndex(AControlArea* Element)
 		return index;
 	}
 	return -1;
-}
-
-void AControlAreaManager::ClientInitHUD_Implementation() {
-	ASoldierPlayerController* playerController = GetWorld()->GetFirstPlayerController<ASoldierPlayerController>();
-	if (auto SLHUD = Cast<ASL_HUD>(playerController->GetHUD()); SLHUD) 
-	{
-		//SLHUD->OnControlAreaInit(ControlAreaList.Num());
-	}
 }

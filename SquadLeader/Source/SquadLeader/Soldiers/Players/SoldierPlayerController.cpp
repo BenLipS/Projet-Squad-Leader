@@ -251,6 +251,22 @@ void ASoldierPlayerController::OnTextNotification_Received_Implementation(const 
 	}
 }
 
+void ASoldierPlayerController::OnControlAreaInit_Implementation(int newValue)
+{
+	if (auto HUD = GetHUD<ASL_HUD>())
+	{
+		HUD->OnControlAreaInit(newValue);
+	}
+}
+
+void ASoldierPlayerController::OnControlAreaChanged_Implementation(unsigned int indexIn, int ownerIn, int capturer, float capturePercent)
+{
+	if (auto HUD = GetHUD<ASL_HUD>())
+	{
+		HUD->OnAreaCaptureChanged(indexIn, ownerIn, capturer, capturePercent);
+	}
+}
+
 void ASoldierPlayerController::OnOrderGiven_Implementation(MissionType Order, FVector Pos)
 {
 	if (ASoldierPlayer* Soldier = GetPawn<ASoldierPlayer>(); Soldier)

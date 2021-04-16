@@ -21,10 +21,6 @@ public:
 	// Sets default values for this actor's properties
 	AControlAreaManager();
 
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
 	UPROPERTY(VisibleAnywhere, Replicated, Category = "ControlList")
 		TArray <AControlArea*> ControlAreaList;  // private because it must not be edited elsewhere
 
@@ -32,10 +28,6 @@ public:
 	// Pre init launch by the gameMode before the BeginPlay() function
 	virtual void PreInitialisation() override;
 	virtual int GetPriority() const override;
-	
-	UFUNCTION(Client, Reliable)
-	void ClientInitHUD();
-	void ClientInitHUD_Implementation();
 	
 public:
 	// for replication purpose

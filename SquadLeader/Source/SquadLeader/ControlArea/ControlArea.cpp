@@ -20,14 +20,6 @@ AControlArea::AControlArea()
 void AControlArea::initCollideElement() {
 }
 
-
-// Called when the game starts or when spawned
-void AControlArea::BeginPlay()
-{
-	Super::BeginPlay();
-
-}
-
 void AControlArea::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -213,33 +205,33 @@ void AControlArea::UpdateTeamData()
 	}
 }
 
-void AControlArea::ClientNotifyValueChange_Implementation(int Value, ASoldierTeam* ControlAreaOwner, ASoldierTeam* ControlAreaMaster)
+void AControlArea::ClientNotifyValueChange(int Value, ASoldierTeam* ControlAreaOwner, ASoldierTeam* ControlAreaMaster)
 {
 	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Black, TEXT("ControlArea : client function"), true);
 	if (auto GS = GetWorld()->GetGameState<ASquadLeaderGameState>(); GS) {
 		int index = GS->GetControlAreaManager()->ControlAreaIndex(this);
 		if (index != -1) {  // only if the control area is in the list
 			ASoldierPlayerController* playerController = GetWorld()->GetFirstPlayerController<ASoldierPlayerController>();
-			ASoldierTeam* PlayerTeam = playerController->GetTeam();
+			if (playerController)
+			{
+				ASoldierTeam* PlayerTeam = playerController->GetTeam();
 			
-			float Percent = (Value + 0.0) / MaxControlValue;
-			int AreaOwner = 0;
-			if (ControlAreaOwner) {
-				if (ControlAreaOwner == PlayerTeam) {
-					AreaOwner = 1;
+				float Percent = (Value + 0.0) / MaxControlValue;
+				int AreaOwner = 0;
+				if (ControlAreaOwner) {
+					if (ControlAreaOwner == PlayerTeam) {
+						AreaOwner = 1;
+					}
+					else AreaOwner = -1;
 				}
-				else AreaOwner = -1;
-			}
-			int AreaCapturer = 0;
-			if (ControlAreaMaster) {
-				if (ControlAreaMaster == PlayerTeam) {
-					AreaCapturer = 1;
+				int AreaCapturer = 0;
+				if (ControlAreaMaster) {
+					if (ControlAreaMaster == PlayerTeam) {
+						AreaCapturer = 1;
+					}
+					else AreaCapturer = -1;
 				}
-				else AreaCapturer = -1;
-			}
-
-			if (auto SLHUD = Cast<ASL_HUD>(playerController->GetHUD()); SLHUD) {
-				//SLHUD->OnAreaCaptureChanged( index, AreaOwner, AreaCapturer, Percent)
+				OnControlAreaChanged.Broadcast(AreaOwner, AreaCapturer, Percent);
 			}
 		}
 	}

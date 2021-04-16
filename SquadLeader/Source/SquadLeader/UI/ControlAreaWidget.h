@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "SL_UserWidget.h"
-#include "Interface/ControlAreaInterface.h"
+#include "Interface/MinimapInterface.h"
 
 #include "Components/HorizontalBox.h"
 
@@ -14,7 +14,7 @@
  * 
  */
 UCLASS()
-class SQUADLEADER_API UControlAreaWidget : public USL_UserWidget, public IControlAreaInterface
+class SQUADLEADER_API UControlAreaWidget : public USL_UserWidget, public IMinimapInterface
 {
 	GENERATED_BODY()
 
@@ -36,7 +36,8 @@ protected:
 
 //-----IControlAreaInterface-----
 public:
-	virtual void OnControlAreaInit(unsigned int nbArea) override;
-	// Owner : -1 ennemy, 0 neutral, 1 ally
-	virtual void OnAreaCaptureChanged(unsigned int index, int owner, int capturer, float capturePercent) override;
+	virtual void OnControlAreaAdded(AControlArea* _ControlArea) override;
+	virtual void OnSoldierAddedToTeam(ASoldier* _Soldier) override {}
+	virtual void OnSoldierRemovedFromTeam(ASoldier* _Soldier) override {}
+	virtual void OnUpdatePOIs() override {}
 };

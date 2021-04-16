@@ -3,16 +3,16 @@
 
 #include "ControlAreaWidget.h"
 
-#include "Interface/ControlAreaDelegateInterface.h"
+#include "Interface/MinimapDelegateInterface.h"
 
 #include "ControlAreaInfoWidget.h"
 #include "Blueprint/WidgetTree.h"
 
 void UControlAreaWidget::SetupDelegateToObject_Implementation(UObject* ObjectIn)
 {
-	if (IControlAreaDelegateInterface* ControlAreaDelegateInterface = Cast<IControlAreaDelegateInterface>(ObjectIn); ControlAreaDelegateInterface)
+	if (IMinimapDelegateInterface* MinimapDelegateInterface = Cast<IMinimapDelegateInterface>(ObjectIn); MinimapDelegateInterface)
 	{
-		ControlAreaDelegateInterface->AddControlAreaDelegate(this);
+		MinimapDelegateInterface->AddMinimapDelegate(this);
 	}
 }
 
@@ -32,24 +32,15 @@ void UControlAreaWidget::SynchronizeProperties()
 	}
 }
 
-void UControlAreaWidget::OnControlAreaInit(unsigned int nbArea)
+void UControlAreaWidget::OnControlAreaAdded(AControlArea* _ControlArea)
 {
-	for (unsigned int i = 0; i < nbArea; i++)
+	if (ControlAreaInfoClass)
 	{
-		if (ControlAreaInfoClass)
-		{
-			UControlAreaInfoWidget* newWidget = WidgetTree->ConstructWidget<UControlAreaInfoWidget>(ControlAreaInfoClass);
-			newWidget->OnControlAreaChange(0, 0, 0.f);
-			ControlAreaList.Add(newWidget);
-			AreaContainer->AddChildToHorizontalBox(newWidget);
-		}
-	}
-}
+		UControlAreaInfoWidget* newWidget = WidgetTree->ConstructWidget<UControlAreaInfoWidget>(ControlAreaInfoClass);
+		newWidget->OnControlAreaChange(0, 0, 0.f);
+		ControlAreaList.Add(newWidget);
+		AreaContainer->AddChildToHorizontalBox(newWidget);
 
-void UControlAreaWidget::OnAreaCaptureChanged(unsigned int index, int owner, int capturer, float capturePercent)
-{
-	if (ControlAreaList.IsValidIndex(index))
-	{
-		ControlAreaList[index]->OnControlAreaChange(owner, capturer, capturePercent);
+		_ControlArea->OnControlAreaChanged.AddDynamic(newWidget, &UControlAreaInfoWidget::OnControlAreaChange);
 	}
 }
