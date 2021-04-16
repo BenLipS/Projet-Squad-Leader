@@ -36,7 +36,7 @@ void UGA_OverheatingWeapon::ActivateAbility(const FGameplayAbilitySpecHandle _Ha
 	TaskWaitDelay->Activate();
 	TaskWaitDelay->OnFinish.AddDynamic(this, &UGA_OverheatingWeapon::EndOverHeat);
 
-	if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("AAAAAAAAAAAAAAAAAAAAAAAAA OverHeat")));
+	//if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("AAAAAAAAAAAAAAAAAAAAAAAAA OverHeat")));
 }
 void UGA_OverheatingWeapon::EndOverHeat()
 {
@@ -56,5 +56,5 @@ void UGA_OverheatingWeapon::CancelAbility(const FGameplayAbilitySpecHandle Handl
 	SourceWeapon->SetHasInfiniteAmmo(false);
 	SourceWeapon->SetTimeBetweenShots(SourceWeapon->GetTimeBetweenShots() / TimeBetweenShootMultiplier);
 
-	if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("CANNCCCEEELLLL OverHeat")));
+	//if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("CANNCCCEEELLLL OverHeat")));
 }

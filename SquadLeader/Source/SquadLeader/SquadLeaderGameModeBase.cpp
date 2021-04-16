@@ -92,10 +92,10 @@ void ASquadLeaderGameModeBase::AddAIBasicToManager(AAIBasicController* AIBasic)
 	if (AIBasic && AIBasic->GetTeam()) {
 		if (auto FoundAIBasicManager = AIBasicManagerCollection.Find(AIBasic->GetTeam()); FoundAIBasicManager) {
 			(*FoundAIBasicManager)->AIBasicList.Add(AIBasic);
-			if (GEngine)GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString{ "AIBasic " + AIBasic->GetTeam()->TeamName + " added"});
+			//if (GEngine)GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString{ "AIBasic " + AIBasic->GetTeam()->TeamName + " added"});
 		}
 		else {
-			if (GEngine)GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("Une AI n'a pas d'equipe"));
+			//if (GEngine)GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("Une AI n'a pas d'equipe"));
 		}
 	}
 	else {
