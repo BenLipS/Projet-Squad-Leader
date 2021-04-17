@@ -23,6 +23,7 @@ void AControlArea::initCollideElement() {
 void AControlArea::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME_CONDITION_NOTIFY(AControlArea, ControlAreaName, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(AControlArea, IsTakenBy, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(AControlArea, IsCapturedBy, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(AControlArea, PercentageCapture, COND_None, REPNOTIFY_Always);
@@ -145,21 +146,21 @@ void AControlArea::calculateControlValue()
 						if (otherTeam.Value->controlValue >= TeamData[presentTeam]->presenceTeam) {
 							otherTeam.Value->controlValue -= TeamData[presentTeam]->presenceTeam;
 							needToDecreaseOtherPresenceFirst = true;
+							if (IsCapturedBy != otherTeam.Key)
+							{
+								IsCapturedBy = otherTeam.Key;
+							}
+							PercentageCapture = static_cast<float>(otherTeam.Value->controlValue) / MaxControlValue;
 						}
 						else {
 							otherTeam.Value->controlValue = 0;
 						}
-						if (IsTakenBy == otherTeam.Key && otherTeam.Value->controlValue < MinControlValueToControl) {  // remove IsTakenBy if needed
+						if (IsTakenBy == otherTeam.Key && otherTeam.Value->controlValue <= MinControlValueToControl) {  // remove IsTakenBy if needed
 							// notify here the changement if needed
 							IsTakenBy = nullptr;
 							otherTeam.Value->ChangeSpawnState(false);
 							GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("ControlArea : Team control = None"));
 						}
-						if (IsCapturedBy != otherTeam.Key)
-						{
-							IsCapturedBy = otherTeam.Key;
-						}
-						PercentageCapture = static_cast<float>(otherTeam.Value->controlValue) / MaxControlValue;
 						//ClientNotifyValueChange(otherTeam.Value->controlValue, IsTakenBy, otherTeam.Key);  // call client function to notify the modification
 					}
 				}

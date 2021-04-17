@@ -41,6 +41,8 @@ public:
 	//UPROPERTY(EditAnywhere, Category = "DetectionArea")
 	//	class UBoxComponent* BoxCollide;
 
+	UPROPERTY(EditInstanceOnly, Replicated, BlueprintReadWrite, Category = "ControlAreaData")
+		FString ControlAreaName = "";
 
 	/** Control value variables */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ControlValue")
