@@ -52,6 +52,30 @@ void USquadLeaderGameInstance::HttpCallConnectUser(FString BaseAdress)
     Request->ProcessRequest();
 }
 
+void USquadLeaderGameInstance::HttpCallSendSyncData(FString BaseAdress)
+{
+    TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = Http->CreateRequest();
+    Request->OnProcessRequestComplete().BindUObject(this, &USquadLeaderGameInstance::OnResponseReceivedSendSync);
+    Request->SetHeader("Content-Type", "application/x-www-form-urlencoded");
+    FString authHeader = FString("Bearer ") + AuthToken;
+    Request->SetHeader("Authorization", authHeader);
+    Request->SetURL(BaseAdress + UserData.Id + "/?name=" + UserData.Name + "&ipAdress=" + UserData.IpAdress + "&isInGame=" + 0);  // TODO : find the IPAdress
+    Request->SetVerb("PATCH");
+    Request->ProcessRequest();
+}
+
+void USquadLeaderGameInstance::HttpCallReceiveSyncData(FString BaseAdress)
+{
+    TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = Http->CreateRequest();
+    Request->OnProcessRequestComplete().BindUObject(this, &USquadLeaderGameInstance::OnResponseReceivedReceiveSync);
+    Request->SetHeader("Content-Type", "application/x-www-form-urlencoded");
+    FString authHeader = FString("Bearer ") + AuthToken;
+    Request->SetHeader("Authorization", authHeader);
+    Request->SetURL(BaseAdress + UserData.Id);
+    Request->SetVerb("GET");
+    Request->ProcessRequest();
+}
+
 void USquadLeaderGameInstance::OnResponseReceivedPing(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful) {
     if (bWasSuccessful) {
         // able to ping the data server, continu the sync with the server
@@ -94,10 +118,42 @@ void USquadLeaderGameInstance::OnResponseReceivedConnectUser(FHttpRequestPtr Req
         // save the identification token sent by the server, and sync the remaining data with the server
         AuthToken = Response->GetContentAsString();
 
-        // change the name and the IPAdress on server, and download scores
-
+        // change the name, the IPAdress and the IsInGame status on server, and download scores
+        HttpCallSendSyncData(BaseServerDataAdress);
+        HttpCallReceiveSyncData(BaseServerDataAdress);
     }
     else {  // connection problems
+        // arrange offline system
+    }
+}
+
+void USquadLeaderGameInstance::OnResponseReceivedSendSync(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful) {
+    if (!bWasSuccessful) {  // no connection to the data server
+        // arrange offline system
+    }
+}
+
+void USquadLeaderGameInstance::OnResponseReceivedReceiveSync(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful) {
+    if (bWasSuccessful) {
+        // save imported data
+        TSharedPtr<FJsonObject> JsonObject;
+        TSharedRef<TJsonReader<TCHAR>> Reader = TJsonReaderFactory<TJsonReader<TCHAR>>::Create(Response->GetContentAsString());
+        if (FJsonSerializer::Deserialize(Reader, JsonObject)) {
+            //Get the value of the json object by field name
+            UserData.NbKillIA = JsonObject->GetIntegerField("nbKillIA");
+            UserData.NbKillPlayer = JsonObject->GetIntegerField("nbKillPlayer");
+            UserData.NbDeathIA = JsonObject->GetIntegerField("nbDeathIA");
+            UserData.NbDeathPlayer = JsonObject->GetIntegerField("nbDeathPlayer");
+            UserData.NbVictory = JsonObject->GetIntegerField("nbVictory");
+            UserData.NbLoss = JsonObject->GetIntegerField("nbLoss");
+            UserData.Score = JsonObject->GetIntegerField("score");
+            UserData.PlayTime = JsonObject->GetIntegerField("playTime");
+            UserData.Friend;  // TODO: add friend system
+
+            UserData.Save(UserDataFilename);
+        }
+    }
+    else {  // no connection to the data server
         // arrange offline system
     }
 }

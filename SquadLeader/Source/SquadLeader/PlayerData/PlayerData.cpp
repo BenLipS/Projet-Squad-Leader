@@ -20,7 +20,7 @@ void PlayerData::LoadOrCreate(FString FileName) {
     if (FileContent == "0") {  // Read succesful, but file empty: create default file, and save it
         FileContent = FString("{\"id\":\"") + ""
             + "\",\"guestToken\":\"" + ""
-            + "\", \"name\":\"" + "Bob"
+            + "\", \"name\":\"" + ""
             + "\", \"ipAdress\":\"" + ""
             + "\", \"nbKillIA\":\"" + FString::FromInt(0)
             + "\", \"nbKillPlayer\":\"" + FString::FromInt(0)
@@ -87,7 +87,7 @@ void PlayerData::WriteFile(FString FileName, FString Content) {
         // We use the LoadFileToString to load the file into
         if (FFileHelper::SaveStringToFile(StringToWrite, *file))
         {
-            UE_LOG(LogTemp, Warning, TEXT("FileManipulation: Sucsesfuly Written: \"%s\" to the text file"), *StringToWrite);
+            UE_LOG(LogTemp, Warning, TEXT("FileManipulation: Succesfuly Written: \"%s\" to the text file"), *StringToWrite);
         }
         else
         {
