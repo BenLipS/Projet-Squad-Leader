@@ -14,15 +14,21 @@ ASoldierAI::ASoldierAI(const FObjectInitializer& _ObjectInitializer) : Super(_Ob
 // TODO: See with AI team how to proceed
 void ASoldierAI::LockControls()
 {
+	
 	if (AAIGeneralController* AIController = Cast<AAIGeneralController>(GetController()); AIController) {
 		AIController->IsActivated = false;
+		if (GetLocalRole() < ROLE_Authority)
+			int test = 2;
 	}
+	
 }
 
 void ASoldierAI::UnLockControls()
 {
 	if (AAIGeneralController* AIController = Cast<AAIGeneralController>(GetController()); AIController) {
 		AIController->IsActivated = true;
+		if (GetLocalRole() < ROLE_Authority)
+			int test = 2;
 	}
 }
 

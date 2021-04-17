@@ -56,10 +56,12 @@ void AAIGeneralController::InitMissionList() {
 void AAIGeneralController::Tick(float DeltaSeconds) {
 	if (IsActivated) {
 		Super::Tick(DeltaSeconds);
-
 		Sens();
+	}
 		Think(); // == if we need to change the BehaviorTree,
-		Act();
+	if (IsActivated) {
+			Act();
+		
 		//Act will also be done in the behavior tree
 		FlockingComponent->UpdateFlockingPosition(DeltaSeconds);
 
