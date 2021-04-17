@@ -17,7 +17,10 @@ UGA_ReloadWeapon::UGA_ReloadWeapon()
 void UGA_ReloadWeapon::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	if (!CommitAbility(Handle, ActorInfo, ActivationInfo))
+	{
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
+		return;
+	}
 
 	ASoldier* SourceSoldier = Cast<ASoldier>(ActorInfo->AvatarActor);
 	SourceWeapon = Cast<ASL_Weapon>(SourceSoldier->GetCurrentWeapon());
@@ -59,18 +62,13 @@ void UGA_ReloadWeapon::MontageCompletedOrBlendedOut()
 	WaitNetSyncTask->ReadyForActivation();
 }
 
-void UGA_ReloadWeapon::ReloadWeapon()
-{
-	SourceWeapon->ReloadWeapon();
-	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, false, false);
-}
-
 void UGA_ReloadWeapon::MontageInterruptedOrCancelled()
 {
 	CancelAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true);
 }
 
-void UGA_ReloadWeapon::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
+void UGA_ReloadWeapon::ReloadWeapon()
 {
-	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
+	SourceWeapon->ReloadWeapon();
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, false, false);
 }

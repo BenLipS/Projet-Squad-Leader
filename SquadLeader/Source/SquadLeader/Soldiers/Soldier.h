@@ -435,6 +435,10 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Animation|Montages")
 	UAnimMontage* ReloadWeaponMontage;
 
+	// Cast Spell - For miscellaneous abilities
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Animation|Montages")
+	UAnimMontage* CastSpellMontage;
+
 protected:
 	void HandleDeathMontage();
 

@@ -17,6 +17,15 @@ public:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle _Handle, const FGameplayAbilityActorInfo* _ActorInfo, const FGameplayAbilityActivationInfo _ActivationInfo, const FGameplayEventData* _TriggerEventData) override;
 
 protected:
+	UFUNCTION()
+	void MontageCompletedOrBlendedOut();
+
+	UFUNCTION()
+	void MontageInterruptedOrCancelled();
+
+	UFUNCTION()
+	void SpawnShield();
+
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	TSubclassOf<class AShield> ShieldClass;
 
@@ -26,12 +35,11 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Stats")
 	float ShieldHealth;
 
+	// Distance from the caller to spawn the shield
 	UPROPERTY(EditDefaultsOnly, Category = "Mesh")
 	float ShieldDistanceFromCaller;
 
 	// Scale the shield mesh
 	UPROPERTY(EditDefaultsOnly, Category = "Mesh")
 	FVector ShieldScale;
-
-	void SpawnShield();
 };
