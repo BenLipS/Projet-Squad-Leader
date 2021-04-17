@@ -74,14 +74,14 @@ Intermediate/
 Plugins//Intermediate/
 
 # Cache files for the editor to use
-DerivedDataCache/*
+DerivedDataCache/**
 enc_temp_folder/
-
-# Individual data write on json files
-/SquadLeader/Config/userData.json
 
 Logs/
 Build/
 
 EditorPerProjectUserSettings.ini
 BattleFront/Saved/Config/Windows/Engine.ini
+
+# Individual data write on json files
+**/userData.json
