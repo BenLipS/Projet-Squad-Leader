@@ -32,13 +32,19 @@ protected:
 	FString AuthToken;
 	
 public:
+	UFUNCTION(BlueprintCallable)
+		void LaunchGame();
+	UFUNCTION(BlueprintCallable)
+		void JoinGame(FString IPAdress);
+
+private:
 	void HttpCallPing(FString BaseAdress);
 	void HttpCallCreateUser(FString BaseAdress);
 	void HttpCallConnectUser(FString BaseAdress);
 	void HttpCallSendSyncData(FString BaseAdress);
 	void HttpCallReceiveSyncData(FString BaseAdress);
 	
-protected:
+private:
 	void OnResponseReceivedPing(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 	void OnResponseReceivedCreateUser(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 	void OnResponseReceivedConnectUser(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);

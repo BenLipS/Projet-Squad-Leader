@@ -1,5 +1,6 @@
 #include "SquadLeaderGameInstance.h"
 
+
 USquadLeaderGameInstance::USquadLeaderGameInstance() {
     //When the object is constructed, Get the HTTP module
     Http = &FHttpModule::Get();
@@ -11,6 +12,17 @@ void USquadLeaderGameInstance::OnStart()
     UserData.LoadOrCreate(UserDataFilename);
     HttpCallPing(BaseServerDataAdress);
 
+}
+
+
+void USquadLeaderGameInstance::LaunchGame()
+{
+    GetFirstGamePlayer()->ConsoleCommand("open Factory_V1?listen", true);
+}
+
+void USquadLeaderGameInstance::JoinGame(FString IPAdress)
+{
+    GetFirstGamePlayer()->ConsoleCommand("open " + IPAdress, true);
 }
 
 
