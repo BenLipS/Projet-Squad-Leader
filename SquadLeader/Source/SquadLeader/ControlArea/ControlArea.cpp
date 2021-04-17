@@ -24,6 +24,8 @@ void AControlArea::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME_CONDITION_NOTIFY(AControlArea, IsTakenBy, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(AControlArea, IsCapturedBy, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(AControlArea, PercentageCapture, COND_None, REPNOTIFY_Always);
 }
 
 
@@ -43,6 +45,40 @@ int AControlArea::GetPriority() const
 	return 2;
 }
 
+void AControlArea::OnRepOwner()
+{
+	if (ASoldierPlayerController* playerController = GetWorld()->GetFirstPlayerController<ASoldierPlayerController>(); playerController)
+	{
+		int AreaOwner = 0;
+		if (IsTakenBy) {
+			if (IsTakenBy == playerController->GetTeam()) {
+				AreaOwner = 1;
+			}
+			else AreaOwner = -1;
+		}
+		OnOwnerChanged.Broadcast(AreaOwner);
+	}
+}
+
+void AControlArea::OnRepCapturer()
+{
+	if (ASoldierPlayerController* playerController = GetWorld()->GetFirstPlayerController<ASoldierPlayerController>(); playerController)
+	{
+		int AreaCapturer = 0;
+		if (IsCapturedBy) {
+			if (IsCapturedBy == playerController->GetTeam()) {
+				AreaCapturer = 1;
+			}
+			else AreaCapturer = -1;
+		}
+		OnCapturerChanged.Broadcast(AreaCapturer);
+	}
+}
+
+void AControlArea::OnRepPercentage()
+{
+	OnPercentageChanged.Broadcast(PercentageCapture);
+}
 
 void AControlArea::NotifyActorBeginOverlap(AActor* OtherActor)
 {
@@ -119,7 +155,12 @@ void AControlArea::calculateControlValue()
 							otherTeam.Value->ChangeSpawnState(false);
 							GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("ControlArea : Team control = None"));
 						}
-						ClientNotifyValueChange(otherTeam.Value->controlValue, IsTakenBy, otherTeam.Key);  // call client function to notify the modification
+						if (IsCapturedBy != otherTeam.Key)
+						{
+							IsCapturedBy = otherTeam.Key;
+						}
+						PercentageCapture = static_cast<float>(otherTeam.Value->controlValue) / MaxControlValue;
+						//ClientNotifyValueChange(otherTeam.Value->controlValue, IsTakenBy, otherTeam.Key);  // call client function to notify the modification
 					}
 				}
 				if (!needToDecreaseOtherPresenceFirst) {  // if all other presence value is 0
@@ -138,7 +179,12 @@ void AControlArea::calculateControlValue()
 							GameMode->NotifyControlAreaCaptured(this);
 						}
 					}
-					ClientNotifyValueChange(TeamData[presentTeam]->controlValue, IsTakenBy, presentTeam);  // call client function to notify the modification
+					if (IsCapturedBy != presentTeam)
+					{
+						IsCapturedBy = presentTeam;
+					}
+					//ClientNotifyValueChange(TeamData[presentTeam]->controlValue, IsTakenBy, presentTeam);  // call client function to notify the modification
+					PercentageCapture = static_cast<float>(TeamData[presentTeam]->controlValue) / MaxControlValue;
 				}
 			}
 			else { // stop the timer
@@ -200,38 +246,6 @@ void AControlArea::UpdateTeamData()
 					team.Value->ChangeSpawnState(IsTakenBy == team.Key);
 					team.Value->ChangeSpawnTeam(team.Key);
 				}
-			}
-		}
-	}
-}
-
-void AControlArea::ClientNotifyValueChange(int Value, ASoldierTeam* ControlAreaOwner, ASoldierTeam* ControlAreaMaster)
-{
-	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Black, TEXT("ControlArea : client function"), true);
-	if (auto GS = GetWorld()->GetGameState<ASquadLeaderGameState>(); GS) {
-		int index = GS->GetControlAreaManager()->ControlAreaIndex(this);
-		if (index != -1) {  // only if the control area is in the list
-			ASoldierPlayerController* playerController = GetWorld()->GetFirstPlayerController<ASoldierPlayerController>();
-			if (playerController)
-			{
-				ASoldierTeam* PlayerTeam = playerController->GetTeam();
-			
-				float Percent = (Value + 0.0) / MaxControlValue;
-				int AreaOwner = 0;
-				if (ControlAreaOwner) {
-					if (ControlAreaOwner == PlayerTeam) {
-						AreaOwner = 1;
-					}
-					else AreaOwner = -1;
-				}
-				int AreaCapturer = 0;
-				if (ControlAreaMaster) {
-					if (ControlAreaMaster == PlayerTeam) {
-						AreaCapturer = 1;
-					}
-					else AreaCapturer = -1;
-				}
-				OnControlAreaChanged.Broadcast(AreaOwner, AreaCapturer, Percent);
 			}
 		}
 	}

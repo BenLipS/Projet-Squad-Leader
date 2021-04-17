@@ -3,7 +3,24 @@
 
 #include "ControlAreaInfoWidget.h"
 
-void UControlAreaInfoWidget::OnControlAreaChange(int newOwner, int newCapturer, float Percentage)
+void UControlAreaInfoWidget::OnControlAreaCapturerChange(int newCapturer)
+{
+	if (ImageControlArea)
+	{
+		auto mat = ImageControlArea->GetDynamicMaterial();
+		if (mat)
+		{
+			if (newCapturer != Capturer)
+			{
+				Capturer = newCapturer;
+				mat->SetVectorParameterValue("BottomInnerColor", GetColorFromOwner(Capturer));
+			}
+			ImageControlArea->SetBrushFromMaterial(mat);
+		}
+	}
+}
+
+void UControlAreaInfoWidget::OnControlAreaOwnerChange(int newOwner)
 {
 	if (ImageControlArea)
 	{
@@ -15,12 +32,19 @@ void UControlAreaInfoWidget::OnControlAreaChange(int newOwner, int newCapturer, 
 				Owner = newOwner;
 				mat->SetVectorParameterValue("OutterColor", GetColorFromOwner(Owner) * 0.1f);
 			}
+			ImageControlArea->SetBrushFromMaterial(mat);
+		}
+	}
+	
+}
 
-			if (newCapturer != Capturer)
-			{
-				Capturer = newCapturer;
-				mat->SetVectorParameterValue("BottomInnerColor", GetColorFromOwner(Capturer));
-			}
+void UControlAreaInfoWidget::OnControlAreaPercentageChange(float Percentage)
+{
+	if (ImageControlArea)
+	{
+		auto mat = ImageControlArea->GetDynamicMaterial();
+		if (mat)
+		{
 			mat->SetScalarParameterValue("Percentage_fill", Percentage);
 			ImageControlArea->SetBrushFromMaterial(mat);
 		}

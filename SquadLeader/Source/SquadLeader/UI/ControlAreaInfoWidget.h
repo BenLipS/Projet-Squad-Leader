@@ -37,7 +37,11 @@ protected:
 
 public:
 	UFUNCTION()
-	void OnControlAreaChange(int newOwner, int newCapturer, float Percentage);
+	void OnControlAreaCapturerChange(int newOwner);
+	UFUNCTION()
+	void OnControlAreaOwnerChange(int newCapturer);
+	UFUNCTION()
+	void OnControlAreaPercentageChange(float Percentage);
 
 private:
 	UFUNCTION()

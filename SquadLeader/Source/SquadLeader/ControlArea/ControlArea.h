@@ -10,7 +10,8 @@
 #include "Net/UnrealNetwork.h"
 #include "ControlArea.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FControlAreaChanged, int, OwnerValue, int, CapturerValue, float, Percentage);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FControlAreaIntChanged, int, newInt);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FControlAreaFloatChanged, float, newFloat);
 
 UCLASS()
 class SQUADLEADER_API AControlArea : public AActor, public IPreInitable
@@ -18,7 +19,9 @@ class SQUADLEADER_API AControlArea : public AActor, public IPreInitable
 	GENERATED_BODY()
 
 public:
-	FControlAreaChanged OnControlAreaChanged;
+	FControlAreaIntChanged OnOwnerChanged;
+	FControlAreaIntChanged OnCapturerChanged;
+	FControlAreaFloatChanged OnPercentageChanged;
 	
 public:	
 	// Sets default values for this actor's properties
@@ -48,9 +51,25 @@ public:
 		int ControlValueToTake = 20;
 
 public:
-	UPROPERTY(VisibleAnywhere, Replicated, Category = "IsTaken")
-		ASoldierTeam* IsTakenBy;
+	UPROPERTY(VisibleAnywhere, ReplicatedUsing = OnRepOwner, Category = "IsTaken")
+	ASoldierTeam* IsTakenBy;
 
+	UPROPERTY(VisibleAnywhere, ReplicatedUsing = OnRepCapturer, Category = "IsTaken")
+	ASoldierTeam* IsCapturedBy;
+
+protected:
+	UPROPERTY(ReplicatedUsing = OnRepPercentage)
+	float PercentageCapture = 0.f;
+
+protected:
+	UFUNCTION()
+	void OnRepOwner();
+
+	UFUNCTION()
+	void OnRepCapturer();
+
+	UFUNCTION()
+	void OnRepPercentage();
 
 	/**
 	 *	Event when this actor overlaps another actor, for example a player walking into a trigger.
@@ -80,9 +99,6 @@ public:
 protected:
 	UFUNCTION(Category = "ControlData")
 		void UpdateTeamData();
-public:
-	UFUNCTION(Category = "ControlData")
-		void ClientNotifyValueChange(int Value, ASoldierTeam* ControlAreaOwner, ASoldierTeam* ControlAreaMaster);
 
 protected:
 	UPROPERTY(EditInstanceOnly, Category = "InfluenceMap")
