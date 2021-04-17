@@ -29,6 +29,15 @@ void ASL_HUD::BeginPlay()
 	SetAIStateLink();
 	BindSoldierTeamChanges();
 	BindControlAreas();
+
+	auto test = PlayerOwner->GetWorld()->GetGameState<ASquadLeaderGameState>()->GetSoldierTeamCollection();
+
+	for (auto test2 : test)
+	{
+		if (test2)
+		{
+		}
+	}
 }
 
 void ASL_HUD::SetPlayerStateLink()

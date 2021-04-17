@@ -10,11 +10,17 @@ class ASoldierSpawn;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSoldierAddedToList, ASoldier*, NewSoldier);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSoldierRemovedFromList, ASoldier*, NewSoldier);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSoldierTeamIntChanged, int, NewTicket);
 
 UCLASS(Blueprintable)
 class SQUADLEADER_API ASoldierTeam : public AInfo, public IPreInitable
 {
 	GENERATED_BODY()
+
+public:
+	FOnSoldierTeamIntChanged OnTicketChanged;
+
+	void BroadcastTickets();
 
 public:
 	ASoldierTeam();

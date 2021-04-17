@@ -5,6 +5,11 @@
 #include "../SquadLeaderGameModeBase.h"
 #include "SquadLeader/Soldiers/AIs/SoldierAI.h"
 
+void ASoldierTeam::BroadcastTickets()
+{
+	OnTicketChanged.Broadcast(Tickets);
+}
+
 ASoldierTeam::ASoldierTeam() {
 	bReplicates = true;
 }
@@ -111,6 +116,9 @@ TArray<ASoldier*> ASoldierTeam::GetSoldierList() const
 void ASoldierTeam::RemoveOneTicket()
 {
 	Tickets--;
+
+	OnTicketChanged.Broadcast(Tickets);
+
 	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TeamName + TEXT(" : Loses a ticket."));
 	
 	// TODO : End game here if no tickets left and team is primordial
