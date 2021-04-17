@@ -5,8 +5,10 @@
 #include "CoreMinimal.h"
 #include "SL_UserWidget.h"
 #include "Interface/MinimapInterface.h"
+#include "Interface/TicketInterface.h"
 
 #include "Components/HorizontalBox.h"
+#include "Components/TextBlock.h"
 
 #include "ControlAreaWidget.generated.h"
 
@@ -14,7 +16,7 @@
  * 
  */
 UCLASS()
-class SQUADLEADER_API UControlAreaWidget : public USL_UserWidget, public IMinimapInterface
+class SQUADLEADER_API UControlAreaWidget : public USL_UserWidget, public IMinimapInterface, public ITicketInterface
 {
 	GENERATED_BODY()
 
@@ -25,6 +27,12 @@ protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UHorizontalBox* AreaContainer;
 
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UTextBlock* LeftTicketText;
+
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UTextBlock* RightTicketText;
+
 protected:
 	TArray<class UControlAreaInfoWidget*> ControlAreaList;
 
@@ -33,6 +41,12 @@ protected:
 
 protected:
 	virtual void SynchronizeProperties() override;
+
+
+//-----ITicketInterface-----
+public:
+	virtual void OnAllyTicketChanged(int newTicket) override;
+	virtual void OnEnnemyTicketChanged(int newTicket) override;
 
 //-----IControlAreaInterface-----
 public:

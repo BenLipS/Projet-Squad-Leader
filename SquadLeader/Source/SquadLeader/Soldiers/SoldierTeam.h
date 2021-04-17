@@ -105,7 +105,11 @@ public:
 
 protected:  // Tickets
 	UPROPERTY(EditAnywhere, Replicated, Category = "Tickets")
-		int Tickets = 5;  // default value, must be changed in blueprint
+	int Tickets = 5;  // default value, must be changed in blueprint
+
+	UFUNCTION(Server, Reliable)
+	void InformAllPlayerController();
+
 public:
 	UFUNCTION(BlueprintCallable, Category = "Tickets")
 		void RemoveOneTicket();

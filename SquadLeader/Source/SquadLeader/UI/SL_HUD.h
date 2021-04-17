@@ -12,7 +12,7 @@
 #include "Interface/NotificationDelegateInterface.h"
 #include "Interface/StatInfoDelegateInterface.h"
 #include "Interface/MinimapDelegateInterface.h"
-#include "Interface/ControlAreaDelegateInterface.h"
+#include "Interface/TicketDelegateInterface.h"
 
 #include "SL_HUD.generated.h"
 
@@ -27,7 +27,7 @@ class SQUADLEADER_API ASL_HUD : public AHUD,
 	public INotificationDelegateInterface,
 	public IStatInfoDelegateInterface,
 	public IMinimapDelegateInterface,
-	public IControlAreaDelegateInterface
+	public ITicketDelegateInterface
 
 {
 	GENERATED_BODY()

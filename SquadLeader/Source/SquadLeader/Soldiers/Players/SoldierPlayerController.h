@@ -114,12 +114,12 @@ public:
 	void OnTextNotification_Received_Implementation(const FString& notificationString);
 
 	UFUNCTION(Client, Reliable)
-	void OnControlAreaInit(int newValue);
-	void OnControlAreaInit_Implementation(int newValue);
+	void OnAllyTicket_Received(int newTicket);
+	void OnAllyTicket_Received_Implementation(int newTicket);
 
 	UFUNCTION(Client, Reliable)
-	void OnControlAreaChanged(unsigned int indexIn, int ownerIn, int capturer, float capturePercent);
-	void OnControlAreaChanged_Implementation(unsigned int indexIn, int ownerIn, int capturer, float capturePercent);
+	void OnEnnemyTicket_Received(int newTicket);
+	void OnEnnemyTicket_Received_Implementation(int newTicket);
 
 	UFUNCTION(Server, Reliable)
 	void OnOrderGiven(MissionType Order, FVector Pos);

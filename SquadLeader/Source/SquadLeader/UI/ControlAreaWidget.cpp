@@ -4,6 +4,10 @@
 #include "ControlAreaWidget.h"
 
 #include "Interface/MinimapDelegateInterface.h"
+#include "Interface/TicketDelegateInterface.h"
+#include "SquadLeader/GameState/SquadLeaderGameState.h"
+#include "../Soldiers/SoldierTeam.h"
+#include "../Soldiers/Players/SoldierPlayerController.h"
 
 #include "ControlAreaInfoWidget.h"
 #include "Blueprint/WidgetTree.h"
@@ -13,6 +17,27 @@ void UControlAreaWidget::SetupDelegateToObject_Implementation(UObject* ObjectIn)
 	if (IMinimapDelegateInterface* MinimapDelegateInterface = Cast<IMinimapDelegateInterface>(ObjectIn); MinimapDelegateInterface)
 	{
 		MinimapDelegateInterface->AddMinimapDelegate(this);
+	}
+
+	if (ITicketDelegateInterface* TicketDelegateInterface = Cast<ITicketDelegateInterface>(ObjectIn); TicketDelegateInterface)
+	{
+		TicketDelegateInterface->AddTicketDelegate(this);
+	}
+}
+
+void UControlAreaWidget::OnAllyTicketChanged(int newTicket)
+{
+	if (LeftTicketText)
+	{
+		LeftTicketText->SetText(FText::FromString(FString::FromInt(newTicket)));
+	}
+}
+
+void UControlAreaWidget::OnEnnemyTicketChanged(int newTicket)
+{
+	if (RightTicketText)
+	{
+		RightTicketText->SetText(FText::FromString(FString::FromInt(newTicket)));
 	}
 }
 
@@ -49,3 +74,24 @@ void UControlAreaWidget::OnControlAreaAdded(AControlArea* ControlArea)
 		ControlArea->OnPercentageChanged.AddDynamic(newWidget, &UControlAreaInfoWidget::OnControlAreaPercentageChange);
 	}
 }
+//
+//auto playerController = GetOwningPlayer<ASoldierPlayerController>();
+//
+//if (playerController)
+//{
+//	auto teams = playerController->GetWorld()->GetGameState<ASquadLeaderGameState>()->GetSoldierTeamCollection();
+//
+//	for (ASoldierTeam* team : teams)
+//	{
+//		if (team->Id == playerController->GetTeam()->Id)
+//		{
+//			team->OnTicketChanged.AddDynamic(this, &UControlAreaWidget::OnAllyTicketChanged);
+//			team->BroadcastTickets();
+//		}
+//		else if (team->Id < 3)
+//		{
+//			team->OnTicketChanged.AddDynamic(this, &UControlAreaWidget::OnEnnemyTicketChanged);
+//			team->BroadcastTickets();
+//		}
+//	}
+//}

@@ -251,19 +251,19 @@ void ASoldierPlayerController::OnTextNotification_Received_Implementation(const 
 	}
 }
 
-void ASoldierPlayerController::OnControlAreaInit_Implementation(int newValue)
+void ASoldierPlayerController::OnAllyTicket_Received_Implementation(int newTicket)
 {
-	if (auto HUD = GetHUD<ASL_HUD>())
+	if (auto HUD = GetHUD<ITicketInterface>(); HUD)
 	{
-		HUD->OnControlAreaInit(newValue);
+		HUD->OnAllyTicketChanged(newTicket);
 	}
 }
 
-void ASoldierPlayerController::OnControlAreaChanged_Implementation(unsigned int indexIn, int ownerIn, int capturer, float capturePercent)
+void ASoldierPlayerController::OnEnnemyTicket_Received_Implementation(int newTicket)
 {
-	if (auto HUD = GetHUD<ASL_HUD>())
+	if (auto HUD = GetHUD<ITicketInterface>(); HUD)
 	{
-		HUD->OnAreaCaptureChanged(indexIn, ownerIn, capturer, capturePercent);
+		HUD->OnEnnemyTicketChanged(newTicket);
 	}
 }
 
