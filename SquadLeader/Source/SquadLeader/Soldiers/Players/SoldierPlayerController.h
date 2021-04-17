@@ -113,6 +113,14 @@ public:
 	void OnTextNotification_Received(const FString& notificationString);
 	void OnTextNotification_Received_Implementation(const FString& notificationString);
 
+	UFUNCTION(Client, Reliable)
+	void OnControlAreaInit(int newValue);
+	void OnControlAreaInit_Implementation(int newValue);
+
+	UFUNCTION(Client, Reliable)
+	void OnControlAreaChanged(unsigned int indexIn, int ownerIn, int capturer, float capturePercent);
+	void OnControlAreaChanged_Implementation(unsigned int indexIn, int ownerIn, int capturer, float capturePercent);
+
 	UFUNCTION(Server, Reliable)
 	void OnOrderGiven(MissionType Order, FVector Pos);
 	void OnOrderGiven_Implementation(MissionType Order, FVector Pos);
@@ -168,4 +176,6 @@ public:
 	UFUNCTION(Server, Reliable)
 	void ServerCheat_LevelUp();
 	void ServerCheat_LevelUp_Implementation();
+
+
 };

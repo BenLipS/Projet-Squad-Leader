@@ -21,7 +21,6 @@ public:
 	// Sets default values for this actor's properties
 	AControlAreaManager();
 
-protected:
 	UPROPERTY(VisibleAnywhere, Replicated, Category = "ControlList")
 		TArray <AControlArea*> ControlAreaList;  // private because it must not be edited elsewhere
 
@@ -51,4 +50,7 @@ public:
 	
 	UFUNCTION()
 	ASoldierTeam* GetTeamWithAllControl();
+
+	UFUNCTION()
+	int ControlAreaIndex(AControlArea* Element);
 };
