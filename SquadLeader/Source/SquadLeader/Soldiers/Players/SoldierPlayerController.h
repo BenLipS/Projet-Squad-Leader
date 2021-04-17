@@ -121,6 +121,10 @@ public:
 	void OnEnnemyTicket_Received(int newTicket);
 	void OnEnnemyTicket_Received_Implementation(int newTicket);
 
+	UFUNCTION(Client, Reliable)
+	void OnGameEnd(const FString& TextToDisplay);
+	void OnGameEnd_Implementation(const FString& TextToDisplay);
+
 	UFUNCTION(Server, Reliable)
 	void OnOrderGiven(MissionType Order, FVector Pos);
 	void OnOrderGiven_Implementation(MissionType Order, FVector Pos);

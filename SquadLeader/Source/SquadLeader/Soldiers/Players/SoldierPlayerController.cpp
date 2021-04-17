@@ -267,6 +267,14 @@ void ASoldierPlayerController::OnEnnemyTicket_Received_Implementation(int newTic
 	}
 }
 
+void ASoldierPlayerController::OnGameEnd_Implementation(const FString& TextToDisplay)
+{
+	if (auto HUD = GetHUD<IGameEndInterface>(); HUD)
+	{
+		HUD->OnGameEnd(TextToDisplay);
+	}
+}
+
 void ASoldierPlayerController::OnOrderGiven_Implementation(MissionType Order, FVector Pos)
 {
 	if (ASoldierPlayer* Soldier = GetPawn<ASoldierPlayer>(); Soldier)
