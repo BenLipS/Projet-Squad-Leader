@@ -5,6 +5,8 @@
 #include "../../../Projectile/SL_Projectile.h"
 #include "GA_LaunchGrenade.generated.h"
 
+class ASoldier;
+
 UCLASS()
 class SQUADLEADER_API UGA_LaunchGrenade : public UGameplayAbilitySoldier
 {
@@ -18,10 +20,27 @@ protected:
 
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* OwnerInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 
-	virtual void InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) override;
+	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled);
 
-	virtual void CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateCancelAbility) override;
+	UFUNCTION()
+	void MontageCompletedOrBlendedOut();
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-	TSubclassOf<ASL_Projectile> MyProjectile;
+	UFUNCTION()
+	void MontageInterruptedOrCancelled();
+
+	UFUNCTION()
+	void MontageSentEvent(FGameplayTag _EventTag, FGameplayEventData _EventData);
+
+	UFUNCTION()
+	void ThrowProjectile();
+
+	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
+	TSubclassOf<ASL_Projectile> ProjectileClass;
+
+	// Event tag to notify from the montage to launch the projectile
+	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
+	FGameplayTag ThrownProjectileEventTag;
+
+	// Cache values
+	ASoldier* SourceSoldier = nullptr;
 };

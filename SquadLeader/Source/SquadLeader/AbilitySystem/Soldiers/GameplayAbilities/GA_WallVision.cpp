@@ -46,8 +46,8 @@ void UGA_WallVision::ActivateAbility(const FGameplayAbilitySpecHandle Handle, co
 			{
 				PC->OnWallVisionActivate();
 				UAbilityTask_WaitDelay* TaskWaitDelay = UAbilityTask_WaitDelay::WaitDelay(this, 10.f);
-				TaskWaitDelay->Activate();
 				TaskWaitDelay->OnFinish.AddDynamic(this, &UGA_WallVision::EndWallVision);
+				TaskWaitDelay->ReadyForActivation();
 			}
 		}
 	}

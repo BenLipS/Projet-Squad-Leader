@@ -12,11 +12,20 @@ class SQUADLEADER_API UGA_SpawnPhysicalShield : public UGameplayAbilitySoldier
 public:
 	UGA_SpawnPhysicalShield();
 
+protected:
 	virtual bool CanActivateAbility(const FGameplayAbilitySpecHandle _Handle, const FGameplayAbilityActorInfo* _ActorInfo, const FGameplayTagContainer* _SourceTags = nullptr, const FGameplayTagContainer* _TargetTags = nullptr, OUT FGameplayTagContainer* _OptionalRelevantTags = nullptr) const override;
 
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle _Handle, const FGameplayAbilityActorInfo* _ActorInfo, const FGameplayAbilityActivationInfo _ActivationInfo, const FGameplayEventData* _TriggerEventData) override;
 
-protected:
+	UFUNCTION()
+	void MontageCompletedOrBlendedOut();
+
+	UFUNCTION()
+	void MontageInterruptedOrCancelled();
+
+	UFUNCTION()
+	void SpawnShield();
+
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	TSubclassOf<class AShield> ShieldClass;
 
@@ -26,12 +35,11 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Stats")
 	float ShieldHealth;
 
+	// Distance from the caller to spawn the shield
 	UPROPERTY(EditDefaultsOnly, Category = "Mesh")
 	float ShieldDistanceFromCaller;
 
 	// Scale the shield mesh
 	UPROPERTY(EditDefaultsOnly, Category = "Mesh")
 	FVector ShieldScale;
-
-	void SpawnShield();
 };

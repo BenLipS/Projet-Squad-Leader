@@ -2,6 +2,8 @@
 #include "../../../Soldiers/Soldier.h"
 #include "../AbilitySystemSoldier.h"
 #include "SquadLeader/Weapons/Shield.h"
+#include "Abilities/Tasks/AbilityTask_WaitDelay.h"
+#include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 
 UGA_SpawnPhysicalShield::UGA_SpawnPhysicalShield() :
 ShieldLifeSpan{ 5.f },
@@ -29,10 +31,36 @@ void UGA_SpawnPhysicalShield::ActivateAbility(const FGameplayAbilitySpecHandle _
 		return;
 	}
 
+	ASoldier* SourceSoldier = Cast<ASoldier>(_ActorInfo->AvatarActor);
+
+	if (UAnimMontage* CastSpellMontage = SourceSoldier->CastSpellMontage; CastSpellMontage)
+	{
+		UAbilityTask_PlayMontageAndWait* TaskPlayMontage = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, NAME_None, CastSpellMontage, 1.0f, NAME_None, true, 1.0f);
+		TaskPlayMontage->OnCompleted.AddDynamic(this, &UGA_SpawnPhysicalShield::MontageCompletedOrBlendedOut);
+		TaskPlayMontage->OnBlendOut.AddDynamic(this, &UGA_SpawnPhysicalShield::MontageCompletedOrBlendedOut);
+		TaskPlayMontage->OnInterrupted.AddDynamic(this, &UGA_SpawnPhysicalShield::MontageInterruptedOrCancelled);
+		TaskPlayMontage->OnCancelled.AddDynamic(this, &UGA_SpawnPhysicalShield::MontageInterruptedOrCancelled);
+		TaskPlayMontage->ReadyForActivation();
+	}
+	else
+	{
+		UAbilityTask_WaitDelay* TaskWaitDelay = UAbilityTask_WaitDelay::WaitDelay(this, 1.f); // In case there is no montage but we still want to spawn the shield
+		TaskWaitDelay->ReadyForActivation();
+		TaskWaitDelay->OnFinish.AddDynamic(this, &UGA_SpawnPhysicalShield::MontageCompletedOrBlendedOut);
+	}
+}
+
+void UGA_SpawnPhysicalShield::MontageCompletedOrBlendedOut()
+{
 	if (CurrentActorInfo->IsNetAuthority())
 		SpawnShield();
 
-	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, false, false);
+}
+
+void UGA_SpawnPhysicalShield::MontageInterruptedOrCancelled()
+{
+	CancelAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true);
 }
 
 void UGA_SpawnPhysicalShield::SpawnShield()
@@ -44,8 +72,9 @@ void UGA_SpawnPhysicalShield::SpawnShield()
 	SpawnInfo.Instigator = SourceSoldier;
 	SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-	FVector Location = CurrentActorInfo->AvatarActor->GetActorLocation();
-	Location.Z -= SourceSoldier->GetDefaultHalfHeight() * 2.f;
+	// TODO: What should be Z position ?
+	//FVector Location = CurrentActorInfo->AvatarActor->GetActorLocation();
+	//Location.Z -= SourceSoldier->GetDefaultHalfHeight() * 2.f;
 
 	AShield* Shield = GetWorld()->SpawnActor<AShield>(ShieldClass, SourceSoldier->GetActorLocation() + ShieldDistanceFromCaller * SourceSoldier->GetActorForwardVector(), SourceSoldier->GetActorForwardVector().Rotation(), SpawnInfo);
 
