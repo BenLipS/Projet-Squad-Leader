@@ -153,6 +153,8 @@ private:
 
 	void UpdateTile(int index, float value, int team, Type type) noexcept;
 
+	void AddUpdateTile(const uint32 index);
+
 public:
 
 	//Dimension of the grid
@@ -208,7 +210,7 @@ private:
 	* we pop out an index when he's update value is down to 0
 	*/
 	UPROPERTY()
-		TArray<int> m_index_update;
+		TArray<uint32> m_index_update;
 
 	int value_tick = 0;
 	/*class UMyThreadManager* m_ThreadManager;*/

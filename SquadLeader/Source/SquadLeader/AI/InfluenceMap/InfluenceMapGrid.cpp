@@ -233,7 +233,8 @@ void AInfluenceMapGrid::UpdateTile(int index, float value, int team, Type type) 
 		m_influencemap[index].m_value = value;
 	
 	if (!m_influencemap[index].in_update) {
-		m_index_update.Add(index);
+		//m_index_update.Add(index);
+		AddUpdateTile(index);
 		m_influencemap[index].in_update = true;
 	}
 	m_influencemap[index].m_team = team;
@@ -247,4 +248,14 @@ float AInfluenceMapGrid::GetValue(const FVector2D Location, const uint8 Team) {
 		Cost += m_influencemap[index].m_value * 1.5f;
 	}
 	return Cost;
+}
+
+void AInfluenceMapGrid::AddUpdateTile(const uint32 index) {
+	for (int i = 0; i != m_index_update.Num(); ++i) {
+		if (m_index_update[i] >= index) {
+			m_index_update.Insert(index, i);
+			return;
+		}
+	}
+	m_index_update.Add(index);
 }
