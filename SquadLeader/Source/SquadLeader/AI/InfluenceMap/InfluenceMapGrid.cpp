@@ -110,11 +110,34 @@ int AInfluenceMapGrid::FindTileIndex(FVector _location) const noexcept {
 }
 
 bool AInfluenceMapGrid::FindIndexModify(const FVector2D Location, uint32& Index){
-	for (int index : m_index_update) {
-		if (IsOnTileUpdate(Location, m_influencemap[index].m_location)) {
-			Index = index;
+	if (m_index_update.Num() > 0) {
+		int begin = 0;
+		int end = m_index_update.Num() - 1;
+		int middle = begin;
+		bool find = false;
+
+		while (!find && begin <= end) {
+			middle = (begin + end) / 2;
+			const FTileBase Tile = m_influencemap[m_index_update[middle]];
+			if (IsOnTileUpdate(Location, Tile.m_location))
+				find = true;
+			else if (Location.Y >= Tile.m_location.Y - (m_tile_height / 2.0f) && Location.Y <= Tile.m_location.Y + (m_tile_height / 2.f))
+				if (Location.X > Tile.m_location.X)
+					begin = middle + 1;
+				else
+					end = middle - 1;
+			else
+				if (Location.Y > Tile.m_location.Y - (m_tile_height / 2.0f))
+					begin = middle + 1;
+				else
+					end = middle - 1;
+		}
+
+		if (find) {
+			Index = m_index_update[middle];
 			return true;
 		}
+		return false;
 	}
 	return false;
 }
@@ -245,7 +268,7 @@ float AInfluenceMapGrid::GetValue(const FVector2D Location, const uint8 Team) {
 	uint32 index = -1;
 	float Cost = 1.f;
 	if (FindIndexModify(Location, index)) {
-		Cost += m_influencemap[index].m_value * 1.5f;
+		Cost += m_influencemap[index].m_value * 2.5f;
 	}
 	return Cost;
 }
