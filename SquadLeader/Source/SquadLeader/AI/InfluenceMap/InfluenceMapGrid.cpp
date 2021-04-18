@@ -96,7 +96,11 @@ void AInfluenceMapGrid::UpdateGrid() noexcept {
 			m_influencemap[index_tile].in_update = false;
 		}
 	}
-	m_index_update.RemoveAll([&](const int index) { return !m_influencemap[index].in_update; });
+
+	auto functor = [&](const int index) { return !m_influencemap[index].in_update; };
+	m_index_update.RemoveAll(functor);
+	m_index_team1.RemoveAll(functor);
+	m_index_team2.RemoveAll(functor);
 }
 
 int AInfluenceMapGrid::FindTileIndex(FVector _location) const noexcept {
