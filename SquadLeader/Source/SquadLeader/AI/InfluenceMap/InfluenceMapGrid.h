@@ -111,7 +111,8 @@ private:
 	*/
 	int FindTileIndex(FVector _location) const noexcept;
 
-	bool FindIndexModify(const FVector2D Location, uint32& Index);
+	bool FindIndexModifyinTeam1(const FVector2D Location, uint32& Index);
+	bool FindIndexModifyinTeam2(const FVector2D Location, uint32& Index);
 
 	/*
 	* Check if _location is on the tile who's in tile_location
@@ -153,7 +154,8 @@ private:
 
 	void UpdateTile(int index, float value, int team, Type type) noexcept;
 
-	void AddUpdateTile(const uint32 index);
+	void AddUpdateTileTeam1(const uint32 index);
+	void AddUpdateTileTeam2(const uint32 index);
 
 public:
 
@@ -211,6 +213,11 @@ private:
 	*/
 	UPROPERTY()
 		TArray<uint32> m_index_update;
+
+	UPROPERTY()
+		TArray<uint32> m_index_team1;
+	UPROPERTY()
+		TArray<uint32> m_index_team2;
 
 	int value_tick = 0;
 	/*class UMyThreadManager* m_ThreadManager;*/
