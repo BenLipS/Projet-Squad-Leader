@@ -190,20 +190,20 @@ void ASquadLeaderGameModeBase::NotifySoldierKilled(ASoldier* _DeadSoldier, ASold
 	if (ASoldierPlayer* _DeadSoldierPlayer = Cast<ASoldierPlayer>(_DeadSoldier); _DeadSoldierPlayer)
 		_DeadSoldierPlayer->GrantEXP(EXP_Death);
 
+	// Only Grant EXP to enemies
+	if (_DeadSoldier->GetTeam() == _Killer->GetTeam())
+		return;
+
 	// Grant EXP to the killer player
-	if (ASoldierPlayer* _KillerPlayer = Cast<ASoldierPlayer>(_Killer); _KillerPlayer)
+	if (_Killer->IsA<ASoldierPlayer>())
 	{
 		_Killer->GrantEXP(EXP_Kill);
 	}
 	// Grant EXP to the leader if the killer is a squad AI
-	else if (ASoldierAI* _KillerAI = Cast<ASoldierAI>(_Killer); _KillerAI) 
-	{
-		AAISquadController* SquadController = Cast<AAISquadController>(_KillerAI->GetController());
-		if (SquadController && SquadController->SquadManager)
-		{
-			if (ASoldierPlayer* Leader = SquadController->SquadManager->Leader; Leader)
-				Leader->GrantEXP(EXP_KillSquad);
-		}
+	else if (AAISquadController* SquadController = Cast<AAISquadController>(_Killer->GetController()); SquadController && SquadController->SquadManager)
+	{	
+		if (ASoldierPlayer* Leader = SquadController->SquadManager->Leader; Leader)
+			Leader->GrantEXP(EXP_KillSquad);
 	}
 }
 

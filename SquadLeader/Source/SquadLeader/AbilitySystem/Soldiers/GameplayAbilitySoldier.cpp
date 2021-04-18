@@ -8,7 +8,7 @@ UGameplayAbilitySoldier::UGameplayAbilitySoldier()
 
 	// Default tags that block this ability from activating
 	ActivationBlockedTags.AddTag(FGameplayTag::RequestGameplayTag(FName("State.Dead")));
-	ActivationBlockedTags.AddTag(FGameplayTag::RequestGameplayTag(FName("State.Debuff.Stun")));
+	ActivationBlockedTags.AddTag(FGameplayTag::RequestGameplayTag(FName("State.Debuff")));
 }
 
 bool UGameplayAbilitySoldier::BatchRPCTryActivateAbility(FGameplayAbilitySpecHandle _InAbilityHandle, const bool _EndAbilityImmediately)

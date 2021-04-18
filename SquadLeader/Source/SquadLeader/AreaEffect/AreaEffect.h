@@ -3,57 +3,97 @@
 #include "Core.h"
 #include "GameFramework/Actor.h"
 #include "GameplayEffect.h"
-#include "GameplayEffectExtension.h"
-#include "../AbilitySystem/AreaEffect/AttributeSetAreaEffect.h"
-#include "../AbilitySystem/AreaEffect/GameplayEffects/GE_Default_Stats_AreaEffect.h"
-#include "../AbilitySystem/AreaEffect/AbilitySystemComponentAreaEffect.h"
-#include "AbilitySystemInterface.h"
-#include "AbilitySystemComponent.h"
+#include "Net/UnrealNetwork.h"
+#include "Curves/CurveFloat.h"
 #include "AreaEffect.generated.h"
 
+class ASoldier;
+
 UCLASS()
-class SQUADLEADER_API AAreaEffect : public AActor, public IAbilitySystemInterface
+class SQUADLEADER_API AAreaEffect : public AActor
 {
 	GENERATED_BODY()
 
 public:	
-	// Sets default values for this actor's properties
 	AAreaEffect();
-	AAreaEffect(AActor* realOwnerIn);
-
-public:
-	UAbilitySystemComponentAreaEffect* GetAbilitySystemComponent() const override;
-	UAttributeSetAreaEffect* GetAttributeSet() const;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	//Finish the areaEffect
-	void finishAreaEffect();
+	ASoldier* SourceSoldier = nullptr;
 
-	void InitializeAttributes();
+//////////////// Effects
+protected:
+	FTimerHandle LifetimeTimer;
+	FTimerHandle IntervalTimer;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ability System Component", meta = (AllowPrivateAccess = "true"))
-	UAbilitySystemComponentAreaEffect* AbilitySystemComponent;
+	void OnReadyToApplyEffects();
+	void DestroyAreaEffect();
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Attribute Set", meta = (AllowPrivateAccess = "true"))
-	UAttributeSetAreaEffect* AttributeSet;
+	void ApplyGameplayEffects(UAbilitySystemComponent* _TargetASC);
+	void ApplyDamages(UAbilitySystemComponent* _TargetASC, const float _DistActorArea);
+	void ApplyImpulse(AActor* _Actor, const float _DistActorArea);
 
-	// Define the default stats
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Attribute Set")
-	TSubclassOf<class UGE_Default_Stats_AreaEffect> DefaultAttributeEffects;
-
-	// Define the effect applied by explosion
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Abilities")
+	// Define the effects to apply
+	UPROPERTY(EditDefaultsOnly, Category = "Effects")
 	TArray<TSubclassOf<class UGameplayEffect>> ExplosionEffects;
 
-	AActor* realOwner;
+//////////////// Stats
+protected:
+	// We can specifically define an execution GE for the damages. It will be combinated with the properties BaseDamage and CurveDamage so we can easily interpolate the damage. This is meant to be used with Soldier ASC
+	UPROPERTY(EditDefaultsOnly, Category = "Stats|Damage")
+	TSubclassOf<UGameplayEffect> GE_DamageClass;
 
-	bool realOwnerHasASC;
+	// Damage to apply on the area effect. This only works with GE_DamageClass
+	UPROPERTY(EditDefaultsOnly, Category = "Stats|Damage")
+	float DamageBase = 0.f;
 
-	void OnAreaTick();
+	// Determine the current damage multiplier based on distance from the center. This only works with GE_DamageClass
+	UPROPERTY(EditDefaultsOnly, Category = "Stats|Damage")
+	UCurveFloat* CurveDamage;
 
-	FTimerHandle areaTimer;
-	FTimerHandle periodTimer;
+	float DetermineDamage(const float _DistActorArea) const;
+
+	// Lifetime before destroying this area effect. Last at least one frame for the animation
+	UPROPERTY(EditDefaultsOnly, Category = "Stats|Duration", Replicated)
+	float Lifetime = 0.f;
+
+	// Radius of the area effect
+	UPROPERTY(EditDefaultsOnly, Category = "Stats|Radius", Replicated)
+	float Radius = 100.f;
+
+	// If we want to repeat the effects. Set the interval of time before redoing th effects
+	UPROPERTY(EditDefaultsOnly, Category = "Stats|Interval", Replicated)
+	float Interval = 0.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Stats|Impulse", Replicated)
+	float ImpulseStrenghBase = 0.f;
+
+	// Determine the current impulse strengh multiplier based on distance from the center
+	UPROPERTY(EditDefaultsOnly, Category = "Stats|Impulse", Replicated)
+	UCurveFloat* CurveImpulseStrengh;
+
+	FVector DetermineImpulse(AActor* _Actor, const float _DistActorArea) const;
+
+//////////////// Collision
+public:
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Collision")
+	bool bDebugTrace = false;
+
+//////////////// Animation
+protected:
+	void ShowAnimation();
+
+	UPROPERTY(EditDefaultsOnly, Category = "Animation|Particles")
+	UParticleSystem* AreaFX;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Animation|Particles")
+	FVector AreaFXRelativeLocation;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Animation|Particles")
+	FRotator AreaFXRotator;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Animation|Particles")
+	FVector AreaFXScale;
 };
