@@ -268,7 +268,7 @@ float AInfluenceMapGrid::GetValue(const FVector2D Location, const uint8 Team) {
 	uint32 index = -1;
 	float Cost = 1.f;
 	if (FindIndexModify(Location, index)) {
-		Cost += m_influencemap[index].m_value * 2.5f;
+		Cost += m_influencemap[index].m_value * 10.f;
 	}
 	return Cost;
 }
