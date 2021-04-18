@@ -3,12 +3,27 @@
 #include "GameplayEffectExtension.h"
 #include "../../Soldiers/Soldier.h"
 #include "GameplayEffects/States/GE_StateFighting.h"
+#include "GameplayEffects/GE_UpdateStats.h"
+#include "SquadLeader/SquadLeaderGameModeBase.h"
+
+UAttributeSetSoldier::UAttributeSetSoldier(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer),
+CharacterLevel{ 1.f },
+MaxLevel{ 10.f },
+EXP{ 0.f },
+MoveSpeedMultiplier{ 1.f }
+{
+}
 
 void UAttributeSetSoldier::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
+	DOREPLIFETIME(UAttributeSetSoldier, EXPAccumulated);
+
+	// Attributes
 	DOREPLIFETIME(UAttributeSetSoldier, CharacterLevel);
+	DOREPLIFETIME(UAttributeSetSoldier, EXP);
+	DOREPLIFETIME(UAttributeSetSoldier, EXPLevelUp);
 	DOREPLIFETIME(UAttributeSetSoldier, Health);
 	DOREPLIFETIME(UAttributeSetSoldier, MaxHealth);
 	DOREPLIFETIME(UAttributeSetSoldier, HealthRegenRate);
@@ -27,6 +42,10 @@ bool UAttributeSetSoldier::PreGameplayEffectExecute(FGameplayEffectModCallbackDa
 void UAttributeSetSoldier::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
 {
 	Super::PreAttributeChange(Attribute, NewValue);
+
+	// We don't want stat changes if the soldier is dead
+	if (GetOwningAbilitySystemComponent()->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("State.Dead"))))
+		return;
 
 	if (Attribute == GetMaxHealthAttribute())
 		AdjustAttributeForMaxChange(Health, MaxHealth, NewValue, GetHealthAttribute());
@@ -65,15 +84,13 @@ void UAttributeSetSoldier::PostGameplayEffectExecute(const FGameplayEffectModCal
 				SetShield(GetShield() - LocalDamage);
 			else
 			{
-				SetHealth(GetHealth() - (LocalDamage - GetShield()));
+				SetHealth(FMath::Max(GetHealth() - (LocalDamage - GetShield()), 0.0f));
 				SetShield(0.f);
-
-				//GEngine->AddOnScreenDebugMessage(78, 1.f, FColor::Red, FString::Printf(TEXT("%s still has %s HPs"), *TargetSoldier->GetName(), *FString::SanitizeFloat(GetHealth())));
 			}
 			if (!TargetSoldier->IsAlive()) // The soldier has been killed
 			{
-				//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("%s is dead"), *TargetSoldier->GetName()));
-				//SourceSoldier->getBounty();
+				if (ASquadLeaderGameModeBase* GameMode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode()); GameMode)
+					GameMode->NotifySoldierKilled(TargetSoldier, SourceSoldier);
 			}
 			else if (SourceASC)
 			{
@@ -96,15 +113,67 @@ void UAttributeSetSoldier::AdjustAttributeForMaxChange(FGameplayAttributeData& A
 
 	if (!FMath::IsNearlyEqual(CurrentMaxValue, NewMaxValue) && ASC)
 	{
-		const float CurrentValue = AffectedAttribute.GetCurrentValue();
-		float NewDelta = (CurrentMaxValue > 0.f) ? (CurrentValue * NewMaxValue / CurrentMaxValue) - CurrentValue : NewMaxValue;
-		ASC->ApplyModToAttributeUnsafe(AffectedAttributeProperty, EGameplayModOp::Additive, FMath::CeilToFloat(NewDelta));
+		// Increase affected attribute to same max attribute increase
+		// Only decrease affected attribute if max attribute is lower
+		const float CurrentAffectedValue = AffectedAttribute.GetBaseValue();
+		ASC->ApplyModToAttributeUnsafe(AffectedAttributeProperty, EGameplayModOp::Override, FMath::Clamp(CurrentAffectedValue + NewMaxValue - CurrentMaxValue, FMath::Min(CurrentAffectedValue, NewMaxValue), NewMaxValue));
+	}
+}
+
+float UAttributeSetSoldier::GetRemainEXPForLevelUp() const
+{
+	return GetEXPLevelUp() - GetEXP();
+}
+
+float UAttributeSetSoldier::GetEXPAccumulated() const
+{
+	return EXPAccumulated;
+}
+
+void UAttributeSetSoldier::LevelUp()
+{
+	UAbilitySystemComponent* ASC = GetOwningAbilitySystemComponent();
+
+	if (ASoldier* Soldier = Cast<ASoldier>(ASC->AbilityActorInfo->AvatarActor.Get()); Soldier)
+	{
+		// Increase level by 1
+		ASC->ApplyModToAttributeUnsafe(GetCharacterLevelAttribute(), EGameplayModOp::Additive, 1);
+
+		// Update accumulated EXP
+		EXPAccumulated = GetEXPLevelUp();
+
+		// Grant new attribute values
+		FGameplayEffectSpecHandle Handle = ASC->MakeOutgoingSpec(Soldier->GetStatAttributeEffects(), GetCharacterLevel(), ASC->MakeEffectContext());
+		ASC->ApplyGameplayEffectSpecToSelf(*Handle.Data.Get());
+	}
+}
+
+void UAttributeSetSoldier::GrantEXP(const float _EXP)
+{
+	UAbilitySystemComponent* ASC = GetOwningAbilitySystemComponent();
+	
+	if (ASoldier* Soldier = Cast<ASoldier>(ASC->AbilityActorInfo->AvatarActor.Get()); Soldier)
+	{
+		ASC->ApplyModToAttributeUnsafe(GetEXPAttribute(), EGameplayModOp::Additive, _EXP);
+
+		while (GetEXP() >= GetEXPLevelUp() && !FMath::IsNearlyEqual(GetCharacterLevel(), MaxLevel, 0.1f))
+			Soldier->LevelUp();
 	}
 }
 
 void UAttributeSetSoldier::OnRep_CharacterLevel(const FGameplayAttributeData& _OldCharacterLevel)
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAttributeSetSoldier, CharacterLevel, _OldCharacterLevel);
+}
+
+void UAttributeSetSoldier::OnRep_EXP(const FGameplayAttributeData& _OldEXP)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAttributeSetSoldier, EXP, _OldEXP);
+}
+
+void UAttributeSetSoldier::OnRep_EXPLevelUp(const FGameplayAttributeData& _OldEXPLevelUp)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAttributeSetSoldier, EXPLevelUp, _OldEXPLevelUp);
 }
 
 void UAttributeSetSoldier::OnRep_Health(const FGameplayAttributeData& _OldHealth)

@@ -99,7 +99,7 @@ protected:
 protected:
 // Damage
 	UPROPERTY(BluePrintReadWrite, EditAnywhere, Category = "Stats|Damage")
-	float Damage;
+	FScalableFloat  Damage;
 
 // Range
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Stats")

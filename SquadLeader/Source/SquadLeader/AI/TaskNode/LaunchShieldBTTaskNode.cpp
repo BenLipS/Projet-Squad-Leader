@@ -14,7 +14,7 @@ ULaunchShieldBTTaskNode::ULaunchShieldBTTaskNode() {
 
 EBTNodeResult::Type ULaunchShieldBTTaskNode::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) {
 	AAIGeneralController* AIGeneralController = Cast<AAIGeneralController>(OwnerComp.GetOwner());
-	if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, FString::Printf(TEXT("%s Shield"), *AIGeneralController->GetName()));
+	//if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, FString::Printf(TEXT("%s Shield"), *AIGeneralController->GetName()));
 	ResultState _result = AIGeneralController->LaunchShield();
 
 	AIGeneralController->get_blackboard()->SetValueAsBool("LaunchShield", false);

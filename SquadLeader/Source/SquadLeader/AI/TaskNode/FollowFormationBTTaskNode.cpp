@@ -21,6 +21,7 @@ EBTNodeResult::Type UFollowFormationBTTaskNode::ExecuteTask(UBehaviorTreeCompone
 	HysteresisDoFollow = false;
 	AISquadController->HysteresisDoRunningFormation = false;
 	Cast<ASoldierAI>(AISquadController->GetPawn())->CancelAbilityRun();
+	AISquadController->IsRunning = false;
 	AISquadController->FollowFormation();
 	AISquadController->FollowFlocking();
 	//Nous retournons Succeeded

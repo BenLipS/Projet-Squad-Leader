@@ -42,8 +42,19 @@ bool UGA_ReloadWeapon::CanActivateAbility(const FGameplayAbilitySpecHandle Handl
 	return false;
 }
 
+void UGA_ReloadWeapon::CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateCancelAbility)
+{
+	if (ScopeLockCount > 0)
+	{
+		WaitingToExecute.Add(FPostLockDelegate::CreateUObject(this, &UGA_ReloadWeapon::CancelAbility, Handle, ActorInfo, ActivationInfo, bReplicateCancelAbility));
+		return;
+	}
+
+	Super::CancelAbility(Handle, ActorInfo, ActivationInfo, bReplicateCancelAbility);
+	SourceWeapon->ReloadWeapon();
+}
+
 void UGA_ReloadWeapon::ReadyToReaload()
 {
-	SourceWeapon->ReloadWeapon();
-	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+	CancelAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true);
 }

@@ -11,7 +11,7 @@
 
 ASL_Weapon::ASL_Weapon() :
 	MuzzleAttachPoint{ FName("Muzzle") },
-	Damage{ 10.f },
+	Damage{ FScalableFloat{1.f} },
 	MaxRange{ 999'999.f },
 	FieldOfViewAim {50.f},
 	TimeBetweenShots { 0.1f },
@@ -145,7 +145,7 @@ float ASL_Weapon::GetMaxRange() const noexcept
 
 float ASL_Weapon::GetWeaponDamage() const noexcept
 {
-	return Damage;
+	return IsValid(OwningSoldier) ? Damage.GetValueAtLevel(OwningSoldier->GetCharacterLevel()) : 1.f;
 }
 
 void ASL_Weapon::SetWeaponDamage(const float _Damage) noexcept

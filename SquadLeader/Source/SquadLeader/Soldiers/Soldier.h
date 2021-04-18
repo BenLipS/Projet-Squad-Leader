@@ -7,6 +7,7 @@
 #include "AbilitySystemInterface.h"
 #include "../AbilitySystem/Soldiers/AttributeSetSoldier.h"
 #include "../AbilitySystem/Soldiers/AbilitySystemSoldier.h"
+#include "../AbilitySystem/Soldiers/GameplayEffects/GE_UpdateStats.h"
 #include "Interface/Teamable.h"
 //
 #include "SoldierTeam.h"
@@ -71,7 +72,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ability System Component", meta = (AllowPrivateAccess = "true"))
 	UAbilitySystemSoldier* AbilitySystemComponent;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute Set", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Stat Attributes", meta = (AllowPrivateAccess = "true"))
 	UAttributeSetSoldier* AttributeSet;
 
 public:
@@ -79,11 +80,11 @@ public:
 	UAttributeSetSoldier* GetAttributeSet() const;
 
 protected:
-	// Define the default stats
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Abilities")
-	TSubclassOf<class UGameplayEffect> DefaultAttributeEffects;
+	// Define the stats for any level. It is call at the beginning and when leveling up
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Stat Attributes")
+	TSubclassOf<UGE_UpdateStats> StatAttributeEffects;
 
-	// Define the default abilities
+	// Define the start abilities
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Abilities")
 	TArray<TSubclassOf<class UGameplayAbilitySoldier>> CharacterDefaultAbilities;
 
@@ -100,6 +101,7 @@ protected:
 	virtual void InitializeAttributeChangeCallbacks();
 
 public:
+	TSubclassOf<UGE_UpdateStats> GetStatAttributeEffects() const;
 	bool IsInCooldown(const FGameplayTag& _Tag);
 
 //////////////// Tag Change Callbacks
@@ -136,6 +138,18 @@ public:
 	int32 GetCharacterLevel() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
+	float GetEXP() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
+	float GetEXPLevelUp() const;
+	
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
+	float GetRemainEXPForLevelUp() const;
+	
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
+	void GrantEXP(const float _EXP);
+
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
 	float GetHealth() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
@@ -169,6 +183,7 @@ public:
 	FDelegateHandle HealthChangedDelegateHandle;
 	virtual void HealthChanged(const FOnAttributeChangeData& _Data);
 
+	virtual void LevelUp();
 	virtual void Die();
 	virtual void Respawn();
 	virtual void OnReceiveDamage(const FVector& _ImpactPoint, const FVector& _SourcePoint);
@@ -232,8 +247,20 @@ public:
 	UFUNCTION()
 	void MoveForward(const float _Val);
 
+	UPROPERTY(EditDefaultsOnly, Meta = (ClampMin = 0.0f, ClamMax = 1.0f), Category = "Movement")
+	float MaxInputForward;
+
+	UPROPERTY(EditDefaultsOnly, Meta = (ClampMin = -1.0f, ClamMax = 0.0f), Category = "Movement")
+	float MaxInputBackward;
+
 	UFUNCTION()
 	void MoveRight(const float _Val);
+
+	UPROPERTY(EditDefaultsOnly, Meta = (ClampMin = -1.0f, ClamMax = 0.0f), Category = "Movement")
+	float MaxInputLeft;
+
+	UPROPERTY(EditDefaultsOnly, Meta = (ClampMin = 0.0f, ClamMax = 1.0f), Category = "Movement")
+	float MaxInputRight;
 
 	// Looking direction
 	UFUNCTION()
@@ -363,10 +390,27 @@ private:
 //////////////// Particles
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Animation | Particles")
+	UParticleSystem* LevelUpFX;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Animation | Particles")
+	FVector LevelUpFXRelativeLocation;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Animation | Particles")
+	FRotator LevelUpFXRotator;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Animation | Particles")
+	FVector LevelUpFXScale;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Animation | Particles")
 	UParticleSystem* ImpactHitFX;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Animation | Particles")
 	FVector ImpactHitFXScale;
+
+	UFUNCTION(Reliable, Client, WithValidation)
+	void ClientSpawnLevelUpParticle();
+	void ClientSpawnLevelUpParticle_Implementation();
+	bool ClientSpawnLevelUpParticle_Validate();
 
 //////////////// Montages
 public:

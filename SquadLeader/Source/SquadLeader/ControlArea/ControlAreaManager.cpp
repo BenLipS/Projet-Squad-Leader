@@ -42,7 +42,7 @@ TArray<AControlArea*> AControlAreaManager::GetAreaControlledByTeam(ASoldierTeam*
 {
 	TArray<AControlArea*> selection;
 	for (auto element : ControlAreaList) {
-		if (element->isTakenBy == _Team) {
+		if (element->IsTakenBy == _Team) {
 			selection.Add(element);
 		}
 	}
@@ -69,11 +69,11 @@ ASoldierTeam* AControlAreaManager::GetTeamWithAllControl()
 {
 	if (ControlAreaList.Num() > 0) {
 		for (auto element : ControlAreaList) {
-			if (element->isTakenBy != ControlAreaList[0]->isTakenBy) {
+			if (element->IsTakenBy != ControlAreaList[0]->IsTakenBy) {
 				return nullptr;
 			}
 		}
-		return ControlAreaList[0]->isTakenBy;
+		return ControlAreaList[0]->IsTakenBy;
 	}
 	return nullptr;
 }
