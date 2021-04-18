@@ -25,4 +25,7 @@ public:
 
 	UFUNCTION()
 	virtual void OnStatsInfoReceived(TMap<FString, FString> statsIn) = 0;
+	
+	UFUNCTION()
+	virtual void OnStatsInfoCleanOrder() = 0;
 };

@@ -1,4 +1,6 @@
 #include "SquadLeaderGameInstance.h"
+#include "UI/SL_HUD.h"
+#include "UI/Menu/MenuListInfo.h"
 
 
 USquadLeaderGameInstance::USquadLeaderGameInstance() {
@@ -23,6 +25,34 @@ void USquadLeaderGameInstance::LaunchGame()
 void USquadLeaderGameInstance::JoinGame(FString IPAdress)
 {
     GetFirstGamePlayer()->ConsoleCommand("open " + IPAdress, true);
+}
+
+void USquadLeaderGameInstance::ProfileInfo(ASL_HUD* HUD)
+{
+    TMap<FString, FString> statsIn;
+    statsIn.Add("Player Id", UserData.Id);
+    statsIn.Add("Name", UserData.Name);
+    statsIn.Add("IP Adress", UserData.IpAdress);
+    statsIn.Add("Number of killed AI", FString::FromInt(UserData.NbKillIA));
+    statsIn.Add("Number of killed players", FString::FromInt(UserData.NbKillPlayer));
+    statsIn.Add("Number of deaths per AI", FString::FromInt(UserData.NbDeathIA));
+    statsIn.Add("Number of deaths per players", FString::FromInt(UserData.NbDeathPlayer));
+    statsIn.Add("Number of wins", FString::FromInt(UserData.NbVictory));
+    statsIn.Add("Number of defeats", FString::FromInt(UserData.NbLoss));
+    
+    float WinRate;
+    if (UserData.NbLoss == 0) {
+        WinRate = UserData.NbVictory;
+    }
+    else {
+        WinRate = static_cast<float>(UserData.NbVictory) / UserData.NbLoss;
+    }
+    statsIn.Add("Win rate", FString::SanitizeFloat(WinRate));
+    statsIn.Add("Score", FString::FromInt(UserData.Score));
+    statsIn.Add("Playtime", FString::FromInt(UserData.PlayTime));
+    
+    HUD->OnStatsInfoCleanOrder();
+    HUD->OnStatsInfoReceived(statsIn);
 }
 
 

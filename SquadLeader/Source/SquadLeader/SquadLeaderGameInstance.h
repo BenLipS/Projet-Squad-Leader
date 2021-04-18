@@ -36,6 +36,9 @@ public:
 		void LaunchGame();
 	UFUNCTION(BlueprintCallable)
 		void JoinGame(FString IPAdress);
+	UFUNCTION(BlueprintCallable)
+		void ProfileInfo(class ASL_HUD* HUD);
+
 
 private:
 	void HttpCallPing(FString BaseAdress);

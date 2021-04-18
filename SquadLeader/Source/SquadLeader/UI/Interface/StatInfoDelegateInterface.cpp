@@ -21,6 +21,14 @@ void IStatInfoDelegateInterface::OnStatsInfoReceived(TMap<FString, FString> stat
 	}
 }
 
+void IStatInfoDelegateInterface::OnStatsInfoCleanOrder()
+{
+	for (auto StatInfoInterface : StatInfoDelegates)
+	{
+		StatInfoInterface->OnStatsInfoCleanOrder();
+	}
+}
+
 void IStatInfoDelegateInterface::AddStatInfoDelegate(IStatInfoInterface* newDelegate)
 {
 	StatInfoDelegates.AddUnique(newDelegate);
