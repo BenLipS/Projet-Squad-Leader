@@ -18,7 +18,8 @@
 
 ASoldier::ASoldier(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer.SetDefaultSubobjectClass<USoldierMovementComponent>(ACharacter::CharacterMovementComponentName)),
 bAbilitiesInitialized{ false },
-WeaponAttachPoint{ FName("WeaponSocket") },
+WeaponAttachPointRightHand{ FName("WeaponSocketRightHand") },
+WeaponAttachPointLeftHand{ FName("WeaponSocketLeftHand") },
 MaxInputForward{ 1.0f },
 MaxInputBackward{ -0.5f },
 MaxInputLeft{ -0.7f },
@@ -555,6 +556,16 @@ ASL_Weapon* ASoldier::GetCurrentWeapon() const
 	return CurrentWeapon;
 }
 
+void ASoldier::UseCurrentWeaponWithRightHand()
+{
+	CurrentWeapon->GetWeaponMesh()->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, WeaponAttachPointRightHand);
+}
+
+void ASoldier::UseCurrentWeaponWithLeftHand()
+{
+	CurrentWeapon->GetWeaponMesh()->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, WeaponAttachPointLeftHand);
+}
+
 bool ASoldier::AddWeaponToInventory(ASL_Weapon* _NewWeapon, const bool _bEquipWeapon)
 {
 	if (!_NewWeapon || GetLocalRole() < ROLE_Authority)
@@ -643,7 +654,7 @@ void ASoldier::SetCurrentWeapon(ASL_Weapon* _NewWeapon, ASL_Weapon* _LastWeapon)
 		if (AbilitySystemComponent)
 			AbilitySystemComponent->AddLooseGameplayTag(CurrentWeaponTag);
 
-		CurrentWeapon->GetWeaponMesh()->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, WeaponAttachPoint);
+		UseCurrentWeaponWithRightHand();
 		CurrentWeapon->GetWeaponMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 		// TODO: Do update for HUD through player controller here

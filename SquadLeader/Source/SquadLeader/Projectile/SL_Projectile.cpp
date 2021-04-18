@@ -1,6 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "SL_Projectile.h"
 #include "Components/SPhereComponent.h"
 #include "../AreaEffect/AreaEffect.h"
@@ -15,8 +12,9 @@
 // Sets default values
 ASL_Projectile::ASL_Projectile()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
+	bReplicates = true;
+	SetReplicateMovement(true);
 
 	CollisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
 	CollisionComp->BodyInstance.SetCollisionProfileName("Projectile");
@@ -65,13 +63,18 @@ void ASL_Projectile::BeginPlay()
 
 void ASL_Projectile::OnExplode()
 {
-	for (auto areaEffect : ExplosionAreaEffect)
+	for (auto AreaEffectClass : AreaEffectList)
 	{
-		FActorSpawnParameters SpawnInfo;
-		SpawnInfo.Owner = GetOwner();
-		SpawnInfo.Instigator = GetInstigator();
-		SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-		GetWorld()->SpawnActor<AAreaEffect>(areaEffect, GetActorLocation(), GetActorRotation(), SpawnInfo);
+		AAreaEffect* AreaEffect = GetWorld()->SpawnActorDeferred<AAreaEffect>(AreaEffectClass, FTransform{GetActorRotation(), GetActorLocation()}, GetOwner(), GetInstigator(), ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+
+		if (AreaEffect)
+		{
+#ifdef UE_BUILD_DEBUG
+			AreaEffect->bDebugTrace = bDebugTraceExplosion;
+#endif
+			AreaEffect->FinishSpawning(FTransform{ GetActorRotation(), GetActorLocation() });
+		}
+
 	}
 	DeleteProjectile();
 }
@@ -108,7 +111,6 @@ void ASL_Projectile::InitVelocity()
 			YawAdjust = AI->LaunchProjectileYawAdjust;
 		}
 	}	
-
 
 	Azimuth += PitchAdjust;
 	if (Azimuth > 180.f)

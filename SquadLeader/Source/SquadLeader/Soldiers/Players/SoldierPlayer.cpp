@@ -9,8 +9,8 @@
 #include "DrawDebugHelpers.h"
 
 ASoldierPlayer::ASoldierPlayer(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer),
-ASCInputBound{ false },
-NbAIsForNextLevelUp{ 0.f }
+NbAIsForNextLevelUp{ 0.f },
+ASCInputBound{ false }
 {
 }
 

@@ -33,8 +33,8 @@ void UGA_OverheatingWeapon::ActivateAbility(const FGameplayAbilitySpecHandle _Ha
 	SourceWeapon->SetTimeBetweenShots(SourceWeapon->GetTimeBetweenShots() * TimeBetweenShootMultiplier);
 
 	UAbilityTask_WaitDelay* TaskWaitDelay = UAbilityTask_WaitDelay::WaitDelay(this, TimeOverHeat);
-	TaskWaitDelay->Activate();
 	TaskWaitDelay->OnFinish.AddDynamic(this, &UGA_OverheatingWeapon::EndOverHeat);
+	TaskWaitDelay->ReadyForActivation();
 
 	if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("AAAAAAAAAAAAAAAAAAAAAAAAA OverHeat")));
 }
