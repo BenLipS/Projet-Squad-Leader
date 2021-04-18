@@ -12,11 +12,11 @@ class SQUADLEADER_API UGA_SpawnPhysicalShield : public UGameplayAbilitySoldier
 public:
 	UGA_SpawnPhysicalShield();
 
+protected:
 	virtual bool CanActivateAbility(const FGameplayAbilitySpecHandle _Handle, const FGameplayAbilityActorInfo* _ActorInfo, const FGameplayTagContainer* _SourceTags = nullptr, const FGameplayTagContainer* _TargetTags = nullptr, OUT FGameplayTagContainer* _OptionalRelevantTags = nullptr) const override;
 
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle _Handle, const FGameplayAbilityActorInfo* _ActorInfo, const FGameplayAbilityActivationInfo _ActivationInfo, const FGameplayEventData* _TriggerEventData) override;
 
-protected:
 	UFUNCTION()
 	void MontageCompletedOrBlendedOut();
 

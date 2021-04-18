@@ -50,10 +50,10 @@ void UGA_FireWeapon::ActivateAbility(const FGameplayAbilitySpecHandle Handle, co
 		ReloadWeapon();
 }
 
-bool UGA_FireWeapon::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, OUT FGameplayTagContainer* OptionalRelevantTags) const
+bool UGA_FireWeapon::CanActivateAbility(const FGameplayAbilitySpecHandle _Handle, const FGameplayAbilityActorInfo* _ActorInfo, const FGameplayTagContainer* _SourceTags, const FGameplayTagContainer* _TargetTags, OUT FGameplayTagContainer* _OptionalRelevantTags) const
 {
-	ASoldier* SourceSoldier = Cast<ASoldier>(ActorInfo->AvatarActor);
-	return SourceSoldier && Cast<ASL_Weapon>(SourceSoldier->GetCurrentWeapon());
+	ASoldier* SourceSoldier = Cast<ASoldier>(_ActorInfo->AvatarActor);
+	return SourceSoldier && Cast<ASL_Weapon>(SourceSoldier->GetCurrentWeapon()) && Super::CanActivateAbility(_Handle, _ActorInfo, _SourceTags, _TargetTags, _OptionalRelevantTags);
 }
 
 void UGA_FireWeapon::InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo)

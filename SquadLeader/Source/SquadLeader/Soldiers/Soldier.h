@@ -414,7 +414,6 @@ protected:
 
 //////////////// Montages
 public:
-	// Anim Montage
 	// Level start
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Animation|Montages")
 	UAnimMontage* StartGameMontage;
@@ -434,6 +433,10 @@ public:
 	// Reload weapon
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Animation|Montages")
 	UAnimMontage* ReloadWeaponMontage;
+
+	// Throw projectile
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Animation|Montages")
+	UAnimMontage* ThrowProjectileMontage;
 
 	// Cast Spell - For miscellaneous abilities
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Animation|Montages")

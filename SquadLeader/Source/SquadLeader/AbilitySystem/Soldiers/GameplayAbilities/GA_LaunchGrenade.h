@@ -18,10 +18,22 @@ protected:
 
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* OwnerInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 
-	virtual void InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) override;
+	UFUNCTION()
+	void MontageCompletedOrBlendedOut();
 
-	virtual void CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateCancelAbility) override;
+	UFUNCTION()
+	void MontageInterruptedOrCancelled();
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-	TSubclassOf<ASL_Projectile> MyProjectile;
+	UFUNCTION()
+	void MontageSentEvent(FGameplayTag _EventTag, FGameplayEventData _EventData);
+
+	UFUNCTION()
+	void ThrowProjectile();
+
+	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
+	TSubclassOf<ASL_Projectile> ProjectileClass;
+
+	// Event tag to notify from the montage to launch the projectile
+	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
+	FGameplayTag ThrownProjectileEventTag;
 };
