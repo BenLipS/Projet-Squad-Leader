@@ -5,6 +5,8 @@
 #include "../../../Projectile/SL_Projectile.h"
 #include "GA_LaunchGrenade.generated.h"
 
+class ASoldier;
+
 UCLASS()
 class SQUADLEADER_API UGA_LaunchGrenade : public UGameplayAbilitySoldier
 {
@@ -17,6 +19,8 @@ protected:
 	virtual bool CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags = nullptr, const FGameplayTagContainer* TargetTags = nullptr, OUT FGameplayTagContainer* OptionalRelevantTags = nullptr) const override;
 
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* OwnerInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
+
+	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled);
 
 	UFUNCTION()
 	void MontageCompletedOrBlendedOut();
@@ -36,4 +40,7 @@ protected:
 	// Event tag to notify from the montage to launch the projectile
 	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
 	FGameplayTag ThrownProjectileEventTag;
+
+	// Cache values
+	ASoldier* SourceSoldier = nullptr;
 };

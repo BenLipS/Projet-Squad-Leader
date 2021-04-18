@@ -239,8 +239,11 @@ public:
 	UPROPERTY(VisibleDefaultsOnly, Category = "Mesh")
 	USkeletalMeshComponent* FirstPersonMesh;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Mesh")
-	FName WeaponAttachPoint;
+	UPROPERTY(EditDefaultsOnly, Category = "Inventory|Weapon")
+	FName WeaponAttachPointRightHand;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Inventory|Weapon")
+	FName WeaponAttachPointLeftHand;
 
 //////////////// Movement
 	// Move direction
@@ -304,6 +307,14 @@ protected:
 public:
 	UFUNCTION(BlueprintCallable, Category = "Inventory|Weapon")
 	ASL_Weapon* GetCurrentWeapon() const;
+
+	// Define the attach point for the mesh as right hand - This is the default point - this will be useful to handle animations
+	UFUNCTION(BlueprintCallable, Category = "Inventory|Weapon")
+	void UseCurrentWeaponWithRightHand();
+
+	// Define the attach point for the mesh as left hand - this will be useful to handle animations
+	UFUNCTION(BlueprintCallable, Category = "Inventory|Weapon")
+	void UseCurrentWeaponWithLeftHand();
 
 	bool bChangedWeaponLocally;
 

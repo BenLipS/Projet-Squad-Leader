@@ -27,10 +27,12 @@ void UGA_LaunchGrenade::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		return;
 	}
 
-	ASoldier* SourceSoldier = Cast<ASoldier>(ActorInfo->AvatarActor);
+	SourceSoldier = Cast<ASoldier>(ActorInfo->AvatarActor);
 
 	if (UAnimMontage* ThrowProjectileMontage = SourceSoldier->ThrowProjectileMontage; ThrowProjectileMontage)
 	{
+		SourceSoldier->UseCurrentWeaponWithLeftHand(); // Because the animation throw with right hand
+
 		FGameplayTagContainer Tags;
 		Tags.AddTag(ThrownProjectileEventTag);
 
@@ -49,6 +51,12 @@ void UGA_LaunchGrenade::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		TaskWaitDelay->ReadyForActivation();
 		TaskWaitDelay->OnFinish.AddDynamic(this, &UGA_LaunchGrenade::MontageCompletedOrBlendedOut);
 	}
+}
+
+void UGA_LaunchGrenade::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
+{
+	SourceSoldier->UseCurrentWeaponWithRightHand(); // Since it is the default config
+	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
 void UGA_LaunchGrenade::MontageCompletedOrBlendedOut()
@@ -72,8 +80,6 @@ void UGA_LaunchGrenade::MontageSentEvent(FGameplayTag _EventTag, FGameplayEventD
 
 void UGA_LaunchGrenade::ThrowProjectile()
 {
-	ASoldier* SourceSoldier = Cast<ASoldier>(CurrentActorInfo->AvatarActor);
-
 	// Create projectile then launch it
 	FActorSpawnParameters SpawnInfo;
 	SpawnInfo.Owner = SourceSoldier;
