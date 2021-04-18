@@ -19,9 +19,16 @@
 ASoldier::ASoldier(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer.SetDefaultSubobjectClass<USoldierMovementComponent>(ACharacter::CharacterMovementComponentName)),
 bAbilitiesInitialized{ false },
 WeaponAttachPoint{ FName("WeaponSocket") },
+MaxInputForward{ 1.0f },
+MaxInputBackward{ -0.5f },
+MaxInputLeft{ -0.7f },
+MaxInputRight{ 0.7f },
 bChangedWeaponLocally{ false },
 FieldOfViewNormal{ 90.f },
-ImpactHitFXScale{FVector{1.f}}
+LevelUpFXRelativeLocation{ FVector{0.f} },
+LevelUpFXRotator{ FRotator{} },
+LevelUpFXScale{ FVector{1.f} },
+ImpactHitFXScale{ FVector{1.f} }
 {
 	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
@@ -65,13 +72,11 @@ void ASoldier::BeginPlay()
 	// from the server only, have a test to determine wheter we can change the team, then use a ClientSetTeam to replicate the change
 	//if (GetLocalRole() == ROLE_Authority)
 	{
-		// Init team
-		if (InitialTeam && !(GetTeam()))
-			SetTeam(InitialTeam);
-
-		// Add this to the team data
+		// Add this to the team data or use the default team
 		if (GetTeam())
 			GetTeam()->AddSoldierList(this);
+		else if (InitialTeam)
+			SetTeam(InitialTeam);
 	}
 
 	if (StartGameMontage)
@@ -107,7 +112,7 @@ void ASoldier::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifeti
 void ASoldier::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	/*auto GM = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
+	/*ASquadLeaderGameModeBase* GM = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
 
 	if (GetTeam() && GM && GM->InfluenceMap) {
 		FGridPackage m_package;
@@ -127,14 +132,14 @@ void ASoldier::Tick(float DeltaTime)
 			}
 		}
 
-		m_package.m_type = Type::Soldier;*/
-		//GM->InfluenceMap->ReceivedMessage(m_package);
-	//}
+		m_package.m_type = Type::Soldier;
+		GM->InfluenceMap->ReceivedMessage(m_package);
+	}*/
 }
 
 void ASoldier::InitCameras()
 {
-	SyncControlRotation = FRotator{0.f, 0.f, 0.f};
+	SyncControlRotation = FRotator{ 0.f, 0.f, 0.f };
 
 	// 1st person camera
 	FirstPersonCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("FirstPersonCamera"));
@@ -219,13 +224,13 @@ void ASoldier::InitializeAttributes()
 {
 	check(AbilitySystemComponent);
 
-	if (!DefaultAttributeEffects)
+	if (!StatAttributeEffects)
 		return;
 
 	FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
 	EffectContext.AddSourceObject(this);
 
-	FGameplayEffectSpecHandle NewHandle = AbilitySystemComponent->MakeOutgoingSpec(DefaultAttributeEffects, GetCharacterLevel(), EffectContext);
+	FGameplayEffectSpecHandle NewHandle = AbilitySystemComponent->MakeOutgoingSpec(StatAttributeEffects, GetCharacterLevel(), EffectContext);
 	if (NewHandle.IsValid())
 	{
 		FActiveGameplayEffectHandle ActiveGEHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*NewHandle.Data.Get());
@@ -283,6 +288,11 @@ void ASoldier::InitializeTagChangeCallbacks()
 void ASoldier::InitializeAttributeChangeCallbacks()
 {
 	HealthChangedDelegateHandle = AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetHealthAttribute()).AddUObject(this, &ASoldier::HealthChanged);
+}
+
+TSubclassOf<UGE_UpdateStats> ASoldier::GetStatAttributeEffects() const
+{
+	return StatAttributeEffects;
 }
 
 bool ASoldier::IsInCooldown(const FGameplayTag& _Tag)
@@ -412,13 +422,13 @@ void ASoldier::setToThirdCameraPerson()
 void ASoldier::MoveForward(const float _Val)
 {
 	if (_Val != 0.0f)
-		AddMovementInput(UKismetMathLibrary::GetForwardVector(FRotator(0, GetControlRotation().Yaw, 0)), _Val);
+		AddMovementInput(UKismetMathLibrary::GetForwardVector(FRotator(0, GetControlRotation().Yaw, 0)), FMath::Clamp(_Val, MaxInputBackward, MaxInputForward));
 }
 
 void ASoldier::MoveRight(const float _Val)
 {
 	if (_Val != 0.0f)
-		AddMovementInput(UKismetMathLibrary::GetRightVector(FRotator(0, GetControlRotation().Yaw, 0)), _Val);
+		AddMovementInput(UKismetMathLibrary::GetRightVector(FRotator(0, GetControlRotation().Yaw, 0)), FMath::Clamp(_Val, MaxInputLeft, MaxInputRight));
 }
 
 void ASoldier::LookUp(const float _Val)
@@ -684,6 +694,27 @@ int32 ASoldier::GetCharacterLevel() const
 	return -1;
 }
 
+float ASoldier::GetEXP() const
+{
+	return AttributeSet ? AttributeSet->GetEXP() : -1.0f;
+}
+
+float ASoldier::GetEXPLevelUp() const
+{
+	return AttributeSet ? AttributeSet->GetEXPLevelUp() : -1.0f;
+}
+
+float ASoldier::GetRemainEXPForLevelUp() const
+{
+	return AttributeSet ? AttributeSet->GetRemainEXPForLevelUp() : -1.0f;
+}
+
+void ASoldier::GrantEXP(const float _EXP)
+{
+	if (AttributeSet)
+		AttributeSet->GrantEXP(_EXP);
+}
+
 float ASoldier::GetHealth() const
 {
 	return AttributeSet ? AttributeSet->GetHealth() : -1.0f;
@@ -732,6 +763,14 @@ void ASoldier::HealthChanged(const FOnAttributeChangeData& _Data)
 {
 	if (!IsAlive())
 		Die();
+}
+
+void ASoldier::LevelUp()
+{
+	AttributeSet->LevelUp();
+
+	if (LevelUpFX && (GetLocalRole() == ROLE_Authority))
+		ClientSpawnLevelUpParticle();
 }
 
 void ASoldier::Die()
@@ -854,7 +893,7 @@ bool ASoldier::SetTeam(ASoldierTeam* _Team)
 	// TODO: Clients must be aware of their team. If we really want a security with the server, we should call this function
 	// from the server only, have a test to determine wheter we can change the team, then use a ClientSetTeam to replicate the change
 	//if (GetLocalRole() == ROLE_Authority)
-	{  
+	{
 		Team = _Team;
 		return true;
 	}
@@ -867,8 +906,19 @@ void ASoldier::setup_stimulus() {
 	stimulus->RegisterWithPerceptionSystem();
 };
 
-uint8 ASoldier::GetInfluenceRadius() const noexcept{
+uint8 ASoldier::GetInfluenceRadius() const noexcept {
 	return InfluenceRadius;
+}
+
+void ASoldier::ClientSpawnLevelUpParticle_Implementation()
+{
+	UParticleSystemComponent* LevelUpParticle = UGameplayStatics::SpawnEmitterAttached(LevelUpFX, GetMesh(), FName{ "Pelvis" }, LevelUpFXRelativeLocation, LevelUpFXRotator, EAttachLocation::SnapToTarget);
+	LevelUpParticle->SetWorldScale3D(LevelUpFXScale);
+}
+
+bool ASoldier::ClientSpawnLevelUpParticle_Validate()
+{
+	return true;
 }
 
 void ASoldier::HandleDeathMontage()
@@ -894,7 +944,7 @@ void ASoldier::OnRespawnMontageCompleted(UAnimMontage* _Montage, bool _bInterrup
 // TODO: Show particle from the hit location - not center of the soldier
 void ASoldier::ShowImpactHitEffect()
 {
-	UParticleSystemComponent* LaserParticle = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactHitFX, GetActorLocation(), FRotator(), ImpactHitFXScale);
+	UParticleSystemComponent* LaserParticle = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactHitFX, GetActorLocation(), GetActorRotation(), ImpactHitFXScale);
 }
 
 FVector ASoldier::GetLookingDirection()
