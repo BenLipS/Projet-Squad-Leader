@@ -29,7 +29,7 @@ void UAbilityCooldownWidgiet::OnAbilityCooldownTriggered(float Timer, ESoldierAb
 	}
 }
 
-void UAbilityCooldownWidgiet::AddAbilityID(ESoldierAbilityInputID Key)
+void UAbilityCooldownWidgiet::AddAbilityID(ESoldierAbilityInputID Key, FString KeyText)
 {
 	for (auto Widget : CooldownBox->GetAllChildren())
 	{
@@ -46,7 +46,7 @@ void UAbilityCooldownWidgiet::AddAbilityID(ESoldierAbilityInputID Key)
 	{
 		UCooldownElementWidget* newWidget = WidgetTree->ConstructWidget<UCooldownElementWidget>(WidgetElementClass);
 
-		newWidget->InitState(Key);
+		newWidget->InitState(Key, KeyText);
 
 		CooldownBox->AddChildToHorizontalBox(newWidget);
 	}

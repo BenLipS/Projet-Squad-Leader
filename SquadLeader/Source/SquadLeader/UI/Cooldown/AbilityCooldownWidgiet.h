@@ -33,5 +33,5 @@ protected:
 public:
 	virtual void OnAbilityCooldownTriggered(float Timer, ESoldierAbilityInputID Key) override;
 
-	virtual void AddAbilityID(ESoldierAbilityInputID Key) override;
+	virtual void AddAbilityID(ESoldierAbilityInputID Key, FString KeyText) override;
 };
