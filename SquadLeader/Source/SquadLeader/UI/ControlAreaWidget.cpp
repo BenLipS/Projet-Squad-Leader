@@ -74,24 +74,3 @@ void UControlAreaWidget::OnControlAreaAdded(AControlArea* ControlArea)
 		ControlArea->OnPercentageChanged.AddDynamic(newWidget, &UControlAreaInfoWidget::OnControlAreaPercentageChange);
 	}
 }
-//
-//auto playerController = GetOwningPlayer<ASoldierPlayerController>();
-//
-//if (playerController)
-//{
-//	auto teams = playerController->GetWorld()->GetGameState<ASquadLeaderGameState>()->GetSoldierTeamCollection();
-//
-//	for (ASoldierTeam* team : teams)
-//	{
-//		if (team->Id == playerController->GetTeam()->Id)
-//		{
-//			team->OnTicketChanged.AddDynamic(this, &UControlAreaWidget::OnAllyTicketChanged);
-//			team->BroadcastTickets();
-//		}
-//		else if (team->Id < 3)
-//		{
-//			team->OnTicketChanged.AddDynamic(this, &UControlAreaWidget::OnEnnemyTicketChanged);
-//			team->BroadcastTickets();
-//		}
-//	}
-//}

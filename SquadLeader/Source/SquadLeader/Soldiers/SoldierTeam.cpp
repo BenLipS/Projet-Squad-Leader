@@ -114,31 +114,6 @@ TArray<ASoldier*> ASoldierTeam::GetSoldierList() const
 	return SoldierList;
 }
 
-/*void ASoldierTeam::OnRepTicket_Implementation(int newTickets)
-{
-	Tickets = newTickets;
-
-	auto test = GetLocalRole();
-
-	if (Id < 3)
-	{
-		if (ASoldierPlayerController* PC = GetWorld()->GetFirstLocalPlayerFromController<ASoldierPlayerController>(); PC)
-		{
-			if (auto HUD = PC->GetHUD<ITicketInterface>(); HUD)
-			{
-				if (PC->GetTeam() == this)
-				{
-					HUD->OnAllyTicketChanged(Tickets);
-				}
-				else
-				{
-					HUD->OnEnnemyTicketChanged(Tickets);
-				}
-			}
-		}
-	}
-}*/
-
 void ASoldierTeam::InformAllPlayerController_Implementation()
 {
 	for (auto PCIterator = GetWorld()->GetPlayerControllerIterator(); PCIterator; PCIterator++)
