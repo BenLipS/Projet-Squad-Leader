@@ -211,18 +211,19 @@ void ASquadLeaderGameModeBase::CheckTeamTicketsVictoryCondition()
 
 void ASquadLeaderGameModeBase::EndGame(ASoldierTeam* WinningTeam)
 {
-	for (auto Teams : Cast<ASquadLeaderGameState>(GameState)->GetSoldierTeamCollection()) {
-		for (auto Soldiers : Teams->GetSoldierList()) {
-			if (auto PlayerController = Cast<ASoldierPlayerController>(Soldiers->GetController()); PlayerController) {
-				if (PlayerController->GetTeam() == WinningTeam) {
-					PlayerController->OnGameEnd("VICTORY !");
-				}
-				else {
-					PlayerController->OnGameEnd("DEFEAT !");
-				}
+	for (auto PCIterator = GetWorld()->GetPlayerControllerIterator(); PCIterator; PCIterator++)
+	{
+		if (auto PC = Cast<ASoldierPlayerController>(PCIterator->Get()); PC)
+		{
+			if (PC->GetTeam() == WinningTeam) {
+				PC->OnGameEnd("VICTORY !");
+			}
+			else {
+				PC->OnGameEnd("DEFEAT !");
 			}
 		}
 	}
+
 	FTimerHandle timerBeforeClosing;
 	GetWorld()->GetTimerManager().SetTimer(timerBeforeClosing, this,
 		&ASquadLeaderGameModeBase::CloseGame, 10.f);  // request to the server to end the game
@@ -230,11 +231,11 @@ void ASquadLeaderGameModeBase::EndGame(ASoldierTeam* WinningTeam)
 
 void ASquadLeaderGameModeBase::CloseGame()
 {
-	for (auto Teams : Cast<ASquadLeaderGameState>(GameState)->GetSoldierTeamCollection()) {
-		for (auto Soldiers : Teams->GetSoldierList()) {
-			if (auto PlayerController = Cast<ASoldierPlayerController>(Soldiers->GetController()); PlayerController) {
-				PlayerController->ClientSendCommand("open MapMainMenu", true);
-			}
+	for (auto PCIterator = GetWorld()->GetPlayerControllerIterator(); PCIterator; PCIterator++)
+	{
+		if (auto PC = Cast<ASoldierPlayerController>(PCIterator->Get()); PC)
+		{
+			PC->ClientSendCommand("open MapMainMenu", true);
 		}
 	}
 	//FGenericPlatformMisc::RequestExit(false);
