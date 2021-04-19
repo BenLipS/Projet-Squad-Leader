@@ -6,7 +6,7 @@ UGA_Run::UGA_Run()
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 
 	AbilityInputID = ESoldierAbilityInputID::Run;
-	AbilityID = ESoldierAbilityInputID::None;
+	AbilityID = ESoldierAbilityInputID::Run;
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Run")));
 	ActivationOwnedTags.AddTag(FGameplayTag::RequestGameplayTag(FName("State.Running")));
 }
@@ -21,6 +21,7 @@ void UGA_Run::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGa
 		if (ASoldier* Soldier = Cast<ASoldier>(ActorInfo->AvatarActor.Get()); Soldier)
 			Soldier->StartRunning();
 	}
+	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 }
 
 bool UGA_Run::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, OUT FGameplayTagContainer* OptionalRelevantTags) const

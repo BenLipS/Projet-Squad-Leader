@@ -58,6 +58,10 @@ protected:
 public:
 	UFUNCTION(Client, Reliable)
 	void CreateHUD();
+
+	void BindMainAbilities();
+	void NotifyMainAbilityCooldown(const float _Cooldown, const ESoldierAbilityInputID _ID);
+
 //////////////// Movements
 protected:
 	// Move direction
@@ -149,6 +153,12 @@ public:
 	void OnWallVisionDeactivate();
 	void OnWallVisionDeactivate_Implementation();
 
+	//----- Cooldown -----
+
+	// Get the cooldown of the ability given its ID - This will take only the first ability that match the ID
+	/*UFUNCTION()
+	float GetCooldown(const ESoldierAbilityInputID _AbilityID);*/
+
 //////////////// Cheat
 	UFUNCTION(Exec)
 	void Cheat_AddAISquad();
@@ -180,6 +190,4 @@ public:
 	UFUNCTION(Server, Reliable)
 	void ServerCheat_LevelUp();
 	void ServerCheat_LevelUp_Implementation();
-
-
 };

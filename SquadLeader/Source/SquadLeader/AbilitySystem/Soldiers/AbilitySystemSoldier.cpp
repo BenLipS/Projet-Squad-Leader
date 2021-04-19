@@ -3,6 +3,7 @@
 #include "AbilitySystemGlobals.h"
 #include "GameplayCueManager.h"
 #include "Algo/MaxElement.h"
+#include "Algo/Find.h"
 
 bool UAbilitySystemSoldier::BatchRPCTryActivateAbility(FGameplayAbilitySpecHandle _InAbilityHandle, bool _EndAbilityImmediately)
 {
@@ -65,6 +66,13 @@ void UAbilitySystemSoldier::RemoveGameplayCueLocal(const FGameplayTag _GameplayC
 	UAbilitySystemGlobals::Get().GetGameplayCueManager()->HandleGameplayCue(GetOwner(), _GameplayCueTag, EGameplayCueEvent::Type::Removed, _GameplayCueParameters);
 }
 
+bool UAbilitySystemSoldier::IsInCooldown(const FGameplayTag& _Tag)
+{
+	float RemainTime = 0.00f;
+	const bool bTagFoundAsCooldown = GetCooldownRemainingForTag(_Tag, RemainTime);
+	return bTagFoundAsCooldown && (RemainTime > 0.00f);
+}
+
 bool UAbilitySystemSoldier::GetCooldownRemainingForTags(const FGameplayTagContainer& _CooldownTags, float& _TimeRemaining)
 {
 	if (_CooldownTags.Num() > 0)
@@ -115,4 +123,26 @@ bool UAbilitySystemSoldier::GetCooldownRemainingAndDurationForTag(const FGamepla
 {
 	const FGameplayTagContainer CooldownTags{ _CooldownTags };
 	return GetCooldownRemainingAndDurationForTags(CooldownTags, _TimeRemaining, _CooldownDuration);
+}
+
+float UAbilitySystemSoldier::GetCooldownRemainingFromAbilityID(const ESoldierAbilityInputID _AbilityID)
+{
+	// Find the ability matching _AbilityID
+	auto It_Ability = Algo::FindByPredicate(GetActivatableAbilities(), [_AbilityID](FGameplayAbilitySpec AbilitySpec)
+	{
+		return AbilitySpec.InputID == static_cast<int32>(_AbilityID);
+	});
+
+	if (!It_Ability)
+		return 0.f;
+
+	// Get the cooldown
+	UGameplayAbilitySoldier* Ability = Cast<UGameplayAbilitySoldier>(It_Ability->Ability);
+	if (Ability)
+	{
+		float RemainTime = 0.00f;
+		GetCooldownRemainingForTags(*Ability->GetCooldownTags(), RemainTime);
+		return RemainTime;
+	}
+	return 0.f;
 }

@@ -6,7 +6,7 @@ UGA_Aim::UGA_Aim()
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 
 	AbilityInputID = ESoldierAbilityInputID::Aim;
-	AbilityID = ESoldierAbilityInputID::None;
+	AbilityID = ESoldierAbilityInputID::Aim;
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Aim")));
 	ActivationOwnedTags.AddTag(FGameplayTag::RequestGameplayTag(FName("State.Aiming")));
 }
@@ -21,6 +21,7 @@ void UGA_Aim::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGa
 		ASoldier* soldier = CastChecked<ASoldier>(ActorInfo->AvatarActor.Get());
 		soldier->StartAiming();
 	}
+	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 }
 
 bool UGA_Aim::CanActivateAbility(const FGameplayAbilitySpecHandle _Handle, const FGameplayAbilityActorInfo* _ActorInfo, const FGameplayTagContainer* _SourceTags, const FGameplayTagContainer* _TargetTags, OUT FGameplayTagContainer* _OptionalRelevantTags) const

@@ -9,7 +9,7 @@ UGA_ReloadWeapon::UGA_ReloadWeapon()
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 
 	AbilityInputID = ESoldierAbilityInputID::ReloadWeapon;
-	AbilityID = ESoldierAbilityInputID::None;
+	AbilityID = ESoldierAbilityInputID::ReloadWeapon;
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.ReloadWeapon")));
 	ActivationOwnedTags.AddTag(FGameplayTag::RequestGameplayTag(FName("State.ReloadingWeapon")));
 }
@@ -40,6 +40,8 @@ void UGA_ReloadWeapon::ActivateAbility(const FGameplayAbilitySpecHandle Handle, 
 		TaskWaitDelay->ReadyForActivation();
 		TaskWaitDelay->OnFinish.AddDynamic(this, &UGA_ReloadWeapon::MontageCompletedOrBlendedOut);
 	}
+
+	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 }
 
 bool UGA_ReloadWeapon::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, OUT FGameplayTagContainer* OptionalRelevantTags) const

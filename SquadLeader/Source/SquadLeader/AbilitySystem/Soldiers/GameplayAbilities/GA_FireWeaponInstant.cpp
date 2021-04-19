@@ -15,10 +15,6 @@ SourceSoldier { nullptr },
 TimeOfLastShoot{ -9999.f }
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
-
-	AbilityInputID = ESoldierAbilityInputID::None;
-	AbilityID = ESoldierAbilityInputID::None;
-
 	ActivationBlockedTags.AddTag(FGameplayTag::RequestGameplayTag(FName("State.ReloadingWeapon")));
 }
 
@@ -46,6 +42,8 @@ void UGA_FireWeaponInstant::ActivateAbility(const FGameplayAbilitySpecHandle Han
 	ServerWaitForClientTargetDataTask->ReadyForActivation();
 
 	FireBullet();
+
+	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 }
 
 void UGA_FireWeaponInstant::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
