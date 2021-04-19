@@ -43,7 +43,7 @@ FVector AAISquadController::GetRespawnPoint()  // TODO : Change this function to
 			auto AvailableSpawnPoints = soldier->GetTeam()->GetUsableSpawnPoints();
 			if (AvailableSpawnPoints.Num() > 0) {
 
-				FVector OptimalPosition = AvailableSpawnPoints[0]->GetActorLocation();
+				ASoldierSpawn* OptimalSpawn = AvailableSpawnPoints[0];
 				auto CalculateMinimalDistance = [](FVector PlayerPos, FVector FirstPoint, FVector SecondPoint) {  // return true if the first point is closest
 					float dist1 = FVector::Dist(PlayerPos, FirstPoint);
 					float dist2 = FVector::Dist(PlayerPos, SecondPoint);
@@ -51,16 +51,16 @@ FVector AAISquadController::GetRespawnPoint()  // TODO : Change this function to
 				};
 
 				for (auto loop : AvailableSpawnPoints) {
-					if (CalculateMinimalDistance(soldier->GetActorLocation(), loop->GetActorLocation(), OptimalPosition)) {
-						OptimalPosition = loop->GetActorLocation();
+					if (CalculateMinimalDistance(soldier->GetActorLocation(), loop->GetActorLocation(), OptimalSpawn->GetActorLocation())) {
+						OptimalSpawn = loop;
 					}
 				}
 
-				return OptimalPosition;
+				return OptimalSpawn->GetSpawnLocation();
 			}
 		}
 	}
-	return FVector(0.f, 0.f, 1500.f); // else return default
+	return FVector(200.f, 200.f, 1500.f); // else return default
 }
 
 void AAISquadController::BeginPlay()

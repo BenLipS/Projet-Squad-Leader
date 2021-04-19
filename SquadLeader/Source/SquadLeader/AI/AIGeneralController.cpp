@@ -54,16 +54,20 @@ void AAIGeneralController::InitMissionList() {
 }
 
 void AAIGeneralController::Tick(float DeltaSeconds) {
-	Super::Tick(DeltaSeconds);
+	if (IsActivated) {
+		Super::Tick(DeltaSeconds);
+		Sens();
+	}
+		Think(); // == if we need to change the BehaviorTree,
+	if (IsActivated) {
+			Act();
+		
+		//Act will also be done in the behavior tree
+		FlockingComponent->UpdateFlockingPosition(DeltaSeconds);
 
-	Sens();
-	Think(); // == if we need to change the BehaviorTree,
-	Act();
-	//Act will also be done in the behavior tree
-	FlockingComponent->UpdateFlockingPosition(DeltaSeconds);
-
-	CheckIfNeedToStopCurrentBehavior();
-	//Act will also be done in the behavior tree
+		CheckIfNeedToStopCurrentBehavior();
+		//Act will also be done in the behavior tree
+	}
 }
 
 void AAIGeneralController::Sens() {
@@ -573,7 +577,7 @@ ResultState AAIGeneralController::ShootEnemy() {
 
 EPathFollowingRequestResult::Type AAIGeneralController::FollowFlocking() {
 	EPathFollowingRequestResult::Type _movetoResult;
-	_movetoResult = MoveToLocation(blackboard->GetValueAsVector("FlockingLocation"), 5.f);
+	_movetoResult = MoveToLocation(blackboard->GetValueAsVector("FlockingLocation"), 5.f, true, true, false, true, DefaultNavigationFilterClass);
 	return _movetoResult;
 }
 
@@ -591,7 +595,7 @@ void AAIGeneralController::SetPatrolPoint()
 	FVector startLocation = ObjectifLocation + 100.f;
 	FVector endLocation = ObjectifLocation + 100.f + PatrolPos;
 
-	if (navSys->NavigationRaycast(GetWorld(), startLocation, endLocation, HitLocation))
+	if (navSys->NavigationRaycast(GetWorld(), startLocation, endLocation, HitLocation, DefaultNavigationFilterClass))
 		PatrolPos = HitLocation;
 
 	blackboard->SetValueAsVector("PatrolPoint", ObjectifLocation + PatrolPos);

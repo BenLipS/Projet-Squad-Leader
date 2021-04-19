@@ -113,7 +113,7 @@ void ASoldier::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifeti
 void ASoldier::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	ASquadLeaderGameModeBase* GM = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
+	/*ASquadLeaderGameModeBase* GM = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
 
 	if (GetTeam() && GM && GM->InfluenceMap) {
 		FGridPackage m_package;
@@ -135,12 +135,12 @@ void ASoldier::Tick(float DeltaTime)
 
 		m_package.m_type = Type::Soldier;
 		GM->InfluenceMap->ReceivedMessage(m_package);
-	}
+	}*/
 }
 
 void ASoldier::InitCameras()
 {
-	SyncControlRotation = FRotator{0.f, 0.f, 0.f};
+	SyncControlRotation = FRotator{ 0.f, 0.f, 0.f };
 
 	// 1st person camera
 	FirstPersonCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("FirstPersonCamera"));
@@ -458,7 +458,7 @@ void ASoldier::Turn(const float _Val)
 
 FVector ASoldier::GetLookingAtPosition(const float _MaxRange) const
 {
-	FCollisionQueryParams Params(SCENE_QUERY_STAT(AGSGATA_LineTrace), false);
+	FCollisionQueryParams Params(SCENE_QUERY_STAT(ASL_LineTrace), false);
 	Params.bReturnPhysicalMaterial = true;
 	Params.AddIgnoredActor(this);
 	Params.bIgnoreBlocks = false;
@@ -474,7 +474,7 @@ FVector ASoldier::GetLookingAtPosition(const float _MaxRange) const
 
 	// Get first blocking hit
 	FHitResult HitResult;
-	GetWorld()->LineTraceSingleByChannel(HitResult, ViewStart, ViewEnd, ECC_Player, Params);
+	GetWorld()->LineTraceSingleByChannel(HitResult, ViewStart, ViewEnd, ECC_WorldDynamic, Params);
 
 	//::DrawDebugLine(GetWorld(), ViewStart, HitResult.bBlockingHit ? HitResult.Location : ViewEnd, FColor::Blue, false, 2.f);
 
@@ -781,7 +781,7 @@ void ASoldier::LevelUp()
 	AttributeSet->LevelUp();
 
 	if (LevelUpFX && (GetLocalRole() == ROLE_Authority))
-		ClientSpawnLevelUpParticle(); 
+		ClientSpawnLevelUpParticle();
 }
 
 void ASoldier::Die()
@@ -904,7 +904,7 @@ bool ASoldier::SetTeam(ASoldierTeam* _Team)
 	// TODO: Clients must be aware of their team. If we really want a security with the server, we should call this function
 	// from the server only, have a test to determine wheter we can change the team, then use a ClientSetTeam to replicate the change
 	//if (GetLocalRole() == ROLE_Authority)
-	{  
+	{
 		Team = _Team;
 		return true;
 	}
@@ -917,7 +917,7 @@ void ASoldier::setup_stimulus() {
 	stimulus->RegisterWithPerceptionSystem();
 };
 
-uint8 ASoldier::GetInfluenceRadius() const noexcept{
+uint8 ASoldier::GetInfluenceRadius() const noexcept {
 	return InfluenceRadius;
 }
 

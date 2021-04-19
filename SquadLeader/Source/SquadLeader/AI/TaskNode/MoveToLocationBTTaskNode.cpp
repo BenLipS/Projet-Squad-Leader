@@ -25,7 +25,7 @@ void UMoveToLocationBTTaskNode::TickTask(class UBehaviorTreeComponent& OwnerComp
 
 	const FVector LocationGoal = _controller->get_blackboard()->GetValueAsVector(BlackboardKey.SelectedKeyName);
 
-	EPathFollowingRequestResult::Type MoveToActorResult = _controller->MoveToLocation(LocationGoal, AcceptableRadius, true, true, true);
+	EPathFollowingRequestResult::Type MoveToActorResult = _controller->MoveToLocation(LocationGoal, AcceptableRadius, true, true, true, true, _controller->GetQueryFilter());
 
 	if (MoveToActorResult == EPathFollowingRequestResult::AlreadyAtGoal)
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);

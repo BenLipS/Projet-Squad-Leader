@@ -24,6 +24,7 @@ enum Type {
 	Soldier UMETA(DisplayName = "Soldier"),
 	ControlArea UMETA(DisplayName = "ControlArea"),
 	Projectile UMETA(DisplayName = "Projectile"),
+	None UMETA(DisplayName = "None"),
 };
 
 USTRUCT()
@@ -81,6 +82,8 @@ public:
 
 	void ReceivedMessage(FGridPackage _message);
 
+public:
+	float GetValue(const FVector2D Location, const uint8 Team);
 private:
 	/*
 	* will initialize the array with the tile needed
@@ -109,10 +112,15 @@ private:
 	*/
 	int FindTileIndex(FVector _location) const noexcept;
 
+	bool FindIndexModifyinTeam1(const FVector2D Location, uint32& Index);
+	bool FindIndexModifyinTeam2(const FVector2D Location, uint32& Index);
+
 	/*
 	* Check if _location is on the tile who's in tile_location
 	*/
 	bool IsOnTile(FVector _location, FVector tile_location) const noexcept;
+
+	bool IsOnTileUpdate(const FVector2D Location, const FVector TileLocation) const noexcept;
 
 	/*
 	* Find the neighboor for all tile
@@ -140,12 +148,17 @@ private:
 	*/
 	void InfluenceControlArea(int index, int start_index, int source_index, int distance, int value) noexcept;
 
+	void InfluenceProjectile(int index, int start_index, int source_index, int distance, int value) noexcept;
+
 	/*
 	* Calculate the time of execution of a function
 	*/
 	void TimeFunction();
 
 	void UpdateTile(int index, float value, int team, Type type) noexcept;
+
+	void AddUpdateTileTeam1(const uint32 index);
+	void AddUpdateTileTeam2(const uint32 index);
 
 public:
 
@@ -202,8 +215,14 @@ private:
 	* we pop out an index when he's update value is down to 0
 	*/
 	UPROPERTY()
-		TArray<int> m_index_update;
+		TArray<uint32> m_index_update;
+
+	UPROPERTY()
+		TArray<uint32> m_index_team1;
+	UPROPERTY()
+		TArray<uint32> m_index_team2;
 
 	int value_tick = 0;
 	/*class UMyThreadManager* m_ThreadManager;*/
+
 };

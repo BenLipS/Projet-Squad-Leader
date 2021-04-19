@@ -20,6 +20,12 @@ AControlArea::AControlArea()
 void AControlArea::initCollideElement() {
 }
 
+// Called when the game starts or when spawned
+void AControlArea::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
 void AControlArea::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
