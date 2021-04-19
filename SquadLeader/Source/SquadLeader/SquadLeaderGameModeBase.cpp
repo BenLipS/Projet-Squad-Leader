@@ -1,4 +1,5 @@
 #include "SquadLeaderGameModeBase.h"
+#include "Net/OnlineEngineInterface.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Soldiers/Players/SoldierPlayerController.h"
 #include "Soldiers/Players/SoldierPlayerState.h"
@@ -46,6 +47,56 @@ void ASquadLeaderGameModeBase::InitGameWithGameState() {
 	}
 
 	InitGameState();
+}
+
+
+void ASquadLeaderGameModeBase::PreLogin(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage)
+{
+	// Test if the max number of player is reached
+	auto AlreadyConnectedPlayerNumber = GameState->PlayerArray.Num();
+	if (AlreadyConnectedPlayerNumber < NbMaxPlayer)
+	{
+
+		// Check if it is still time to log in (only on InitGameState)
+		if (auto GS = Cast<ASquadLeaderInitGameState>(GameState); GS)
+		{
+
+			// Login unique id must match server expected unique id type OR No unique id could mean game doesn't use them
+			const bool bUniqueIdCheckOk = (!UniqueId.IsValid() || (UniqueId.GetType() == UOnlineEngineInterface::Get()->GetDefaultOnlineSubsystemName()));
+			if (bUniqueIdCheckOk)
+			{
+				ErrorMessage = GameSession->ApproveLogin(Options);
+			}
+			else
+			{
+				ErrorMessage = TEXT("incompatible_unique_net_id");
+			}
+		}
+		else
+		{
+			ErrorMessage = TEXT("connection_period_exceeded");
+		}
+	}
+	else
+	{
+		ErrorMessage = TEXT("max_number_of_player_connected");
+	}
+
+	// send a message to remove the match in the match-macking system
+	if (AlreadyConnectedPlayerNumber >= 6) {
+		// TODO Thomas Ba
+	}
+
+	FGameModeEvents::GameModePreLoginEvent.Broadcast(this, UniqueId, ErrorMessage);
+}
+
+void ASquadLeaderGameModeBase::Logout(AController* Exiting)
+{
+	// notifies that a player has left
+	if (GEngine)GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Black, TEXT("A player left the game."));  // message for the server only
+
+	// do the basic job
+	Super::Logout(Exiting);
 }
 
 
@@ -141,31 +192,48 @@ void ASquadLeaderGameModeBase::RespawnSoldier(AController* _Controller)
 void ASquadLeaderGameModeBase::CheckControlAreaVictoryCondition()
 {
 	if (auto WinnerTeam = Cast<ASquadLeaderGameState>(GameState)->GetControlAreaManager()->GetTeamWithAllControl(); WinnerTeam) {
-		GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Red, TEXT("END GAME: All control area taken\n") + WinnerTeam->TeamName + TEXT(" win !"), false, FVector2D(7, 7));
-		FTimerHandle timerBeforeClosing;
-		GetWorld()->GetTimerManager().SetTimer(timerBeforeClosing, this,
-			&ASquadLeaderGameModeBase::EndGame, 5.f);  // request to the server to end the game
+		//GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Red, TEXT("END GAME: All control area taken\n") + WinnerTeam->TeamName + TEXT(" win !"), false, FVector2D(7, 7));
+		EndGame(WinnerTeam);
 	}
 }
 
 void ASquadLeaderGameModeBase::CheckTeamTicketsVictoryCondition()
 {
-	for (auto teams : Cast<ASquadLeaderGameState>(GameState)->GetSoldierTeamCollection()) {
-		if (teams->GetTicket() == 0) {
-			GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Red, TEXT("END GAME: Tickets depleted\n") + teams->TeamName + TEXT(" lose !"), false, FVector2D(7, 7));
-			FTimerHandle timerBeforeClosing;
-			GetWorld()->GetTimerManager().SetTimer(timerBeforeClosing, this,
-				&ASquadLeaderGameModeBase::EndGame, 5.f);  // request to the server to end the game
+	for (auto team : Cast<ASquadLeaderGameState>(GameState)->GetSoldierTeamCollection()) {
+		if (team->GetTicket() == 0) {
+			//GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Red, TEXT("END GAME: Tickets depleted\n") + teams->TeamName + TEXT(" lose !"), false, FVector2D(7, 7));
+			for (auto potentialwinningteam : Cast<ASquadLeaderGameState>(GameState)->GetSoldierTeamCollection())
+			if (potentialwinningteam != team && (potentialwinningteam->Id == 1 || potentialwinningteam->Id == 2))
+				EndGame(potentialwinningteam);
 		}
 	}
 }
 
-void ASquadLeaderGameModeBase::EndGame()
+void ASquadLeaderGameModeBase::EndGame(ASoldierTeam* WinningTeam)
 {
 	for (auto Teams : Cast<ASquadLeaderGameState>(GameState)->GetSoldierTeamCollection()) {
 		for (auto Soldiers : Teams->GetSoldierList()) {
-			if (auto PlayerControler = Cast<ASoldierPlayerController>(Soldiers->GetController()); PlayerControler) {
-				PlayerControler->ClientSendCommand("EXIT", true);
+			if (auto PlayerController = Cast<ASoldierPlayerController>(Soldiers->GetController()); PlayerController) {
+				if (PlayerController->GetTeam() == WinningTeam) {
+					PlayerController->OnGameEnd("VICTORY !");
+				}
+				else {
+					PlayerController->OnGameEnd("DEFEAT !");
+				}
+			}
+		}
+	}
+	FTimerHandle timerBeforeClosing;
+	GetWorld()->GetTimerManager().SetTimer(timerBeforeClosing, this,
+		&ASquadLeaderGameModeBase::CloseGame, 10.f);  // request to the server to end the game
+}
+
+void ASquadLeaderGameModeBase::CloseGame()
+{
+	for (auto Teams : Cast<ASquadLeaderGameState>(GameState)->GetSoldierTeamCollection()) {
+		for (auto Soldiers : Teams->GetSoldierList()) {
+			if (auto PlayerController = Cast<ASoldierPlayerController>(Soldiers->GetController()); PlayerController) {
+				PlayerController->ClientSendCommand("open MapMainMenu", true);
 			}
 		}
 	}

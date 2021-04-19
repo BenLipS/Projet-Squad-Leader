@@ -36,7 +36,7 @@ void AInfluenceMapGrid::Tick(float DeltaSeconds) {
 			UpdateGrid();
 			const double endTime = FPlatformTime::Seconds();
 			const double elapsedTime = endTime - startTime;
-			GEngine->AddOnScreenDebugMessage(20, 2.f, FColor::Green, FString::Printf(TEXT("Ex?cution a dur? % .0fms."), elapsedTime * 1000));
+			//GEngine->AddOnScreenDebugMessage(20, 2.f, FColor::Green, FString::Printf(TEXT("Ex?cution a dur? % .0fms."), elapsedTime * 1000));
 		}
 		value_tick++;
 	}

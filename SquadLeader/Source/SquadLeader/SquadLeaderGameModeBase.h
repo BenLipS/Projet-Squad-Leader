@@ -23,6 +23,13 @@ public:
 
 	void InitGameWithGameState();
 
+	virtual void PreLogin(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage) override;
+	virtual void Logout(AController* Exiting) override;
+
+public:
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "GameData")
+		int NbMaxPlayer = 6;
+
 protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Respawn")
 	float RespawnDelay;
@@ -32,7 +39,8 @@ public:
 	void RespawnSoldier(AController* _Controller);
 	void CheckControlAreaVictoryCondition();
 	void CheckTeamTicketsVictoryCondition();
-	void EndGame();
+	void EndGame(ASoldierTeam* WinningTeam);
+	void CloseGame();
 
 protected:
 	UPROPERTY(EditDefaultsOnly)

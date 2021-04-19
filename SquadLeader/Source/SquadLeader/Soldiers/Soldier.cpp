@@ -155,10 +155,8 @@ void ASoldier::InitCameras()
 	SpringArmComponent->SetupAttachment(GetCapsuleComponent());
 	SpringArmComponent->TargetArmLength = 170;
 	SpringArmComponent->SetRelativeLocation(FVector(-30.f, 40.f, BaseEyeHeight));
-	SpringArmComponent->bEnableCameraLag = true;
-	SpringArmComponent->bEnableCameraRotationLag = true;
-	SpringArmComponent->CameraLagSpeed = 10.0f;
-	SpringArmComponent->CameraRotationLagSpeed = 10.0f;
+	SpringArmComponent->bEnableCameraLag = false;
+	SpringArmComponent->bEnableCameraRotationLag = false;
 	SpringArmComponent->bUsePawnControlRotation = true;
 
 	ThirdPersonCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("ThirdPersonCamera"));
