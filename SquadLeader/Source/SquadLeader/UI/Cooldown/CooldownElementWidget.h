@@ -52,7 +52,7 @@ public:
 	void LaunchCooldown(float Timer);
 
 	UFUNCTION()
-	void InitState(ESoldierAbilityInputID newKey);
+	void InitState(ESoldierAbilityInputID newKey, FString KeyText);
 
 	UFUNCTION()
 	ESoldierAbilityInputID GetAbilityID();

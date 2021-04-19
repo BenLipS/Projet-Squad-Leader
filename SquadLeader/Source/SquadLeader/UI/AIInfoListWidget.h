@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "SL_UserWidget.h"
-#include "Components/TileView.h"
+#include "Components/VerticalBox.h"
 #include "../Soldiers/AIs/SoldierAI.h"
 #include "Interface/SquadInterface.h"
 #include "AIInfoListWidget.generated.h"
@@ -23,6 +23,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Widget | AIInfo")
 	TSubclassOf<class UAIInfoWidget> AIInfoWidgetClass;
+
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UVerticalBox* AIInfoContainer;
 
 public:
 	UAIInfoListWidget(const FObjectInitializer& ObjectInitializer);

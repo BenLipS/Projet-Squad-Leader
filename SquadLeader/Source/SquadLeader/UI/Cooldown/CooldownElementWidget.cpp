@@ -63,8 +63,8 @@ ESoldierAbilityInputID UCooldownElementWidget::GetAbilityID()
 	return AbilityID;
 }
 
-void UCooldownElementWidget::InitState(ESoldierAbilityInputID newKey)
+void UCooldownElementWidget::InitState(ESoldierAbilityInputID newKey, FString KeyText)
 {
 	AbilityID = newKey;
-	TextKey->SetText(FText::FromString(""));
+	TextKey->SetText(FText::FromString(KeyText));
 }
