@@ -3,6 +3,7 @@
 #include "AIInfoListWidget.h"
 #include "AIInfoWidget.h"
 #include "../Soldiers/AIs/SoldierAI.h"
+#include "Blueprint/WidgetTree.h"
 #include "Interface/SquadDelegateInterface.h"
 
 
@@ -13,20 +14,17 @@ UAIInfoListWidget::UAIInfoListWidget(const FObjectInitializer& ObjectInitializer
 void UAIInfoListWidget::OnSquadChanged(const TArray<FSoldierAIData>& newValue)
 {
 	AIInfoWidgetList.Empty();
-	int y = 5;
+	AIInfoContainer->ClearChildren();
 	for (auto Soldier : newValue)
 	{
-		UAIInfoWidget* newEntry = CreateWidget<UAIInfoWidget>(GetWorld(), AIInfoWidgetClass);
+		UAIInfoWidget* newEntry = WidgetTree->ConstructWidget<UAIInfoWidget>(AIInfoWidgetClass);
 		newEntry->OnHealthChanged(Soldier.Health);
 		newEntry->OnMaxHealthChanged(Soldier.MaxHealth);
 		newEntry->OnShieldChanged(Soldier.Shield);
 		newEntry->OnMaxShieldChanged(Soldier.MaxShield);
-		newEntry->AddToViewport();
-		newEntry->SetPositionInViewport(FVector2D(5, y));
-		y += 55;
 		AIInfoWidgetList.Add(newEntry);
+		AIInfoContainer->AddChildToVerticalBox(newEntry);
 	}
-	
 }
 
 void UAIInfoListWidget::OnSquadHealthChanged(int index, float newHealth)
