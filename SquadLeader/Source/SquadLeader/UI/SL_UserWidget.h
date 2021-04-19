@@ -20,5 +20,7 @@ public:
 	virtual void AddToViewport(int32 ZOrder = 0);
 
 	/*Call by HUD to setup the delegate interface*/
-	virtual void SetupDelegateToObject(UObject* ObjectIn);
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	void SetupDelegateToObject(UObject* ObjectIn);
+	virtual void SetupDelegateToObject_Implementation(UObject* ObjectIn);
 };

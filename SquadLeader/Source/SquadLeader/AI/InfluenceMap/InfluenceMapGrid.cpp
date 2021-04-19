@@ -36,7 +36,7 @@ void AInfluenceMapGrid::Tick(float DeltaSeconds) {
 			UpdateGrid();
 			const double endTime = FPlatformTime::Seconds();
 			const double elapsedTime = endTime - startTime;
-			GEngine->AddOnScreenDebugMessage(20, 2.f, FColor::Green, FString::Printf(TEXT("Ex?cution a dur? % .0fms."), elapsedTime * 1000));
+			//GEngine->AddOnScreenDebugMessage(20, 2.f, FColor::Green, FString::Printf(TEXT("Ex?cution a dur? % .0fms."), elapsedTime * 1000));
 		}
 		value_tick++;
 	}
@@ -75,7 +75,9 @@ bool AInfluenceMapGrid::IsValid(FVector _location) const {
 void AInfluenceMapGrid::DrawGrid() const {
 	if (m_DrawCharacterInfluence) {
 		for (FTileBase _tile : m_influencemap) {
-			if (_tile.m_team == 1)
+			if(_tile.m_type == Type::Projectile)
+				DrawDebugSolidBox(GetWorld(), _tile.m_location, FVector(95.f, 95.f, 10.f), FColor(255 * _tile.m_value, 0, 255 * _tile.m_value));
+			else if (_tile.m_team == 1)
 				DrawDebugSolidBox(GetWorld(), _tile.m_location, FVector(95.f, 95.f, 10.f), FColor(0, 0, 255 * _tile.m_value));
 			else if (_tile.m_team == 2)
 				DrawDebugSolidBox(GetWorld(), _tile.m_location, FVector(95.f, 95.f, 10.f), FColor(255 * _tile.m_value, 0, 0));
@@ -89,14 +91,47 @@ void AInfluenceMapGrid::UpdateGrid() noexcept {
 
 	for (int32 index = m_index_update.Num() - 1; index >= 0; --index) {
 		int index_tile = m_index_update[index];
-		if (m_influencemap[index_tile].m_value >= 0.05f)
-			m_influencemap[index_tile].m_value -= 0.05f;
-		else {
-			m_influencemap[index_tile].m_team = -1;
-			m_influencemap[index_tile].in_update = false;
+		if (m_influencemap[index_tile].m_type != Type::ControlArea) {
+			if (m_influencemap[index_tile].m_value >= 0.05f)
+				m_influencemap[index_tile].m_value -= 0.05f;
+			else {
+				m_influencemap[index_tile].m_team = -1;
+				m_influencemap[index_tile].in_update = false;
+				m_influencemap[index_tile].m_type = Type::None;
+			}
 		}
 	}
-	m_index_update.RemoveAll([&](const int index) { return !m_influencemap[index].in_update; });
+
+	for (int32 index = m_index_team1.Num() - 1; index >= 0; --index) {
+		int index_tile = m_index_team1[index];
+		if (m_influencemap[index_tile].m_type != Type::ControlArea) {
+			if (m_influencemap[index_tile].m_value >= 0.05f)
+				m_influencemap[index_tile].m_value -= 0.05f;
+			else {
+				m_influencemap[index_tile].m_team = -1;
+				m_influencemap[index_tile].in_update = false;
+				m_influencemap[index_tile].m_type = Type::None;
+			}
+		}
+	}
+
+	for (int32 index = m_index_team2.Num() - 1; index >= 0; --index) {
+		int index_tile = m_index_team2[index];
+		if (m_influencemap[index_tile].m_type != Type::ControlArea) {
+			if (m_influencemap[index_tile].m_value >= 0.05f)
+				m_influencemap[index_tile].m_value -= 0.05f;
+			else {
+				m_influencemap[index_tile].m_team = -1;
+				m_influencemap[index_tile].in_update = false;
+				m_influencemap[index_tile].m_type = Type::None;
+			}
+		}
+	}
+
+	auto functor = [&](const int index) { return !m_influencemap[index].in_update; };
+	m_index_update.RemoveAll(functor);
+	m_index_team1.RemoveAll(functor);
+	m_index_team2.RemoveAll(functor);
 }
 
 int AInfluenceMapGrid::FindTileIndex(FVector _location) const noexcept {
@@ -109,6 +144,72 @@ int AInfluenceMapGrid::FindTileIndex(FVector _location) const noexcept {
 	return -1;
 }
 
+bool AInfluenceMapGrid::FindIndexModifyinTeam1(const FVector2D Location, uint32& Index){
+	if (m_index_team1.Num() > 0) {
+		int begin = 0;
+		int end = m_index_team1.Num() - 1;
+		int middle = begin;
+		bool find = false;
+
+		while (!find && begin <= end) {
+			middle = (begin + end) / 2;
+			const FTileBase Tile = m_influencemap[m_index_team1[middle]];
+			if (IsOnTileUpdate(Location, Tile.m_location))
+				find = true;
+			else if (Location.Y >= Tile.m_location.Y - (m_tile_height / 2.0f) && Location.Y <= Tile.m_location.Y + (m_tile_height / 2.f))
+				if (Location.X > Tile.m_location.X)
+					begin = middle + 1;
+				else
+					end = middle - 1;
+			else
+				if (Location.Y > Tile.m_location.Y - (m_tile_height / 2.0f))
+					begin = middle + 1;
+				else
+					end = middle - 1;
+		}
+
+		if (find) {
+			Index = m_index_team1[middle];
+			return true;
+		}
+		return false;
+	}
+	return false;
+}
+
+bool AInfluenceMapGrid::FindIndexModifyinTeam2(const FVector2D Location, uint32& Index) {
+	if (m_index_team2.Num() > 0) {
+		int begin = 0;
+		int end = m_index_team2.Num() - 1;
+		int middle = begin;
+		bool find = false;
+
+		while (!find && begin <= end) {
+			middle = (begin + end) / 2;
+			const FTileBase Tile = m_influencemap[m_index_team2[middle]];
+			if (IsOnTileUpdate(Location, Tile.m_location))
+				find = true;
+			else if (Location.Y >= Tile.m_location.Y - (m_tile_height / 2.0f) && Location.Y <= Tile.m_location.Y + (m_tile_height / 2.f))
+				if (Location.X > Tile.m_location.X)
+					begin = middle + 1;
+				else
+					end = middle - 1;
+			else
+				if (Location.Y > Tile.m_location.Y - (m_tile_height / 2.0f))
+					begin = middle + 1;
+				else
+					end = middle - 1;
+		}
+
+		if (find) {
+			Index = m_index_team2[middle];
+			return true;
+		}
+		return false;
+	}
+	return false;
+}
+
 bool AInfluenceMapGrid::IsOnTile(FVector _location, FVector tile_location) const noexcept {
 	float width = m_tile_width / 2.f;
 	float height = m_tile_height / 2.f;
@@ -116,6 +217,16 @@ bool AInfluenceMapGrid::IsOnTile(FVector _location, FVector tile_location) const
 	bool on_axis_y = _location.Y <= tile_location.Y + height && _location.Y >= tile_location.Y - height;
 
 	return on_axis_x && on_axis_y;
+}
+
+bool AInfluenceMapGrid::IsOnTileUpdate(const FVector2D Location, const FVector TileLocation) const noexcept{
+	const float width = m_tile_width / 2.f;
+	const float height = m_tile_height / 2.f;
+
+	const bool AxisX = (Location.X <= TileLocation.X + width) && (Location.X >= TileLocation.X - width);
+	const bool AxisY = (Location.Y <= TileLocation.Y + height) && (Location.Y >= TileLocation.Y - height);
+
+	return AxisX && AxisY;
 }
 
 void AInfluenceMapGrid::Neighboors(int index) noexcept {
@@ -167,10 +278,22 @@ void AInfluenceMapGrid::InfluenceControlArea(int index, int start_index, int sou
 
 	for (int neighboor : m_neighboors[index].m_neighboor) {
 		if (neighboor != start_index && m_influencemap[neighboor].m_value <= value) {
-			m_influencemap[neighboor].m_value = value;
-			m_influencemap[neighboor].m_team = m_influencemap[index].m_team;
-			m_influencemap[neighboor].m_type = Type::ControlArea;
+			UpdateTile(neighboor, value, m_influencemap[index].m_team, Type::ControlArea);
 			InfluenceControlArea(neighboor, index, source_index, distance + 1, value);
+		}
+	}
+}
+
+void AInfluenceMapGrid::InfluenceProjectile(int index, int start_index, int source_index, int distance, int value) noexcept {
+	float Value = m_influencemap[source_index].m_value / FMath::Sqrt(1.f + distance);
+
+	if (distance > 1)
+		return;
+
+	for (int neighboor : m_neighboors[index].m_neighboor) {
+		if (neighboor != start_index && m_influencemap[neighboor].m_value <= Value) {
+			UpdateTile(neighboor, Value, m_influencemap[index].m_team, Type::Projectile);
+			InfluenceProjectile(neighboor, index, source_index, distance + 1, Value);
 		}
 	}
 }
@@ -185,13 +308,12 @@ void AInfluenceMapGrid::ReceivedMessage(FGridPackage _message) {
 			InfluenceSoldier(index_tile, index_tile, index_tile, 1);
 			break;
 		case Type::ControlArea:
-			m_influencemap[index_tile].m_value = 1.0f;
-			m_influencemap[index_tile].m_team = _message.team_value;
-			m_influencemap[index_tile].m_type = Type::ControlArea;
+			UpdateTile(index_tile, 1.f, _message.team_value, _message.m_type);
 			InfluenceControlArea(index_tile, index_tile, index_tile, 1, 1.0f);
 			break;
 		case Type::Projectile:
-			m_influencemap[index_tile].m_value = 0.3f;
+			UpdateTile(index_tile, 0.7f, _message.team_value, _message.m_type);
+			InfluenceProjectile(index_tile, index_tile, index_tile, 1, 0.7f);
 			break;
 		default:
 			break;
@@ -213,9 +335,56 @@ void AInfluenceMapGrid::UpdateTile(int index, float value, int team, Type type) 
 		m_influencemap[index].m_value = value;
 	
 	if (!m_influencemap[index].in_update) {
-		m_index_update.Add(index);
+		//m_index_update.Add(index);
+		if (type != Type::Projectile) {
+			if (team == 1)
+				AddUpdateTileTeam1(index);
+			else
+				AddUpdateTileTeam2(index);
+		}
+		else {
+			AddUpdateTileTeam1(index);
+			AddUpdateTileTeam2(index);
+		}
+
 		m_influencemap[index].in_update = true;
 	}
 	m_influencemap[index].m_team = team;
 	m_influencemap[index].m_type = type;
+}
+
+float AInfluenceMapGrid::GetValue(const FVector2D Location, const uint8 Team) {
+	uint32 index = -1;
+	float Cost = 1.f;
+	if (Team == 1) {
+		if (FindIndexModifyinTeam1(Location, index)) {
+			Cost += m_influencemap[index].m_value * 10.f;
+		}
+	}
+	else {
+		if (FindIndexModifyinTeam2(Location, index)) {
+			Cost += m_influencemap[index].m_value * 10.f;
+		}
+	}
+	return Cost;
+}
+
+void AInfluenceMapGrid::AddUpdateTileTeam1(const uint32 index) {
+	for (int i = 0; i != m_index_team1.Num(); ++i) {
+		if (m_index_team1[i] >= index) {
+			m_index_team1.Insert(index, i);
+			return;
+		}
+	}
+	m_index_team1.Add(index);
+}
+
+void AInfluenceMapGrid::AddUpdateTileTeam2(const uint32 index) {
+	for (int i = 0; i != m_index_team2.Num(); ++i) {
+		if (m_index_team2[i] >= index) {
+			m_index_team2.Insert(index, i);
+			return;
+		}
+	}
+	m_index_team2.Add(index);
 }

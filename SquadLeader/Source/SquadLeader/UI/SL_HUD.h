@@ -2,24 +2,34 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/HUD.h"
+
 #include "Interface/PlayerHealthDelegateInterface.h"
 #include "Interface/PlayerShieldDelegateInterface.h"
+#include "Interface/PlayerPrestigeDelegateInterface.h"
 #include "Interface/SquadDelegateInterface.h"
 #include "Interface/WeaponDelegateInterface.h"
 #include "Interface/OrderDelegateInterface.h"
 #include "Interface/NotificationDelegateInterface.h"
+#include "Interface/StatInfoDelegateInterface.h"
 #include "Interface/MinimapDelegateInterface.h"
+#include "Interface/TicketDelegateInterface.h"
+#include "Interface/GameEndDelegateInterface.h"
+
 #include "SL_HUD.generated.h"
 
 UCLASS()
 class SQUADLEADER_API ASL_HUD : public AHUD,
 	public IPlayerHealthDelegateInterface,
 	public IPlayerShieldDelegateInterface,
+	public IPlayerPrestigeDelegateInterface,
 	public ISquadDelegateInterface,
 	public IWeaponDelegateInterface,
 	public IOrderDelegateInterface,
 	public INotificationDelegateInterface,
-	public IMinimapDelegateInterface
+	public IStatInfoDelegateInterface,
+	public IMinimapDelegateInterface,
+	public ITicketDelegateInterface,
+	public IGameEndDelegateInterface
 
 {
 	GENERATED_BODY()
@@ -46,6 +56,7 @@ public:
 
 	void BindSoldierTeamChanges();
 	void BindControlAreas();
+	void GetProfileData();
 
 /*********************************
 *****INTERFACE IMPLEMENTATION*****
@@ -80,15 +91,33 @@ public:
 public:
 	//void OnOrderInputPressed() override;
 	//void OnOrderInputReleased() override;
-	// 
+
 //-----INotificationDelegateInterface-----
 public:
 	//void OnTextNotification_Received(FText textNotification) override;
 
+//-----IStatInfoDelegateInterface-----
+public:
+	//void OnStatInfoReceived(FString Key, FString Value) override;
+	//void OnStatsInfoReceived(TMap<FString, FString> statsIn) override;
 //-----IMinimapInterface-----
 public:
 	//void OnSoldierAddedToTeam(ASoldier* _Soldier) override;
 	//void OnSoldierRemovedFromTeam() override;
 	//void OnUpdatePOIs() override;
 	//void OnControlAreaAdded() override;
+
+//-----IPlayerPrestigeDelegateInterface-----
+public:
+	//void OnPlayerPrestigeChanged(float newValue) override;
+	//void OnPlayerPrestigeLevelUpChanged(float newValue) override;
+
+//-----IControlAreaDelegateInterface-----
+public:
+	//virtual void OnControlAreaInit(unsigned int nbArea) override;
+	//virtual void OnAreaCaptureChanged(unsigned int index, int owner, int capturer, float capturePercent) override;
+
+//-----IGameEndDelegateInterface-----
+public:
+	//virtual void OnGameEnd(FString EndMessage) override;
 };

@@ -1,9 +1,16 @@
 #include "SoldierTeam.h"
 #include "Soldier.h"
+#include "Players/SoldierPlayerController.h"
+#include "../UI/Interface/TicketInterface.h"
 #include "../Spawn/SoldierSpawn.h"
 #include "../GameState/SquadLeaderGameState.h"
 #include "../SquadLeaderGameModeBase.h"
 #include "SquadLeader/Soldiers/AIs/SoldierAI.h"
+
+void ASoldierTeam::BroadcastTickets()
+{
+	OnTicketChanged.Broadcast(Tickets);
+}
 
 ASoldierTeam::ASoldierTeam() {
 	bReplicates = true;
@@ -38,7 +45,6 @@ void ASoldierTeam::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	DOREPLIFETIME(ASoldierTeam, SoldierList);
 	DOREPLIFETIME(ASoldierTeam, mainSpawnPoints);
 	DOREPLIFETIME(ASoldierTeam, Tickets);
-
 }
 
 TSubclassOf<ASoldierAI> ASoldierTeam::GetClassBasicAI()
@@ -108,11 +114,32 @@ TArray<ASoldier*> ASoldierTeam::GetSoldierList() const
 	return SoldierList;
 }
 
+void ASoldierTeam::InformAllPlayerController_Implementation()
+{
+	for (auto PCIterator = GetWorld()->GetPlayerControllerIterator(); PCIterator; PCIterator++)
+	{
+		if (auto PC = Cast<ASoldierPlayerController>(PCIterator->Get()); PC)
+		{
+			if (PC->GetTeam() == this)
+			{
+				PC->OnAllyTicket_Received(Tickets);
+			}
+			else
+			{
+				PC->OnEnnemyTicket_Received(Tickets);
+			}
+		}
+	}
+}
+
 void ASoldierTeam::RemoveOneTicket()
 {
 	Tickets--;
-	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TeamName + TEXT(" : Loses a ticket."));
-	
+
+	InformAllPlayerController();
+
+	//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TeamName + TEXT(" : Loses a ticket."));
+
 	// TODO : End game here if no tickets left and team is primordial
 	if (ASquadLeaderGameModeBase* GameMode = GetWorld()->GetAuthGameMode<ASquadLeaderGameModeBase>(); GameMode) {  // only for the server
 		GameMode->CheckTeamTicketsVictoryCondition();

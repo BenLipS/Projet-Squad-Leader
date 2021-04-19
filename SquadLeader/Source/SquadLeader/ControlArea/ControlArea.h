@@ -10,19 +10,22 @@
 #include "Net/UnrealNetwork.h"
 #include "ControlArea.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FControlAreaIntChanged, int, newInt);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FControlAreaFloatChanged, float, newFloat);
 
 UCLASS()
 class SQUADLEADER_API AControlArea : public AActor, public IPreInitable
 {
 	GENERATED_BODY()
+
+public:
+	FControlAreaIntChanged OnOwnerChanged;
+	FControlAreaIntChanged OnCapturerChanged;
+	FControlAreaFloatChanged OnPercentageChanged;
 	
 public:	
 	// Sets default values for this actor's properties
 	AControlArea();
-
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
 
 public:	
 	// for replication purpose
@@ -38,16 +41,37 @@ public:
 	//UPROPERTY(EditAnywhere, Category = "DetectionArea")
 	//	class UBoxComponent* BoxCollide;
 
+	UPROPERTY(EditInstanceOnly, Replicated, BlueprintReadWrite, Category = "ControlAreaData")
+		FString ControlAreaName = "";
 
 	/** Control value variables */
-	UPROPERTY(BlueprintReadWrite, Category = "ControlValue")
-		int maxControlValue;
-	UPROPERTY(BlueprintReadWrite, Category = "ControlValue")
-		int controlValueToTake;
-public:
-	UPROPERTY(VisibleAnywhere, Replicated, Category = "IsTaken")
-		ASoldierTeam* isTakenBy;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ControlValue")
+		int MaxControlValue = 20;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ControlValue")
+		int MinControlValueToControl = 0;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ControlValue")
+		int ControlValueToTake = 20;
 
+public:
+	UPROPERTY(VisibleAnywhere, ReplicatedUsing = OnRepOwner, Category = "IsTaken")
+	ASoldierTeam* IsTakenBy;
+
+	UPROPERTY(VisibleAnywhere, ReplicatedUsing = OnRepCapturer, Category = "IsTaken")
+	ASoldierTeam* IsCapturedBy;
+
+protected:
+	UPROPERTY(ReplicatedUsing = OnRepPercentage)
+	float PercentageCapture = 0.f;
+
+protected:
+	UFUNCTION()
+	void OnRepOwner();
+
+	UFUNCTION()
+	void OnRepCapturer();
+
+	UFUNCTION()
+	void OnRepPercentage();
 
 	/**
 	 *	Event when this actor overlaps another actor, for example a player walking into a trigger.
@@ -64,8 +88,8 @@ public:
 
 protected:  // time value for calculation frequency
 	FTimerHandle timerCalculationControlValue;
-	UPROPERTY(BlueprintReadWrite, Category = "ControlValue")
-		float timeBetweenCalcuation;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ControlValue")
+		float timeBetweenCalcuation = 0.5;
 
 	UFUNCTION(BlueprintCallable, Category = "ControlValue")
 		void calculateControlValue();

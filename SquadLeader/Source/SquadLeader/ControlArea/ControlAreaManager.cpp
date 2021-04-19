@@ -1,13 +1,13 @@
 #include "ControlAreaManager.h"
 #include "../GameState/SquadLeaderGameState.h"
 #include "../SquadLeaderGameModeBase.h"
+#include "../UI/SL_HUD.h"
+#include "../Soldiers/Players/SoldierPlayerController.h"
 
 AControlAreaManager::AControlAreaManager()
 {
 	bReplicates = true;
 }
-
-
 void AControlAreaManager::PreInitialisation()
 {
 	if (auto GS = GetWorld()->GetGameState<ASquadLeaderGameState>(); GS) {
@@ -42,7 +42,7 @@ TArray<AControlArea*> AControlAreaManager::GetAreaControlledByTeam(ASoldierTeam*
 {
 	TArray<AControlArea*> selection;
 	for (auto element : ControlAreaList) {
-		if (element->isTakenBy == _Team) {
+		if (element->IsTakenBy == _Team) {
 			selection.Add(element);
 		}
 	}
@@ -69,11 +69,21 @@ ASoldierTeam* AControlAreaManager::GetTeamWithAllControl()
 {
 	if (ControlAreaList.Num() > 0) {
 		for (auto element : ControlAreaList) {
-			if (element->isTakenBy != ControlAreaList[0]->isTakenBy) {
+			if (element->IsTakenBy != ControlAreaList[0]->IsTakenBy) {
 				return nullptr;
 			}
 		}
-		return ControlAreaList[0]->isTakenBy;
+		return ControlAreaList[0]->IsTakenBy;
 	}
 	return nullptr;
+}
+
+int AControlAreaManager::ControlAreaIndex(AControlArea* Element)
+{
+	int index = 0;
+	bool result = ControlAreaList.Find(Element, index);
+	if (result) {
+		return index;
+	}
+	return -1;
 }

@@ -8,7 +8,9 @@
 #include "../../Spawn/SoldierSpawn.h"
 #include "DrawDebugHelpers.h"
 
-ASoldierPlayer::ASoldierPlayer(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer), ASCInputBound{ false }
+ASoldierPlayer::ASoldierPlayer(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer),
+NbAIsForNextLevelUp{ 0.f },
+ASCInputBound{ false }
 {
 }
 
@@ -145,13 +147,24 @@ void ASoldierPlayer::cycleBetweenTeam()
 	else ServerCycleBetweenTeam();
 }
 
+void ASoldierPlayer::LevelUp()
+{
+	Super::LevelUp();
+
+	if (ASoldierPlayerController* PC = GetController<ASoldierPlayerController>(); PC)
+	{
+		for (int i = 0; i < NbAIsForNextLevelUp.GetValueAtLevel(GetCharacterLevel()); ++i)
+			PC->AddAnAIToIndexSquad();
+	}
+}
+
 FVector ASoldierPlayer::GetRespawnPoint()
 {
 	if (GetTeam()) {
 		auto AvailableSpawnPoints = GetTeam()->GetUsableSpawnPoints();
 		if (AvailableSpawnPoints.Num() > 0) {
 
-			FVector OptimalPosition = AvailableSpawnPoints[0]->GetActorLocation();
+			ASoldierSpawn* OptimalSpawn = AvailableSpawnPoints[0];
 			auto CalculateMinimalDistance = [](FVector PlayerPos, FVector FirstPoint, FVector SecondPoint) {  // return true if the first point is closest
 				float dist1 = FVector::Dist(PlayerPos, FirstPoint);
 				float dist2 = FVector::Dist(PlayerPos, SecondPoint);
@@ -159,15 +172,15 @@ FVector ASoldierPlayer::GetRespawnPoint()
 			};
 
 			for (auto loop : AvailableSpawnPoints) {
-				if (CalculateMinimalDistance(this->GetActorLocation(), loop->GetActorLocation(), OptimalPosition)) {
-					OptimalPosition = loop->GetActorLocation();
+				if (CalculateMinimalDistance(this->GetActorLocation(), loop->GetActorLocation(), OptimalSpawn->GetActorLocation())) {
+					OptimalSpawn = loop;
 				}
 			}
 
-			return OptimalPosition;
+			return OptimalSpawn->GetSpawnLocation();
 		}
 	}
-	return FVector(0.f, 0.f, 1500.f); // else return default
+	return FVector(200.f, 200.f, 1500.f); // else return default
 }
 
 void ASoldierPlayer::OnSquadChanged(const TArray<FSoldierAIData>& newValue)

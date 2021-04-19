@@ -25,11 +25,16 @@ protected:
 	virtual void UnLockControls() override;
 
 //////////////// Squad
+protected:
 	UPROPERTY(EditDefaultsOnly, Category = "SquadManager")
 	TSubclassOf<class AAISquadManager> AISquadManagerClass;
 
 	UPROPERTY(BlueprintReadOnly, Category = "SquadManager")
 	class AAISquadManager* SquadManager;
+
+	// Number of AIs to add for the next level up
+	UPROPERTY(EditDefaultsOnly, Category = "SquadManager")
+	FScalableFloat NbAIsForNextLevelUp;
 
 public:
 	UFUNCTION()
@@ -50,6 +55,8 @@ protected:
 	void BindASCInput();
 
 	bool ASCInputBound;
+
+	virtual void LevelUp() override;
 
 public:  // Respawn
 	virtual FVector GetRespawnPoint() override;

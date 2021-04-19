@@ -56,7 +56,6 @@ protected:
 	TSubclassOf<class AHUD> HUDClass;
 
 public:
-
 	UFUNCTION(Client, Reliable)
 	void CreateHUD();
 //////////////// Movements
@@ -114,21 +113,46 @@ public:
 	void OnTextNotification_Received(const FString& notificationString);
 	void OnTextNotification_Received_Implementation(const FString& notificationString);
 
+	UFUNCTION(Client, Reliable)
+	void OnAllyTicket_Received(int newTicket);
+	void OnAllyTicket_Received_Implementation(int newTicket);
+
+	UFUNCTION(Client, Reliable)
+	void OnEnnemyTicket_Received(int newTicket);
+	void OnEnnemyTicket_Received_Implementation(int newTicket);
+
+	UFUNCTION(Client, Reliable)
+	void OnGameEnd(const FString& TextToDisplay);
+	void OnGameEnd_Implementation(const FString& TextToDisplay);
+
 	UFUNCTION(Server, Reliable)
 	void OnOrderGiven(MissionType Order, FVector Pos);
 	void OnOrderGiven_Implementation(MissionType Order, FVector Pos);
 
-	UFUNCTION(Server, Reliable)
+	UFUNCTION()
 	void AddAnAIToIndexSquad();
-	void AddAnAIToIndexSquad_Implementation();
 
-	UFUNCTION(Exec)
-	void Cheat_AddAISquad();
+	UFUNCTION(Server, Reliable)
+	void ServerAddAnAIToIndexSquad();
+	void ServerAddAnAIToIndexSquad_Implementation();
 
 	UFUNCTION()
 	void BroadCastManagerData();
 
+	//-----ABILITY WALLVISION-----
+
+	UFUNCTION(Client, Reliable)
+	void OnWallVisionActivate();
+	void OnWallVisionActivate_Implementation();
+
+	UFUNCTION(Client, Reliable)
+	void OnWallVisionDeactivate();
+	void OnWallVisionDeactivate_Implementation();
+
 //////////////// Cheat
+	UFUNCTION(Exec)
+	void Cheat_AddAISquad();
+
 	UFUNCTION(exec)
 	void Cheat_SuperSoldier();
 
@@ -142,4 +166,20 @@ public:
 	UFUNCTION(Server, Reliable)
 	void ServerCheat_Die();
 	void ServerCheat_Die_Implementation();
+
+	UFUNCTION(exec)
+	void Cheat_SuperDamage();
+
+	UFUNCTION(Server, Reliable)
+	void ServerCheat_SuperDamage();
+	void ServerCheat_SuperDamage_Implementation();
+
+	UFUNCTION(exec)
+	void Cheat_LevelUp();
+
+	UFUNCTION(Server, Reliable)
+	void ServerCheat_LevelUp();
+	void ServerCheat_LevelUp_Implementation();
+
+
 };

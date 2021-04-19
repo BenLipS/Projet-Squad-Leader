@@ -18,6 +18,8 @@ EBTNodeResult::Type UIsHitBTTaskNode::ExecuteTask(UBehaviorTreeComponent& OwnerC
 	_controller->get_blackboard()->SetValueAsBool("IsHit", false);
 
 	EBTNodeResult::Type NodeResult = EBTNodeResult::InProgress;
+	if(!_controller->IsActivated)
+		NodeResult = EBTNodeResult::Failed;
 
 	FVector EnemyPos = _controller->get_blackboard()->GetValueAsVector("IsHitEnemyLocation");
 	FVector AIPos = _controller->GetPawn()->GetActorLocation();

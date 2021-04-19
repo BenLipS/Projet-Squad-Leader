@@ -24,4 +24,9 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	TSubclassOf<AAreaEffect> AreaEffectClass;
+
+//////////////// Collision
+public:
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Collision")
+	bool bDebugTraceAreaEffect = false;
 };

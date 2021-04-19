@@ -7,6 +7,7 @@
 #include "AbilitySystemInterface.h"
 #include "../AbilitySystem/Soldiers/AttributeSetSoldier.h"
 #include "../AbilitySystem/Soldiers/AbilitySystemSoldier.h"
+#include "../AbilitySystem/Soldiers/GameplayEffects/GE_UpdateStats.h"
 #include "Interface/Teamable.h"
 //
 #include "SoldierTeam.h"
@@ -71,7 +72,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ability System Component", meta = (AllowPrivateAccess = "true"))
 	UAbilitySystemSoldier* AbilitySystemComponent;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute Set", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Stat Attributes", meta = (AllowPrivateAccess = "true"))
 	UAttributeSetSoldier* AttributeSet;
 
 public:
@@ -79,11 +80,11 @@ public:
 	UAttributeSetSoldier* GetAttributeSet() const;
 
 protected:
-	// Define the default stats
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Abilities")
-	TSubclassOf<class UGameplayEffect> DefaultAttributeEffects;
+	// Define the stats for any level. It is call at the beginning and when leveling up
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Stat Attributes")
+	TSubclassOf<UGE_UpdateStats> StatAttributeEffects;
 
-	// Define the default abilities
+	// Define the start abilities
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Abilities")
 	TArray<TSubclassOf<class UGameplayAbilitySoldier>> CharacterDefaultAbilities;
 
@@ -100,6 +101,7 @@ protected:
 	virtual void InitializeAttributeChangeCallbacks();
 
 public:
+	TSubclassOf<UGE_UpdateStats> GetStatAttributeEffects() const;
 	bool IsInCooldown(const FGameplayTag& _Tag);
 
 //////////////// Tag Change Callbacks
@@ -136,6 +138,18 @@ public:
 	int32 GetCharacterLevel() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
+	float GetEXP() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
+	float GetEXPLevelUp() const;
+	
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
+	float GetRemainEXPForLevelUp() const;
+	
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
+	void GrantEXP(const float _EXP);
+
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
 	float GetHealth() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
@@ -169,6 +183,7 @@ public:
 	FDelegateHandle HealthChangedDelegateHandle;
 	virtual void HealthChanged(const FOnAttributeChangeData& _Data);
 
+	virtual void LevelUp();
 	virtual void Die();
 	virtual void Respawn();
 	virtual void OnReceiveDamage(const FVector& _ImpactPoint, const FVector& _SourcePoint);
@@ -224,8 +239,11 @@ public:
 	UPROPERTY(VisibleDefaultsOnly, Category = "Mesh")
 	USkeletalMeshComponent* FirstPersonMesh;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Mesh")
-	FName WeaponAttachPoint;
+	UPROPERTY(EditDefaultsOnly, Category = "Inventory|Weapon")
+	FName WeaponAttachPointRightHand;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Inventory|Weapon")
+	FName WeaponAttachPointLeftHand;
 
 //////////////// Movement
 	// Move direction
@@ -280,27 +298,35 @@ protected:
 	void OnRep_Inventory();
 
 //////////////// Weapons
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Inventory | Weapon")
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Inventory|Weapon")
 	TArray<TSubclassOf<ASL_Weapon>> DefaultInventoryWeaponClasses;
 
 	UPROPERTY(ReplicatedUsing = OnRep_CurrentWeapon)
 	ASL_Weapon* CurrentWeapon;
 
 public:
-	UFUNCTION(BlueprintCallable, Category = "Inventory | Weapon")
+	UFUNCTION(BlueprintCallable, Category = "Inventory|Weapon")
 	ASL_Weapon* GetCurrentWeapon() const;
+
+	// Define the attach point for the mesh as right hand - This is the default point - this will be useful to handle animations
+	UFUNCTION(BlueprintCallable, Category = "Inventory|Weapon")
+	void UseCurrentWeaponWithRightHand();
+
+	// Define the attach point for the mesh as left hand - this will be useful to handle animations
+	UFUNCTION(BlueprintCallable, Category = "Inventory|Weapon")
+	void UseCurrentWeaponWithLeftHand();
 
 	bool bChangedWeaponLocally;
 
 	// Adds a new weapon to the inventory.
 	// Returns false if the weapon already exists in the inventory, true if it's a new weapon.
-	UFUNCTION(BlueprintCallable, Category = "Inventory | Weapon")
+	UFUNCTION(BlueprintCallable, Category = "Inventory|Weapon")
 	bool AddWeaponToInventory(ASL_Weapon* _NewWeapon, const bool _bEquipWeapon = false);
 
-	UFUNCTION(BlueprintCallable, Category = "Inventory | Weapon")
+	UFUNCTION(BlueprintCallable, Category = "Inventory|Weapon")
 	void EquipWeapon(ASL_Weapon* _NewWeapon);
 
-	UFUNCTION(Server, Reliable, Category = "Inventory | Weapon")
+	UFUNCTION(Server, Reliable, Category = "Inventory|Weapon")
 	void ServerEquipWeapon(ASL_Weapon* _NewWeapon);
 	bool ServerEquipWeapon_Validate(ASL_Weapon* _NewWeapon);
 	void ServerEquipWeapon_Implementation(ASL_Weapon* _NewWeapon);
@@ -319,7 +345,7 @@ protected:
 	// The CurrentWeapon is only automatically replicated to simulated clients.
 	// The autonomous client can use this to request the proper CurrentWeapon from the server when it knows it may be
 	// out of sync with it from predictive client-side changes.
-	UFUNCTION(Server, Reliable, Category = "Inventory | Weapon")
+	UFUNCTION(Server, Reliable, Category = "Inventory|Weapon")
 	void ServerSyncCurrentWeapon();
 	void ServerSyncCurrentWeapon_Implementation();
 	bool ServerSyncCurrentWeapon_Validate();
@@ -327,7 +353,7 @@ protected:
 	// The CurrentWeapon is only automatically replicated to simulated clients.
 	// Use this function to manually sync the autonomous client's CurrentWeapon when we're ready to.
 	// This allows us to predict weapon changes (changing weapons fast multiple times in a row so that the server doesn't replicate and clobber our CurrentWeapon).
-	UFUNCTION(Client, Reliable, Category = "Inventory | Weapon")
+	UFUNCTION(Client, Reliable, Category = "Inventory|Weapon")
 	void ClientSyncCurrentWeapon(ASL_Weapon* _InWeapon);
 	void ClientSyncCurrentWeapon_Implementation(ASL_Weapon* _InWeapon);
 	bool ClientSyncCurrentWeapon_Validate(ASL_Weapon* _InWeapon);
@@ -374,26 +400,58 @@ private:
 
 //////////////// Particles
 protected:
-	UPROPERTY(EditDefaultsOnly, Category = "Animation | Particles")
+	UPROPERTY(EditDefaultsOnly, Category = "Animation|Particles")
+	UParticleSystem* LevelUpFX;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Animation|Particles")
+	FVector LevelUpFXRelativeLocation;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Animation|Particles")
+	FRotator LevelUpFXRotator;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Animation|Particles")
+	FVector LevelUpFXScale;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Animation|Particles")
 	UParticleSystem* ImpactHitFX;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Animation | Particles")
+	UPROPERTY(EditDefaultsOnly, Category = "Animation|Particles")
 	FVector ImpactHitFXScale;
+
+	UFUNCTION(Reliable, Client, WithValidation)
+	void ClientSpawnLevelUpParticle();
+	void ClientSpawnLevelUpParticle_Implementation();
+	bool ClientSpawnLevelUpParticle_Validate();
 
 //////////////// Montages
 public:
-	// Anim Montage
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Animation | Montages")
+	// Level start
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Animation|Montages")
 	UAnimMontage* StartGameMontage;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Animation | Montages")
+	// Death
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Animation|Montages")
 	UAnimMontage* DeathMontage;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Animation | Montages")
+	// Respawn
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Animation|Montages")
 	UAnimMontage* RespawnMontage;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Animation | Montages")
+	// Weapon fire
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Animation|Montages")
 	UAnimMontage* WeaponFireMontage;
+
+	// Reload weapon
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Animation|Montages")
+	UAnimMontage* ReloadWeaponMontage;
+
+	// Throw projectile
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Animation|Montages")
+	UAnimMontage* ThrowProjectileMontage;
+
+	// Cast Spell - For miscellaneous abilities
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Animation|Montages")
+	UAnimMontage* CastSpellMontage;
 
 protected:
 	void HandleDeathMontage();
@@ -415,4 +473,10 @@ public:
 	// Projectile forwardVector to launch from
 	UFUNCTION()
 	virtual FVector GetLookingDirection();
+
+//////////////// TODO Review
+public:
+	// This need to use the new camera shake sequence. Matinee is deprecated 
+	UFUNCTION(BlueprintImplementableEvent)
+	void ShakeCamera();
 };
