@@ -192,26 +192,43 @@ void ASquadLeaderGameModeBase::RespawnSoldier(AController* _Controller)
 void ASquadLeaderGameModeBase::CheckControlAreaVictoryCondition()
 {
 	if (auto WinnerTeam = Cast<ASquadLeaderGameState>(GameState)->GetControlAreaManager()->GetTeamWithAllControl(); WinnerTeam) {
-		GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Red, TEXT("END GAME: All control area taken\n") + WinnerTeam->TeamName + TEXT(" win !"), false, FVector2D(7, 7));
-		FTimerHandle timerBeforeClosing;
-		GetWorld()->GetTimerManager().SetTimer(timerBeforeClosing, this,
-			&ASquadLeaderGameModeBase::EndGame, 5.f);  // request to the server to end the game
+		//GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Red, TEXT("END GAME: All control area taken\n") + WinnerTeam->TeamName + TEXT(" win !"), false, FVector2D(7, 7));
+		EndGame(WinnerTeam);
 	}
 }
 
 void ASquadLeaderGameModeBase::CheckTeamTicketsVictoryCondition()
 {
-	for (auto teams : Cast<ASquadLeaderGameState>(GameState)->GetSoldierTeamCollection()) {
-		if (teams->GetTicket() == 0) {
-			GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Red, TEXT("END GAME: Tickets depleted\n") + teams->TeamName + TEXT(" lose !"), false, FVector2D(7, 7));
-			FTimerHandle timerBeforeClosing;
-			GetWorld()->GetTimerManager().SetTimer(timerBeforeClosing, this,
-				&ASquadLeaderGameModeBase::EndGame, 5.f);  // request to the server to end the game
+	for (auto team : Cast<ASquadLeaderGameState>(GameState)->GetSoldierTeamCollection()) {
+		if (team->GetTicket() == 0) {
+			//GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Red, TEXT("END GAME: Tickets depleted\n") + teams->TeamName + TEXT(" lose !"), false, FVector2D(7, 7));
+			for (auto potentialwinningteam : Cast<ASquadLeaderGameState>(GameState)->GetSoldierTeamCollection())
+			if (potentialwinningteam != team && (potentialwinningteam->Id == 1 || potentialwinningteam->Id == 2))
+				EndGame(potentialwinningteam);
 		}
 	}
 }
 
-void ASquadLeaderGameModeBase::EndGame()
+void ASquadLeaderGameModeBase::EndGame(ASoldierTeam* WinningTeam)
+{
+	for (auto Teams : Cast<ASquadLeaderGameState>(GameState)->GetSoldierTeamCollection()) {
+		for (auto Soldiers : Teams->GetSoldierList()) {
+			if (auto PlayerController = Cast<ASoldierPlayerController>(Soldiers->GetController()); PlayerController) {
+				if (PlayerController->GetTeam() == WinningTeam) {
+					PlayerController->OnGameEnd("VICTORY !");
+				}
+				else {
+					PlayerController->OnGameEnd("DEFEAT !");
+				}
+			}
+		}
+	}
+	FTimerHandle timerBeforeClosing;
+	GetWorld()->GetTimerManager().SetTimer(timerBeforeClosing, this,
+		&ASquadLeaderGameModeBase::CloseGame, 10.f);  // request to the server to end the game
+}
+
+void ASquadLeaderGameModeBase::CloseGame()
 {
 	for (auto Teams : Cast<ASquadLeaderGameState>(GameState)->GetSoldierTeamCollection()) {
 		for (auto Soldiers : Teams->GetSoldierList()) {
