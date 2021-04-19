@@ -22,10 +22,10 @@ TimeOfLastShoot{ -9999.f }
 	ActivationBlockedTags.AddTag(FGameplayTag::RequestGameplayTag(FName("State.ReloadingWeapon")));
 }
 
-bool UGA_FireWeaponInstant::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, OUT FGameplayTagContainer* OptionalRelevantTags) const
+bool UGA_FireWeaponInstant::CanActivateAbility(const FGameplayAbilitySpecHandle _Handle, const FGameplayAbilityActorInfo* _ActorInfo, const FGameplayTagContainer* _SourceTags, const FGameplayTagContainer* _TargetTags, OUT FGameplayTagContainer* _OptionalRelevantTags) const
 {
-	ASoldier* Soldier = Cast<ASoldier>(ActorInfo->AvatarActor);
-	return Soldier && Cast<ASL_Weapon>(Soldier->GetCurrentWeapon());
+	ASoldier* Soldier = Cast<ASoldier>(_ActorInfo->AvatarActor);
+	return Soldier && Cast<ASL_Weapon>(Soldier->GetCurrentWeapon()) && Super::CanActivateAbility(_Handle, _ActorInfo, _SourceTags, _TargetTags, _OptionalRelevantTags);
 }
 
 void UGA_FireWeaponInstant::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
@@ -50,10 +50,10 @@ void UGA_FireWeaponInstant::ActivateAbility(const FGameplayAbilitySpecHandle Han
 
 void UGA_FireWeaponInstant::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
-	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
-
 	if (ServerWaitForClientTargetDataTask && ServerWaitForClientTargetDataTask->IsActive())
 		ServerWaitForClientTargetDataTask->EndTask();
+
+	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
 void UGA_FireWeaponInstant::FireBullet()
@@ -72,8 +72,8 @@ void UGA_FireWeaponInstant::FireBullet()
 	{
 		// Wait for the next fire
 		UAbilityTask_WaitDelay* TaskWaitDelay = UAbilityTask_WaitDelay::WaitDelay(this, SourceWeapon->GetTimeBetweenShots());
-		TaskWaitDelay->Activate();
 		TaskWaitDelay->OnFinish.AddDynamic(this, &UGA_FireWeaponInstant::FireBullet);
+		TaskWaitDelay->ReadyForActivation();
 		return;
 	}
 
@@ -97,8 +97,8 @@ void UGA_FireWeaponInstant::FireBullet()
 
 	// Wait for the next fire
 	UAbilityTask_WaitDelay* TaskWaitDelay = UAbilityTask_WaitDelay::WaitDelay(this, SourceWeapon->GetTimeBetweenShots());
-	TaskWaitDelay->Activate();
 	TaskWaitDelay->OnFinish.AddDynamic(this, &UGA_FireWeaponInstant::FireBullet);
+	TaskWaitDelay->ReadyForActivation();
 
 	TimeOfLastShoot = UGameplayStatics::GetTimeSeconds(GetWorld());
 }
@@ -187,7 +187,7 @@ void UGA_FireWeaponInstant::ConfigLineTrace()
 	LineTrace->TargetingSpreadMax = SourceWeapon->GetTargetingSpreadMax();
 	LineTrace->SetShouldProduceTargetDataOnServer(!CurrentActorInfo->PlayerController.Get()); // Produce Target Data On Server only if the controller is an AI
 
-#if ENABLE_DRAW_DEBUG
+#if UE_BUILD_DEBUG
 	LineTrace->bDebug = SourceWeapon->bDebugTrace;
 #endif
 }
