@@ -330,6 +330,9 @@ protected:
 public:
 
 	UPROPERTY()
+		bool IsActivated = false;
+
+	UPROPERTY()
 		bool IsRunning = false;
 
 	UPROPERTY()

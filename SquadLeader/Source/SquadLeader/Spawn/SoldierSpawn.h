@@ -31,7 +31,16 @@ public:
 protected:
 	UPROPERTY(EditInstanceOnly, Replicated, Category = "SpawnCondition")
 	bool canBeUsed;
+	int RespawnLoop = 0;
+
 public:
 	UFUNCTION()
 	bool GetUsable() { return canBeUsed; }
+
+	UPROPERTY(EditInstanceOnly, Replicated, Category = "SpawnData")
+	int SpawnRadius = 200;
+	UPROPERTY(EditInstanceOnly, Replicated, Category = "SpawnData")
+	int NbSpawnPosition = 6;
+
+	FVector GetSpawnLocation();
 };

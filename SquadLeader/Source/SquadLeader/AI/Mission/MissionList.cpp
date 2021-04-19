@@ -7,23 +7,23 @@
 
 auto FMissionAction::operator()(UCaptureMission* _mission)const
 {
-	GEngine->AddOnScreenDebugMessage(40, 10.f, FColor::Yellow, TEXT("Hello ! Mission de type UCaptureMission"));
+	//GEngine->AddOnScreenDebugMessage(40, 10.f, FColor::Yellow, TEXT("Hello ! Mission de type UCaptureMission"));
 	_mission->SetState(MissionState::eRUNNING);
 	m_ai_controller->SetControlAreaBB(_mission->GetControlArea());
 }
 auto FMissionAction::operator()(UDefendMission* _mission)const
 {
-	GEngine->AddOnScreenDebugMessage(40, 10.f, FColor::Yellow, TEXT("Mission de type UDefendMission"));
+	//GEngine->AddOnScreenDebugMessage(40, 10.f, FColor::Yellow, TEXT("Mission de type UDefendMission"));
 	_mission->SetState(MissionState::eRUNNING);
 }
 auto FMissionAction::operator()(UPatrolMission* _mission)const
 {
-	GEngine->AddOnScreenDebugMessage(50, 10.f, FColor::Blue, TEXT("Mission de type UPatrolMission"));
+	//GEngine->AddOnScreenDebugMessage(50, 10.f, FColor::Blue, TEXT("Mission de type UPatrolMission"));
 	_mission->SetState(MissionState::eRUNNING);
 }
 auto FMissionAction::operator()(UFormationMission* _mission)const
 {
-	GEngine->AddOnScreenDebugMessage(50, 10.f, FColor::Blue, TEXT("Mission de type UFormationMission"));
+	//GEngine->AddOnScreenDebugMessage(50, 10.f, FColor::Blue, TEXT("Mission de type UFormationMission"));
 	_mission->SetState(MissionState::eRUNNING);
 }
 

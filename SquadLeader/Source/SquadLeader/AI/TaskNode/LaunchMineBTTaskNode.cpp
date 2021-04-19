@@ -12,7 +12,7 @@ ULaunchMineBTTaskNode::ULaunchMineBTTaskNode() {
 
 EBTNodeResult::Type ULaunchMineBTTaskNode::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) {
 	AAIGeneralController* AIGeneralController = Cast<AAIGeneralController>(OwnerComp.GetOwner());
-	if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, FString::Printf(TEXT("%s Launch Mine"), *AIGeneralController->GetName()));
+	//if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, FString::Printf(TEXT("%s Launch Mine"), *AIGeneralController->GetName()));
 
 	ResultState _result = AIGeneralController->LaunchMine();
 
