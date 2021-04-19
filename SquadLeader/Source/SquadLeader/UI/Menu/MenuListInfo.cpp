@@ -33,8 +33,8 @@ void UMenuListInfo::OnStatInfoReceived(FString Key, FString Value)
 	if (ItemClass)
 	{
 		UMenuListInfoItemWidget* newItem = WidgetTree->ConstructWidget<UMenuListInfoItemWidget>(ItemClass);
-		newItem->SetRightData(Key);
-		newItem->SetLeftData(Value);
+		newItem->SetLeftData(Key);
+		newItem->SetRightData(Value);
 		AddEntryToList(newItem);
 	}
 }
@@ -45,4 +45,9 @@ void UMenuListInfo::OnStatsInfoReceived(TMap<FString, FString> statsIn)
 	{
 		OnStatInfoReceived(StatIn.Key, StatIn.Value);
 	}
+}
+
+void UMenuListInfo::OnStatsInfoCleanOrder()
+{
+	while (ListEntry->RemoveChildAt(0));
 }

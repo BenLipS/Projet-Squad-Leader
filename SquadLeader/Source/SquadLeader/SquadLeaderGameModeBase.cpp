@@ -164,8 +164,8 @@ void ASquadLeaderGameModeBase::EndGame()
 {
 	for (auto Teams : Cast<ASquadLeaderGameState>(GameState)->GetSoldierTeamCollection()) {
 		for (auto Soldiers : Teams->GetSoldierList()) {
-			if (auto PlayerControler = Cast<ASoldierPlayerController>(Soldiers->GetController()); PlayerControler) {
-				PlayerControler->ClientSendCommand("EXIT", true);
+			if (auto PlayerController = Cast<ASoldierPlayerController>(Soldiers->GetController()); PlayerController) {
+				PlayerController->ClientSendCommand("open MapMainMenu", true);
 			}
 		}
 	}

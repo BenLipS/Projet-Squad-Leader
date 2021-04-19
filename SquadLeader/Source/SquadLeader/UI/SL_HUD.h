@@ -56,6 +56,7 @@ public:
 
 	void BindSoldierTeamChanges();
 	void BindControlAreas();
+	void GetProfileData();
 
 /*********************************
 *****INTERFACE IMPLEMENTATION*****
@@ -97,8 +98,8 @@ public:
 
 //-----IStatInfoDelegateInterface-----
 public:
-	//void OnStatInfoReceived(TPair<FString, FString> Value) override;
-	//void OnStatsInfoReceived(TArray<TPair<FString, FString>> statsIn) override;
+	//void OnStatInfoReceived(FString Key, FString Value) override;
+	//void OnStatsInfoReceived(TMap<FString, FString> statsIn) override;
 //-----IMinimapInterface-----
 public:
 	//void OnSoldierAddedToTeam(ASoldier* _Soldier) override;

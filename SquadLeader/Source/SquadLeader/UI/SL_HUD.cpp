@@ -7,6 +7,7 @@
 #include "SquadLeader/GameState/SquadLeaderGameState.h"
 #include "SquadLeader/ControlArea/ControlAreaManager.h"
 #include "SquadLeader/ControlArea/ControlArea.h"
+#include "SquadLeader/SquadLeaderGameInstance.h"
 #include "../Weapons/SL_Weapon.h"
 
 void ASL_HUD::BeginPlay()
@@ -29,7 +30,12 @@ void ASL_HUD::BeginPlay()
 	SetAIStateLink();
 	BindSoldierTeamChanges();
 	BindControlAreas();
+	GetProfileData();
 	//TODO : Init Tickets
+}
+
+void ASL_HUD::GetProfileData() {
+	GetGameInstance<USquadLeaderGameInstance>()->ProfileInfo(this);
 }
 
 void ASL_HUD::SetPlayerStateLink()

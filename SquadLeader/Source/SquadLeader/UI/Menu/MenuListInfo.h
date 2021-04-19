@@ -34,4 +34,5 @@ protected:
 public:
 	virtual void OnStatInfoReceived(FString Key, FString Value) override;
 	virtual void OnStatsInfoReceived(TMap<FString, FString> statsIn) override;
+	virtual void OnStatsInfoCleanOrder() override;
 };
