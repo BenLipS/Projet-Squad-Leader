@@ -458,7 +458,7 @@ void ASoldier::Turn(const float _Val)
 
 FVector ASoldier::GetLookingAtPosition(const float _MaxRange) const
 {
-	FCollisionQueryParams Params(SCENE_QUERY_STAT(AGSGATA_LineTrace), false);
+	FCollisionQueryParams Params(SCENE_QUERY_STAT(ASL_LineTrace), false);
 	Params.bReturnPhysicalMaterial = true;
 	Params.AddIgnoredActor(this);
 	Params.bIgnoreBlocks = false;
@@ -474,7 +474,7 @@ FVector ASoldier::GetLookingAtPosition(const float _MaxRange) const
 
 	// Get first blocking hit
 	FHitResult HitResult;
-	GetWorld()->LineTraceSingleByChannel(HitResult, ViewStart, ViewEnd, ECC_Player, Params);
+	GetWorld()->LineTraceSingleByChannel(HitResult, ViewStart, ViewEnd, ECC_WorldDynamic, Params);
 
 	//::DrawDebugLine(GetWorld(), ViewStart, HitResult.bBlockingHit ? HitResult.Location : ViewEnd, FColor::Blue, false, 2.f);
 
