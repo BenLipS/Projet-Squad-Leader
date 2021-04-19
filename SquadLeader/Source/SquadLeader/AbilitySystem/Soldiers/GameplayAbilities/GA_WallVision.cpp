@@ -1,18 +1,10 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "GA_WallVision.h"
-
 #include "../../../Soldiers/Soldier.h"
 #include "../../../Soldiers/Players/SoldierPlayerController.h"
-
 #include "Abilities/Tasks/AbilityTask_WaitDelay.h"
-
 
 UGA_WallVision::UGA_WallVision()
 {
-	AbilityInputID = ESoldierAbilityInputID::WallVision;
-	AbilityID = ESoldierAbilityInputID::None;
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.WallVision")));
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 }
@@ -29,7 +21,6 @@ bool UGA_WallVision::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
 			return true;
 		}
 	}
-
 	return false;
 }
 
@@ -51,6 +42,8 @@ void UGA_WallVision::ActivateAbility(const FGameplayAbilitySpecHandle Handle, co
 			}
 		}
 	}
+
+	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 }
 
 void UGA_WallVision::CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateCancelAbility)

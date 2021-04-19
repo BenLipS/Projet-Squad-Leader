@@ -6,6 +6,7 @@
 #include "../SquadLeaderGameModeBase.h"
 #include "../AI/InfluenceMap/InfluenceMapGrid.h"
 #include "../AbilitySystem/Soldiers/GameplayAbilitySoldier.h"
+#include "../AbilitySystem/Soldiers/GameplayEffects/GE_UpdateStats.h"
 #include "../AbilitySystem/Soldiers/GameplayEffects/States/GE_StateDead.h"
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "Perception/AISense_Sight.h"
@@ -238,23 +239,46 @@ void ASoldier::InitializeAttributes()
 
 void ASoldier::InitializeAbilities()
 {
+	if (GetLocalRole() < ROLE_Authority || bAbilitiesInitialized)
+		return;
+
 	check(AbilitySystemComponent);
+	check(Ability1);
+	check(Ability2);
 
-	if (GetLocalRole() == ROLE_Authority && !bAbilitiesInitialized)
+	// TODO: Separate the part below into 2 functions
+
+	// Grant main fighting abilities
+	if (Ability1)
 	{
-		// Grant abilities, but only on the server
-		for (TSubclassOf<UGameplayAbilitySoldier>& StartupAbility : CharacterDefaultAbilities)
-		{
-			if (!StartupAbility) // Empty element from blueprint
-			{
-				UE_LOG(LogTemp, Error, TEXT("%s() Invalid ability in CharacterDefaultAbilities. Check the blueprint of the soldier"), *FString(__FUNCTION__));
-				continue;
-			}
-
-			AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(StartupAbility, GetCharacterLevel(), static_cast<int32>(StartupAbility.GetDefaultObject()->AbilityInputID), this));
-		}
-		bAbilitiesInitialized = true;
+		AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(Ability1, GetCharacterLevel(), static_cast<int32>(ESoldierAbilityInputID::Ability1), this));
 	}
+	else  // Empty element from blueprint
+	{
+		UE_LOG(LogTemp, Error, TEXT("%s() Invalid Ability1. Check the blueprint of the soldier"), *FString(__FUNCTION__));
+	}
+
+	if (Ability2)
+	{
+		AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(Ability2, GetCharacterLevel(), static_cast<int32>(ESoldierAbilityInputID::Ability2), this));
+	}
+	else // Empty element from blueprint
+	{
+		UE_LOG(LogTemp, Error, TEXT("%s() Invalid Ability2. Check the blueprint of the soldier"), *FString(__FUNCTION__));
+	}
+
+	// Grant startup abilities
+	for (TSubclassOf<UGameplayAbilitySoldier>& StartupAbility : StartupAbilities)
+	{
+		if (!StartupAbility) // Empty element from blueprint
+		{
+			UE_LOG(LogTemp, Error, TEXT("%s() Invalid ability in StartupAbilities. Check the blueprint of the soldier"), *FString(__FUNCTION__));
+			continue;
+		}
+
+		AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(StartupAbility, GetCharacterLevel(), static_cast<int32>(StartupAbility.GetDefaultObject()->AbilityInputID), this));
+	}
+	bAbilitiesInitialized = true;
 }
 
 void ASoldier::AddStartupEffects()
@@ -288,22 +312,19 @@ void ASoldier::InitializeAttributeChangeCallbacks()
 {
 	HealthChangedDelegateHandle = AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetHealthAttribute()).AddUObject(this, &ASoldier::HealthChanged);
 }
-
 TSubclassOf<UGE_UpdateStats> ASoldier::GetStatAttributeEffects() const
 {
 	return StatAttributeEffects;
 }
 
+float ASoldier::GetCooldownRemainingFromAbilityID(const ESoldierAbilityInputID _AbilityID)
+{
+	return AbilitySystemComponent ? AbilitySystemComponent->GetCooldownRemainingFromAbilityID(_AbilityID) : 0.f;
+}
+
 bool ASoldier::IsInCooldown(const FGameplayTag& _Tag)
 {
-	if (AbilitySystemComponent)
-	{
-		float RemainTime = 0.00f;
-		const bool bTagFoundAsCooldown = AbilitySystemComponent->GetCooldownRemainingForTag(_Tag, RemainTime);
-
-		return bTagFoundAsCooldown && (RemainTime > 0.00f);
-	}
-	return false;
+	return AbilitySystemComponent ? AbilitySystemComponent->IsInCooldown(_Tag) : false;
 }
 
 void ASoldier::DeadTagChanged(const FGameplayTag _CallbackTag, int32 _NewCount)

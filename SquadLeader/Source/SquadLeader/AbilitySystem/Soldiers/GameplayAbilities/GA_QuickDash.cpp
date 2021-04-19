@@ -5,7 +5,7 @@
 UGA_QuickDash::UGA_QuickDash()
 {
 	AbilityInputID = ESoldierAbilityInputID::QuickDash;
-	AbilityID = ESoldierAbilityInputID::None;
+	AbilityID = ESoldierAbilityInputID::QuickDash;
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.QuickDash")));
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 }
@@ -27,6 +27,8 @@ void UGA_QuickDash::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 			Task->ReadyForActivation();
 		}
 	}
+
+	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 }
 
 bool UGA_QuickDash::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, OUT FGameplayTagContainer* OptionalRelevantTags) const

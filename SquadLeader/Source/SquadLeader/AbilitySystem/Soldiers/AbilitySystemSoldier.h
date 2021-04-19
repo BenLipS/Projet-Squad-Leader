@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "AbilitySystemComponent.h"
+#include "SquadLeader/SquadLeader.h"
 #include "AbilitySystemSoldier.generated.h"
 
 UCLASS()
@@ -37,6 +38,9 @@ public:
 
 //////////////// Cooldowns
 	UFUNCTION(BlueprintCallable, Category = "Cooldowns")
+	bool IsInCooldown(const FGameplayTag& _Tag);
+
+	UFUNCTION(BlueprintCallable, Category = "Cooldowns")
 	bool GetCooldownRemainingForTags(const FGameplayTagContainer& _CooldownTags, float& _TimeRemaining);
 
 	UFUNCTION(BlueprintCallable, Category = "Cooldowns")
@@ -47,4 +51,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Cooldowns")
 	bool GetCooldownRemainingAndDurationForTag(const FGameplayTag& _CooldownTags, float& _TimeRemaining, float& _CooldownDuration);
+
+	UFUNCTION(BlueprintCallable, Category = "Cooldowns")
+	float GetCooldownRemainingFromAbilityID(const ESoldierAbilityInputID _AbilityID);
 };
