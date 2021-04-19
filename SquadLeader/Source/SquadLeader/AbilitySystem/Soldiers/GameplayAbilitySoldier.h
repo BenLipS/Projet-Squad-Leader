@@ -13,6 +13,8 @@ class SQUADLEADER_API UGameplayAbilitySoldier : public UGameplayAbility
 public:
 	UGameplayAbilitySoldier();
 
+	virtual void ActivateAbility(const FGameplayAbilitySpecHandle _Handle, const FGameplayAbilityActorInfo* _OwnerInfo, const FGameplayAbilityActivationInfo _ActivationInfo, const FGameplayEventData* _TriggerEventData) override;
+
 	// Abilities with input
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Ability")
 	ESoldierAbilityInputID AbilityInputID = ESoldierAbilityInputID::None;

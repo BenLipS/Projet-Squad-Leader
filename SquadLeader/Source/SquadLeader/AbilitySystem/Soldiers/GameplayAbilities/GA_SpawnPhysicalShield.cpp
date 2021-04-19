@@ -12,9 +12,6 @@ ShieldDistanceFromCaller{ 0.f },
 ShieldScale{ FVector{ 1.f, 1.f, 1.f } }
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
-
-	AbilityInputID = ESoldierAbilityInputID::Ability1;
-	AbilityID = ESoldierAbilityInputID::None;
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.SpawnPhysicalShield")));
 }
 
@@ -48,6 +45,8 @@ void UGA_SpawnPhysicalShield::ActivateAbility(const FGameplayAbilitySpecHandle _
 		TaskWaitDelay->ReadyForActivation();
 		TaskWaitDelay->OnFinish.AddDynamic(this, &UGA_SpawnPhysicalShield::MontageCompletedOrBlendedOut);
 	}
+
+	Super::ActivateAbility(_Handle, _ActorInfo, _ActivationInfo, _TriggerEventData);
 }
 
 void UGA_SpawnPhysicalShield::MontageCompletedOrBlendedOut()

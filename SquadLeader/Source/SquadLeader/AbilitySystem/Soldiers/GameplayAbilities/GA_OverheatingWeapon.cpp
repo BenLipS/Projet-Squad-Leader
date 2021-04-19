@@ -6,8 +6,6 @@ UGA_OverheatingWeapon::UGA_OverheatingWeapon() : TimeOverHeat { 10.f }, TimeBetw
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 
-	AbilityInputID = ESoldierAbilityInputID::None;
-	AbilityID = ESoldierAbilityInputID::None;
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.OverheatingWeapon")));
 }
 
@@ -37,7 +35,9 @@ void UGA_OverheatingWeapon::ActivateAbility(const FGameplayAbilitySpecHandle _Ha
 	TaskWaitDelay->ReadyForActivation();
 
 	//if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("AAAAAAAAAAAAAAAAAAAAAAAAA OverHeat")));
+	Super::ActivateAbility(_Handle, _ActorInfo, _ActivationInfo, _TriggerEventData);
 }
+
 void UGA_OverheatingWeapon::EndOverHeat()
 {
 	CancelAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true);

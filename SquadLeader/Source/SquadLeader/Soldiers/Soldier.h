@@ -7,7 +7,7 @@
 #include "AbilitySystemInterface.h"
 #include "../AbilitySystem/Soldiers/AttributeSetSoldier.h"
 #include "../AbilitySystem/Soldiers/AbilitySystemSoldier.h"
-#include "../AbilitySystem/Soldiers/GameplayEffects/GE_UpdateStats.h"
+#include "SquadLeader/SquadLeader.h"
 #include "Interface/Teamable.h"
 //
 #include "SoldierTeam.h"
@@ -16,6 +16,9 @@
 #include "Soldier.generated.h"
 
 class ASL_Weapon;
+class UGameplayAbilitySoldier;
+class UGameplayEffect;
+class UGE_UpdateStats;
 
 USTRUCT()
 struct SQUADLEADER_API FSoldier_Inventory
@@ -72,7 +75,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ability System Component", meta = (AllowPrivateAccess = "true"))
 	UAbilitySystemSoldier* AbilitySystemComponent;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Stat Attributes", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ability System Component", meta = (AllowPrivateAccess = "true"))
 	UAttributeSetSoldier* AttributeSet;
 
 public:
@@ -80,17 +83,25 @@ public:
 	UAttributeSetSoldier* GetAttributeSet() const;
 
 protected:
+	// Define the start abilities - excluding the main fighting abilities
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Ability System Component|Abilities")
+	TArray<TSubclassOf<UGameplayAbilitySoldier>> StartupAbilities;
+
+	// Ability1
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Ability System Component|Abilities")
+	TSubclassOf<UGameplayAbilitySoldier> Ability1;
+
+	// Ability2
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Ability System Component|Abilities")
+	TSubclassOf<UGameplayAbilitySoldier> Ability2;
+
+	// Additional effect (like hp regen)
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Ability System Component|Effects")
+	TArray<TSubclassOf<UGameplayEffect>> StartupEffects;
+
 	// Define the stats for any level. It is call at the beginning and when leveling up
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Stat Attributes")
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Ability System Component|Attributes")
 	TSubclassOf<UGE_UpdateStats> StatAttributeEffects;
-
-	// Define the start abilities
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Abilities")
-	TArray<TSubclassOf<class UGameplayAbilitySoldier>> CharacterDefaultAbilities;
-
-	// Additional applied effect (for instance hp regen)
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Abilities")
-	TArray<TSubclassOf<class UGameplayEffect>> StartupEffects;
 
 	UPROPERTY()
 	bool bAbilitiesInitialized;	
@@ -102,6 +113,10 @@ protected:
 
 public:
 	TSubclassOf<UGE_UpdateStats> GetStatAttributeEffects() const;
+
+//////////////// Cooldowns
+public:
+	float GetCooldownRemainingFromAbilityID(const ESoldierAbilityInputID _AbilityID);
 	bool IsInCooldown(const FGameplayTag& _Tag);
 
 //////////////// Tag Change Callbacks
