@@ -138,7 +138,7 @@ void ASoldierTeam::RemoveOneTicket()
 
 	InformAllPlayerController();
 
-	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TeamName + TEXT(" : Loses a ticket."));
+	//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TeamName + TEXT(" : Loses a ticket."));
 
 	// TODO : End game here if no tickets left and team is primordial
 	if (ASquadLeaderGameModeBase* GameMode = GetWorld()->GetAuthGameMode<ASquadLeaderGameModeBase>(); GameMode) {  // only for the server

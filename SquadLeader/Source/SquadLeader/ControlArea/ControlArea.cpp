@@ -95,7 +95,7 @@ void AControlArea::NotifyActorBeginOverlap(AActor* OtherActor)
 					GetWorldTimerManager().SetTimer(timerCalculationControlValue, this,
 						&AControlArea::calculateControlValue, timeBetweenCalcuation, true, timeBetweenCalcuation);
 			}
-			else GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Yellow, TEXT("ControlArea : Player of an unknow team"));
+			// else GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Yellow, TEXT("ControlArea : Player of an unknow team"));
 		}
 	}
 }
@@ -159,7 +159,7 @@ void AControlArea::calculateControlValue()
 							// notify here the changement if needed
 							IsTakenBy = nullptr;
 							otherTeam.Value->ChangeSpawnState(false);
-							GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("ControlArea : Team control = None"));
+							//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("ControlArea : Team control = None"));
 						}
 						//ClientNotifyValueChange(otherTeam.Value->controlValue, IsTakenBy, otherTeam.Key);  // call client function to notify the modification
 					}
@@ -174,7 +174,7 @@ void AControlArea::calculateControlValue()
 						IsTakenBy = presentTeam;
 						TeamData[presentTeam]->ChangeSpawnState(true);
 						// notify here the changement if needed
-						GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("ControlArea : Team control =" + presentTeam->TeamName));
+						//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("ControlArea : Team control =" + presentTeam->TeamName));
 
 						if (ASquadLeaderGameModeBase* GameMode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode()); GameMode) {
 							GameMode->NotifyControlAreaCaptured(this);
@@ -190,7 +190,7 @@ void AControlArea::calculateControlValue()
 			}
 			else { // stop the timer
 				GetWorld()->GetTimerManager().ClearTimer(timerCalculationControlValue);
-				GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("ControlArea : Max control for " + presentTeam->TeamName));
+				//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("ControlArea : Max control for " + presentTeam->TeamName));
 
 				auto GM = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
 				FGridPackage m_package;
