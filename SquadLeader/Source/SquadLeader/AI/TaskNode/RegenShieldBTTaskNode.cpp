@@ -14,7 +14,7 @@ URegenShieldBTTaskNode::URegenShieldBTTaskNode() {
 
 EBTNodeResult::Type URegenShieldBTTaskNode::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) {
 	AAIGeneralController* AIGeneralController = Cast<AAIGeneralController>(OwnerComp.GetOwner());
-	if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, FString::Printf(TEXT("%s Regen Shield"), *AIGeneralController->GetName()));
+	//if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, FString::Printf(TEXT("%s Regen Shield"), *AIGeneralController->GetName()));
 	ResultState _result = AIGeneralController->RegenShield();
 
 	AIGeneralController->get_blackboard()->SetValueAsBool("RegenShield", false);

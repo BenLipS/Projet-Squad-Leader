@@ -18,7 +18,6 @@ AControlArea::AControlArea()
 void AControlArea::initCollideElement() {
 }
 
-
 // Called when the game starts or when spawned
 void AControlArea::BeginPlay()
 {
