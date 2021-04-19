@@ -32,7 +32,8 @@ public:
 	void RespawnSoldier(AController* _Controller);
 	void CheckControlAreaVictoryCondition();
 	void CheckTeamTicketsVictoryCondition();
-	void EndGame();
+	void EndGame(ASoldierTeam* WinningTeam);
+	void CloseGame();
 
 protected:
 	UPROPERTY(EditDefaultsOnly)
