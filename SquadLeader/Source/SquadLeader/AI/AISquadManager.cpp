@@ -264,22 +264,22 @@ void AAISquadManager::UpdateMission(const MissionType _MissionType, const FVecto
 	case MissionType::eDEFEND:
 		for_each_sqaud(true, false);
 		m_inFormation = false;
-		GEngine->AddOnScreenDebugMessage(4563, 4.f, FColor::Red, FString::Printf(TEXT("Order Defence on (%s,%s,%s) from %s"), *FString::SanitizeFloat(_Location.X), *FString::SanitizeFloat(_Location.Y), *FString::SanitizeFloat(_Location.Z), *Leader->GetName()));
+		//GEngine->AddOnScreenDebugMessage(4563, 4.f, FColor::Red, FString::Printf(TEXT("Order Defence on (%s,%s,%s) from %s"), *FString::SanitizeFloat(_Location.X), *FString::SanitizeFloat(_Location.Y), *FString::SanitizeFloat(_Location.Z), *Leader->GetName()));
 		break;
 	case MissionType::eATTACK:
 		for_each_sqaud(true, false);
 		m_inFormation = false;
-		GEngine->AddOnScreenDebugMessage(4563, 4.f, FColor::Red, FString::Printf(TEXT("Order Attack on (%s,%s,%s) from %s"), *FString::SanitizeFloat(_Location.X), *FString::SanitizeFloat(_Location.Y), *FString::SanitizeFloat(_Location.Z), *Leader->GetName()));
+		//GEngine->AddOnScreenDebugMessage(4563, 4.f, FColor::Red, FString::Printf(TEXT("Order Attack on (%s,%s,%s) from %s"), *FString::SanitizeFloat(_Location.X), *FString::SanitizeFloat(_Location.Y), *FString::SanitizeFloat(_Location.Z), *Leader->GetName()));
 		break;
 	case MissionType::ePATROL:
 		for_each_sqaud(true, false);
 		m_inFormation = false;
-		GEngine->AddOnScreenDebugMessage(4563, 4.f, FColor::Red, FString::Printf(TEXT("Order MoveTo on (%s,%s,%s) from %s"), *FString::SanitizeFloat(_Location.X), *FString::SanitizeFloat(_Location.Y), *FString::SanitizeFloat(_Location.Z), *Leader->GetName()));
+		//GEngine->AddOnScreenDebugMessage(4563, 4.f, FColor::Red, FString::Printf(TEXT("Order MoveTo on (%s,%s,%s) from %s"), *FString::SanitizeFloat(_Location.X), *FString::SanitizeFloat(_Location.Y), *FString::SanitizeFloat(_Location.Z), *Leader->GetName()));
 		break;
 	default:
 		for_each_sqaud(true, false);
 		m_inFormation = false;
-		GEngine->AddOnScreenDebugMessage(4563, 4.f, FColor::Red, FString::Printf(TEXT("Order Unknown on (%s,%s,%s) from %s"), *FString::SanitizeFloat(_Location.X), *FString::SanitizeFloat(_Location.Y), *FString::SanitizeFloat(_Location.Z), *Leader->GetName()));
+		//GEngine->AddOnScreenDebugMessage(4563, 4.f, FColor::Red, FString::Printf(TEXT("Order Unknown on (%s,%s,%s) from %s"), *FString::SanitizeFloat(_Location.X), *FString::SanitizeFloat(_Location.Y), *FString::SanitizeFloat(_Location.Z), *Leader->GetName()));
 		break;
 	}
 }

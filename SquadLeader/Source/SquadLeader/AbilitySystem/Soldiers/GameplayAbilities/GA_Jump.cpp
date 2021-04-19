@@ -6,7 +6,7 @@ UGA_Jump::UGA_Jump()
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 
 	AbilityInputID = ESoldierAbilityInputID::Jump;
-	AbilityID = ESoldierAbilityInputID::None;
+	AbilityID = ESoldierAbilityInputID::Jump;
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Jump")));
 }
 
@@ -25,6 +25,7 @@ void UGA_Jump::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FG
 			soldier->GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*JumpingEffectSpecHandle.Data.Get());
 		}
 	}
+	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 }
 
 bool UGA_Jump::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, OUT FGameplayTagContainer* OptionalRelevantTags) const

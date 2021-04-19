@@ -1,5 +1,7 @@
 #include "GameplayAbilitySoldier.h"
 #include "AbilitySystemSoldier.h"
+#include "SquadLeader/Soldiers/Players/SoldierPlayerController.h"
+#include "SquadLeader/Soldiers/Players/SoldierPlayerState.h"
 
 UGameplayAbilitySoldier::UGameplayAbilitySoldier()
 {
@@ -9,6 +11,17 @@ UGameplayAbilitySoldier::UGameplayAbilitySoldier()
 	// Default tags that block this ability from activating
 	ActivationBlockedTags.AddTag(FGameplayTag::RequestGameplayTag(FName("State.Dead")));
 	ActivationBlockedTags.AddTag(FGameplayTag::RequestGameplayTag(FName("State.Debuff")));
+}
+
+void UGameplayAbilitySoldier::ActivateAbility(const FGameplayAbilitySpecHandle _Handle, const FGameplayAbilityActorInfo* _OwnerInfo, const FGameplayAbilityActivationInfo _ActivationInfo, const FGameplayEventData* _TriggerEventData)
+{
+	if (ASoldierPlayer* SoldierPlayer = Cast<ASoldierPlayer>(_OwnerInfo->AvatarActor); SoldierPlayer)
+	{
+		if (AbilityID == ESoldierAbilityInputID::Ability1 || AbilityID == ESoldierAbilityInputID::Ability2)
+			SoldierPlayer->GetController<ASoldierPlayerController>()->NotifyMainAbilityCooldown(CooldownDuration.Value, AbilityID);
+	}
+
+	Super::ActivateAbility(_Handle, _OwnerInfo, _ActivationInfo, _TriggerEventData);
 }
 
 bool UGameplayAbilitySoldier::BatchRPCTryActivateAbility(FGameplayAbilitySpecHandle _InAbilityHandle, const bool _EndAbilityImmediately)

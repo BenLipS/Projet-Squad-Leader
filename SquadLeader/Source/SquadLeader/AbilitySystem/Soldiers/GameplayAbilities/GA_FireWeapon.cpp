@@ -9,7 +9,7 @@ UGA_FireWeapon::UGA_FireWeapon()
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 
 	AbilityInputID = ESoldierAbilityInputID::BasicAttack;
-	AbilityID = ESoldierAbilityInputID::None;
+	AbilityID = ESoldierAbilityInputID::BasicAttack;
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.FireWeapon")));
 
 	ActivationOwnedTags.AddTag(FGameplayTag::RequestGameplayTag(FName("State.Firing")));
@@ -48,6 +48,8 @@ void UGA_FireWeapon::ActivateAbility(const FGameplayAbilitySpecHandle Handle, co
 		HandleFire();
 	else
 		ReloadWeapon();
+
+	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 }
 
 bool UGA_FireWeapon::CanActivateAbility(const FGameplayAbilitySpecHandle _Handle, const FGameplayAbilityActorInfo* _ActorInfo, const FGameplayTagContainer* _SourceTags, const FGameplayTagContainer* _TargetTags, OUT FGameplayTagContainer* _OptionalRelevantTags) const

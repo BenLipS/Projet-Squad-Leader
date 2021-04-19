@@ -8,8 +8,6 @@ UGA_LaunchGrenade::UGA_LaunchGrenade()
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 
-	AbilityInputID = ESoldierAbilityInputID::None; // Must be defined in the BP subclasses
-	AbilityID = ESoldierAbilityInputID::None;
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Grenade"))); // Must define another tag in the BP subclasses to be more specific
 	ThrownProjectileEventTag = FGameplayTag::RequestGameplayTag(FName("Event.Ability.GrenadeThrown"));
 }
@@ -51,6 +49,8 @@ void UGA_LaunchGrenade::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		TaskWaitDelay->ReadyForActivation();
 		TaskWaitDelay->OnFinish.AddDynamic(this, &UGA_LaunchGrenade::MontageCompletedOrBlendedOut);
 	}
+
+	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 }
 
 void UGA_LaunchGrenade::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)

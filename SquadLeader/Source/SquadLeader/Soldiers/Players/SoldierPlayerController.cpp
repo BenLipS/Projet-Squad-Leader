@@ -6,6 +6,8 @@
 #include "../SoldierTeam.h"
 #include "../../AI/AISquadManager.h"
 #include "../../UI/SL_HUD.h"
+#include "SquadLeader/SquadLeader.h"
+#include "SquadLeader/UI/Interface/AbilityCooldownDelegateInterface.h"
 
 //TODO: rmove next include -> only use for the team init -> only use on temporary debug
 #include "../../GameState/SquadLeaderGameState.h"
@@ -42,6 +44,25 @@ void ASoldierPlayerController::CreateHUD_Implementation()
 			InputComponent->BindAction("GiveOrder", IE_Released, HUD, &ASL_HUD::OnOrderInputReleased);
 		}
 	}
+}
+
+void ASoldierPlayerController::BindMainAbilities()
+{
+	if (IAbilityCooldownDelegateInterface* HUD = GetHUD<IAbilityCooldownDelegateInterface>(); HUD)
+	{
+
+		HUD->AddAbilityID(ESoldierAbilityInputID::Ability2, "A");
+		HUD->AddAbilityID(ESoldierAbilityInputID::Ability1, "E");
+		
+		// TODO: Uncomment when the third ability is ready
+		//HUD->AddAbilityID(ESoldierAbilityInputID::Ability3);
+	}
+}
+
+void ASoldierPlayerController::NotifyMainAbilityCooldown(const float _Cooldown, const ESoldierAbilityInputID _ID)
+{
+	if (IAbilityCooldownDelegateInterface* HUD = GetHUD<IAbilityCooldownDelegateInterface>(); HUD)
+		HUD->OnAbilityCooldownTriggered(_Cooldown, _ID);
 }
 
 // Server only
@@ -335,6 +356,11 @@ void ASoldierPlayerController::OnWallVisionDeactivate_Implementation()
 		}
 	}
 }
+
+//float ASoldierPlayerController::GetCooldown(const ESoldierAbilityInputID _AbilityID) const
+//{
+//
+//}
 
 void ASoldierPlayerController::Cheat_AddAISquad()
 {
