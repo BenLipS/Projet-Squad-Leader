@@ -24,6 +24,7 @@ enum Type {
 	Soldier UMETA(DisplayName = "Soldier"),
 	ControlArea UMETA(DisplayName = "ControlArea"),
 	Projectile UMETA(DisplayName = "Projectile"),
+	None UMETA(DisplayName = "None"),
 };
 
 USTRUCT()
@@ -146,6 +147,8 @@ private:
 	* Calculate the influence of a control area
 	*/
 	void InfluenceControlArea(int index, int start_index, int source_index, int distance, int value) noexcept;
+
+	void InfluenceProjectile(int index, int start_index, int source_index, int distance, int value) noexcept;
 
 	/*
 	* Calculate the time of execution of a function

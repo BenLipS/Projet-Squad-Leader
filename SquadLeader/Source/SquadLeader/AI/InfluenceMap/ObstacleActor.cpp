@@ -30,7 +30,7 @@ void AObstacleActor::Tick(float DeltaTime)
 			FGridPackage Package;
 			Package.m_location_on_map = GetActorLocation();
 			Package.team_value = 1;
-			Package.m_type = Type::Soldier;
+			Package.m_type = Type::Projectile;
 			GM->InfluenceMap->ReceivedMessage(Package);
 		}
 	}
