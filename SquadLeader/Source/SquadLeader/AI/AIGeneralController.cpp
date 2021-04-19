@@ -626,7 +626,7 @@ ResultState AAIGeneralController::Capturing() {
 	AControlArea* control_area = Cast<AControlArea>(blackboard->GetValueAsObject("ControlArea"));
 	if (control_area) {
 		if (auto value = control_area->TeamData.Find(GetTeam())) {
-			if ((*value)->controlValue >= control_area->maxControlValue) {
+			if ((*value)->controlValue >= control_area->MaxControlValue) {
 				m_missionList->EndMission();
 				m_mission_changed = true;
 				SetState(AIBasicState::Patroling);

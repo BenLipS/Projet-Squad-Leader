@@ -251,6 +251,30 @@ void ASoldierPlayerController::OnTextNotification_Received_Implementation(const 
 	}
 }
 
+void ASoldierPlayerController::OnAllyTicket_Received_Implementation(int newTicket)
+{
+	if (auto HUD = GetHUD<ITicketInterface>(); HUD)
+	{
+		HUD->OnAllyTicketChanged(newTicket);
+	}
+}
+
+void ASoldierPlayerController::OnEnnemyTicket_Received_Implementation(int newTicket)
+{
+	if (auto HUD = GetHUD<ITicketInterface>(); HUD)
+	{
+		HUD->OnEnnemyTicketChanged(newTicket);
+	}
+}
+
+void ASoldierPlayerController::OnGameEnd_Implementation(const FString& TextToDisplay)
+{
+	if (auto HUD = GetHUD<IGameEndInterface>(); HUD)
+	{
+		HUD->OnGameEnd(TextToDisplay);
+	}
+}
+
 void ASoldierPlayerController::OnOrderGiven_Implementation(MissionType Order, FVector Pos)
 {
 	if (ASoldierPlayer* Soldier = GetPawn<ASoldierPlayer>(); Soldier)

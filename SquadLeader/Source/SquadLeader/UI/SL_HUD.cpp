@@ -29,6 +29,7 @@ void ASL_HUD::BeginPlay()
 	SetAIStateLink();
 	BindSoldierTeamChanges();
 	BindControlAreas();
+	//TODO : Init Tickets
 }
 
 void ASL_HUD::SetPlayerStateLink()
@@ -36,6 +37,7 @@ void ASL_HUD::SetPlayerStateLink()
 	ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(GetOwningPlayerController());
 	if (PC)
 	{
+		auto team = PC->GetTeam();
 		if (ASoldier* Soldier = PC->GetPawn<ASoldier>(); Soldier)
 		{
 			if (ASL_Weapon* Weapon = Soldier->GetCurrentWeapon(); Weapon)

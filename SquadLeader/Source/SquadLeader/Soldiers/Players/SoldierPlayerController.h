@@ -113,6 +113,18 @@ public:
 	void OnTextNotification_Received(const FString& notificationString);
 	void OnTextNotification_Received_Implementation(const FString& notificationString);
 
+	UFUNCTION(Client, Reliable)
+	void OnAllyTicket_Received(int newTicket);
+	void OnAllyTicket_Received_Implementation(int newTicket);
+
+	UFUNCTION(Client, Reliable)
+	void OnEnnemyTicket_Received(int newTicket);
+	void OnEnnemyTicket_Received_Implementation(int newTicket);
+
+	UFUNCTION(Client, Reliable)
+	void OnGameEnd(const FString& TextToDisplay);
+	void OnGameEnd_Implementation(const FString& TextToDisplay);
+
 	UFUNCTION(Server, Reliable)
 	void OnOrderGiven(MissionType Order, FVector Pos);
 	void OnOrderGiven_Implementation(MissionType Order, FVector Pos);
@@ -168,4 +180,6 @@ public:
 	UFUNCTION(Server, Reliable)
 	void ServerCheat_LevelUp();
 	void ServerCheat_LevelUp_Implementation();
+
+
 };
