@@ -26,5 +26,5 @@ public:
 	virtual void OnAbilityCooldownTriggered(float Timer, ESoldierAbilityInputID Key) = 0;
 
 	UFUNCTION()
-	virtual void AddAbilityID(ESoldierAbilityInputID Key) = 0;
+	virtual void AddAbilityID(ESoldierAbilityInputID Key, FString KeyText) = 0;
 };

@@ -13,11 +13,11 @@ void IAbilityCooldownDelegateInterface::OnAbilityCooldownTriggered(float Timer, 
 	}
 }
 
-void IAbilityCooldownDelegateInterface::AddAbilityID(ESoldierAbilityInputID Key)
+void IAbilityCooldownDelegateInterface::AddAbilityID(ESoldierAbilityInputID Key, FString KeyText)
 {
 	for (auto AbilityCooldownInterface : AbilityCooldownDelegates)
 	{
-		AbilityCooldownInterface->AddAbilityID(Key);
+		AbilityCooldownInterface->AddAbilityID(Key, KeyText);
 	}
 }
 
