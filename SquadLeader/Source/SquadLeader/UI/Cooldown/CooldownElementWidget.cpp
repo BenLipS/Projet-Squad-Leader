@@ -2,6 +2,7 @@
 
 
 #include "CooldownElementWidget.h"
+#include "Kismet/KismetTextLibrary.h"
 
 void UCooldownElementWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
@@ -12,7 +13,7 @@ void UCooldownElementWidget::NativeTick(const FGeometry& MyGeometry, float InDel
 		TimeRemaining = GetOwningPlayer()->GetWorld()->GetTimerManager().GetTimerRemaining(CooldownTimerHandle);
 		if (TextCooldown)
 		{
-			TextCooldown->SetText(FText::FromString(FString::SanitizeFloat(TimeRemaining, 0)));
+			TextCooldown->SetText(UKismetTextLibrary::Conv_FloatToText(TimeRemaining, ERoundingMode::FromZero, false, true, 1, 324, 1, 1));
 		}
 		if (ImageCooldown)
 		{
@@ -37,7 +38,7 @@ void UCooldownElementWidget::OnCooldownEnded()
 		auto mat = ImageCooldown->GetDynamicMaterial();
 		if (mat)
 		{
-			mat->SetScalarParameterValue("Percentage_fill", 0.f);
+			mat->SetScalarParameterValue("Percentage_fill", 1.f);
 			ImageCooldown->SetBrushFromMaterial(mat);
 		}
 	}
@@ -48,6 +49,7 @@ void UCooldownElementWidget::LaunchPartialCooldown(float Timer, float MaxTimer)
 	//GetOwningPlayer()->GetWorld()->GetTimerManager().SetTimer(CooldownTimerHandle, Timer, false);
 	GetOwningPlayer()->GetWorld()->GetTimerManager().SetTimer(CooldownTimerHandle, this, &UCooldownElementWidget::OnCooldownEnded, Timer);
 	bIsInCooldown = true;
+	MaxTimeRemaining = MaxTimer;
 	TextCooldown->SetVisibility(ESlateVisibility::HitTestInvisible);
 }
 
