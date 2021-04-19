@@ -376,7 +376,7 @@ void AMyRecastNavMesh::SetupCustomNavFilter() {
 }
 void AMyRecastNavMesh::InitInfluenceMap(){
 	TArray<AActor*> ActorList = GetLevel()->Actors;
-	auto functor = [](AActor* actor) { return actor->GetName() == "BP_InfluenceMap_C_0"; };
+	auto functor = [](AActor* actor) { return actor && actor->GetName() == "BP_InfluenceMap_C_0"; };
 	AActor* influenceMap = *(ActorList.FindByPredicate(functor));
 	if (influenceMap) {
 		InfluenceMap = Cast<AInfluenceMapGrid>(influenceMap);
