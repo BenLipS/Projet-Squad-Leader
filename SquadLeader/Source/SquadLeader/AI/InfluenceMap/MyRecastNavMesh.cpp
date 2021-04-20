@@ -378,21 +378,23 @@ void AMyRecastNavMesh::InitInfluenceMap(){
 	TArray<AActor*> ActorList = GetLevel()->Actors;
 	if (ActorList.Num() > 0) {
 		auto functor = [](AActor* actor) { return actor && actor->GetName() == "BP_InfluenceMap_C_0"; };
-		AActor* influenceMap = *(ActorList.FindByPredicate(functor));
-		if (influenceMap) {
-			InfluenceMap = Cast<AInfluenceMapGrid>(influenceMap);
-			DefaultNavFilter->SetInfluenceMap(InfluenceMap);
-			TeamOneNavFilter->SetInfluenceMap(InfluenceMap);
-			TeamTwoNavFilter->SetInfluenceMap(InfluenceMap);
-			SetupCustomNavFilter();
+		if (auto it = ActorList.FindByPredicate(functor); it) {
+			AActor* influenceMap = *(it);
+			if (influenceMap) {
+				InfluenceMap = Cast<AInfluenceMapGrid>(influenceMap);
+				DefaultNavFilter->SetInfluenceMap(InfluenceMap);
+				TeamOneNavFilter->SetInfluenceMap(InfluenceMap);
+				TeamTwoNavFilter->SetInfluenceMap(InfluenceMap);
+				SetupCustomNavFilter();
 
-			FNavigationQueryFilter* Filter1 = new FNavigationQueryFilter();
-			Filter1->SetFilterImplementation(dynamic_cast<const INavigationQueryFilterInterface*>(TeamOneNavFilter));
-			StoreQueryFilter(FilterTeam1, MakeShareable(Filter1));
+				FNavigationQueryFilter* Filter1 = new FNavigationQueryFilter();
+				Filter1->SetFilterImplementation(dynamic_cast<const INavigationQueryFilterInterface*>(TeamOneNavFilter));
+				StoreQueryFilter(FilterTeam1, MakeShareable(Filter1));
 
-			FNavigationQueryFilter* Filter2 = new FNavigationQueryFilter();
-			Filter2->SetFilterImplementation(dynamic_cast<const INavigationQueryFilterInterface*>(TeamTwoNavFilter));
-			StoreQueryFilter(FilterTeam2, MakeShareable(Filter2));
-		}
+				FNavigationQueryFilter* Filter2 = new FNavigationQueryFilter();
+				Filter2->SetFilterImplementation(dynamic_cast<const INavigationQueryFilterInterface*>(TeamTwoNavFilter));
+				StoreQueryFilter(FilterTeam2, MakeShareable(Filter2));
+			}
+		}		
 	}
 }
