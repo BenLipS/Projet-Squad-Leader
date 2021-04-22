@@ -261,7 +261,7 @@ void AInfluenceMapGrid::FindNeighboor()noexcept {
 void AInfluenceMapGrid::InfluenceSoldier(int index, int start_index, int source_index, int distance) noexcept {
 	float value = m_influencemap[source_index].m_value / FMath::Sqrt(1.f + distance);
 
-	if (distance > 10)
+	if (distance > CharacterAreaInfluence)
 		return;
 
 	for (int neighboor : m_neighboors[index].m_neighboor) {
@@ -273,7 +273,7 @@ void AInfluenceMapGrid::InfluenceSoldier(int index, int start_index, int source_
 }
 
 void AInfluenceMapGrid::InfluenceControlArea(int index, int start_index, int source_index, int distance, int value) noexcept {
-	if (distance > 10)
+	if (distance > ControlAreaAreaInfluence)
 		return;
 
 	for (int neighboor : m_neighboors[index].m_neighboor) {
@@ -287,7 +287,7 @@ void AInfluenceMapGrid::InfluenceControlArea(int index, int start_index, int sou
 void AInfluenceMapGrid::InfluenceProjectile(int index, int start_index, int source_index, int distance, int value) noexcept {
 	float Value = m_influencemap[source_index].m_value / FMath::Sqrt(1.f + distance);
 
-	if (distance > 1)
+	if (distance > ProjectileAreaInfluence)
 		return;
 
 	for (int neighboor : m_neighboors[index].m_neighboor) {
@@ -304,15 +304,15 @@ void AInfluenceMapGrid::ReceivedMessage(FGridPackage _message) {
 	
 		switch (_message.m_type) {
 		case Type::Soldier:
-			UpdateTile(index_tile, 0.7f, _message.team_value, _message.m_type);
+			UpdateTile(index_tile, CharacterInfluence, _message.team_value, _message.m_type);
 			InfluenceSoldier(index_tile, index_tile, index_tile, 1);
 			break;
 		case Type::ControlArea:
-			UpdateTile(index_tile, 1.f, _message.team_value, _message.m_type);
+			UpdateTile(index_tile, ControlAreaInfluence, _message.team_value, _message.m_type);
 			InfluenceControlArea(index_tile, index_tile, index_tile, 1, 1.0f);
 			break;
 		case Type::Projectile:
-			UpdateTile(index_tile, 0.7f, _message.team_value, _message.m_type);
+			UpdateTile(index_tile, ProjectileInfluence, _message.team_value, _message.m_type);
 			InfluenceProjectile(index_tile, index_tile, index_tile, 1, 0.7f);
 			break;
 		default:

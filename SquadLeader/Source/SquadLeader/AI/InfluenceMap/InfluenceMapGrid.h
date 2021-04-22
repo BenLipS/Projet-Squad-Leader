@@ -223,6 +223,25 @@ private:
 		TArray<uint32> m_index_team2;
 
 	int value_tick = 0;
-	/*class UMyThreadManager* m_ThreadManager;*/
+
+public:
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Influence Value")
+		float ProjectileInfluence = 0.7f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Influence Value")
+		int ProjectileAreaInfluence = 2;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Influence Value")
+		float ControlAreaInfluence = 1.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Influence Value")
+		int ControlAreaAreaInfluence = 10;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Influence Value")
+		float CharacterInfluence = 0.7f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Influence Value")
+		int CharacterAreaInfluence = 10;
 
 };

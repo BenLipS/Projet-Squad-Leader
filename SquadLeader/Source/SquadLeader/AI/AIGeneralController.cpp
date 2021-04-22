@@ -503,7 +503,7 @@ EPathFollowingRequestResult::Type AAIGeneralController::MoveToVectorLocation() {
 
 	//TO-DO : if follow an enemy be at the distance to shoot 
 	EPathFollowingRequestResult::Type _movetoResult;
-	_movetoResult = MoveToLocation(blackboard->GetValueAsVector("VectorLocation"), 50.f);
+	_movetoResult = MoveToLocation(blackboard->GetValueAsVector("VectorLocation"), 50.f, true, true, false, true, DefaultNavigationFilterClass);
 	if (_movetoResult == EPathFollowingRequestResult::Type::AlreadyAtGoal) {
 		SetState(AIBasicState::Capturing);
 		blackboard->ClearValue("VectorLocation");
