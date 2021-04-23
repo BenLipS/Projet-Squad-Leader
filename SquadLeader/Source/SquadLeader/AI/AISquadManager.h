@@ -55,9 +55,11 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	TArray<AAISquadController*> AISquadList;
 
-public:
-	void BeginPlay() override;
+protected:
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	uint8 StartNumberOfSoldiers = 3;
 
+public:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 		TSubclassOf<ASoldierAI> ClassAI1;
 
@@ -73,6 +75,7 @@ public:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 		TSubclassOf<ASoldierAI> ClassAI5;
 
+	// TODO: Are there necessary?
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 		int MaxAIInSquad = 3;
 
