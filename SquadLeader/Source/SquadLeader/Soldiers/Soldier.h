@@ -99,6 +99,16 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Ability System Component|Abilities")
 	TSubclassOf<UGameplayAbilitySoldier> Ability3;
 
+public:
+	UFUNCTION()
+	TSubclassOf<UGameplayAbilitySoldier> GetClassAbility1() const;
+
+	UFUNCTION()
+	TSubclassOf<UGameplayAbilitySoldier> GetClassAbility2() const;
+
+	UFUNCTION()
+	TSubclassOf<UGameplayAbilitySoldier> GetClassAbility3() const;
+
 	// Additional effect (like hp regen)
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Ability System Component|Effects")
 	TArray<TSubclassOf<UGameplayEffect>> StartupEffects;

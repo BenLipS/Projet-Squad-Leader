@@ -220,6 +220,21 @@ UAttributeSetSoldier* ASoldier::GetAttributeSet() const
 	return AttributeSet;
 }
 
+TSubclassOf<UGameplayAbilitySoldier> ASoldier::GetClassAbility1() const
+{
+	return Ability1;
+}
+
+TSubclassOf<UGameplayAbilitySoldier> ASoldier::GetClassAbility2() const
+{
+	return Ability2;
+}
+
+TSubclassOf<UGameplayAbilitySoldier> ASoldier::GetClassAbility3() const
+{
+	return Ability3;
+}
+
 void ASoldier::InitializeAttributes()
 {
 	check(AbilitySystemComponent);
