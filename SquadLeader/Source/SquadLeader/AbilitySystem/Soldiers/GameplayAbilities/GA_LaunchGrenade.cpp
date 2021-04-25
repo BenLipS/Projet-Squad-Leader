@@ -8,7 +8,7 @@ UGA_LaunchGrenade::UGA_LaunchGrenade()
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 
-	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Grenade"))); // Must define another tag in the BP subclasses to be more specific
+	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Grenade")));
 	ThrownProjectileEventTag = FGameplayTag::RequestGameplayTag(FName("Event.Ability.GrenadeThrown"));
 }
 
@@ -86,5 +86,6 @@ void UGA_LaunchGrenade::ThrowProjectile()
 	SpawnInfo.Instigator = SourceSoldier;
 	SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-	GetWorld()->SpawnActor<ASL_Projectile>(ProjectileClass, SpawnInfo.Owner->GetActorLocation(), Cast<ASoldier>(SpawnInfo.Owner)->CurrentCameraComponent->GetForwardVector().Rotation(), SpawnInfo);
+	const FName SocketHandName = bThrowWithRightHand ? FName{ SourceSoldier->WeaponAttachPointRightHand } : FName{ SourceSoldier->WeaponAttachPointLeftHand };
+	GetWorld()->SpawnActor<ASL_Projectile>(ProjectileClass, SourceSoldier->GetMesh()->GetSocketLocation(SocketHandName), SourceSoldier->CurrentCameraComponent->GetForwardVector().Rotation(), SpawnInfo);
 }
