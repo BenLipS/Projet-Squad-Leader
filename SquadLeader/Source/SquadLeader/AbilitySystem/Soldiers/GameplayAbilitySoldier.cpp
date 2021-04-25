@@ -17,7 +17,7 @@ void UGameplayAbilitySoldier::ActivateAbility(const FGameplayAbilitySpecHandle _
 {
 	if (ASoldierPlayer* SoldierPlayer = Cast<ASoldierPlayer>(_OwnerInfo->AvatarActor); SoldierPlayer)
 	{
-		if (AbilityID == ESoldierAbilityInputID::Ability1 || AbilityID == ESoldierAbilityInputID::Ability2)
+		if (AbilityID == ESoldierAbilityInputID::Ability1 || AbilityID == ESoldierAbilityInputID::Ability2 || AbilityID == ESoldierAbilityInputID::Ability3)
 			SoldierPlayer->GetController<ASoldierPlayerController>()->NotifyMainAbilityCooldown(CooldownDuration.Value, AbilityID);
 	}
 

@@ -95,6 +95,10 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Ability System Component|Abilities")
 	TSubclassOf<UGameplayAbilitySoldier> Ability2;
 
+	// Ability3
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Ability System Component|Abilities")
+	TSubclassOf<UGameplayAbilitySoldier> Ability3;
+
 	// Additional effect (like hp regen)
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Ability System Component|Effects")
 	TArray<TSubclassOf<UGameplayEffect>> StartupEffects;
@@ -107,6 +111,8 @@ protected:
 	bool bAbilitiesInitialized;	
 	virtual void InitializeAttributes();
 	void InitializeAbilities();
+	void InitializeStartupAbilities();
+	virtual void InitializeMainFightingAbilities();
 	void AddStartupEffects();
 	void InitializeTagChangeCallbacks();
 	virtual void InitializeAttributeChangeCallbacks();

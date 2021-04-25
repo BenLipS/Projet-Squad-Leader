@@ -243,10 +243,32 @@ void ASoldier::InitializeAbilities()
 		return;
 
 	check(AbilitySystemComponent);
+
+	InitializeStartupAbilities();
+	InitializeMainFightingAbilities();
+
+	bAbilitiesInitialized = true;
+}
+
+void ASoldier::InitializeStartupAbilities()
+{
+	for (TSubclassOf<UGameplayAbilitySoldier>& StartupAbility : StartupAbilities)
+	{
+		if (!StartupAbility) // Empty element from blueprint
+		{
+			UE_LOG(LogTemp, Error, TEXT("%s() Invalid ability in StartupAbilities. Check the blueprint of the soldier"), *FString(__FUNCTION__));
+			continue;
+		}
+
+		AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(StartupAbility, GetCharacterLevel(), static_cast<int32>(StartupAbility.GetDefaultObject()->AbilityInputID), this));
+	}
+}
+
+void ASoldier::InitializeMainFightingAbilities()
+{
 	check(Ability1);
 	check(Ability2);
-
-	// TODO: Separate the part below into 2 functions
+	//check(Ability3);
 
 	// Grant main fighting abilities
 	if (Ability1)
@@ -267,18 +289,14 @@ void ASoldier::InitializeAbilities()
 		UE_LOG(LogTemp, Error, TEXT("%s() Invalid Ability2. Check the blueprint of the soldier"), *FString(__FUNCTION__));
 	}
 
-	// Grant startup abilities
-	for (TSubclassOf<UGameplayAbilitySoldier>& StartupAbility : StartupAbilities)
+	if (Ability3)
 	{
-		if (!StartupAbility) // Empty element from blueprint
-		{
-			UE_LOG(LogTemp, Error, TEXT("%s() Invalid ability in StartupAbilities. Check the blueprint of the soldier"), *FString(__FUNCTION__));
-			continue;
-		}
-
-		AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(StartupAbility, GetCharacterLevel(), static_cast<int32>(StartupAbility.GetDefaultObject()->AbilityInputID), this));
+		AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(Ability3, GetCharacterLevel(), static_cast<int32>(ESoldierAbilityInputID::Ability3), this));
 	}
-	bAbilitiesInitialized = true;
+	else // Empty element from blueprint
+	{
+		//UE_LOG(LogTemp, Error, TEXT("%s() Invalid Ability2. Check the blueprint of the soldier"), *FString(__FUNCTION__));
+	}
 }
 
 void ASoldier::AddStartupEffects()
