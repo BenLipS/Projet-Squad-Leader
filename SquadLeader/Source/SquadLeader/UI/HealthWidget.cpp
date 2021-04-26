@@ -2,6 +2,8 @@
 
 
 #include "HealthWidget.h"
+#include "Interface/PlayerShieldDelegateInterface.h"
+#include "Interface/PlayerHealthDelegateInterface.h"
 
 UHealthWidget::UHealthWidget(const FObjectInitializer& ObjectInitializer) : USL_UserWidget(ObjectInitializer)
 {
@@ -13,6 +15,11 @@ void UHealthWidget::SetupDelegateToObject_Implementation(UObject* ObjectIn)
 	{
 		PlayerHealthDelegateInterface->AddPlayerHealthDelegate(this);
 	}
+
+	if (IPlayerShieldDelegateInterface* PlayerShieldDelegateInterface = Cast<IPlayerShieldDelegateInterface>(ObjectIn); PlayerShieldDelegateInterface)
+	{
+		PlayerShieldDelegateInterface->AddPlayerShieldDelegate(this);
+	}
 }
 
 void UHealthWidget::OnPlayerHealthChanged(float newValue)
@@ -22,7 +29,7 @@ void UHealthWidget::OnPlayerHealthChanged(float newValue)
 	Health = newValue;
 	ProgressBarHP->SetPercent(Health / MaxHealth);
 	//TextHP->SetText(FText::FromString(FString::SanitizeFloat(Health,0) + "/" + FString::SanitizeFloat(MaxHealth,0) + "HP"));
-	TextHP->SetText(FText::FromString(FString::SanitizeFloat(Health,0) + " HP"));
+	//TextHP->SetText(FText::FromString(FString::SanitizeFloat(Health,0) + " + " + FString::SanitizeFloat(Shield, 0) + " HP"));
 }
 
 void UHealthWidget::OnPlayerMaxHealthChanged(float newValue)
@@ -37,4 +44,20 @@ void UHealthWidget::OnPlayerMaxHealthChanged(float newValue)
 
 	ProgressBarHP->SetPercent(Health / MaxHealth);
 	//TextHP->SetText(FText::FromString(FString::SanitizeFloat(Health, 0) + "/" + FString::SanitizeFloat(MaxHealth, 0) + "HP"));
+}
+
+void UHealthWidget::OnPlayerShieldChanged(float newValue)
+{
+	Shield = newValue;
+	ProgressBarShield->SetPercent(Shield / MaxShield);
+	//TextShield->SetText(FText::FromString(FString::SanitizeFloat(Shield, 0) + "/" + FString::SanitizeFloat(MaxShield, 0)));
+	//TextHP->SetText(FText::FromString(FString::SanitizeFloat(Health, 0) + " + " + FString::SanitizeFloat(Shield, 0) + " HP"));
+}
+
+void UHealthWidget::OnPlayerMaxShieldChanged(float newValue)
+{
+	MaxShield = newValue;
+	ProgressBarShield->SetPercent(Shield / MaxShield);
+	ProgressBarShield->SetNbSplit(MaxShield / ShieldSegment);
+	//TextShield->SetText(FText::FromString(FString::SanitizeFloat(Shield, 0) + "/" + FString::SanitizeFloat(MaxShield, 0)));
 }

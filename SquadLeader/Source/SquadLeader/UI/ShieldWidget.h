@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "SL_UserWidget.h"
 #include "Engine/Canvas.h"
-#include "Components/ProgressBar.h"
+#include "ProgressBarStepWidget.h"
 #include "Components/TextBlock.h"
 #include "Interface/PlayerShieldInterface.h"
 #include "ShieldWidget.generated.h"
@@ -19,13 +19,17 @@ class SQUADLEADER_API UShieldWidget : public USL_UserWidget, public IPlayerShiel
 
 protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-		UProgressBar* ProgressBarShield;
+	UProgressBarStepWidget* ProgressBarShield;
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-		UTextBlock* TextShield;
+	UTextBlock* TextShield;
 
 	float Shield = 100;
 	float MaxShield = 100;
+
+	/*How many HP a segment of the progressBar can hold*/
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	float ShieldSegment = 50.f;
 
 public:
 	UShieldWidget(const FObjectInitializer& ObjectInitializer);
