@@ -50,12 +50,9 @@ void ASoldierPlayerController::BindMainAbilities()
 {
 	if (IAbilityCooldownDelegateInterface* HUD = GetHUD<IAbilityCooldownDelegateInterface>(); HUD)
 	{
-
-		HUD->AddAbilityID(ESoldierAbilityInputID::Ability2, "A");
-		HUD->AddAbilityID(ESoldierAbilityInputID::Ability1, "E");
-		
-		// TODO: Uncomment when the third ability is ready
-		//HUD->AddAbilityID(ESoldierAbilityInputID::Ability3);
+		HUD->AddAbilityID(ESoldierAbilityInputID::Ability1, "Q");
+		HUD->AddAbilityID(ESoldierAbilityInputID::Ability2, "E");
+		HUD->AddAbilityID(ESoldierAbilityInputID::Ability3, "F");
 	}
 }
 
