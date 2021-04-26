@@ -56,8 +56,20 @@ void UHealthWidget::OnPlayerShieldChanged(float newValue)
 
 void UHealthWidget::OnPlayerMaxShieldChanged(float newValue)
 {
+	if (newValue == 0.f)
+	{
+		ShieldBackground->SetVisibility(ESlateVisibility::Collapsed);
+	}
+	else
+	{
+		if (MaxShield == 0.f)
+		{
+			ShieldBackground->SetVisibility(ESlateVisibility::HitTestInvisible);
+		}
+		ProgressBarShield->SetPercent(Shield / newValue);
+		ProgressBarShield->SetNbSplit(newValue / ShieldSegment);
+	}
+
 	MaxShield = newValue;
-	ProgressBarShield->SetPercent(Shield / MaxShield);
-	ProgressBarShield->SetNbSplit(MaxShield / ShieldSegment);
 	//TextShield->SetText(FText::FromString(FString::SanitizeFloat(Shield, 0) + "/" + FString::SanitizeFloat(MaxShield, 0)));
 }

@@ -7,6 +7,7 @@
 #include "Engine/Canvas.h"
 #include "ProgressBarStepWidget.h"
 #include "Components/TextBlock.h"
+#include "Components/Image.h"
 #include "Interface/PlayerHealthInterface.h"
 #include "Interface/PlayerShieldInterface.h"
 #include "HealthWidget.generated.h"
@@ -23,7 +24,7 @@ protected:
 	UProgressBarStepWidget* ProgressBarHP;
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	UTextBlock* TextHP;
+		UTextBlock* TextHP;
 
 	float Health = 100;
 	float MaxHealth = 100;
@@ -38,6 +39,9 @@ protected:
 
 	/*UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UTextBlock* TextShield;*/
+
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UImage* ShieldBackground;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	float ShieldSegment = 50.f;
