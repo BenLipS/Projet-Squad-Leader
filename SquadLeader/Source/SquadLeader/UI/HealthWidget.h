@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "SL_UserWidget.h"
 #include "Engine/Canvas.h"
-#include "Components/ProgressBar.h"
+#include "ProgressBarStepWidget.h"
 #include "Components/TextBlock.h"
 #include "Interface/PlayerHealthInterface.h"
 #include "Interface/PlayerHealthDelegateInterface.h"
@@ -20,13 +20,17 @@ class SQUADLEADER_API UHealthWidget : public USL_UserWidget, public IPlayerHealt
 
 protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	UProgressBar* ProgressBarHP;
+	UProgressBarStepWidget* ProgressBarHP;
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UTextBlock* TextHP;
 
 	float Health = 100;
 	float MaxHealth = 100;
+
+	/*How many HP a segment of the progressBar can hold*/
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	float HPSegment = 50.f;
 
 public:
 	UHealthWidget(const FObjectInitializer& ObjectInitializer);

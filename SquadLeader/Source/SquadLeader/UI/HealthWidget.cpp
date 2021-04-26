@@ -21,14 +21,20 @@ void UHealthWidget::OnPlayerHealthChanged(float newValue)
 		newValue = MaxHealth;*/
 	Health = newValue;
 	ProgressBarHP->SetPercent(Health / MaxHealth);
-	TextHP->SetText(FText::FromString(FString::SanitizeFloat(Health,0) + "/" + FString::SanitizeFloat(MaxHealth,0) + "HP"));
+	//TextHP->SetText(FText::FromString(FString::SanitizeFloat(Health,0) + "/" + FString::SanitizeFloat(MaxHealth,0) + "HP"));
+	TextHP->SetText(FText::FromString(FString::SanitizeFloat(Health,0) + " HP"));
 }
 
 void UHealthWidget::OnPlayerMaxHealthChanged(float newValue)
 {
-	/*if (newValue < Health)
-		Health = newValue;*/
-	MaxHealth = newValue;
+	ensure(HPSegment > 0.f);
+	if (newValue != MaxHealth)
+	{
+		MaxHealth = newValue;
+	}
+	ProgressBarHP->SetNbSplit(MaxHealth / HPSegment);
+
+
 	ProgressBarHP->SetPercent(Health / MaxHealth);
-	TextHP->SetText(FText::FromString(FString::SanitizeFloat(Health, 0) + "/" + FString::SanitizeFloat(MaxHealth, 0) + "HP"));
+	//TextHP->SetText(FText::FromString(FString::SanitizeFloat(Health, 0) + "/" + FString::SanitizeFloat(MaxHealth, 0) + "HP"));
 }
