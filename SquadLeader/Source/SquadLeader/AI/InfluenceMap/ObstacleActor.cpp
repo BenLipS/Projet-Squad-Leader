@@ -24,17 +24,14 @@ void AObstacleActor::BeginPlay()
 void AObstacleActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (TickNumber % 2 == 0) {
-		auto GM = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
-		if (GM && GM->InfluenceMap) {
-			FGridPackage Package;
-			Package.m_location_on_map = GetActorLocation();
-			Package.team_value = 1;
-			Package.m_type = Type::Projectile;
-			Package.ActorID = this->GetUniqueID();
-			GM->InfluenceMap->ReceivedMessage(Package);
-		}
+	auto GM = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
+	if (GM && GM->InfluenceMap) {
+		FGridPackage Package;
+		Package.m_location_on_map = GetActorLocation();
+		Package.team_value = 1;
+		Package.m_type = Type::Projectile;
+		Package.ActorID = this->GetUniqueID();
+		GM->InfluenceMap->ReceivedMessage(Package);
 	}
-	TickNumber++; 
 }
 

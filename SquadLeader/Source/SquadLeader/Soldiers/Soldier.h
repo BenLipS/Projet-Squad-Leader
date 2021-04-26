@@ -494,4 +494,11 @@ public:
 	// This need to use the new camera shake sequence. Matinee is deprecated 
 	UFUNCTION(BlueprintImplementableEvent)
 	void ShakeCamera();
+
+protected:
+	UPROPERTY()
+		FVector LastPosition; 
+
+	UPROPERTY()
+		FVector CurrentPosition;
 };

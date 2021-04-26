@@ -72,9 +72,9 @@ struct SQUADLEADER_API FTileBase {
 public:
 
 	void Reset();
+
+	void ReduceInfluence();
 };
-
-
 
 /**
  * This class will create a Grid for the influence Map
@@ -122,7 +122,7 @@ private:
 	/*
 	* Return the Index in the grid of a certain _location
 	*/
-	int FindTileIndex(FVector _location) const noexcept;
+	bool FindTileIndex(const FVector _location, uint32& Index) const noexcept;
 
 	bool FindIndexModifyinTeam1(const FVector2D Location, uint32& Index);
 	bool FindIndexModifyinTeam2(const FVector2D Location, uint32& Index);
@@ -234,8 +234,6 @@ private:
 	UPROPERTY()
 		TArray<uint32> m_index_team2;
 
-	int value_tick = 0;
-
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Influence Value")
@@ -256,4 +254,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Influence Value")
 		int CharacterAreaInfluence = 10;
 
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Update Tick")
+		int TickUpdate = 5;
+
+	UPROPERTY()
+		int CurrentTick = 5;
 };
