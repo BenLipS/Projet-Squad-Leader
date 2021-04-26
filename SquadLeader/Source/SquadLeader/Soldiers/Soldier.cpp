@@ -339,6 +339,7 @@ void ASoldier::AddStartupEffects()
 void ASoldier::InitializeTagChangeCallbacks()
 {
 	AbilitySystemComponent->RegisterGameplayTagEvent(FGameplayTag::RequestGameplayTag(FName("State.Dead")), EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ASoldier::DeadTagChanged);
+	AbilitySystemComponent->RegisterGameplayTagEvent(FGameplayTag::RequestGameplayTag(FName("State.Debuff.BlurredFromJammer")), EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ASoldier::BlurredFromJammerTagChanged);
 }
 
 void ASoldier::InitializeAttributeChangeCallbacks()
@@ -407,6 +408,11 @@ void ASoldier::DeadTagChanged(const FGameplayTag _CallbackTag, int32 _NewCount)
 			OnRespawnMontageCompleted(nullptr, false);
 		}
 	}
+}
+
+void ASoldier::BlurredFromJammerTagChanged(const FGameplayTag _CallbackTag, int32 _NewCount)
+{
+	OnBlurredVisionFromJammer(_NewCount > 0);
 }
 
 bool ASoldier::ActivateAbilities(const FGameplayTagContainer& _TagContainer)

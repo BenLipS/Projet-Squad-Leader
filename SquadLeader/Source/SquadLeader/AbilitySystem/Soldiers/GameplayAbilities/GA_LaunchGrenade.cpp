@@ -9,7 +9,7 @@ UGA_LaunchGrenade::UGA_LaunchGrenade()
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Grenade")));
-	ThrownProjectileEventTag = FGameplayTag::RequestGameplayTag(FName("Event.Ability.GrenadeThrown"));
+	ThrownProjectileEventTag = FGameplayTag::RequestGameplayTag(FName("Event.Ability.ProjectileThrown"));
 }
 
 bool UGA_LaunchGrenade::CanActivateAbility(const FGameplayAbilitySpecHandle _Handle, const FGameplayAbilityActorInfo* _ActorInfo, const FGameplayTagContainer* _SourceTags, const FGameplayTagContainer* _TargetTags, OUT FGameplayTagContainer* _OptionalRelevantTags) const

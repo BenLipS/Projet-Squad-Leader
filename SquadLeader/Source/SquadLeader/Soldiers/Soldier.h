@@ -128,6 +128,19 @@ public:
 	virtual void InitializeAttributeChangeCallbacks();
 
 public:
+	UFUNCTION(BlueprintCallable, Category = "Abilities")
+	bool ActivateAbilities(const FGameplayTagContainer& _TagContainer);
+
+	UFUNCTION(BlueprintCallable, Category = "Abilities")
+	bool ActivateAbility(const FGameplayTag& _Tag);
+
+	UFUNCTION(BlueprintCallable, Category = "Abilities")
+	void CancelAbilities(const FGameplayTagContainer& _TagContainer);
+
+	UFUNCTION(BlueprintCallable, Category = "Abilities")
+	void CancelAbility(const FGameplayTag& _Tag);
+
+public:
 	TSubclassOf<UGE_UpdateStats> GetStatAttributeEffects() const;
 
 //////////////// Cooldowns
@@ -142,19 +155,11 @@ public:
 
 protected:
 	virtual void DeadTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
+	virtual void BlurredFromJammerTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 
 public:
-	UFUNCTION(BlueprintCallable, Category = "Abilities")
-	bool ActivateAbilities(const FGameplayTagContainer& _TagContainer);
-
-	UFUNCTION(BlueprintCallable, Category = "Abilities")
-	bool ActivateAbility(const FGameplayTag& _Tag);
-
-	UFUNCTION(BlueprintCallable, Category = "Abilities")
-	void CancelAbilities(const FGameplayTagContainer& _TagContainer);
-
-	UFUNCTION(BlueprintCallable, Category = "Abilities")
-	void CancelAbility(const FGameplayTag& _Tag);
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnBlurredVisionFromJammer(const bool _IsBlurred);
 
 //////////////// Attributes
 public:
