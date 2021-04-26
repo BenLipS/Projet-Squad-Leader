@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
-#include "PlayerData/PlayerData.h"
+#include "MainMenu/PlayerData/PlayerData.h"
 #include "Runtime/Online/HTTP/Public/Http.h"
 #include "SquadLeaderGameInstance.generated.h"
 
