@@ -56,13 +56,17 @@ struct SQUADLEADER_API FTileBase {
 	//the position of the tile in the world
 	FVector m_location;
 	//wich team possess this tile
-	int m_team = -1;
+	TArray<uint32> Teams;
 	//the type of the tile (Soldier, COntrolArea, Projectile, etc.)
 	TEnumAsByte<Type> m_type;
 	//ID of the actor's that have influence on the tile
 	TArray<uint32> ActorsID;
 
 	bool in_update = false;
+
+public:
+
+	void Reset();
 };
 
 
@@ -144,14 +148,14 @@ private:
 	* Algorithm recursif
 	* calculate the influence of player on the grid
 	*/
-	void InfluenceSoldier(int index, int start_index, int source_index, int distance, uint32 actorID) noexcept;
+	void InfluenceSoldier(int index, int start_index, int source_index, int distance, uint32 actorID, uint32 Team) noexcept;
 
 	/*
 	* Calculate the influence of a control area
 	*/
-	void InfluenceControlArea(int index, int start_index, int source_index, int distance, uint32 actorID) noexcept;
+	void InfluenceControlArea(int index, int start_index, int source_index, int distance, uint32 actorID, uint32 Team) noexcept;
 
-	void InfluenceProjectile(int index, int start_index, int source_index, int distance, uint32 actorID) noexcept;
+	void InfluenceProjectile(int index, int start_index, int source_index, int distance, uint32 actorID, uint32 Team) noexcept;
 
 	/*
 	* Calculate the time of execution of a function
