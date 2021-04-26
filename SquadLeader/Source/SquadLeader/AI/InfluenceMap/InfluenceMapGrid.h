@@ -53,12 +53,17 @@ struct SQUADLEADER_API FTileBase {
 
 	//value of the tile
 	float m_value = 0.f;
+
 	//the position of the tile in the world
 	FVector m_location;
-	//wich team possess this tile
+	
+	//List of all the team that are on the tile
+	//This will help to determine if there's a conflict on a certain position
 	TArray<uint32> Teams;
-	//the type of the tile (Soldier, COntrolArea, Projectile, etc.)
-	TEnumAsByte<Type> m_type;
+
+	//The list of the different type on the tile(Soldier, COntrolArea, Projectile, etc.)
+	TArray<TEnumAsByte<Type>> Types;
+
 	//ID of the actor's that have influence on the tile
 	TArray<uint32> ActorsID;
 
