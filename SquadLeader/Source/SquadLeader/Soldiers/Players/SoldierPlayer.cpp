@@ -147,6 +147,25 @@ void ASoldierPlayer::cycleBetweenTeam()
 	else ServerCycleBetweenTeam();
 }
 
+void ASoldierPlayer::SpawnPing(FVector PingLocation)
+{
+	FTransform PingTransform;
+	PingTransform.SetLocation(PingLocation);
+	if (!PingMesh) {
+		PingMesh = GetWorld()->SpawnActorDeferred<AActor>(PingClass, PingTransform, this, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+		if (PingMesh) PingMesh->FinishSpawning(PingTransform);
+	}
+	else {
+		PingMesh->Destroy();
+		PingMesh = GetWorld()->SpawnActorDeferred<AActor>(PingClass, PingTransform, this, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+		if (PingMesh) PingMesh->FinishSpawning(PingTransform);
+	}
+
+}
+void ASoldierPlayer::DestroyPing() {
+	if(PingMesh) PingMesh->Destroy();
+}
+
 void ASoldierPlayer::LevelUp()
 {
 	Super::LevelUp();
