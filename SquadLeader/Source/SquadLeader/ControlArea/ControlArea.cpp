@@ -206,6 +206,7 @@ void AControlArea::calculateControlValue()
 					break;
 				}
 				m_package.m_type = Type::ControlArea;
+				m_package.ActorID = this->GetUniqueID();
 				GM->InfluenceMap->ReceivedMessage(m_package);
 			}
 		}

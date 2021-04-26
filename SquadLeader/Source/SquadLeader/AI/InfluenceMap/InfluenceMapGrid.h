@@ -36,6 +36,7 @@ struct SQUADLEADER_API FGridPackage {
 	int team_value = 0;
 	FVector m_location_on_map;
 	TEnumAsByte<Type> m_type;
+	uint32 ActorID;
 };
 
 /*
@@ -58,6 +59,8 @@ struct SQUADLEADER_API FTileBase {
 	int m_team = -1;
 	//the type of the tile (Soldier, COntrolArea, Projectile, etc.)
 	TEnumAsByte<Type> m_type;
+	//ID of the actor's that have influence on the tile
+	TArray<uint32> ActorsID;
 
 	bool in_update = false;
 };
@@ -141,21 +144,21 @@ private:
 	* Algorithm recursif
 	* calculate the influence of player on the grid
 	*/
-	void InfluenceSoldier(int index, int start_index, int source_index, int distance) noexcept;
+	void InfluenceSoldier(int index, int start_index, int source_index, int distance, uint32 actorID) noexcept;
 
 	/*
 	* Calculate the influence of a control area
 	*/
-	void InfluenceControlArea(int index, int start_index, int source_index, int distance, int value) noexcept;
+	void InfluenceControlArea(int index, int start_index, int source_index, int distance, uint32 actorID) noexcept;
 
-	void InfluenceProjectile(int index, int start_index, int source_index, int distance, int value) noexcept;
+	void InfluenceProjectile(int index, int start_index, int source_index, int distance, uint32 actorID) noexcept;
 
 	/*
 	* Calculate the time of execution of a function
 	*/
 	void TimeFunction();
 
-	void UpdateTile(int index, float value, int team, Type type) noexcept;
+	void UpdateTile(int index, float value, int team, Type type, uint32 actorID) noexcept;
 
 	void AddUpdateTileTeam1(const uint32 index);
 	void AddUpdateTileTeam2(const uint32 index);

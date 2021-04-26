@@ -31,6 +31,7 @@ void AObstacleActor::Tick(float DeltaTime)
 			Package.m_location_on_map = GetActorLocation();
 			Package.team_value = 1;
 			Package.m_type = Type::Projectile;
+			Package.ActorID = this->GetUniqueID();
 			GM->InfluenceMap->ReceivedMessage(Package);
 		}
 	}

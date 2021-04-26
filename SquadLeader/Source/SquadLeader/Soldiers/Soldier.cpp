@@ -114,8 +114,9 @@ void ASoldier::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifeti
 void ASoldier::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	/*ASquadLeaderGameModeBase* GM = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
+	ASquadLeaderGameModeBase* GM = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
 
+	//Envoi des informations à la carte d'influence
 	if (GetTeam() && GM && GM->InfluenceMap) {
 		FGridPackage m_package;
 		m_package.m_location_on_map = GetActorLocation();
@@ -135,8 +136,9 @@ void ASoldier::Tick(float DeltaTime)
 		}
 
 		m_package.m_type = Type::Soldier;
+		m_package.ActorID = this->GetUniqueID();
 		GM->InfluenceMap->ReceivedMessage(m_package);
-	}*/
+	}
 }
 
 void ASoldier::InitCameras()
