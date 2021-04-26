@@ -28,5 +28,8 @@ public:
 	virtual void OnControlAreaAdded(AControlArea* _ControlArea) = 0;
 
 	UFUNCTION()
+	virtual void OnPingAdded(FVector2D PosPingMinimap) = 0;
+
+	UFUNCTION()
 	virtual void OnUpdatePOIs() = 0;
 };

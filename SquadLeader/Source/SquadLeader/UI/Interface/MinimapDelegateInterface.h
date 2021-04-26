@@ -23,6 +23,7 @@ public:
 	virtual void OnSoldierAddedToTeam(ASoldier* _Soldier);
 	virtual void OnSoldierRemovedFromTeam(ASoldier* _Soldier);
 	virtual void OnControlAreaAdded(AControlArea* _ControlArea);
+	virtual void OnPingAdded(FVector2D _PingPos) override;
 	virtual void OnUpdatePOIs();
 
 	void AddMinimapDelegate(IMinimapInterface* _NewDelegate);

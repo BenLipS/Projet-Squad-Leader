@@ -35,6 +35,9 @@ protected:
 	UOverlay* MinimapControlAreaOverlay;
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UOverlay* PingOverlay;
+
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UImage* MinimapImage;
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
@@ -48,24 +51,28 @@ protected:
 	TArray<UPointOfInterestWidget*> POIList;
 
 // Squad
-	UPROPERTY(EditDefaultsOnly, Category = "PointOfInterest")
+	UPROPERTY(EditAnywhere, Category = "PointOfInterest")
 	TSubclassOf<UPointOfInterestWidget> SquadIconWidgetClass;
 
 // Player Allies
-	UPROPERTY(EditDefaultsOnly, Category = "PointOfInterest")
+	UPROPERTY(EditAnywhere, Category = "PointOfInterest")
 	TSubclassOf<UPointOfInterestWidget> PlayerAllieIconWidgetClass;
 
 // AI Allies
-	UPROPERTY(EditDefaultsOnly, Category = "PointOfInterest")
+	UPROPERTY(EditAnywhere, Category = "PointOfInterest")
 	TSubclassOf<UPointOfInterestWidget> AIAllieIconWidgetClass;
 
 // Ennemies
-	UPROPERTY(EditDefaultsOnly, Category = "PointOfInterest")
+	UPROPERTY(EditAnywhere, Category = "PointOfInterest")
 	TSubclassOf<UPointOfInterestWidget> EnnemyIconWidgetClass;
 
 // Control Area
-	UPROPERTY(EditDefaultsOnly, Category = "PointOfInterest")
+	UPROPERTY(EditAnywhere, Category = "PointOfInterest")
 	TSubclassOf<UPointOfInterestWidget> ControlAreaIconWidgetClass;
+
+// Ping
+	UPROPERTY(EditAnywhere, Category = "PointOfInterest")
+	TSubclassOf<UPointOfInterestWidget> PingIconWidgetClass;
 
 public:
 	UMinimapWidget(const FObjectInitializer& _ObjectInitializer);
@@ -76,6 +83,6 @@ public:
 	virtual void OnSoldierAddedToTeam(ASoldier* _Soldier) override;
 	virtual void OnSoldierRemovedFromTeam(ASoldier* _Soldier) override;
 	virtual void OnControlAreaAdded(AControlArea* _ControlArea) override;
-
+	virtual void OnPingAdded(FVector2D PosPingMinimap) override;
 	virtual void OnUpdatePOIs() override;
 };

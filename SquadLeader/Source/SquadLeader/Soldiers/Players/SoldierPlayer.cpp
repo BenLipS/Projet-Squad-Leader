@@ -6,6 +6,7 @@
 #include "../../AI/AISquadManager.h"
 #include "../../AbilitySystem/Soldiers/GameplayAbilitySoldier.h"
 #include "../../Spawn/SoldierSpawn.h"
+#include "SquadLeader/UI/Interface/MinimapInterface.h"
 #include "DrawDebugHelpers.h"
 
 ASoldierPlayer::ASoldierPlayer(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer),
@@ -151,16 +152,32 @@ void ASoldierPlayer::SpawnPing(FVector PingLocation)
 {
 	FTransform PingTransform;
 	PingTransform.SetLocation(PingLocation);
-	if (!PingMesh) {
-		PingMesh = GetWorld()->SpawnActorDeferred<AActor>(PingClass, PingTransform, this, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
-		if (PingMesh) PingMesh->FinishSpawning(PingTransform);
-	}
-	else {
+	if (PingMesh) 
 		PingMesh->Destroy();
-		PingMesh = GetWorld()->SpawnActorDeferred<AActor>(PingClass, PingTransform, this, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
-		if (PingMesh) PingMesh->FinishSpawning(PingTransform);
+	
+	PingMesh = GetWorld()->SpawnActorDeferred<AActor>(PingClass, PingTransform, this, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+	if (PingMesh) PingMesh->FinishSpawning(PingTransform);
+	
+	if (ASoldierPlayerController* PC = GetController<ASoldierPlayerController>(); PC)
+	{
+		if (auto HUD = PC->GetHUD<IMinimapInterface>(); HUD)
+		{
+
+		}
 	}
 
+
+	if (ASL_HUD* HUD = GetHUD<ASL_HUD>(); HUD)
+	{
+		OnPingAdded()
+	}
+	
+
+	////// HUD
+	AddPingToHUD()
+	{
+
+	}
 }
 void ASoldierPlayer::DestroyPing() {
 	if(PingMesh) PingMesh->Destroy();

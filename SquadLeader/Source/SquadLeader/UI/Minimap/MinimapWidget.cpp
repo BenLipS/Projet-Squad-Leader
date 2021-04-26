@@ -6,6 +6,8 @@
 #include "Components/OverlaySlot.h"
 #include "SquadLeader/AI/AISquadManager.h"
 
+#include "Blueprint/WidgetTree.h"
+
 UMinimapWidget::UMinimapWidget(const FObjectInitializer& _ObjectInitializer) : USL_UserWidget(_ObjectInitializer),
 Dimensions{ 10'000.f },
 Zoom{ 1.f },
@@ -78,6 +80,30 @@ void UMinimapWidget::OnControlAreaAdded(AControlArea* _ControlArea)
 
 		POIList.Add(POI);
 	}
+}
+
+void UMinimapWidget::OnPingAdded(FVector2D PosPingMinimap)
+{
+	//creer un widget
+	UPointOfInterestWidget* POI;
+
+	//
+	if (IsValid(PingIconWidgetClass))
+	{
+		POI = CreateWidget<UPointOfInterestWidget>(PingOverlay, PingIconWidgetClass);
+
+		if (POI)
+		{
+			// Put the POI to the center of the minimap as the base position
+			if (UOverlaySlot* OverlaySlot = Cast<UOverlaySlot>(PingOverlay->AddChild(POI)); OverlaySlot)
+			{
+				OverlaySlot->SetHorizontalAlignment(EHorizontalAlignment::HAlign_Center);
+				OverlaySlot->SetVerticalAlignment(EVerticalAlignment::VAlign_Center);
+			}
+		}
+	}
+	
+
 }
 
 void UMinimapWidget::OnSoldierRemovedFromTeam(ASoldier* _Soldier)
