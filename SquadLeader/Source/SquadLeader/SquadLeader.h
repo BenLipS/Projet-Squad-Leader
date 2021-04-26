@@ -31,6 +31,8 @@ enum class ESoldierAbilityInputID : uint8
 	Ability1		UMETA(DisplayName = "Ability1"),
 	// E
 	Ability2		UMETA(DisplayName = "Ability2"),
+	//F
+	Ability3		UMETA(DisplayName = "Ability3"),
 	// T
 	GiveOrder		UMETA(DisplayName = "GiveOrder"),
 	// R
