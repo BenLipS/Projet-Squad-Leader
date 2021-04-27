@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
 #include "MainMenu/PlayerData/PlayerData.h"
+#include "MainMenu/GameParam/GameParam.h"
 #include "Runtime/Online/HTTP/Public/Http.h"
 #include "SquadLeaderGameInstance.generated.h"
 
@@ -53,4 +54,8 @@ private:
 	void OnResponseReceivedConnectUser(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 	void OnResponseReceivedSendSync(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 	void OnResponseReceivedReceiveSync(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
+
+public:
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf <UGameParam> GameParam;
 };

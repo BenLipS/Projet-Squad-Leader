@@ -25,4 +25,6 @@ public:
 	TSubclassOf <UGameParam> MinGameParam;
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf <UGameParam> MaxGameParam;
+
+	//UGameParam CreateRandomGameParam();
 };
