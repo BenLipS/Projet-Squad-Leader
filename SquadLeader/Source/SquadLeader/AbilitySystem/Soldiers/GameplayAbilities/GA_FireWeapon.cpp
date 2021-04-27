@@ -64,10 +64,11 @@ void UGA_FireWeapon::InputReleased(const FGameplayAbilitySpecHandle Handle, cons
 		CancelAbility(Handle, ActorInfo, ActivationInfo, true);
 }
 
-void UGA_FireWeapon::CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateCancelAbility)
+void UGA_FireWeapon::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
-	Super::CancelAbility(Handle, ActorInfo, ActivationInfo, bReplicateCancelAbility);
-	GA_FireWeaponInstantInstance->CancelAbility(InstantAbilityHandle, ActorInfo, ActivationInfo, true);
+	if (GA_FireWeaponInstantInstance)
+		GA_FireWeaponInstantInstance->CancelAbility(InstantAbilityHandle, ActorInfo, ActivationInfo, true);
+	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
 void UGA_FireWeapon::HandleFire()

@@ -2,10 +2,11 @@
 #include "SquadLeader/Weapons/SL_Weapon.h"
 #include "SquadLeader/Weapons/Shield.h"
 #include "SquadLeader/Soldiers/Soldier.h"
-#include "SquadLeader/AbilitySystem/Soldiers/AbilityTasks/SL_WaitTargetDataUsingActor.h"
 #include "SquadLeader/AbilitySystem/Soldiers/Trace/SL_LineTrace.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/CollisionProfile.h"
+#include "SquadLeader/AbilitySystem/Soldiers/AbilityTasks/SL_ServerWaitForClientTargetData.h"
+#include "SquadLeader/AbilitySystem/Soldiers/AbilityTasks/SL_WaitTargetDataUsingActor.h"
 #include "Abilities/Tasks/AbilityTask_WaitDelay.h"
 
 UGA_FireWeaponInstant::UGA_FireWeaponInstant() :
@@ -51,6 +52,9 @@ void UGA_FireWeaponInstant::EndAbility(const FGameplayAbilitySpecHandle Handle, 
 	if (ServerWaitForClientTargetDataTask && ServerWaitForClientTargetDataTask->IsActive())
 		ServerWaitForClientTargetDataTask->EndTask();
 
+	if (TaskWaitDelay && TaskWaitDelay->IsActive())
+		TaskWaitDelay->EndTask();
+
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
@@ -69,7 +73,7 @@ void UGA_FireWeaponInstant::FireBullet()
 		|| SourceSoldier->GetAbilitySystemComponent()->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("State.ReloadingWeapon"))))
 	{
 		// Wait for the next fire
-		UAbilityTask_WaitDelay* TaskWaitDelay = UAbilityTask_WaitDelay::WaitDelay(this, SourceWeapon->GetTimeBetweenShots());
+		TaskWaitDelay = UAbilityTask_WaitDelay::WaitDelay(this, SourceWeapon->GetTimeBetweenShots());
 		TaskWaitDelay->OnFinish.AddDynamic(this, &UGA_FireWeaponInstant::FireBullet);
 		TaskWaitDelay->ReadyForActivation();
 		return;
@@ -94,7 +98,7 @@ void UGA_FireWeaponInstant::FireBullet()
 	TaskWaitTarget->ReadyForActivation();
 
 	// Wait for the next fire
-	UAbilityTask_WaitDelay* TaskWaitDelay = UAbilityTask_WaitDelay::WaitDelay(this, SourceWeapon->GetTimeBetweenShots());
+	TaskWaitDelay = UAbilityTask_WaitDelay::WaitDelay(this, SourceWeapon->GetTimeBetweenShots());
 	TaskWaitDelay->OnFinish.AddDynamic(this, &UGA_FireWeaponInstant::FireBullet);
 	TaskWaitDelay->ReadyForActivation();
 

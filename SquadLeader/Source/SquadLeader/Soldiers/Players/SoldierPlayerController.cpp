@@ -50,12 +50,9 @@ void ASoldierPlayerController::BindMainAbilities()
 {
 	if (IAbilityCooldownDelegateInterface* HUD = GetHUD<IAbilityCooldownDelegateInterface>(); HUD)
 	{
-
-		HUD->AddAbilityID(ESoldierAbilityInputID::Ability2, "A");
-		HUD->AddAbilityID(ESoldierAbilityInputID::Ability1, "E");
-		
-		// TODO: Uncomment when the third ability is ready
-		//HUD->AddAbilityID(ESoldierAbilityInputID::Ability3);
+		HUD->AddAbilityID(ESoldierAbilityInputID::Ability1, "Q");
+		HUD->AddAbilityID(ESoldierAbilityInputID::Ability2, "E");
+		HUD->AddAbilityID(ESoldierAbilityInputID::Ability3, "F");
 	}
 }
 
@@ -327,18 +324,15 @@ void ASoldierPlayerController::BroadCastManagerData()
 		CurrentHUD->OnSquadChanged(SquadManagerData.SquadData);
 }
 
+// TODO: Use the soldier list - Don't use all the actors from the world
 void ASoldierPlayerController::OnWallVisionActivate_Implementation()
 {
 	for (AActor* Actor : GetWorld()->PersistentLevel->Actors)
 	{
 		if (ASoldier* Soldier = Cast<ASoldier>(Actor); Soldier)
 		{
-			auto team1 = Soldier->GetPlayerState();
-			auto team2 = GetTeam();
 			if (Soldier->GetTeam() != GetTeam())
-			{
 				Soldier->GetMesh()->SetRenderCustomDepth(true);
-			}
 		}
 	}
 }
@@ -348,12 +342,7 @@ void ASoldierPlayerController::OnWallVisionDeactivate_Implementation()
 	for (AActor* Actor : GetWorld()->PersistentLevel->Actors)
 	{
 		if (ASoldier* Soldier = Cast<ASoldier>(Actor); Soldier)
-		{
-			if (Soldier->GetMesh()->bRenderCustomDepth)
-			{
-				Soldier->GetMesh()->SetRenderCustomDepth(false);
-			}
-		}
+			Soldier->GetMesh()->SetRenderCustomDepth(false);
 	}
 }
 
