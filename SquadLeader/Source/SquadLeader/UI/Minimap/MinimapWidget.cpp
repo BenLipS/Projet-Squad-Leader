@@ -5,8 +5,20 @@
 #include "SquadLeader/Soldiers/Players/SoldierPlayer.h"
 #include "Components/OverlaySlot.h"
 #include "SquadLeader/AI/AISquadManager.h"
+#include "Kismet/KismetMaterialLibrary.h"
+#include "Materials/MaterialParameterCollection.h"
+#include "Materials/MaterialParameterCollectionInstance.h"
 
 #include "Blueprint/WidgetTree.h"
+
+void UMinimapWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+{
+	Super::NativeTick(MyGeometry, InDeltaTime);
+	if (IsValid(MaterialCollection))
+	{
+		UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MaterialCollection, FName("Zoom"), 10.f);
+	}
+}
 
 UMinimapWidget::UMinimapWidget(const FObjectInitializer& _ObjectInitializer) : USL_UserWidget(_ObjectInitializer),
 Dimensions{ 10'000.f },

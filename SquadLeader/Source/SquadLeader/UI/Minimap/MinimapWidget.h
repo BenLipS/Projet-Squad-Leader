@@ -49,12 +49,16 @@ protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UImage* PlayerIconImage;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	class UMaterialParameterCollection* MaterialCollection;
+	//class UMaterialParameterCollectionInstance* MaterialCollectionInstance;
+
 	// Max length a POI can be from the player icon to be visible
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float IconMaxLengthVisibility;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	MapShapePolicy MapShape;
+	MapShapePolicy MapShape = MapShapePolicy::eCIRCLE;
 
 //////////////// Points of interest
 	TArray<UPointOfInterestWidget*> POIList;
@@ -82,6 +86,9 @@ protected:
 // Ping
 	UPROPERTY(EditAnywhere, Category = "PointOfInterest")
 	TSubclassOf<UPointOfInterestWidget> PingIconWidgetClass;
+
+protected:
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 public:
 	UMinimapWidget(const FObjectInitializer& _ObjectInitializer);
