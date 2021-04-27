@@ -158,8 +158,8 @@ protected:
 	virtual void BlurredFromJammerTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 
 public:
-	UFUNCTION(BlueprintImplementableEvent)
-	void OnBlurredVisionFromJammer(const bool _IsBlurred);
+	UFUNCTION()
+	virtual void OnBlurredVisionFromJammer(const bool _IsBlurred);
 
 //////////////// Attributes
 public:

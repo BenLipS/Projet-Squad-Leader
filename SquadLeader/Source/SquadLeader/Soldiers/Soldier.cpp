@@ -415,6 +415,10 @@ void ASoldier::BlurredFromJammerTagChanged(const FGameplayTag _CallbackTag, int3
 	OnBlurredVisionFromJammer(_NewCount > 0);
 }
 
+void ASoldier::OnBlurredVisionFromJammer(const bool _IsBlurred) {
+
+};
+
 bool ASoldier::ActivateAbilities(const FGameplayTagContainer& _TagContainer)
 {
 	return AbilitySystemComponent->TryActivateAbilitiesByTag(_TagContainer);
