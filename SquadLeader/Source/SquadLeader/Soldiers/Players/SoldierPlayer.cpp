@@ -167,7 +167,7 @@ void ASoldierPlayer::SpawnPing(FVector PingLocation)
 	}
 
 
-	if (ASL_HUD* HUD = GetHUD<ASL_HUD>(); HUD)
+	/*if (ASL_HUD* HUD = GetHUD<ASL_HUD>(); HUD)
 	{
 		OnPingAdded()
 	}
@@ -177,7 +177,7 @@ void ASoldierPlayer::SpawnPing(FVector PingLocation)
 	AddPingToHUD()
 	{
 
-	}
+	}*/
 }
 void ASoldierPlayer::DestroyPing() {
 	if(PingMesh) PingMesh->Destroy();

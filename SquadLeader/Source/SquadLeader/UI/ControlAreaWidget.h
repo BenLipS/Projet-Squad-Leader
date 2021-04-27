@@ -53,6 +53,6 @@ public:
 	virtual void OnControlAreaAdded(AControlArea* _ControlArea) override;
 	virtual void OnSoldierAddedToTeam(ASoldier* _Soldier) override {}
 	virtual void OnSoldierRemovedFromTeam(ASoldier* _Soldier) override {}
-	virtual void OnPingAdded(AActor* _Ping) override;
+	virtual void OnPingAdded(FVector2D _Ping) override {}
 	virtual void OnUpdatePOIs() override {}
 };
