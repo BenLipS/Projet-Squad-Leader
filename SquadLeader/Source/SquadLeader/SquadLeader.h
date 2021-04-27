@@ -3,9 +3,16 @@
 #include "CoreMinimal.h"
 #include "UObject/ObjectMacros.h"
 
+// Collision Channels
 #define ECC_Player ECollisionChannel::ECC_GameTraceChannel1
 #define ECC_Projectile1 ECollisionChannel::ECC_GameTraceChannel2
 #define ECC_Projectile2 ECollisionChannel::ECC_GameTraceChannel3
+
+// Profile names
+#define PN_Shield1 "Shield1"
+#define PN_Shield2 "Shield2"
+#define PN_Projectile1 "Projectile1"
+#define PN_Projectile2 "Projectile2"
 
 UENUM(BlueprintType)
 enum class ESoldierAbilityInputID : uint8

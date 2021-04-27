@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Net/UnrealNetwork.h"
 #include "SL_Projectile.generated.h"
 
 class AAreaEffect;
@@ -21,6 +22,7 @@ public:
 	ASL_Projectile();
 
 	virtual void BeginPlay() override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Mesh")
@@ -28,6 +30,15 @@ protected:
 
 public:
 	UStaticMeshComponent* GetMesh() const;
+
+protected:
+	// CollisionProfileName of the mesh
+	UPROPERTY(EditDefaultsOnly, Replicated, Category = "Mesh")
+	FName CollisionProfileNameMesh;
+
+public:
+	void SetCollisionProfile(const FName& _Name);
+	FName GetCollisionProfile() const;
 
 //Attributes
 protected:

@@ -27,6 +27,15 @@ public:
 	UStaticMeshComponent* GetMesh() const;
 
 protected:
+	// CollisionProfileName of the mesh
+	UPROPERTY(EditDefaultsOnly, Replicated, Category = "Mesh")
+	FName CollisionProfileNameMesh;
+
+public:
+	void SetCollisionProfile(const FName& _Name);
+	FName GetCollisionProfile() const;
+
+protected:
 	// How much damage the shield can absorb
 	UPROPERTY(EditDefaultsOnly, Replicated, Category = "Stats")
 	float Health;

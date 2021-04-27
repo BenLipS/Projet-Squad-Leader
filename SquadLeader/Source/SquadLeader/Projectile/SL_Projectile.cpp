@@ -10,7 +10,7 @@
 #include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
-ASL_Projectile::ASL_Projectile()
+ASL_Projectile::ASL_Projectile() : CollisionProfileNameMesh{ FName{"BlockAllDynamic"} }
 {
 	PrimaryActorTick.bCanEverTick = false;
 	bReplicates = true;
@@ -54,6 +54,8 @@ void ASL_Projectile::BeginPlay()
 	ProjectileMovement->Bounciness = Bounciness;
 	ProjectileMovement->ProjectileGravityScale = GravityScale;
 
+	SetCollisionProfile(CollisionProfileNameMesh);
+
 	InitVelocity();
 
 	//if (auto temp = Cast<USphereComponent>(RootComponent))
@@ -63,9 +65,28 @@ void ASL_Projectile::BeginPlay()
 		GetWorldTimerManager().SetTimer(TimerExplosion, this, &ASL_Projectile::OnExplode, ExplosionDelay, true);
 }
 
+void ASL_Projectile::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ASL_Projectile, CollisionProfileNameMesh);
+}
+
 UStaticMeshComponent* ASL_Projectile::GetMesh() const
 {
 	return Mesh;
+}
+
+void ASL_Projectile::SetCollisionProfile(const FName& _Name)
+{
+	CollisionProfileNameMesh = _Name;
+	Mesh->SetCollisionProfileName(CollisionProfileNameMesh);
+	CollisionComp->SetCollisionProfileName(CollisionProfileNameMesh);
+}
+
+FName ASL_Projectile::GetCollisionProfile() const
+{
+	return CollisionProfileNameMesh;
 }
 
 void ASL_Projectile::OnExplode()
