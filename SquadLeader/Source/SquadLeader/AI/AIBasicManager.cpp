@@ -42,7 +42,7 @@ void AAIBasicManager::Init(ASoldierTeam* _Team)
 	
 	// calculate information for placement
 	TArray<ASoldierSpawn*> spawnList = Team->GetUsableSpawnPoints();
-	int NbAIToSpawn = Team->NbAIBasicAssault + Team->NbAIBasicHeavy;
+	int NbAIToSpawn = Team->GetNbAIBasicAssault() + Team->GetNbAIBasicHeavy();
 	int maxNumberBySpawn = ceil((NbAIToSpawn+0.0) / spawnList.Num());
 		
 	for (int spawnLoop = 0; spawnLoop < NbAIToSpawn; spawnLoop++) {
@@ -51,7 +51,7 @@ void AAIBasicManager::Init(ASoldierTeam* _Team)
 		FTransform LocationAI{};
 		LocationAI.SetLocation(CalculOffSetForInitSpawn(spawnpoint, maxNumberBySpawn, spawnLoop));
 		ASoldierAI* BasicAI;
-		if (spawnLoop < Team->NbAIBasicAssault) {
+		if (spawnLoop < Team->GetNbAIBasicAssault()) {
 			BasicAI = GetWorld()->SpawnActorDeferred<ASoldierAI>(Team->GetClassBasicAIAssault(), LocationAI, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 		}
 		else {
