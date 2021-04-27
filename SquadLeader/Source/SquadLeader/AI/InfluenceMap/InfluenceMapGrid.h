@@ -282,4 +282,8 @@ protected:
 		TArray<FActorData> ActorsData;
 
 	bool ActorAlreadyExist(const uint32 ActorID, uint16 &Index) const;
+
+	void DeleteInfluence(const uint16 IndexActor, const uint8 Team) noexcept;
+
+	void UpdateControlArea(const uint16 IndexControlArea, const uint8 Team) noexcept;
 };

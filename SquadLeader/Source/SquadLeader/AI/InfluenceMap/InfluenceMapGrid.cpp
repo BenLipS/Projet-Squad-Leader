@@ -45,12 +45,6 @@ void AInfluenceMapGrid::Tick(float DeltaSeconds) {
 	Super::Tick(DeltaSeconds);
 	if (GetLocalRole() == ROLE_Authority) {
 		DrawGrid();
-		if (CurrentTick == TickUpdate) {
-			CurrentTick = 0;
-			UpdateGrid();
-		}
-		else
-			CurrentTick++;
 	}
 }
 
@@ -321,23 +315,43 @@ void AInfluenceMapGrid::ReceivedMessage(FGridPackage _message) {
 			FActorData actorData;
 			actorData.ActorID = _message.ActorID;
 			ActorsData.Add(actorData);
+
+			switch (_message.m_type) {
+			case Type::Soldier:
+				UpdateTile(Index, CharacterInfluence, _message.team_value, _message.m_type, _message.ActorID, IndexActor);
+				InfluenceSoldier(Index, Index, Index, 1, _message.ActorID, _message.team_value, IndexActor);
+				break;
+			case Type::ControlArea:
+				UpdateTile(Index, ControlAreaInfluence, _message.team_value, _message.m_type, _message.ActorID, IndexActor);
+				InfluenceControlArea(Index, Index, Index, 1, _message.ActorID, _message.team_value, IndexActor);
+				break;
+			case Type::Projectile:
+				UpdateTile(Index, ProjectileInfluence, _message.team_value, _message.m_type, _message.ActorID, IndexActor);
+				InfluenceProjectile(Index, Index, Index, 1, _message.ActorID, _message.team_value, IndexActor);
+				break;
+			default:
+				break;
+			}
+
 		}
-		
-		switch (_message.m_type) {
-		case Type::Soldier:
-			UpdateTile(Index, CharacterInfluence, _message.team_value, _message.m_type, _message.ActorID, IndexActor);
-			InfluenceSoldier(Index, Index, Index, 1, _message.ActorID, _message.team_value, IndexActor);
-			break;
-		case Type::ControlArea:
-			UpdateTile(Index, ControlAreaInfluence, _message.team_value, _message.m_type, _message.ActorID, IndexActor);
-			InfluenceControlArea(Index, Index, Index, 1, _message.ActorID, _message.team_value, IndexActor);
-			break;
-		case Type::Projectile:
-			UpdateTile(Index, ProjectileInfluence, _message.team_value, _message.m_type, _message.ActorID, IndexActor);
-			InfluenceProjectile(Index, Index, Index, 1, _message.ActorID, _message.team_value, IndexActor);
-			break;
-		default:
-			break;
+		else {
+			switch (_message.m_type) {
+			case Type::Soldier:
+				UpdateTile(Index, CharacterInfluence, _message.team_value, _message.m_type, _message.ActorID, IndexActor);
+				InfluenceSoldier(Index, Index, Index, 1, _message.ActorID, _message.team_value, IndexActor);
+				break;
+			case Type::ControlArea:
+				GEngine->AddOnScreenDebugMessage(30, 1.f, FColor::Silver, FString::Printf(TEXT("Update des Tiles de la zone de Controle")));
+				UpdateControlArea(IndexActor, _message.team_value);
+				break;
+			case Type::Projectile:
+				GEngine->AddOnScreenDebugMessage(20, 1.f, FColor::Cyan, FString::Printf(TEXT("Suppression des anciennes Tiles du Projectile")));
+				GEngine->AddOnScreenDebugMessage(21, 1.f, FColor::Cyan, FString::Printf(TEXT("Index de l'actor dans la liste : %d"), IndexActor));
+				DeleteInfluence(IndexActor, _message.team_value);
+				break;
+			default:
+				break;
+			}
 		}
 	}
 }
@@ -388,7 +402,7 @@ void AInfluenceMapGrid::UpdateTile(int index, float value, int team, Type type, 
 	if(!(m_influencemap[index].Types.Contains(type)))
 		m_influencemap[index].Types.Add(type);
 
-	//actorData.AddIndexs(index);
+	ActorsData[ActorDataIndex].AddIndexs(index);
 }
 
 float AInfluenceMapGrid::GetValue(const FVector2D Location, const uint8 Team) {
@@ -435,6 +449,44 @@ bool AInfluenceMapGrid::ActorAlreadyExist(const uint32 ActorID, uint16& Index) c
 			Index = index;
 			return true;
 		}
+		index++;
 	}
 	return false;
+}
+
+void AInfluenceMapGrid::DeleteInfluence(const uint16 IndexActor, const uint8 Team) noexcept{
+	for (uint32 index : ActorsData[IndexActor].IndexInfluence) {
+		m_influencemap[index].Reset();
+		//Pour le moment c'est seulement les Obstacles
+		/*if (Team == 1)
+			m_index_team1.Remove(index);
+		else
+			m_index_team2.Remove(index);*/
+		m_index_team1.Remove(index);
+		m_index_team2.Remove(index);
+		GEngine->AddOnScreenDebugMessage(22, 1.f, FColor::Red, FString::Printf(TEXT("Suppression en cours...")));
+	}
+	ActorsData[IndexActor].IndexInfluence.Empty();
+
+	GEngine->AddOnScreenDebugMessage(23, 1.f, FColor::Red, FString::Printf(TEXT("Les anciennes Tiles on ete delete")));
+	//To-Do : besoin de créer l'operateur == pour des FActorData
+	//ActorsData.Remove(ActorsData[IndexActor]);
+}
+
+void AInfluenceMapGrid::UpdateControlArea(const uint16 IndexControlArea, const uint8 Team) noexcept {
+	for (uint32 index : ActorsData[IndexControlArea].IndexInfluence) {
+		//Si on update un point de contrôle alors l'équipe qui capture domine complètement
+		//À voir si on laisse comme ça
+		for (uint32 team_id : m_influencemap[index].Teams) {
+			if(team_id != Team && team_id == 1)
+				m_index_team1.Remove(index);
+			if (team_id != Team && team_id == 2)
+				m_index_team2.Remove(index);
+		}
+
+		m_influencemap[index].Teams.Empty();
+		m_influencemap[index].Teams.Add(Team);
+		GEngine->AddOnScreenDebugMessage(31, 1.f, FColor::Red, FString::Printf(TEXT("Update des Tiles en cours...")));
+	}
+	GEngine->AddOnScreenDebugMessage(32, 1.f, FColor::Red, FString::Printf(TEXT("Update des Tiles termine")));
 }

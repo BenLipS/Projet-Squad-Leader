@@ -179,6 +179,17 @@ void AControlArea::calculateControlValue()
 						if (ASquadLeaderGameModeBase* GameMode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode()); GameMode) {
 							GameMode->NotifyControlAreaCaptured(this);
 						}
+
+						auto GM = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
+						FGridPackage m_package;
+						m_package.m_location_on_map = GetActorLocation();
+
+						m_package.team_value = presentTeam->Id;
+						m_package.m_type = Type::ControlArea;
+						m_package.ActorID = this->GetUniqueID();
+						GM->InfluenceMap->ReceivedMessage(m_package);
+
+
 					}
 					if (IsCapturedBy != presentTeam)
 					{
@@ -191,23 +202,6 @@ void AControlArea::calculateControlValue()
 			else { // stop the timer
 				GetWorld()->GetTimerManager().ClearTimer(timerCalculationControlValue);
 				//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("ControlArea : Max control for " + presentTeam->TeamName));
-
-				auto GM = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
-				FGridPackage m_package;
-				m_package.m_location_on_map = GetActorLocation();
-				switch (presentTeam->Id) {
-				case 1:
-					m_package.team_value = 1;
-					break;
-				case 2:
-					m_package.team_value = 2;
-					break;
-				default:
-					break;
-				}
-				m_package.m_type = Type::ControlArea;
-				m_package.ActorID = this->GetUniqueID();
-				GM->InfluenceMap->ReceivedMessage(m_package);
 			}
 		}
 		else {  // too much teams on points or nobody

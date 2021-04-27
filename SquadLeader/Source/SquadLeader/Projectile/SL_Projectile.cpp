@@ -198,5 +198,4 @@ void ASL_Projectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor*
 	}
 }
 
-
 //FGameplayEffectSpecHandle DamageEffectSpecHandle = MakeOutgoingGameplayEffectSpec(DamageGameplayEffect, GetAbilityLevel());

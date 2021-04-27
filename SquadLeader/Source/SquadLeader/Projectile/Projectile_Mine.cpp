@@ -5,6 +5,8 @@
 #include "Components/SPhereComponent.h"
 #include "../AreaEffect/AreaEffect.h"
 #include "../Soldiers/Soldier.h"
+#include "../GameState/SquadLeaderGameState.h"
+#include "../SquadLeaderGameModeBase.h"
 
 AProjectile_Mine::AProjectile_Mine() : ASL_Projectile()
 {
@@ -14,6 +16,15 @@ AProjectile_Mine::AProjectile_Mine() : ASL_Projectile()
 void AProjectile_Mine::BeginPlay()
 {
 	Super::BeginPlay();
+	auto GM = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
+	if (GM && GM->InfluenceMap) {
+		FGridPackage Package;
+		Package.m_location_on_map = GetActorLocation();
+		Package.team_value = 1;
+		Package.m_type = Type::Projectile;
+		Package.ActorID = this->GetUniqueID();
+		GM->InfluenceMap->ReceivedMessage(Package);
+	}
 }
 
 void AProjectile_Mine::InitVelocity()
@@ -51,6 +62,7 @@ void AProjectile_Mine::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActo
 void AProjectile_Mine::OnExplode()
 {
 	Super::OnExplode();
+	GEngine->AddOnScreenDebugMessage(10, 1.f, FColor::Cyan, TEXT("Mine destructor"));
 }
 
 void AProjectile_Mine::OnStick()

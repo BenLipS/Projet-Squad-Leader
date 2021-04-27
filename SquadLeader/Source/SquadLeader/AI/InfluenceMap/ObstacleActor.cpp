@@ -13,17 +13,28 @@ AObstacleActor::AObstacleActor()
 
 }
 
+AObstacleActor::~AObstacleActor() {
+	//die
+}
+
 // Called when the game starts or when spawned
 void AObstacleActor::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	InitObstacleActor();
 }
 
 // Called every frame
 void AObstacleActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	if (TickNumber == 150)
+		DestroyObstacle();
+	else
+		TickNumber++;
+}
+
+void AObstacleActor::InitObstacleActor() {
 	auto GM = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
 	if (GM && GM->InfluenceMap) {
 		FGridPackage Package;
@@ -35,3 +46,16 @@ void AObstacleActor::Tick(float DeltaTime)
 	}
 }
 
+void AObstacleActor::DestroyObstacle() {
+	GEngine->AddOnScreenDebugMessage(10, 1.f, FColor::Cyan, TEXT("big explosion or new update of the Obstacle"));
+	auto GM = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
+	if (GM && GM->InfluenceMap) {
+		FGridPackage Package;
+		Package.m_location_on_map = GetActorLocation();
+		Package.team_value = 1;
+		Package.m_type = Type::Projectile;
+		Package.ActorID = this->GetUniqueID();
+		GM->InfluenceMap->ReceivedMessage(Package);
+	}
+	Destroy();
+}
