@@ -16,6 +16,12 @@ class UPointOfInterestWidget;
 // !! WARNING !!
 // We suppose the minimap is a square ONLY
 
+UENUM()
+enum class MapShapePolicy : uint8 {
+	eCIRCLE,
+	eSQUARE
+};
+
 UCLASS()
 class SQUADLEADER_API UMinimapWidget : public USL_UserWidget, public IMinimapInterface
 {
@@ -41,8 +47,11 @@ protected:
 	UImage* PlayerIconImage;
 
 	// Max length a POI can be from the player icon to be visible
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float IconMaxLengthVisibility;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	MapShapePolicy MapShape;
 
 //////////////// Points of interest
 	TArray<UPointOfInterestWidget*> POIList;
@@ -70,6 +79,14 @@ protected:
 public:
 	UMinimapWidget(const FObjectInitializer& _ObjectInitializer);
 
+	UFUNCTION(BlueprintCallable)
+	void SetMapShape(MapShapePolicy MapShapeIn);
+
+	UFUNCTION(BlueprintCallable)
+	void SetIconMaxLengthVisibility(float LenghtIn);
+
+	//-----USL_UserWidget-----
+
 	void SetupDelegateToObject_Implementation(UObject* _ObjectIn) override;
 
 	//-----IMinimapDelegateInterface-----
@@ -78,4 +95,7 @@ public:
 	virtual void OnControlAreaAdded(AControlArea* _ControlArea) override;
 
 	virtual void OnUpdatePOIs() override;
+
+	virtual void OnFullMapDisplayBegin();
+	virtual void OnFullMapDisplayEnd();
 };
