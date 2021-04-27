@@ -110,7 +110,7 @@ void ASquadLeaderGameModeBase::StartPlay() {
 	}
 	
 	//Init for AI
-	//InitInfluenceMap();
+	InitInfluenceMap();
 	InitAIManagers();
 
 	// Start timer for the granted EXP over time
