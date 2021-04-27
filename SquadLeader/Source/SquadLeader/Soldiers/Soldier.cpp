@@ -119,34 +119,34 @@ void ASoldier::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	CurrentPosition = this->GetActorLocation();
 
-	if (FVector::Dist(LastPosition, CurrentPosition) >= 500.f) {
-		LastPosition = CurrentPosition;
-		ASquadLeaderGameModeBase* GM = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
+	//if (FVector::Dist(LastPosition, CurrentPosition) >= 500.f) {
+	//	LastPosition = CurrentPosition;
+	//	ASquadLeaderGameModeBase* GM = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
 
-		//Envoi des informations à la carte d'influence
-		if (GetTeam() && GM && GM->InfluenceMap) {
-			FGridPackage m_package;
-			m_package.m_location_on_map = CurrentPosition;
+	//	//Envoi des informations à la carte d'influence
+	//	if (GetTeam() && GM && GM->InfluenceMap) {
+	//		FGridPackage m_package;
+	//		m_package.m_location_on_map = CurrentPosition;
 
-			ASoldierTeam* team_ = GetTeam();
-			if (team_) {
-				switch (team_->Id) {
-				case 1:
-					m_package.team_value = 1;
-					break;
-				case 2:
-					m_package.team_value = 2;
-					break;
-				default:
-					break;
-				}
-			}
+	//		ASoldierTeam* team_ = GetTeam();
+	//		if (team_) {
+	//			switch (team_->Id) {
+	//			case 1:
+	//				m_package.team_value = 1;
+	//				break;
+	//			case 2:
+	//				m_package.team_value = 2;
+	//				break;
+	//			default:
+	//				break;
+	//			}
+	//		}
 
-			m_package.m_type = Type::Soldier;
-			m_package.ActorID = this->GetUniqueID();
-			GM->InfluenceMap->ReceivedMessage(m_package);
-		}
-	}
+	//		m_package.m_type = Type::Soldier;
+	//		m_package.ActorID = this->GetUniqueID();
+	//		GM->InfluenceMap->ReceivedMessage(m_package);
+	//	}
+	//}
 }
 
 void ASoldier::InitCameras()

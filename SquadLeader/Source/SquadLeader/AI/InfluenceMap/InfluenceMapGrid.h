@@ -76,6 +76,21 @@ public:
 	void ReduceInfluence();
 };
 
+
+USTRUCT()
+struct SQUADLEADER_API FActorData {
+	GENERATED_USTRUCT_BODY()
+public:
+	FActorData(){}
+public:
+	uint32 ActorID;
+	TArray<uint32> IndexInfluence;
+
+public:
+
+	void AddIndexs(const uint32 index) noexcept { IndexInfluence.Add(index); }
+};
+
 /**
  * This class will create a Grid for the influence Map
  * It will also contains the Infleunce Map
@@ -153,21 +168,21 @@ private:
 	* Algorithm recursif
 	* calculate the influence of player on the grid
 	*/
-	void InfluenceSoldier(int index, int start_index, int source_index, int distance, uint32 actorID, uint32 Team) noexcept;
+	void InfluenceSoldier(int index, int start_index, int source_index, int distance, uint32 actorID, uint32 Team, uint16& ActorDataIndex) noexcept;
 
 	/*
 	* Calculate the influence of a control area
 	*/
-	void InfluenceControlArea(int index, int start_index, int source_index, int distance, uint32 actorID, uint32 Team) noexcept;
+	void InfluenceControlArea(int index, int start_index, int source_index, int distance, uint32 actorID, uint32 Team, uint16& ActorDataIndex) noexcept;
 
-	void InfluenceProjectile(int index, int start_index, int source_index, int distance, uint32 actorID, uint32 Team) noexcept;
+	void InfluenceProjectile(int index, int start_index, int source_index, int distance, uint32 actorID, uint32 Team, uint16& ActorDataIndex) noexcept;
 
 	/*
 	* Calculate the time of execution of a function
 	*/
 	void TimeFunction();
 
-	void UpdateTile(int index, float value, int team, Type type, uint32 actorID) noexcept;
+	void UpdateTile(int index, float value, int team, Type type, uint32 actorID, uint16& ActorDataIndex) noexcept;
 
 	void AddUpdateTileTeam1(const uint32 index);
 	void AddUpdateTileTeam2(const uint32 index);
@@ -260,4 +275,11 @@ public:
 
 	UPROPERTY()
 		int CurrentTick = 5;
+
+protected:
+
+	UPROPERTY()
+		TArray<FActorData> ActorsData;
+
+	bool ActorAlreadyExist(const uint32 ActorID, uint16 &Index) const;
 };
