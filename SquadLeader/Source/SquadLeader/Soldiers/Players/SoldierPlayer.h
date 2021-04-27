@@ -19,6 +19,12 @@ public:
 	void PossessedBy(AController* _newController) override;
 	void OnRep_PlayerState() override;
 
+public:
+	virtual void OnBlurredVisionFromJammer(const bool _IsBlurred) override;
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnToggleGlitchOnScreen(const bool _DisplayGlitch);
+
 //////////////// Controllers
 protected:
 	virtual void LockControls() override;

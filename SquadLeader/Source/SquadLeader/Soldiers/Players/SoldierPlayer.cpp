@@ -56,6 +56,11 @@ void ASoldierPlayer::OnRep_PlayerState()
 		PC->CreateHUD();
 }
 
+void ASoldierPlayer::OnBlurredVisionFromJammer(const bool _IsBlurred)
+{
+	OnToggleGlitchOnScreen(_IsBlurred);
+}
+
 void ASoldierPlayer::LockControls()
 {
 	if (APlayerController* PC = Cast<APlayerController>(Controller); PC)
