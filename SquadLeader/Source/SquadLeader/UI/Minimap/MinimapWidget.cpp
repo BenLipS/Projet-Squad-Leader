@@ -16,6 +16,16 @@ POIList{}
 {
 }
 
+void UMinimapWidget::SetMapShape(MapShapePolicy MapShapeIn)
+{
+	MapShape = MapShapeIn;
+}
+
+void UMinimapWidget::SetIconMaxLengthVisibility(float LenghtIn)
+{
+	IconMaxLengthVisibility = LenghtIn;
+}
+
 void UMinimapWidget::SetupDelegateToObject_Implementation(UObject* _ObjectIn)
 {
 	if (IMinimapDelegateInterface* MinimapDelegateInterface = Cast<IMinimapDelegateInterface>(_ObjectIn); MinimapDelegateInterface)
@@ -148,4 +158,12 @@ void UMinimapWidget::OnUpdatePOIs()
 		POI->SetRenderTranslation(SoldierPosOnMinimap);
 		POI->SetVisibility(ESlateVisibility::Visible);
 	}
+}
+
+void UMinimapWidget::OnFullMapDisplayBegin()
+{
+}
+
+void UMinimapWidget::OnFullMapDisplayEnd()
+{
 }
