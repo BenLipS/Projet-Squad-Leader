@@ -20,7 +20,7 @@ protected:
 
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* OwnerInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 
-	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled);
+	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 
 	UFUNCTION()
 	void MontageCompletedOrBlendedOut();
@@ -36,6 +36,10 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
 	TSubclassOf<ASL_Projectile> ProjectileClass;
+
+	// If true the projectile will be spawned from right hand. Else from left hand
+	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
+	bool bThrowWithRightHand = true;
 
 	// Event tag to notify from the montage to launch the projectile
 	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
