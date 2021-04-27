@@ -36,6 +36,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void LaunchGame();
 	UFUNCTION(BlueprintCallable)
+		void SetGameParamToDefault();
+	UFUNCTION(BlueprintCallable)
+		void SetGameParamToRandom();
+	UFUNCTION(BlueprintCallable)
 		void JoinGame(FString IPAdress);
 	UFUNCTION(BlueprintCallable)
 		void ProfileInfo(class ASL_HUD* HUD);

@@ -39,4 +39,6 @@ public:
 	int RespawnDuration;
 	UPROPERTY(EditDefaultsOnly)
 	bool FriendOnly;
+
+	void RandomiseParam(UGameParam* MinConfig, UGameParam* MaxConfig);
 };

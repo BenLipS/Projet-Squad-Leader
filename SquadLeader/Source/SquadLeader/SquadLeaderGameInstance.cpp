@@ -1,4 +1,5 @@
 #include "SquadLeaderGameInstance.h"
+#include "MainMenu/SLMainMenuGameModeBase.h"
 #include "UI/SL_HUD.h"
 #include "UI/Menu/MenuListInfo.h"
 
@@ -20,6 +21,19 @@ void USquadLeaderGameInstance::OnStart()
 void USquadLeaderGameInstance::LaunchGame()
 {
     GetFirstGamePlayer()->ConsoleCommand("open Factory_V1?listen", true);
+}
+
+void USquadLeaderGameInstance::SetGameParamToDefault()
+{
+    if (auto GM = GetWorld()->GetAuthGameMode<ASLMainMenuGameModeBase>(); GM)
+        GameParam = GM->DefaultGameParam;
+}
+
+void USquadLeaderGameInstance::SetGameParamToRandom()
+{
+    if (auto GM = GetWorld()->GetAuthGameMode<ASLMainMenuGameModeBase>(); GM) {
+        GameParam.GetDefaultObject()->RandomiseParam(GM->MinGameParam.GetDefaultObject(), GM->MaxGameParam.GetDefaultObject());
+    }
 }
 
 void USquadLeaderGameInstance::JoinGame(FString IPAdress)
