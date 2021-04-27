@@ -26,9 +26,12 @@ public:
 	
 protected:
 	void OnStart();
+
+private:
 	FHttpModule* Http;
 
 	PlayerData UserData;
+	FString LocalIPAdress;
 
 	FString AuthToken;
 	

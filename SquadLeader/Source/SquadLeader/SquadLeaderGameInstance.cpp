@@ -2,19 +2,37 @@
 #include "MainMenu/SLMainMenuGameModeBase.h"
 #include "UI/SL_HUD.h"
 #include "UI/Menu/MenuListInfo.h"
+#include <iostream>
 
+#include "winsock.h"
 
 USquadLeaderGameInstance::USquadLeaderGameInstance() {
     //When the object is constructed, Get the HTTP module
     Http = &FHttpModule::Get();
+
+    /// -> deprecated method to find Local IPAdress
+    // Init WinSock
+    WSADATA wsa_Data;
+    int wsa_ReturnCode = WSAStartup(0x101, &wsa_Data);
+
+    // Get the local hostname
+    char szHostName[255];
+    gethostname(szHostName, 255);
+    struct hostent* host_entry;
+    host_entry = gethostbyname(szHostName);
+    LocalIPAdress = inet_ntoa(*(struct in_addr*)*host_entry->h_addr_list);
+    WSACleanup();
 }
+
 
 void USquadLeaderGameInstance::OnStart()
 {
     Super::OnStart();
     UserData.LoadOrCreate(UserDataFilename);
+    if (!LocalIPAdress.IsEmpty()) {
+        UserData.IpAdress = LocalIPAdress;
+    }
     HttpCallPing(BaseServerDataAdress);
-
 }
 
 
