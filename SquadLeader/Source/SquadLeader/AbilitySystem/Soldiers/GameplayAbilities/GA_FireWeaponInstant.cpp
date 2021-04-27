@@ -117,7 +117,7 @@ void UGA_FireWeaponInstant::HandleTargetData(const FGameplayAbilityTargetDataHan
 
 	FGameplayEffectSpecHandle DamageEffectSpecHandle = MakeOutgoingGameplayEffectSpec(GE_DamageClass, GetAbilityLevel());
 	DamageEffectSpecHandle.Data->SetSetByCallerMagnitude(FGameplayTag::RequestGameplayTag(FName("Data.Damage")), SourceWeapon->GetWeaponDamage());
-	const FGameplayAbilityTargetData* Data = _Data.Get(0);
+	const FGameplayAbilityTargetData* Data = _Data.Get(_Data.Data.Num() - 1);
 
 	for (TWeakObjectPtr<AActor> Actor : Data->GetActors())
 	{
@@ -135,7 +135,7 @@ void UGA_FireWeaponInstant::HandleTargetData(const FGameplayAbilityTargetDataHan
 
 	// Gameplay cue
 	FGameplayEffectContextHandle EffectContext = DamageEffectSpecHandle.Data->GetEffectContext();
-	EffectContext.AddHitResult(*_Data.Get(0)->GetHitResult());
+	EffectContext.AddHitResult(*Data->GetHitResult());
 
 	FGameplayCueParameters GC_Parameters;
 	GC_Parameters.Instigator = SourceSoldier;
@@ -178,6 +178,7 @@ void UGA_FireWeaponInstant::ConfigLineTrace()
 		return;
 	}
 
+	LineTrace->SetInstigator(SourceSoldier);
 	LineTrace->ResetSpread(); // Spread is only reseted here - Continuous fire won't reset then
 	LineTrace->TraceProfile = FCollisionProfileName{ SourceWeapon->CollisionProfileName };
 	LineTrace->bIgnoreBlockingHits = false;

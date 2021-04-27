@@ -81,18 +81,19 @@ void UGA_SpawnPhysicalShield::SpawnShield()
 {
 	ASoldier* SourceSoldier = Cast<ASoldier>(CurrentActorInfo->AvatarActor);
 
-	FActorSpawnParameters SpawnInfo;
-	SpawnInfo.Owner = SourceSoldier;
-	SpawnInfo.Instigator = SourceSoldier;
-	SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	FTransform Transform{ SourceSoldier->GetActorForwardVector().Rotation(), SourceSoldier->GetActorLocation() + ShieldDistanceFromCaller * SourceSoldier->GetActorForwardVector(), ShieldScale };
+	AShield* Shield = GetWorld()->SpawnActorDeferred<AShield>(ShieldClass, Transform, SourceSoldier, SourceSoldier, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 
-	// TODO: What should be Z position ?
-	//FVector Location = CurrentActorInfo->AvatarActor->GetActorLocation();
-	//Location.Z -= SourceSoldier->GetDefaultHalfHeight() * 2.f;
+	if (Shield)
+	{
+		Shield->SetLifeSpan(ShieldLifeSpan);
+		Shield->SetHealth(ShieldHealth);
 
-	AShield* Shield = GetWorld()->SpawnActor<AShield>(ShieldClass, SourceSoldier->GetActorLocation() + ShieldDistanceFromCaller * SourceSoldier->GetActorForwardVector(), SourceSoldier->GetActorForwardVector().Rotation(), SpawnInfo);
+		if (SourceSoldier && SourceSoldier->GetTeam() && SourceSoldier->GetTeam()->Id == 1)
+			Shield->SetCollisionProfile(TEXT(PN_Shield1));
+		else
+			Shield->SetCollisionProfile(TEXT(PN_Shield2));
 
-	Shield->SetLifeSpan(ShieldLifeSpan);
-	Shield->SetHealth(ShieldHealth);
-	Shield->SetActorScale3D(ShieldScale);
+		Shield->FinishSpawning(Transform);
+	}
 }
