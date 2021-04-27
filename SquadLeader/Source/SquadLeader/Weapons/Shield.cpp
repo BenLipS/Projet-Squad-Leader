@@ -2,14 +2,13 @@
 #include "SquadLeader/SquadLeader.h"
 #include "SquadLeader/Soldiers/Soldier.h"
 
-AShield::AShield() : Health { 100.f }
+AShield::AShield() : Health{ 100.f }
 {
 	PrimaryActorTick.bCanEverTick = false;
 	bReplicates = true;
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ShieldMesh"));
 	Mesh->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
-	Mesh->SetCollisionProfileName(TEXT("Shield")); // Shield is a predifined collision from the editor
 }
 
 void AShield::BeginPlay()
@@ -26,6 +25,11 @@ void AShield::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeP
 
 	DOREPLIFETIME(AShield, Health);
 	DOREPLIFETIME(AShield, Team);
+}
+
+UStaticMeshComponent* AShield::GetMesh() const
+{
+	return Mesh;
 }
 
 void AShield::DestroyShield()

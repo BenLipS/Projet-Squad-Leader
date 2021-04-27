@@ -18,12 +18,18 @@ class SQUADLEADER_API ASL_Projectile : public AActor
 {
 	GENERATED_BODY()
 public:	
-	// Sets default values for this actor's properties
 	ASL_Projectile();
 
-	~ASL_Projectile() = default;
+	virtual void BeginPlay() override;
 
-	//Attributes
+protected:
+	UPROPERTY(EditDefaultsOnly, Category = "Mesh")
+	UStaticMeshComponent* Mesh;
+
+public:
+	UStaticMeshComponent* GetMesh() const;
+
+//Attributes
 protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Projectile")
 	float InitialSpeed = 1000.f;
@@ -46,7 +52,7 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Projectile")
 	float YawAdjust;
-	
+
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Projectile")
 	float PitchAdjust;
 
@@ -65,13 +71,7 @@ protected:
 
 	FTimerHandle TimerExplosion;
 
-	//Methods
-
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
 	void DeleteProjectile();
-
 	virtual void InitVelocity();
 
 public:

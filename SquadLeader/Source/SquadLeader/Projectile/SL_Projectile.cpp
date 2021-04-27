@@ -27,9 +27,11 @@ ASL_Projectile::ASL_Projectile()
 
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileComp"));
 	ProjectileMovement->UpdatedComponent = CollisionComp;
+
+	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
+	Mesh->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
 }
 
-// Called when the game starts or when spawned
 void ASL_Projectile::BeginPlay()
 {
 	Super::BeginPlay();
@@ -61,11 +63,16 @@ void ASL_Projectile::BeginPlay()
 		GetWorldTimerManager().SetTimer(TimerExplosion, this, &ASL_Projectile::OnExplode, ExplosionDelay, true);
 }
 
+UStaticMeshComponent* ASL_Projectile::GetMesh() const
+{
+	return Mesh;
+}
+
 void ASL_Projectile::OnExplode()
 {
 	for (auto AreaEffectClass : AreaEffectList)
 	{
-		AAreaEffect* AreaEffect = GetWorld()->SpawnActorDeferred<AAreaEffect>(AreaEffectClass, FTransform{GetActorRotation(), GetActorLocation()}, GetOwner(), GetInstigator(), ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+		AAreaEffect* AreaEffect = GetWorld()->SpawnActorDeferred<AAreaEffect>(AreaEffectClass, FTransform{ GetActorRotation(), GetActorLocation() }, GetOwner(), GetInstigator(), ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 
 		if (AreaEffect)
 		{
@@ -110,7 +117,7 @@ void ASL_Projectile::InitVelocity()
 			PitchAdjust = AI->LaunchProjectilePitchAdjust;
 			YawAdjust = AI->LaunchProjectileYawAdjust;
 		}
-	}	
+	}
 
 	Azimuth += PitchAdjust;
 	if (Azimuth > 180.f)
@@ -127,7 +134,7 @@ void ASL_Projectile::InitVelocity()
 
 	ForwardVector = FVector(UKismetMathLibrary::DegSin(Azimuth) * UKismetMathLibrary::DegCos(Inclination), UKismetMathLibrary::DegSin(Azimuth) * UKismetMathLibrary::DegSin(Inclination), UKismetMathLibrary::DegCos(Azimuth));
 
-	ProjectileMovement->Velocity =  ForwardVector * ProjectileMovement->InitialSpeed;
+	ProjectileMovement->Velocity = ForwardVector * ProjectileMovement->InitialSpeed;
 }
 
 void ASL_Projectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit)
@@ -154,7 +161,7 @@ void ASL_Projectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor
 			break;
 		}
 	}
-	
+
 }
 
 void ASL_Projectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)

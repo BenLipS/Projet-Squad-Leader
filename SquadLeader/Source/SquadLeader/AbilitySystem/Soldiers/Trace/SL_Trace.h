@@ -104,5 +104,9 @@ protected:
 	virtual TArray<FHitResult> PerformTrace();
 
 	virtual void DoTrace(TArray<FHitResult>& HitResults, const UWorld* World, const FGameplayTargetDataFilterHandle FilterHandle, const FVector& Start, const FVector& End, FName ProfileName, const FCollisionQueryParams Params) PURE_VIRTUAL(ASL_Trace, return;);
+
+	// Remove trace data in case a soldier shot on a shield from an ennemy team
+	void FilterTraceWithShield(TArray<FHitResult>& _HitResults);
+
 	virtual void ShowDebugTrace(TArray<FHitResult>& HitResults, EDrawDebugTrace::Type DrawDebugType, float Duration = 2.0f) PURE_VIRTUAL(ASL_Trace, return;);
 };
