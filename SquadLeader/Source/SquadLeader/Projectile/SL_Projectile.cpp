@@ -93,13 +93,14 @@ void ASL_Projectile::OnExplode()
 {
 	for (auto AreaEffectClass : AreaEffectList)
 	{
-		AAreaEffect* AreaEffect = GetWorld()->SpawnActorDeferred<AAreaEffect>(AreaEffectClass, FTransform{ GetActorRotation(), GetActorLocation() }, GetOwner(), GetInstigator(), ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+		AAreaEffect* AreaEffect = GetWorld()->SpawnActorDeferred<AAreaEffect>(AreaEffectClass, FTransform{ GetActorRotation(), GetActorLocation() }, this, GetInstigator(), ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 
 		if (AreaEffect)
 		{
 #ifdef UE_BUILD_DEBUG
 			AreaEffect->bDebugTrace = bDebugTraceExplosion;
 #endif
+			AreaEffect->bIgnoreBlock = false;
 			AreaEffect->FinishSpawning(FTransform{ GetActorRotation(), GetActorLocation() });
 		}
 
