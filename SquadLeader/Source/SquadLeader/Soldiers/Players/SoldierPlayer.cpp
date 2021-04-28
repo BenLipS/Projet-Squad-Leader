@@ -7,6 +7,7 @@
 #include "../../AbilitySystem/Soldiers/GameplayAbilitySoldier.h"
 #include "../../Spawn/SoldierSpawn.h"
 #include "DrawDebugHelpers.h"
+#include "TimerManager.h"
 
 ASoldierPlayer::ASoldierPlayer(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer),
 NbAIsForNextLevelUp{ 0.f },
@@ -188,5 +189,80 @@ void ASoldierPlayer::OnSquadChanged(const TArray<FSoldierAIData>& newValue)
 	if (ASoldierPlayerController* PC = GetController<ASoldierPlayerController>(); PC)
 	{
 		PC->OnSquadChanged(newValue);
+	}
+}
+
+void ASoldierPlayer::OnReceiveDamage(const FVector& _ImpactPoint, const FVector& _SourcePoint)
+{
+	FVector ShootDir2D = _ImpactPoint - _SourcePoint;
+	ShootDir2D.Z = 0;
+	FVector FowardVector2D = GetActorForwardVector();
+	FowardVector2D.Z = 0;
+
+	int Det = ShootDir2D.X * FowardVector2D.Y - ShootDir2D.Y * FowardVector2D.X;
+
+	if (Det >= 0) {//Hit right side
+		//if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("Droite"));
+		AddHitRight();
+	}
+	else {//Hit left side
+		//if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("Gauche"));
+		AddHitLeft();
+	}
+
+	//Call PP_Right 
+	//Param the scalar
+
+	//Call PP_Left
+	//Param the scalar
+}
+
+void ASoldierPlayer::ResetPosteffects()
+{
+
+}
+
+float ASoldierPlayer::NbOfHitToPPIntensity(int NbHit)
+{
+	switch (NbHit) {
+		case 1:
+			return 0.2;
+		case 2:
+			return 0.8;
+		case 3:
+			return 2;
+		default:
+			return 0.f;
+	}
+}
+
+void ASoldierPlayer::AddHitLeft()
+{
+	if (HitLeft < 3) {
+		HitLeft++;
+
+		GetWorldTimerManager().SetTimer(FTimerHandle{}, this, &ASoldierPlayer::RemoveHitLeft, 5.f, false);
+	}
+}
+
+void ASoldierPlayer::AddHitRight()
+{
+	if (HitRight < 3) {
+		HitRight++;
+		GetWorldTimerManager().SetTimer(FTimerHandle{}, this, &ASoldierPlayer::RemoveHitRight, 5.f, false);
+	}
+}
+
+void ASoldierPlayer::RemoveHitLeft()
+{
+	if (HitLeft > 0) {
+		HitLeft--;
+	}
+}
+
+void ASoldierPlayer::RemoveHitRight()
+{
+	if (HitRight > 0) {
+		HitRight--;
 	}
 }

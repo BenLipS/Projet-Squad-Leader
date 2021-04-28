@@ -65,4 +65,23 @@ public:  // Respawn
 
 	UFUNCTION()
 	void OnSquadChanged(const TArray<FSoldierAIData>& newValue);
+
+///////////////
+	virtual void OnReceiveDamage(const FVector& _ImpactPoint, const FVector& _SourcePoint) override;
+	UFUNCTION()
+	void ResetPosteffects();
+	UFUNCTION()
+	float NbOfHitToPPIntensity(int NbHit);
+	UFUNCTION()
+	void AddHitLeft();
+	UFUNCTION()
+	void AddHitRight();
+	UFUNCTION()
+	void RemoveHitLeft();
+	UFUNCTION()
+	void RemoveHitRight();
+	UPROPERTY()
+	int HitLeft = 0;
+	UPROPERTY()
+	int HitRight = 0;
 };
