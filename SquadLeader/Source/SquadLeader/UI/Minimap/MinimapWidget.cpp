@@ -8,6 +8,8 @@
 #include "Kismet/KismetMaterialLibrary.h"
 #include "Materials/MaterialParameterCollection.h"
 #include "Materials/MaterialParameterCollectionInstance.h"
+#include "Blueprint/WidgetBlueprintLibrary.h"
+#include "Blueprint/WidgetLayoutLibrary.h"
 
 #include "Blueprint/WidgetTree.h"
 
@@ -16,14 +18,41 @@ void UMinimapWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 	Super::NativeTick(MyGeometry, InDeltaTime);
 	if (IsValid(MaterialCollection))
 	{
-		UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MaterialCollection, FName("Zoom"), 10.f);
+		FVector ActorPosition = GetOwningPlayerPawn()->GetActorLocation();
+
+		UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MaterialCollection, FName("X"), ActorPosition.X);
+
+		UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MaterialCollection, FName("Y"), ActorPosition.Y);
+	}
+	auto ActorRotation = GetOwningPlayer()->GetPawn<ASoldier>()->GetMesh()->GetComponentRotation();
+	PlayerIconImage->SetRenderTransformAngle(ActorRotation.Yaw);
+}
+
+bool UMinimapWidget::IsInDisplay(FVector2D DifferenceVec, FVector2D SizeIn)
+{
+	FVector2D size;
+	if (IsValid(MapPanel))
+		size = MapPanel->GetDesiredSize();
+	else
+		size = GetDesiredSize();
+	switch (MapShape)
+	{
+	case MapShapePolicy::eCIRCLE :
+		return (DifferenceVec.Size() + (SizeIn.Size() / 2.f)) <= (size.Size() / 2.f);
+		break;
+
+	case MapShapePolicy::eSQUARE :
+		return DifferenceVec.GetAbs() + SizeIn.GetAbs() <= size.GetAbs();
+		break;
+
+	default:
+		return false;
 	}
 }
 
 UMinimapWidget::UMinimapWidget(const FObjectInitializer& _ObjectInitializer) : USL_UserWidget(_ObjectInitializer),
 Dimensions{ 10'000.f },
 Zoom{ 1.f },
-IconMaxLengthVisibility{ 130.f },
 POIList{}
 {
 }
@@ -33,10 +62,10 @@ void UMinimapWidget::SetMapShape(MapShapePolicy MapShapeIn)
 	MapShape = MapShapeIn;
 }
 
-void UMinimapWidget::SetIconMaxLengthVisibility(float LenghtIn)
+/*void UMinimapWidget::SetIconMaxLengthVisibility(float LenghtIn)
 {
 	IconMaxLengthVisibility = LenghtIn;
-}
+}*/
 
 void UMinimapWidget::SetupDelegateToObject_Implementation(UObject* _ObjectIn)
 {
@@ -156,7 +185,7 @@ void UMinimapWidget::OnUpdatePOIs()
 		const FVector2D DiffVec = { DiffX, DiffY };
 
 		// The POI is too far from the player
-		if (!POI->bPersistant && DiffVec.Size() > IconMaxLengthVisibility)
+		if (!POI->bPersistant && !IsInDisplay(FVector2D::ZeroVector, POI->GetDesiredSize()))
 		{
 			POI->SetVisibility(ESlateVisibility::Collapsed);
 			continue;
@@ -164,7 +193,8 @@ void UMinimapWidget::OnUpdatePOIs()
 
 		// Angle between soldier and player (center of the minimap)
 		const float Angle = FMath::Atan2(/* 0.f*/ - DiffY, /* 0.f*/ - DiffX);
-		const float Length = FMath::Clamp(DiffVec.Size(), 0.f, IconMaxLengthVisibility);
+		MapPanel->GetDesiredSize();
+		const float Length = FMath::Clamp(DiffVec.Size(), 0.f, (MinimapImage->GetDesiredSize().Y));
 
 		const FVector2D SoldierPosOnMinimap = -FVector2D{ FMath::Sin(Angle) * Length, FMath::Cos(Angle) * Length };
 		POI->SetRenderTranslation(SoldierPosOnMinimap);

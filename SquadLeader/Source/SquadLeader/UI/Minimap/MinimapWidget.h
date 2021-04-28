@@ -1,9 +1,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Engine/Canvas.h"
 #include "Components/Image.h"
 #include "Components/Overlay.h"
+#include "Components/ScaleBox.h"
+#include "Components/CanvasPanel.h"
 #include "../SL_UserWidget.h"
 #include "../Interface/MinimapInterface.h"
 #include "../Interface/MinimapDelegateInterface.h"
@@ -49,13 +50,16 @@ protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UImage* PlayerIconImage;
 
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UCanvasPanel* MapPanel;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	class UMaterialParameterCollection* MaterialCollection;
 	//class UMaterialParameterCollectionInstance* MaterialCollectionInstance;
 
 	// Max length a POI can be from the player icon to be visible
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	float IconMaxLengthVisibility;
+	/*UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float IconMaxLengthVisibility;*/
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	MapShapePolicy MapShape = MapShapePolicy::eCIRCLE;
@@ -89,6 +93,9 @@ protected:
 
 protected:
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
+	//virtual int32 NativePaint(const FPaintArgs& Args, const FGeometry& AllottedGeometry, const FSlateRect& MyCullingRect, FSlateWindowElementList& OutDrawElements, int32 LayerId, 	const FWidgetStyle& InWidgetStyle, 	bool bParentEnabled) const override;
+
+	bool IsInDisplay(FVector2D DifferenceVec, FVector2D Size);
 
 public:
 	UMinimapWidget(const FObjectInitializer& _ObjectInitializer);
@@ -96,8 +103,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetMapShape(MapShapePolicy MapShapeIn);
 
-	UFUNCTION(BlueprintCallable)
-	void SetIconMaxLengthVisibility(float LenghtIn);
+	/*UFUNCTION(BlueprintCallable)
+	void SetIconMaxLengthVisibility(float LengthIn);*/
 
 	//-----USL_UserWidget-----
 
