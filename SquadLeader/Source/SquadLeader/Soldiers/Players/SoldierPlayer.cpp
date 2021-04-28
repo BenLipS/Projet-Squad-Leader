@@ -6,12 +6,15 @@
 #include "../../AI/AISquadManager.h"
 #include "../../AbilitySystem/Soldiers/GameplayAbilitySoldier.h"
 #include "../../Spawn/SoldierSpawn.h"
+#include "Kismet/KismetMaterialLibrary.h"
 #include "DrawDebugHelpers.h"
 
-ASoldierPlayer::ASoldierPlayer(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer),
-NbAIsForNextLevelUp{ 0.f },
-ASCInputBound{ false }
+ASoldierPlayer::ASoldierPlayer(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer)
 {
+	PostProcessVolume = CreateDefaultSubobject<UPostProcessComponent>(TEXT("PostProcessVolume"));
+	PostProcessVolume->bUnbound = false;
+	PostProcessVolume->bEnabled = true;
+	PostProcessVolume->AttachToComponent(ThirdPersonCameraComponent, FAttachmentTransformRules::KeepRelativeTransform);
 }
 
 /*
@@ -22,6 +25,13 @@ ASCInputBound{ false }
 void ASoldierPlayer::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (MaterialGlitchInterface && IsLocallyControlled())
+	{
+		MaterialGlitchInstance = UKismetMaterialLibrary::CreateDynamicMaterialInstance(GetWorld(), MaterialGlitchInterface);
+
+		SetWeightGlitchEffect(0.f);
+	}
 }
 
 // Server only 
@@ -58,7 +68,40 @@ void ASoldierPlayer::OnRep_PlayerState()
 
 void ASoldierPlayer::OnBlurredVisionFromJammer(const bool _IsBlurred)
 {
-	OnToggleGlitchOnScreen(_IsBlurred);
+	//OnToggleGlitchOnScreen(_IsBlurred);
+	if (!IsLocallyControlled())
+		return;
+
+	if (_IsBlurred) // Apply the glitches
+	{
+		SetWeightGlitchEffect(1.f);
+	}
+	else if (WeightGlitchEffect >= 0.1f)
+	{
+		StartReducingGlitch();
+	}
+	else
+		EndGlitch();
+}
+
+void ASoldierPlayer::StartReducingGlitch()
+{
+	GetWorldTimerManager().SetTimer(TimerGlitchReduction, this, &ASoldierPlayer::ReduceGlitch, TimeBetweenReductionGlitch, true);
+	ReduceGlitch();
+}
+
+void ASoldierPlayer::ReduceGlitch()
+{
+	if (const float NewWeight = WeightGlitchEffect * ReductionMultiplierGlitch; NewWeight >= MinimumWeightForGlitchReduction)
+		SetWeightGlitchEffect(NewWeight);
+	else
+		EndGlitch();
+}
+
+void ASoldierPlayer::EndGlitch()
+{
+	GetWorld()->GetTimerManager().ClearTimer(TimerGlitchReduction);
+	SetWeightGlitchEffect(0.f);
 }
 
 void ASoldierPlayer::LockControls()
@@ -102,6 +145,12 @@ void ASoldierPlayer::Turn(const float _Val)
 		else
 			ServerSyncControlRotation(SyncControlRotation);
 	}
+}
+
+void ASoldierPlayer::SetWeightGlitchEffect(const float _Weight)
+{
+	WeightGlitchEffect = _Weight;
+	PostProcessVolume->AddOrUpdateBlendable(MaterialGlitchInstance, _Weight);
 }
 
 void ASoldierPlayer::SetAbilitySystemComponent()
