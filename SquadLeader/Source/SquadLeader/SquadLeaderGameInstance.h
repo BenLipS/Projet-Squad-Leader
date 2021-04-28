@@ -35,6 +35,8 @@ private:
 	FString LocalIPAdress;
 
 	FString AuthToken;
+
+	bool OnlineStatus;
 	
 public:
 	UFUNCTION(BlueprintCallable)
@@ -48,20 +50,25 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void ProfileInfo(class ASL_HUD* HUD);
 
+	UFUNCTION(BlueprintCallable)
+		bool const GetNetworkStatus() { return OnlineStatus; }
+
 
 private:
-	void HttpCallPing(FString BaseAdress);
-	void HttpCallCreateUser(FString BaseAdress);
-	void HttpCallConnectUser(FString BaseAdress);
-	void HttpCallSendSyncData(FString BaseAdress);
-	void HttpCallReceiveSyncData(FString BaseAdress);
+	void NoConnexionComportment();
 
-	void HttpCallCreateNewGame(FString BaseAdress);
-	void HttpCallSetUpNewGame(FString BaseAdress);
-	void HttpCallAllowFriendForGame(FString BaseAdress);
-	void HttpCallDeleteGame(FString BaseAdress);
+	void HttpCallPing();
+	void HttpCallCreateUser();
+	void HttpCallConnectUser();
+	void HttpCallSendSyncData();
+	void HttpCallReceiveSyncData();
 
-	void HttpCallChangeConnectedStatus(FString BaseAdress, int status);
+	void HttpCallCreateNewGame();
+	void HttpCallSetUpNewGame();
+	void HttpCallAllowFriendForGame();
+	void HttpCallDeleteGame();
+
+	void HttpCallChangeConnectedStatus(int status);
 	
 private:
 	void OnResponseReceivedPing(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
