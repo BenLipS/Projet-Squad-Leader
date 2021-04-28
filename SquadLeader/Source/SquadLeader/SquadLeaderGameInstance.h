@@ -18,6 +18,7 @@ class SQUADLEADER_API USquadLeaderGameInstance : public UGameInstance
 
 public:
 	USquadLeaderGameInstance();
+	virtual void Shutdown() override;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UserDataLocation")
 		FString BaseServerDataAdress;
@@ -54,10 +55,13 @@ private:
 	void HttpCallConnectUser(FString BaseAdress);
 	void HttpCallSendSyncData(FString BaseAdress);
 	void HttpCallReceiveSyncData(FString BaseAdress);
+
 	void HttpCallCreateNewGame(FString BaseAdress);
 	void HttpCallSetUpNewGame(FString BaseAdress);
 	void HttpCallAllowFriendForGame(FString BaseAdress);
 	void HttpCallDeleteGame(FString BaseAdress);
+
+	void HttpCallChangeConnectedStatus(FString BaseAdress, int status);
 	
 private:
 	void OnResponseReceivedPing(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);

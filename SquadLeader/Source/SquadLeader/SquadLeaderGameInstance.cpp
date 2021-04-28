@@ -25,6 +25,13 @@ USquadLeaderGameInstance::USquadLeaderGameInstance() {
 }
 
 
+void USquadLeaderGameInstance::Shutdown()
+{
+    // when closing
+    HttpCallChangeConnectedStatus(BaseServerDataAdress, 0);  // notify server of the deconnexion
+    UserData.Save(UserDataFilename);  // save data
+}
+
 void USquadLeaderGameInstance::OnStart()
 {
     Super::OnStart();
@@ -39,6 +46,7 @@ void USquadLeaderGameInstance::OnStart()
 void USquadLeaderGameInstance::LaunchGame()
 {
     HttpCallCreateNewGame(BaseServerDataAdress);
+    HttpCallChangeConnectedStatus(BaseServerDataAdress, 2); // notify that the client is joining a new game
     GetFirstGamePlayer()->ConsoleCommand("open Factory_V1?listen", true);
 }
 
@@ -134,7 +142,7 @@ void USquadLeaderGameInstance::HttpCallSendSyncData(FString BaseAdress)
     Request->SetHeader("Content-Type", "application/x-www-form-urlencoded");
     FString authHeader = FString("Bearer ") + AuthToken;
     Request->SetHeader("Authorization", authHeader);
-    Request->SetURL(BaseAdress + UserData.Id + "/?name=" + UserData.Name + "&ipAdress=" + UserData.IpAdress + "&isInGame=" + 0);  // TODO : find the IPAdress
+    Request->SetURL(BaseAdress + UserData.Id + "/?name=" + UserData.Name + "&ipAdress=" + UserData.IpAdress + "&isInGame=" + FString::FromInt(1));  // isInGame = 1 for presence
     Request->SetVerb("PATCH");
     Request->ProcessRequest();
 }
@@ -211,6 +219,18 @@ void USquadLeaderGameInstance::HttpCallDeleteGame(FString BaseAdress)
     Request->SetHeader("Authorization", authHeader);
     Request->SetURL(BaseAdress + UserData.Id + "/Games/" + GameID);
     Request->SetVerb("DELETE");
+    Request->ProcessRequest();
+}
+
+void USquadLeaderGameInstance::HttpCallChangeConnectedStatus(FString BaseAdress, int status)
+{
+    TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = Http->CreateRequest();
+    Request->OnProcessRequestComplete().BindUObject(this, &USquadLeaderGameInstance::OnResponseDoNothing);
+    Request->SetHeader("Content-Type", "application/x-www-form-urlencoded");
+    FString authHeader = FString("Bearer ") + AuthToken;
+    Request->SetHeader("Authorization", authHeader);
+    Request->SetURL(BaseAdress + UserData.Id + "/isInGame?isInGame=" + FString::FromInt(status));
+    Request->SetVerb("PUT");
     Request->ProcessRequest();
 }
 
