@@ -12,7 +12,6 @@
 
 void FTileBase::Reset() {
 	m_value = 0.f;
-	Teams.Empty();
 	in_update = false;
 	Types.Empty();
 	ActorsID.Empty();
@@ -337,16 +336,14 @@ void AInfluenceMapGrid::ReceivedMessage(FGridPackage _message) {
 		else {
 			switch (_message.m_type) {
 			case Type::Soldier:
+				UpdateSoldier(IndexActor, _message.team_value, _message.ActorID);
 				UpdateTile(Index, CharacterInfluence, _message.team_value, _message.m_type, _message.ActorID, IndexActor);
 				InfluenceSoldier(Index, Index, Index, 1, _message.ActorID, _message.team_value, IndexActor);
 				break;
 			case Type::ControlArea:
-				GEngine->AddOnScreenDebugMessage(30, 1.f, FColor::Silver, FString::Printf(TEXT("Update des Tiles de la zone de Controle")));
 				UpdateControlArea(IndexActor, _message.team_value);
 				break;
 			case Type::Projectile:
-				GEngine->AddOnScreenDebugMessage(20, 1.f, FColor::Cyan, FString::Printf(TEXT("Suppression des anciennes Tiles du Projectile")));
-				GEngine->AddOnScreenDebugMessage(21, 1.f, FColor::Cyan, FString::Printf(TEXT("Index de l'actor dans la liste : %d"), IndexActor));
 				DeleteInfluence(IndexActor, _message.team_value);
 				break;
 			default:
@@ -367,21 +364,22 @@ void AInfluenceMapGrid::TimeFunction() {
 
 void AInfluenceMapGrid::UpdateTile(int index, float value, int team, Type type, uint32 actorID, uint16& ActorDataIndex) noexcept {
 
-	if (m_influencemap[index].Types.Contains(Type::ControlArea))
-		return;
+	//if (m_influencemap[index].Types.Contains(Type::ControlArea))
+	//	return;
 
 	auto bool2 = m_influencemap[index].ActorsID.Contains(actorID);
-	//auto bool2 = m_influencemap[index].in_update;
 
 	if (!bool2) {
-		m_influencemap[index].ActorsID.Add(actorID);
 
-		if (m_influencemap[index].m_value == 0.f)
+		if (m_influencemap[index].ActorsID.Num() >= 1) {
+			if (m_influencemap[index].m_value + 0.1f <= 1.f)
+				m_influencemap[index].m_value += 0.1f;
+			else
+				m_influencemap[index].m_value = 1.f;
+		}
+		else {
 			m_influencemap[index].m_value = value;
-		else if (m_influencemap[index].m_value + 0.1f <= 1.f)
-			m_influencemap[index].m_value += 0.1f;
-		else
-			m_influencemap[index].m_value = 1.f;
+		}
 
 		if (!(m_influencemap[index].Teams.Contains(team)))
 			m_influencemap[index].Teams.Add(team);
@@ -396,6 +394,8 @@ void AInfluenceMapGrid::UpdateTile(int index, float value, int team, Type type, 
 			AddUpdateTileTeam1(index);
 			AddUpdateTileTeam2(index);
 		}
+
+		m_influencemap[index].ActorsID.Add(actorID);
 	}
 
 	m_influencemap[index].in_update = true;
@@ -457,6 +457,7 @@ bool AInfluenceMapGrid::ActorAlreadyExist(const uint32 ActorID, uint16& Index) c
 void AInfluenceMapGrid::DeleteInfluence(const uint16 IndexActor, const uint8 Team) noexcept{
 	for (uint32 index : ActorsData[IndexActor].IndexInfluence) {
 		m_influencemap[index].Reset();
+		m_influencemap[index].Teams.Empty();
 		//Pour le moment c'est seulement les Obstacles
 		/*if (Team == 1)
 			m_index_team1.Remove(index);
@@ -464,11 +465,8 @@ void AInfluenceMapGrid::DeleteInfluence(const uint16 IndexActor, const uint8 Tea
 			m_index_team2.Remove(index);*/
 		m_index_team1.Remove(index);
 		m_index_team2.Remove(index);
-		GEngine->AddOnScreenDebugMessage(22, 1.f, FColor::Red, FString::Printf(TEXT("Suppression en cours...")));
 	}
 	ActorsData[IndexActor].IndexInfluence.Empty();
-
-	GEngine->AddOnScreenDebugMessage(23, 1.f, FColor::Red, FString::Printf(TEXT("Les anciennes Tiles on ete delete")));
 	//To-Do : besoin de créer l'operateur == pour des FActorData
 	//ActorsData.Remove(ActorsData[IndexActor]);
 }
@@ -486,7 +484,30 @@ void AInfluenceMapGrid::UpdateControlArea(const uint16 IndexControlArea, const u
 
 		m_influencemap[index].Teams.Empty();
 		m_influencemap[index].Teams.Add(Team);
-		GEngine->AddOnScreenDebugMessage(31, 1.f, FColor::Red, FString::Printf(TEXT("Update des Tiles en cours...")));
 	}
-	GEngine->AddOnScreenDebugMessage(32, 1.f, FColor::Red, FString::Printf(TEXT("Update des Tiles termine")));
+}
+
+void AInfluenceMapGrid::UpdateSoldier(const uint16 IndexSoldier, const uint8 Team, const uint32 SoldierID) noexcept {
+	if (ActorsData[IndexSoldier].IndexInfluence.Num() > 0) {
+		for (uint32 index : ActorsData[IndexSoldier].IndexInfluence) {
+			m_influencemap[index].ActorsID.Remove(SoldierID);
+
+			if (m_influencemap[index].ActorsID.Num() >= 1)
+				m_influencemap[index].m_value =  0.5f;
+
+			else {
+				m_influencemap[index].Teams.Remove(Team);
+				m_influencemap[index].m_value = 0.0f;
+
+				if (Team == 1)
+					m_index_team1.Remove(index);
+				else
+					m_index_team2.Remove(index);
+			}
+		}
+		ActorsData[IndexSoldier].IndexInfluence.Empty();
+	}
+	else {
+		return;
+	}
 }

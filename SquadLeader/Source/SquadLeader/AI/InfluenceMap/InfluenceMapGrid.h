@@ -286,4 +286,5 @@ protected:
 	void DeleteInfluence(const uint16 IndexActor, const uint8 Team) noexcept;
 
 	void UpdateControlArea(const uint16 IndexControlArea, const uint8 Team) noexcept;
+	void UpdateSoldier(const uint16 IndexSoldier, const uint8 Team, const uint32 SoldierID) noexcept;
 };
