@@ -54,15 +54,23 @@ private:
 	void HttpCallConnectUser(FString BaseAdress);
 	void HttpCallSendSyncData(FString BaseAdress);
 	void HttpCallReceiveSyncData(FString BaseAdress);
+	void HttpCallCreateNewGame(FString BaseAdress);
+	void HttpCallSetUpNewGame(FString BaseAdress);
+	void HttpCallAllowFriendForGame(FString BaseAdress);
+	void HttpCallDeleteGame(FString BaseAdress);
 	
 private:
 	void OnResponseReceivedPing(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 	void OnResponseReceivedCreateUser(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 	void OnResponseReceivedConnectUser(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
-	void OnResponseReceivedSendSync(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 	void OnResponseReceivedReceiveSync(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
+	void OnResponseCreateNewGame(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
+	void OnResponseDeleteGame(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
+	void OnResponseDoNothing(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 
 public:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf <UGameParam> GameParam;
+private:
+	FString GameID = "";  // only define if a game is create
 };

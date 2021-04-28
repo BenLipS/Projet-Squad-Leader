@@ -38,6 +38,7 @@ void USquadLeaderGameInstance::OnStart()
 
 void USquadLeaderGameInstance::LaunchGame()
 {
+    HttpCallCreateNewGame(BaseServerDataAdress);
     GetFirstGamePlayer()->ConsoleCommand("open Factory_V1?listen", true);
 }
 
@@ -129,7 +130,7 @@ void USquadLeaderGameInstance::HttpCallConnectUser(FString BaseAdress)
 void USquadLeaderGameInstance::HttpCallSendSyncData(FString BaseAdress)
 {
     TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = Http->CreateRequest();
-    Request->OnProcessRequestComplete().BindUObject(this, &USquadLeaderGameInstance::OnResponseReceivedSendSync);
+    Request->OnProcessRequestComplete().BindUObject(this, &USquadLeaderGameInstance::OnResponseDoNothing);
     Request->SetHeader("Content-Type", "application/x-www-form-urlencoded");
     FString authHeader = FString("Bearer ") + AuthToken;
     Request->SetHeader("Authorization", authHeader);
@@ -149,6 +150,70 @@ void USquadLeaderGameInstance::HttpCallReceiveSyncData(FString BaseAdress)
     Request->SetVerb("GET");
     Request->ProcessRequest();
 }
+
+void USquadLeaderGameInstance::HttpCallCreateNewGame(FString BaseAdress)
+{
+    TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = Http->CreateRequest();
+    Request->OnProcessRequestComplete().BindUObject(this, &USquadLeaderGameInstance::OnResponseCreateNewGame);
+    Request->SetHeader("Content-Type", "application/x-www-form-urlencoded");
+    FString authHeader = FString("Bearer ") + AuthToken;
+    Request->SetHeader("Authorization", authHeader);
+    Request->SetURL(BaseAdress + UserData.Id + "/Games/");
+    Request->SetVerb("POST");
+    Request->ProcessRequest();
+}
+
+void USquadLeaderGameInstance::HttpCallSetUpNewGame(FString BaseAdress)
+{
+    if (GameID != "") {
+        const FString space = FString(" ");
+        const FString changeCaracter = FString("_");
+
+        TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = Http->CreateRequest();
+        Request->OnProcessRequestComplete().BindUObject(this, &USquadLeaderGameInstance::OnResponseDoNothing);
+        Request->SetHeader("Content-Type", "application/x-www-form-urlencoded");
+        FString authHeader = FString("Bearer ") + AuthToken;
+        Request->SetHeader("Authorization", authHeader);
+        Request->SetURL(BaseAdress + UserData.Id + "/Games/" + GameID +
+            "?name=" + GameParam.GetDefaultObject()->Name.Replace(*space, *changeCaracter) +
+            "&levelTarget=" + FString::FromInt(GameParam.GetDefaultObject()->LevelTarget) +
+            "&levelRange=" + FString::FromInt(GameParam.GetDefaultObject()->LevelRange) +
+            "&nbAIBasic=" + FString::FromInt(GameParam.GetDefaultObject()->NbAIBasicAssault + GameParam.GetDefaultObject()->NbAIBasicHeavy) +
+            "&levelAIBasic=" + FString::FromInt(GameParam.GetDefaultObject()->LevelAIBasic) +
+            "&nbAISquad=" + FString::FromInt(GameParam.GetDefaultObject()->StartingNbAISquad) +
+            "&levelAISquad=" + FString::FromInt(GameParam.GetDefaultObject()->LevelAISquad) +
+            "&nbTicket=" + FString::FromInt(GameParam.GetDefaultObject()->NbTickets) +
+            "&weather=" + FString::FromInt(GameParam.GetDefaultObject()->Weather) +
+            "&respawnDuration=" + FString::FromInt(GameParam.GetDefaultObject()->RespawnDuration));  // + friends
+        Request->SetVerb("PATCH");
+        Request->ProcessRequest();
+    }
+}
+
+void USquadLeaderGameInstance::HttpCallAllowFriendForGame(FString BaseAdress)
+{
+    TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = Http->CreateRequest();
+    Request->OnProcessRequestComplete().BindUObject(this, &USquadLeaderGameInstance::OnResponseDoNothing);
+    Request->SetHeader("Content-Type", "application/x-www-form-urlencoded");
+    FString authHeader = FString("Bearer ") + AuthToken;
+    Request->SetHeader("Authorization", authHeader);
+    Request->SetURL(BaseAdress + UserData.Id + "/Games/" + GameID + "/allowFriend/");
+    Request->SetVerb("PUT");
+    Request->ProcessRequest();
+}
+
+void USquadLeaderGameInstance::HttpCallDeleteGame(FString BaseAdress)
+{
+    TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = Http->CreateRequest();
+    Request->OnProcessRequestComplete().BindUObject(this, &USquadLeaderGameInstance::OnResponseDeleteGame);
+    Request->SetHeader("Content-Type", "application/x-www-form-urlencoded");
+    FString authHeader = FString("Bearer ") + AuthToken;
+    Request->SetHeader("Authorization", authHeader);
+    Request->SetURL(BaseAdress + UserData.Id + "/Games/" + GameID);
+    Request->SetVerb("DELETE");
+    Request->ProcessRequest();
+}
+
 
 void USquadLeaderGameInstance::OnResponseReceivedPing(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful) {
     if (bWasSuccessful) {
@@ -201,7 +266,7 @@ void USquadLeaderGameInstance::OnResponseReceivedConnectUser(FHttpRequestPtr Req
     }
 }
 
-void USquadLeaderGameInstance::OnResponseReceivedSendSync(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful) {
+void USquadLeaderGameInstance::OnResponseDoNothing(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful) {
     if (!bWasSuccessful) {  // no connection to the data server
         // arrange offline system
     }
@@ -229,5 +294,35 @@ void USquadLeaderGameInstance::OnResponseReceivedReceiveSync(FHttpRequestPtr Req
     }
     else {  // no connection to the data server
         // arrange offline system
+    }
+}
+
+void USquadLeaderGameInstance::OnResponseCreateNewGame(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
+{
+    if (bWasSuccessful) {
+        // save imported data
+        TSharedPtr<FJsonObject> JsonObject;
+        TSharedRef<TJsonReader<TCHAR>> Reader = TJsonReaderFactory<TJsonReader<TCHAR>>::Create(Response->GetContentAsString());
+        if (FJsonSerializer::Deserialize(Reader, JsonObject)) {
+            //Get the value of the json object by field name
+            GameID = JsonObject->GetStringField("id");
+        }
+        HttpCallSetUpNewGame(BaseServerDataAdress);
+        if (GameParam.GetDefaultObject()->FriendOnly) {
+            HttpCallAllowFriendForGame(BaseServerDataAdress);
+        }
+    }
+    else {  // no connection to the data server
+        // arrange offline system
+    }
+}
+
+void USquadLeaderGameInstance::OnResponseDeleteGame(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
+{
+    if (bWasSuccessful) {
+        GameID = "";
+    }
+    else {  // no connection to the data server or problems
+        // TODO: retry later
     }
 }
