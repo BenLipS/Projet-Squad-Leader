@@ -6,13 +6,16 @@
 #include "../../AI/AISquadManager.h"
 #include "../../AbilitySystem/Soldiers/GameplayAbilitySoldier.h"
 #include "../../Spawn/SoldierSpawn.h"
+#include "Kismet/KismetMaterialLibrary.h"
 #include "DrawDebugHelpers.h"
 #include "TimerManager.h"
 
-ASoldierPlayer::ASoldierPlayer(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer),
-NbAIsForNextLevelUp{ 0.f },
-ASCInputBound{ false }
+ASoldierPlayer::ASoldierPlayer(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer)
 {
+	PostProcessVolume = CreateDefaultSubobject<UPostProcessComponent>(TEXT("PostProcessVolume"));
+	PostProcessVolume->bUnbound = false;
+	PostProcessVolume->bEnabled = true;
+	PostProcessVolume->AttachToComponent(ThirdPersonCameraComponent, FAttachmentTransformRules::KeepRelativeTransform);
 }
 
 /*
@@ -33,8 +36,7 @@ void ASoldierPlayer::BeginPlay()
 		PostProcessVolume->AddOrUpdateBlendable(MaterialBrokenGlassRightInstance, 0.f);
 		PostProcessVolume->AddOrUpdateBlendable(MaterialBrokenGlassLeftInstance, 0.f);
 		SetWeightGlitchEffect(0.f);
-	}
-}
+	}}
 
 // Server only 
 void ASoldierPlayer::PossessedBy(AController* _newController)
@@ -66,6 +68,55 @@ void ASoldierPlayer::OnRep_PlayerState()
 	//-----HUD-----
 	if (ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(GetController()); PC)
 		PC->CreateHUD();
+}
+
+void ASoldierPlayer::DeadTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
+{
+	Super::DeadTagChanged(CallbackTag, NewCount);
+	if (NewCount > 0) // If dead tag is added - Handle death
+	{
+		HitRight = 0;
+		HitLeft = 0;
+		UpdateBrokenGlassEffect();
+	}
+}
+
+void ASoldierPlayer::OnBlurredVisionFromJammer(const bool _IsBlurred)
+{
+	//OnToggleGlitchOnScreen(_IsBlurred);
+	if (!IsLocallyControlled())
+		return;
+
+	if (_IsBlurred) // Apply the glitches
+	{
+		SetWeightGlitchEffect(1.f);
+	}
+	else if (WeightGlitchEffect >= 0.1f)
+	{
+		StartReducingGlitch();
+	}
+	else
+		EndGlitch();
+}
+
+void ASoldierPlayer::StartReducingGlitch()
+{
+	GetWorldTimerManager().SetTimer(TimerGlitchReduction, this, &ASoldierPlayer::ReduceGlitch, TimeBetweenReductionGlitch, true);
+	ReduceGlitch();
+}
+
+void ASoldierPlayer::ReduceGlitch()
+{
+	if (const float NewWeight = WeightGlitchEffect * ReductionMultiplierGlitch; NewWeight >= MinimumWeightForGlitchReduction)
+		SetWeightGlitchEffect(NewWeight);
+	else
+		EndGlitch();
+}
+
+void ASoldierPlayer::EndGlitch()
+{
+	GetWorld()->GetTimerManager().ClearTimer(TimerGlitchReduction);
+	SetWeightGlitchEffect(0.f);
 }
 
 void ASoldierPlayer::LockControls()
@@ -109,6 +160,12 @@ void ASoldierPlayer::Turn(const float _Val)
 		else
 			ServerSyncControlRotation(SyncControlRotation);
 	}
+}
+
+void ASoldierPlayer::SetWeightGlitchEffect(const float _Weight)
+{
+	WeightGlitchEffect = _Weight;
+	PostProcessVolume->AddOrUpdateBlendable(MaterialGlitchInstance, _Weight);
 }
 
 void ASoldierPlayer::SetAbilitySystemComponent()
@@ -231,11 +288,11 @@ float ASoldierPlayer::NbOfHitToPPIntensity(int NbHit)
 {
 	switch (NbHit) {
 		case 1:
-			return 0.2;
+			return 0.2f;
 		case 2:
-			return 0.8;
+			return 0.8f;
 		case 3:
-			return 2;
+			return 2.f;
 		default:
 			return 0.f;
 	}

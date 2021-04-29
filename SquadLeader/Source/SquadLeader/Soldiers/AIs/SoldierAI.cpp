@@ -17,8 +17,7 @@ void ASoldierAI::LockControls()
 	
 	if (AAIGeneralController* AIController = Cast<AAIGeneralController>(GetController()); AIController) {
 		AIController->IsActivated = false;
-		if (GetLocalRole() < ROLE_Authority)
-			int test = 2;
+		AIController->StopMovement();
 	}
 	
 }
@@ -27,8 +26,6 @@ void ASoldierAI::UnLockControls()
 {
 	if (AAIGeneralController* AIController = Cast<AAIGeneralController>(GetController()); AIController) {
 		AIController->IsActivated = true;
-		if (GetLocalRole() < ROLE_Authority)
-			int test = 2;
 	}
 }
 
@@ -160,6 +157,16 @@ void ASoldierAI::InitializeAttributeChangeCallbacks()
 		MaxHealthChangedDelegateHandle = AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetMaxHealthAttribute()).AddUObject(this, &ASoldierAI::MaxHealthChanged);
 		ShieldChangedDelegateHandle = AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetShieldAttribute()).AddUObject(this, &ASoldierAI::ShieldChanged);
 		MaxShieldChangedDelegateHandle = AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetMaxShieldAttribute()).AddUObject(this, &ASoldierAI::MaxShieldChanged);
+	}
+}
+
+void ASoldierAI::OnBlurredVisionFromJammer(const bool _IsBlurred)
+{
+	if (auto AIController = Cast<AAIGeneralController>(GetController()); AIController) {
+		AIController->StopCurrentBehavior = true;
+		AIController->get_blackboard()->SetValueAsBool("IsStun", _IsBlurred);
+		if (_IsBlurred)LockControls();
+		else UnLockControls();
 	}
 }
 
