@@ -17,6 +17,9 @@ EBTNodeResult::Type UMoveToLocationBTTaskNode::ExecuteTask(UBehaviorTreeComponen
 
 	EBTNodeResult::Type NodeResult = EBTNodeResult::InProgress;
 
+	if(_controller->get_blackboard()->GetValueAsBool("IsStun"))
+		NodeResult = EBTNodeResult::Failed;
+
 	return NodeResult;
 }
 
@@ -29,8 +32,11 @@ void UMoveToLocationBTTaskNode::TickTask(class UBehaviorTreeComponent& OwnerComp
 
 	if (MoveToActorResult == EPathFollowingRequestResult::AlreadyAtGoal)
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
-	if(MoveToActorResult == EPathFollowingRequestResult::Failed || _controller->StopCurrentBehavior)
+	if (MoveToActorResult == EPathFollowingRequestResult::Failed || _controller->StopCurrentBehavior) {
 		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+		_controller->StopMovement();
+	}
+		
 }
 
 FString UMoveToLocationBTTaskNode::GetStaticDescription() const {
