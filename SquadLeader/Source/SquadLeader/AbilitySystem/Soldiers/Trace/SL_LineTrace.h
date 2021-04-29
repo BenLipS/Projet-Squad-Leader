@@ -12,8 +12,7 @@
 
 /**
  * Reusable, configurable line trace TargetActor.
- * Meant to be used with GSAT_WaitTargetDataUsingActor instead of the default WaitTargetData AbilityTask as the default
- * one will destroy the TargetActor.
+ * Meant to be used with SL_WaitTargetDataUsingActor instead of the default WaitTargetData AbilityTask as the default one will destroy the TargetActor.
  */
 UCLASS()
 class SQUADLEADER_API ASL_LineTrace : public ASL_Trace
@@ -24,7 +23,6 @@ public:
 	ASL_LineTrace() = default;
 
 protected:
-
 	virtual void DoTrace(TArray<FHitResult>& HitResults, const UWorld* World, const FGameplayTargetDataFilterHandle FilterHandle, const FVector& Start, const FVector& End, FName ProfileName, const FCollisionQueryParams Params) override;
 	virtual void ShowDebugTrace(TArray<FHitResult>& HitResults, EDrawDebugTrace::Type DrawDebugType, float Duration = 2.0f) override;
 

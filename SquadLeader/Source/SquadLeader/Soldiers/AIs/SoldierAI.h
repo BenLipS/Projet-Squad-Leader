@@ -120,6 +120,8 @@ public:
 
 	void InitializeAttributeChangeCallbacks() override;
 
+	void OnBlurredVisionFromJammer(const bool _IsBlurred) override;
+
 	//-----Delegate-----	
 protected:
 

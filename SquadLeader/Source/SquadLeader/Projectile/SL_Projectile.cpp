@@ -10,7 +10,7 @@
 #include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
-ASL_Projectile::ASL_Projectile()
+ASL_Projectile::ASL_Projectile() : CollisionProfileNameMesh{ FName{"BlockAllDynamic"} }
 {
 	PrimaryActorTick.bCanEverTick = false;
 	bReplicates = true;
@@ -27,9 +27,11 @@ ASL_Projectile::ASL_Projectile()
 
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileComp"));
 	ProjectileMovement->UpdatedComponent = CollisionComp;
+
+	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
+	Mesh->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
 }
 
-// Called when the game starts or when spawned
 void ASL_Projectile::BeginPlay()
 {
 	Super::BeginPlay();
@@ -52,6 +54,8 @@ void ASL_Projectile::BeginPlay()
 	ProjectileMovement->Bounciness = Bounciness;
 	ProjectileMovement->ProjectileGravityScale = GravityScale;
 
+	SetCollisionProfile(CollisionProfileNameMesh);
+
 	InitVelocity();
 
 	//if (auto temp = Cast<USphereComponent>(RootComponent))
@@ -61,17 +65,42 @@ void ASL_Projectile::BeginPlay()
 		GetWorldTimerManager().SetTimer(TimerExplosion, this, &ASL_Projectile::OnExplode, ExplosionDelay, true);
 }
 
+void ASL_Projectile::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ASL_Projectile, CollisionProfileNameMesh);
+}
+
+UStaticMeshComponent* ASL_Projectile::GetMesh() const
+{
+	return Mesh;
+}
+
+void ASL_Projectile::SetCollisionProfile(const FName& _Name)
+{
+	CollisionProfileNameMesh = _Name;
+	Mesh->SetCollisionProfileName(CollisionProfileNameMesh);
+	CollisionComp->SetCollisionProfileName(CollisionProfileNameMesh);
+}
+
+FName ASL_Projectile::GetCollisionProfile() const
+{
+	return CollisionProfileNameMesh;
+}
+
 void ASL_Projectile::OnExplode()
 {
 	for (auto AreaEffectClass : AreaEffectList)
 	{
-		AAreaEffect* AreaEffect = GetWorld()->SpawnActorDeferred<AAreaEffect>(AreaEffectClass, FTransform{GetActorRotation(), GetActorLocation()}, GetOwner(), GetInstigator(), ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+		AAreaEffect* AreaEffect = GetWorld()->SpawnActorDeferred<AAreaEffect>(AreaEffectClass, FTransform{ GetActorRotation(), GetActorLocation() }, this, GetInstigator(), ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 
 		if (AreaEffect)
 		{
 #ifdef UE_BUILD_DEBUG
 			AreaEffect->bDebugTrace = bDebugTraceExplosion;
 #endif
+			AreaEffect->bIgnoreBlock = false;
 			AreaEffect->FinishSpawning(FTransform{ GetActorRotation(), GetActorLocation() });
 		}
 
@@ -110,7 +139,7 @@ void ASL_Projectile::InitVelocity()
 			PitchAdjust = AI->LaunchProjectilePitchAdjust;
 			YawAdjust = AI->LaunchProjectileYawAdjust;
 		}
-	}	
+	}
 
 	Azimuth += PitchAdjust;
 	if (Azimuth > 180.f)
@@ -127,7 +156,7 @@ void ASL_Projectile::InitVelocity()
 
 	ForwardVector = FVector(UKismetMathLibrary::DegSin(Azimuth) * UKismetMathLibrary::DegCos(Inclination), UKismetMathLibrary::DegSin(Azimuth) * UKismetMathLibrary::DegSin(Inclination), UKismetMathLibrary::DegCos(Azimuth));
 
-	ProjectileMovement->Velocity =  ForwardVector * ProjectileMovement->InitialSpeed;
+	ProjectileMovement->Velocity = ForwardVector * ProjectileMovement->InitialSpeed;
 }
 
 void ASL_Projectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit)
@@ -154,7 +183,7 @@ void ASL_Projectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor
 			break;
 		}
 	}
-	
+
 }
 
 void ASL_Projectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
