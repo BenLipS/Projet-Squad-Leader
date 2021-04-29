@@ -34,10 +34,7 @@ float USoldierMovementComponent::GetMaxSpeed() const
 		if (IsCrouching())
 			FinalSpeed = ASC ? ASC->GetNumericAttribute(UAttributeSetSoldier::GetMoveSpeedCrouchAttribute()) : MaxWalkSpeedCrouched;
 		else
-		{
 			FinalSpeed = ASC ? ASC->GetNumericAttribute(UAttributeSetSoldier::GetMoveSpeedWalkAttribute()) : MaxWalkSpeed;
-			GEngine->AddOnScreenDebugMessage(20, 2.f, FColor::Green, FString::Printf(TEXT("Direction: %f"), AngleDirection));
-		}
 
 		FinalSpeed *= MoveSpeedDirectionMultiplier;
 		break;
