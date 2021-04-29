@@ -29,6 +29,9 @@ protected:
 	FTimerHandle IntervalTimer;
 
 	void OnReadyToApplyEffects();
+
+	// Make sure there is no wall blocking the effect
+	bool ValidateEffectOnSoldier(const FHitResult& _HitSoldier, const TArray<FHitResult>& _HitActors);
 	void DestroyAreaEffect();
 
 	void ApplyGameplayEffects(UAbilitySystemComponent* _TargetASC);
@@ -78,8 +81,15 @@ protected:
 
 //////////////// Collision
 public:
+	// Whether this area can apply its effect regardless the collisions
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Collision")
+	bool bIgnoreBlock = true;
+
+public:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Collision")
 	bool bDebugTrace = false;
+
+	void FilterTraceWithShield(TArray<FHitResult>& _HitResults);
 
 //////////////// Animation
 protected:

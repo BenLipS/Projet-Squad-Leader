@@ -2,14 +2,13 @@
 #include "SquadLeader/SquadLeader.h"
 #include "SquadLeader/Soldiers/Soldier.h"
 
-AShield::AShield() : Health { 100.f }
+AShield::AShield() : Health{ 100.f }, CollisionProfileNameMesh{ FName{"BlockAllDynamic"} }
 {
 	PrimaryActorTick.bCanEverTick = false;
 	bReplicates = true;
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ShieldMesh"));
 	Mesh->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
-	Mesh->SetCollisionProfileName(TEXT("Shield")); // Shield is a predifined collision from the editor
 }
 
 void AShield::BeginPlay()
@@ -18,6 +17,8 @@ void AShield::BeginPlay()
 
 	ASoldier* SourceSoldier = Cast<ASoldier>(GetOwner());
 	SetTeam(SourceSoldier ? SourceSoldier->GetTeam() : nullptr);
+
+	SetCollisionProfile(CollisionProfileNameMesh);
 }
 
 void AShield::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -26,6 +27,23 @@ void AShield::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeP
 
 	DOREPLIFETIME(AShield, Health);
 	DOREPLIFETIME(AShield, Team);
+	DOREPLIFETIME(AShield, CollisionProfileNameMesh);
+}
+
+UStaticMeshComponent* AShield::GetMesh() const
+{
+	return Mesh;
+}
+
+void AShield::SetCollisionProfile(const FName& _Name)
+{
+	CollisionProfileNameMesh = _Name;
+	Mesh->SetCollisionProfileName(CollisionProfileNameMesh);
+}
+
+FName AShield::GetCollisionProfile() const
+{
+	return CollisionProfileNameMesh;
 }
 
 void AShield::DestroyShield()
