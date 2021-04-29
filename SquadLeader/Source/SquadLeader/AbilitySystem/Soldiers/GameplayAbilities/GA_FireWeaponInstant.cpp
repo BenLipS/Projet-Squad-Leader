@@ -123,9 +123,11 @@ void UGA_FireWeaponInstant::HandleTargetData(const FGameplayAbilityTargetDataHan
 	{
 		if (ASoldier* TargetSoldier = Cast<ASoldier>(Actor); TargetSoldier && TargetSoldier->GetAbilitySystemComponent())
 		{
-			ApplyDamages(_Data, DamageEffectSpecHandle, TargetSoldier->GetAbilitySystemComponent());
-			TargetSoldier->OnReceiveDamage(Data->GetHitResult()->ImpactPoint, Data->GetHitResult()->TraceStart);
-			break;
+			if (SourceSoldier->GetTeam() != TargetSoldier->GetTeam())
+			{
+				ApplyDamages(_Data, DamageEffectSpecHandle, TargetSoldier->GetAbilitySystemComponent());
+				TargetSoldier->OnReceiveDamage(Data->GetHitResult()->ImpactPoint, Data->GetHitResult()->TraceStart);
+			}
 		}
 		else if (AShield* Shield = Cast<AShield>(Actor); Shield)
 		{
@@ -154,8 +156,7 @@ void UGA_FireWeaponInstant::ApplyEffectsToSource()
 
 void UGA_FireWeaponInstant::ApplyDamages(const FGameplayAbilityTargetDataHandle& _Data, const FGameplayEffectSpecHandle& _DamageEffectSpecHandle, UAbilitySystemComponent* _TargetASC)
 {
-	if (Cast<ASoldier>(_TargetASC->GetAvatarActor())->GetTeam() != SourceSoldier->GetTeam())
-		SourceSoldier->GetAbilitySystemComponent()->ApplyGameplayEffectSpecToTarget(*_DamageEffectSpecHandle.Data.Get(), _TargetASC);
+	SourceSoldier->GetAbilitySystemComponent()->ApplyGameplayEffectSpecToTarget(*_DamageEffectSpecHandle.Data.Get(), _TargetASC);
 }
 
 void UGA_FireWeaponInstant::ApplyDamages(AShield* _Shield, const float _Damages)

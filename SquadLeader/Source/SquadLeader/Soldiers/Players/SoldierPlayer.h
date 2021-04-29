@@ -97,39 +97,27 @@ public:
 	UFUNCTION()
 	void EndGlitch();
 
-//////////////// Ability System Component
+//Broken Glass Effect
 protected:
-	void SetAbilitySystemComponent();
-	void BindASCInput();
-
-	bool ASCInputBound = false;
-
-	virtual void LevelUp() override;
-
-public:  // Respawn
-	virtual FVector GetRespawnPoint() override;
-
-//////////////// SquadManager data callbacks
-
-	UFUNCTION()
-	void OnSquadChanged(const TArray<FSoldierAIData>& newValue);
-
-///////////////Broken Glass Effect
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Camera|PostEffects|BrokenGlass")
-		UMaterialInterface* MaterialBrokenGlassRightInterface = nullptr;
+	UMaterialInterface* MaterialBrokenGlassRightInterface = nullptr;
 
 	UPROPERTY(BlueprintReadWrite, Category = "Camera|PostEffects|BrokenGlass")
-		UMaterialInstanceDynamic* MaterialBrokenGlassRightInstance = nullptr;
+	UMaterialInstanceDynamic* MaterialBrokenGlassRightInstance = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Camera|PostEffects|BrokenGlass")
-		UMaterialInterface* MaterialBrokenGlassLeftInterface = nullptr;
+	UMaterialInterface* MaterialBrokenGlassLeftInterface = nullptr;
 
 	UPROPERTY(BlueprintReadWrite, Category = "Camera|PostEffects|BrokenGlass")
-		UMaterialInstanceDynamic* MaterialBrokenGlassLeftInstance = nullptr;
+	UMaterialInstanceDynamic* MaterialBrokenGlassLeftInstance = nullptr;
 
 	virtual void OnReceiveDamage(const FVector& _ImpactPoint, const FVector& _SourcePoint) override;
-	UFUNCTION()
-	void ResetPosteffects();
+
+	UFUNCTION(Client, Reliable)
+	void ClientOnReceiveDamage(const FVector& _ImpactPoint, const FVector& _SourcePoint);
+	void ClientOnReceiveDamage_Implementation(const FVector& _ImpactPoint, const FVector& _SourcePoint);
+
+public:
 	UFUNCTION()
 	float NbOfHitToPPIntensity(int NbHit);
 	UFUNCTION()
@@ -146,4 +134,21 @@ public:  // Respawn
 	int HitLeft = 0;
 	UPROPERTY()
 	int HitRight = 0;
+
+//////////////// Ability System Component
+protected:
+	void SetAbilitySystemComponent();
+	void BindASCInput();
+
+	bool ASCInputBound = false;
+
+	virtual void LevelUp() override;
+
+public:  // Respawn
+	virtual FVector GetRespawnPoint() override;
+
+//////////////// SquadManager data callbacks
+
+	UFUNCTION()
+	void OnSquadChanged(const TArray<FSoldierAIData>& newValue);
 };

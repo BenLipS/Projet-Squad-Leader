@@ -27,16 +27,30 @@ void ASoldierPlayer::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (MaterialGlitchInterface && IsLocallyControlled())
+	if (!IsLocallyControlled())
+		return;
+
+	ensure(MaterialGlitchInterface);
+	ensure(MaterialBrokenGlassRightInterface);
+	ensure(MaterialBrokenGlassLeftInterface);
+
+	// Glitch
+	if (MaterialGlitchInterface)
 	{
 		MaterialGlitchInstance = UKismetMaterialLibrary::CreateDynamicMaterialInstance(GetWorld(), MaterialGlitchInterface);
+		SetWeightGlitchEffect(0.f);
+	}
+
+	// Broken glass
+	if (MaterialBrokenGlassRightInterface && MaterialBrokenGlassLeftInterface)
+	{
 		MaterialBrokenGlassRightInstance = UKismetMaterialLibrary::CreateDynamicMaterialInstance(GetWorld(), MaterialBrokenGlassRightInterface);
 		MaterialBrokenGlassLeftInstance = UKismetMaterialLibrary::CreateDynamicMaterialInstance(GetWorld(), MaterialBrokenGlassLeftInterface);
 
 		PostProcessVolume->AddOrUpdateBlendable(MaterialBrokenGlassRightInstance, 0.f);
 		PostProcessVolume->AddOrUpdateBlendable(MaterialBrokenGlassLeftInstance, 0.f);
-		SetWeightGlitchEffect(0.f);
-	}}
+	}
+}
 
 // Server only 
 void ASoldierPlayer::PossessedBy(AController* _newController)
@@ -73,6 +87,10 @@ void ASoldierPlayer::OnRep_PlayerState()
 void ASoldierPlayer::DeadTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
 {
 	Super::DeadTagChanged(CallbackTag, NewCount);
+
+	if (!IsLocallyControlled())
+		return;
+
 	if (NewCount > 0) // If dead tag is added - Handle death
 	{
 		HitRight = 0;
@@ -83,18 +101,13 @@ void ASoldierPlayer::DeadTagChanged(const FGameplayTag CallbackTag, int32 NewCou
 
 void ASoldierPlayer::OnBlurredVisionFromJammer(const bool _IsBlurred)
 {
-	//OnToggleGlitchOnScreen(_IsBlurred);
 	if (!IsLocallyControlled())
 		return;
 
 	if (_IsBlurred) // Apply the glitches
-	{
 		SetWeightGlitchEffect(1.f);
-	}
 	else if (WeightGlitchEffect >= 0.1f)
-	{
 		StartReducingGlitch();
-	}
 	else
 		EndGlitch();
 }
@@ -262,12 +275,19 @@ void ASoldierPlayer::OnSquadChanged(const TArray<FSoldierAIData>& newValue)
 
 void ASoldierPlayer::OnReceiveDamage(const FVector& _ImpactPoint, const FVector& _SourcePoint)
 {
+	if (!IsLocallyControlled())
+	{
+		if (GetLocalRole() == ROLE_Authority)
+			ClientOnReceiveDamage(_ImpactPoint, _SourcePoint);
+		return;
+	}
+
 	FVector ShootDir2D = _ImpactPoint - _SourcePoint;
 	ShootDir2D.Z = 0;
 	FVector FowardVector2D = GetActorForwardVector();
 	FowardVector2D.Z = 0;
 
-	int Det = ShootDir2D.X * FowardVector2D.Y - ShootDir2D.Y * FowardVector2D.X;
+	const int Det = ShootDir2D.X * FowardVector2D.Y - ShootDir2D.Y * FowardVector2D.X;
 
 	if (Det >= 0) {//Hit right side
 		//if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("Droite"));
@@ -279,9 +299,9 @@ void ASoldierPlayer::OnReceiveDamage(const FVector& _ImpactPoint, const FVector&
 	}
 }
 
-void ASoldierPlayer::ResetPosteffects()
+void ASoldierPlayer::ClientOnReceiveDamage_Implementation(const FVector& _ImpactPoint, const FVector& _SourcePoint)
 {
-
+	OnReceiveDamage(_ImpactPoint, _SourcePoint);
 }
 
 float ASoldierPlayer::NbOfHitToPPIntensity(int NbHit)
