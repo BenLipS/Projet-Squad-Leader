@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Net/UnrealNetwork.h"
 #include "SL_Projectile.generated.h"
 
 class AAreaEffect;
@@ -18,12 +19,28 @@ class SQUADLEADER_API ASL_Projectile : public AActor
 {
 	GENERATED_BODY()
 public:	
-	// Sets default values for this actor's properties
 	ASL_Projectile();
 
-	~ASL_Projectile() = default;
+	virtual void BeginPlay() override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	//Attributes
+protected:
+	UPROPERTY(EditDefaultsOnly, Category = "Mesh")
+	UStaticMeshComponent* Mesh;
+
+public:
+	UStaticMeshComponent* GetMesh() const;
+
+protected:
+	// CollisionProfileName of the mesh
+	UPROPERTY(EditDefaultsOnly, Replicated, Category = "Mesh")
+	FName CollisionProfileNameMesh;
+
+public:
+	void SetCollisionProfile(const FName& _Name);
+	FName GetCollisionProfile() const;
+
+//Attributes
 protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Projectile")
 	float InitialSpeed = 1000.f;
@@ -46,7 +63,7 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Projectile")
 	float YawAdjust;
-	
+
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Projectile")
 	float PitchAdjust;
 
@@ -65,13 +82,7 @@ protected:
 
 	FTimerHandle TimerExplosion;
 
-	//Methods
-
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
 	void DeleteProjectile();
-
 	virtual void InitVelocity();
 
 public:

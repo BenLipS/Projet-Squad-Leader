@@ -12,8 +12,8 @@ UCLASS()
 class SQUADLEADER_API AShield : public AActor, public ITeamable
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	AShield();
 
 protected:
@@ -23,6 +23,19 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Mesh")
 	UStaticMeshComponent* Mesh;
 
+public:
+	UStaticMeshComponent* GetMesh() const;
+
+protected:
+	// CollisionProfileName of the mesh
+	UPROPERTY(EditDefaultsOnly, Replicated, Category = "Mesh")
+	FName CollisionProfileNameMesh;
+
+public:
+	void SetCollisionProfile(const FName& _Name);
+	FName GetCollisionProfile() const;
+
+protected:
 	// How much damage the shield can absorb
 	UPROPERTY(EditDefaultsOnly, Replicated, Category = "Stats")
 	float Health;

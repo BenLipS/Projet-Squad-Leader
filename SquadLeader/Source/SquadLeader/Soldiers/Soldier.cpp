@@ -21,10 +21,6 @@ ASoldier::ASoldier(const FObjectInitializer& _ObjectInitializer) : Super(_Object
 bAbilitiesInitialized{ false },
 WeaponAttachPointRightHand{ FName("WeaponSocketRightHand") },
 WeaponAttachPointLeftHand{ FName("WeaponSocketLeftHand") },
-MaxInputForward{ 1.0f },
-MaxInputBackward{ -0.5f },
-MaxInputLeft{ -0.7f },
-MaxInputRight{ 0.7f },
 bChangedWeaponLocally{ false },
 FieldOfViewNormal{ 90.f },
 LevelUpFXRelativeLocation{ FVector{0.f} },
@@ -339,7 +335,7 @@ void ASoldier::AddStartupEffects()
 void ASoldier::InitializeTagChangeCallbacks()
 {
 	AbilitySystemComponent->RegisterGameplayTagEvent(FGameplayTag::RequestGameplayTag(FName("State.Dead")), EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ASoldier::DeadTagChanged);
-	AbilitySystemComponent->RegisterGameplayTagEvent(FGameplayTag::RequestGameplayTag(FName("State.Debuff.BlurredFromJammer")), EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ASoldier::BlurredFromJammerTagChanged);
+	AbilitySystemComponent->RegisterGameplayTagEvent(FGameplayTag::RequestGameplayTag(FName("State.Debuff.Vision.BlurredFromJammer")), EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ASoldier::BlurredFromJammerTagChanged);
 }
 
 void ASoldier::InitializeAttributeChangeCallbacks()
@@ -415,6 +411,10 @@ void ASoldier::BlurredFromJammerTagChanged(const FGameplayTag _CallbackTag, int3
 	OnBlurredVisionFromJammer(_NewCount > 0);
 }
 
+void ASoldier::OnBlurredVisionFromJammer(const bool _IsBlurred) {
+
+};
+
 bool ASoldier::ActivateAbilities(const FGameplayTagContainer& _TagContainer)
 {
 	return AbilitySystemComponent->TryActivateAbilitiesByTag(_TagContainer);
@@ -481,13 +481,13 @@ void ASoldier::setToThirdCameraPerson()
 void ASoldier::MoveForward(const float _Val)
 {
 	if (_Val != 0.0f)
-		AddMovementInput(UKismetMathLibrary::GetForwardVector(FRotator(0, GetControlRotation().Yaw, 0)), FMath::Clamp(_Val, MaxInputBackward, MaxInputForward));
+		AddMovementInput(UKismetMathLibrary::GetForwardVector(FRotator(0, GetControlRotation().Yaw, 0)), _Val);
 }
 
 void ASoldier::MoveRight(const float _Val)
 {
 	if (_Val != 0.0f)
-		AddMovementInput(UKismetMathLibrary::GetRightVector(FRotator(0, GetControlRotation().Yaw, 0)), FMath::Clamp(_Val, MaxInputLeft, MaxInputRight));
+		AddMovementInput(UKismetMathLibrary::GetRightVector(FRotator(0, GetControlRotation().Yaw, 0)), _Val);
 }
 
 void ASoldier::LookUp(const float _Val)
