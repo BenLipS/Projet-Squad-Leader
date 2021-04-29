@@ -23,7 +23,7 @@ public:
 	virtual void OnSoldierAddedToTeam(ASoldier* _Soldier) override;
 	virtual void OnSoldierRemovedFromTeam(ASoldier* _Soldier) override;
 	virtual void OnControlAreaAdded(AControlArea* _ControlArea) override;
-	virtual void OnPingAdded(FVector2D _PingPos) override;
+	virtual void OnPingAdded(FVector2D PosPingActor) override;
 	virtual void OnUpdatePOIs() override;
 	virtual void OnFullMapDisplayBegin() override;
 	virtual void OnFullMapDisplayEnd() override;

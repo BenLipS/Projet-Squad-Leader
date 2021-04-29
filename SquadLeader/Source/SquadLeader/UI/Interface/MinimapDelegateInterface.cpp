@@ -10,11 +10,11 @@ void IMinimapDelegateInterface::OnSoldierAddedToTeam(ASoldier* _Soldier)
 	}
 }
 
-void IMinimapDelegateInterface::OnPingAdded(FVector2D _PingPos)
+void IMinimapDelegateInterface::OnPingAdded(FVector2D PosPingActor)
 {
 	for (auto MinimapInterface : MinimapDelegates)
 	{
-		MinimapInterface->OnPingAdded(_PingPos);
+		MinimapInterface->OnPingAdded(PosPingActor);
 	}
 }
 
