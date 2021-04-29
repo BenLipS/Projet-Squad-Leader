@@ -72,6 +72,37 @@ void USquadLeaderGameInstance::JoinGame(FString IPAdress)
     GetFirstGamePlayer()->ConsoleCommand("open " + IPAdress, true);
 }
 
+bool USquadLeaderGameInstance::UpdateNetworkStatus(const int MatchResult, float GameDuration, int XP, AKillStats* KillData)
+{
+    if (OnlineStatus) {
+        // first do some process and save it in UserData
+        if (MatchResult == 1) {
+            UserData.NbVictory++;
+        }
+        else if (MatchResult == -1) {
+            UserData.NbLoss++;
+        }
+        else return false;  // error in the entry data
+
+        // add kill data
+        UserData.NbKillIA += KillData->NbKillAI;
+        UserData.NbKillPlayer += KillData->NbKillPlayer;
+        UserData.NbDeathIA += KillData->NbDeathByAI;
+        UserData.NbDeathPlayer += KillData->NbDeathByPlayer;
+
+        // update GameDuration
+        UserData.PlayTime += GameDuration;
+
+        // update score
+        UserData.Score = (UserData.Score * (UserData.NbVictory + UserData.NbLoss - 1) + (XP / 100)) / (UserData.NbVictory + UserData.NbLoss);
+
+        HttpCallUpdatePlayerAfterGame();  // send the changed data after the match
+        UserData.Save(UserDataFilename);  // take some time to save the data locally
+        return true;
+    }
+    return false;
+}
+
 void USquadLeaderGameInstance::NoConnexionComportment() {
     OnlineStatus = false;
 
@@ -244,6 +275,27 @@ void USquadLeaderGameInstance::HttpCallChangeConnectedStatus(int status)
     Request->SetHeader("Authorization", authHeader);
     Request->SetURL(BaseServerDataAdress + UserData.Id + "/isInGame?isInGame=" + FString::FromInt(status));
     Request->SetVerb("PUT");
+    Request->ProcessRequest();
+}
+
+void USquadLeaderGameInstance::HttpCallUpdatePlayerAfterGame()
+{
+    TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = Http->CreateRequest();
+    Request->OnProcessRequestComplete().BindUObject(this, &USquadLeaderGameInstance::OnResponseDoNothing);
+    Request->SetHeader("Content-Type", "application/x-www-form-urlencoded");
+    FString authHeader = FString("Bearer ") + AuthToken;
+    Request->SetHeader("Authorization", authHeader);
+    Request->SetURL(BaseServerDataAdress + UserData.Id +
+        "/?nbKillIA=" + FString::FromInt(UserData.NbKillIA) +
+        "&nbKillPlayer=" + FString::FromInt(UserData.NbKillPlayer) +
+        "&nbDeathIA=" + FString::FromInt(UserData.NbDeathIA) +
+        "&nbDeathPlayer=" + FString::FromInt(UserData.NbDeathPlayer) +
+        "&nbVictory=" + FString::FromInt(UserData.NbVictory) +
+        "&nbLoss=" + FString::FromInt(UserData.NbLoss) +
+        "&score=" + FString::FromInt(UserData.Score) +
+        "&playTime=" + FString::FromInt(UserData.PlayTime) + 
+        "&isInGame=" + FString::FromInt(1));
+    Request->SetVerb("PATCH");
     Request->ProcessRequest();
 }
 

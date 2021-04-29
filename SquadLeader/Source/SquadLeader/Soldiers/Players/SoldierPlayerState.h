@@ -1,8 +1,9 @@
 #pragma once
 
-#include "CoreMinimal.h"
+#include "Core.h"
 #include "GameFramework/PlayerState.h"
 #include "../Soldier.h"
+#include "KillStats.h"
 #include "AbilitySystemInterface.h"
 #include "../../AbilitySystem/Soldiers/AttributeSetSoldier.h"
 #include "../../AbilitySystem/Soldiers/AbilitySystemSoldier.h"
@@ -85,4 +86,8 @@ protected:
 	virtual void EXPLevelUpChanged(const FOnAttributeChangeData& Data);
 public:
 	void BroadCastAllDatas();
+
+public:
+	UPROPERTY(Replicated)
+	AKillStats* PersonalRecord;
 };

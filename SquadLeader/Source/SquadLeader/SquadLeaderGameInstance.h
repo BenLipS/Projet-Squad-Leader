@@ -5,6 +5,7 @@
 #include "MainMenu/PlayerData/PlayerData.h"
 #include "MainMenu/GameParam/GameParam.h"
 #include "Runtime/Online/HTTP/Public/Http.h"
+#include "Soldiers/Players/KillStats.h"
 #include "SquadLeaderGameInstance.generated.h"
 
 
@@ -53,6 +54,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 		bool const GetNetworkStatus() { return OnlineStatus; }
 
+	UFUNCTION(BlueprintCallable)
+		bool UpdateNetworkStatus(const int MatchResult, float GameDuration, int XP, AKillStats* KillData);
 
 private:
 	void NoConnexionComportment();
@@ -69,6 +72,8 @@ private:
 	void HttpCallDeleteGame();
 
 	void HttpCallChangeConnectedStatus(int status);
+
+	void HttpCallUpdatePlayerAfterGame();
 	
 private:
 	void OnResponseReceivedPing(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);

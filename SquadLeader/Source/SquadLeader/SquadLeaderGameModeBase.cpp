@@ -4,13 +4,13 @@
 #include "Soldiers/Players/SoldierPlayerController.h"
 #include "Soldiers/Players/SoldierPlayerState.h"
 #include "Soldiers/Soldier.h"
+#include "AbilitySystemGlobals.h"
 #include "SquadLeaderGameInstance.h"
 #include "MainMenu/GameParam/GameParam.h"
 
 #include "GameState/SquadLeaderGameState.h"
 #include "GameState/SquadLeaderInitGameState.h"
 #include "GameState/SquadLeaderCloseGameState.h"
-#include "AbilitySystemGlobals.h"
 
 
 ASquadLeaderGameModeBase::ASquadLeaderGameModeBase()
@@ -228,10 +228,10 @@ void ASquadLeaderGameModeBase::EndGame(ASoldierTeam* WinningTeam)
 		if (auto PC = Cast<ASoldierPlayerController>(PCIterator->Get()); PC)
 		{
 			if (PC->GetTeam() == WinningTeam) {
-				PC->OnGameEnd("VICTORY !");
+				PC->OnGameEnd(1, GetGameTimeSinceCreation());
 			}
 			else {
-				PC->OnGameEnd("DEFEAT !");
+				PC->OnGameEnd(-1, GetGameTimeSinceCreation());
 			}
 		}
 	}
@@ -268,23 +268,47 @@ void ASquadLeaderGameModeBase::GrantOverTimeEXPToSoldier()
 void ASquadLeaderGameModeBase::NotifySoldierKilled(ASoldier* _DeadSoldier, ASoldier* _Killer)
 {
 	// Grant EXP to the killed player
-	if (ASoldierPlayer* _DeadSoldierPlayer = Cast<ASoldierPlayer>(_DeadSoldier); _DeadSoldierPlayer)
+	if (ASoldierPlayer* _DeadSoldierPlayer = Cast<ASoldierPlayer>(_DeadSoldier); _DeadSoldierPlayer) {
 		_DeadSoldierPlayer->GrantEXP(EXP_Death);
+
+		// Find if the killer is a soldier or an AI
+		if (_Killer->IsA<ASoldierPlayer>()) {
+			if (auto PS = _DeadSoldierPlayer->GetPlayerState<ASoldierPlayerState>(); PS) PS->PersonalRecord->NbDeathByPlayer++;
+		}
+		else {  // the killer is an AI
+			if (auto PS = _DeadSoldierPlayer->GetPlayerState<ASoldierPlayerState>(); PS) PS->PersonalRecord->NbDeathByAI++;
+		}
+	}
 
 	// Only Grant EXP to enemies
 	if (_DeadSoldier->GetTeam() == _Killer->GetTeam())
 		return;
 
 	// Grant EXP to the killer player
-	if (_Killer->IsA<ASoldierPlayer>())
+	if (ASoldierPlayer* _KillerPlayer = Cast<ASoldierPlayer>(_Killer); _KillerPlayer)
 	{
-		_Killer->GrantEXP(EXP_Kill);
+		_KillerPlayer->GrantEXP(EXP_Kill);
+
+		// Find if the dead soldier is a soldier or an AI
+		if (_DeadSoldier->IsA<ASoldierPlayer>()) {
+			if (auto PS = _KillerPlayer->GetPlayerState<ASoldierPlayerState>(); PS) PS->PersonalRecord->NbKillPlayer++;
+		}
+		else {  // the dead soldier is an AI
+			if (auto PS = _KillerPlayer->GetPlayerState<ASoldierPlayerState>(); PS) PS->PersonalRecord->NbKillAI++;
+		}
 	}
 	// Grant EXP to the leader if the killer is a squad AI
 	else if (AAISquadController* SquadController = Cast<AAISquadController>(_Killer->GetController()); SquadController && SquadController->SquadManager)
 	{	
-		if (ASoldierPlayer* Leader = SquadController->SquadManager->Leader; Leader)
+		if (ASoldierPlayer* Leader = SquadController->SquadManager->Leader; Leader) {
 			Leader->GrantEXP(EXP_KillSquad);
+			if (_DeadSoldier->IsA<ASoldierPlayer>()) {
+				if (auto PS = Leader->GetPlayerState<ASoldierPlayerState>(); PS) PS->PersonalRecord->NbKillPlayer++;
+			}
+			else {  // the dead soldier is an AI
+				if (auto PS = Leader->GetPlayerState<ASoldierPlayerState>(); PS) PS->PersonalRecord->NbKillAI++;
+			}
+		}
 	}
 }
 
