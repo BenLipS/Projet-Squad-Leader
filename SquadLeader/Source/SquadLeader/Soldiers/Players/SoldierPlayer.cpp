@@ -91,7 +91,7 @@ void ASoldierPlayer::DeadTagChanged(const FGameplayTag CallbackTag, int32 NewCou
 	if (!IsLocallyControlled())
 		return;
 
-	if (NewCount > 0) // If dead tag is added - Handle death
+	if (NewCount == 0) // Respawn
 	{
 		HitRight = 0;
 		HitLeft = 0;
