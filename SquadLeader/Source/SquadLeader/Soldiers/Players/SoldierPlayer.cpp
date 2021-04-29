@@ -96,6 +96,7 @@ void ASoldierPlayer::DeadTagChanged(const FGameplayTag CallbackTag, int32 NewCou
 		HitRight = 0;
 		HitLeft = 0;
 		UpdateBrokenGlassEffect();
+		SetWeightGlitchEffect(0.f);
 	}
 }
 
