@@ -135,26 +135,30 @@ void UMinimapWidget::OnControlAreaAdded(AControlArea* _ControlArea)
 
 void UMinimapWidget::OnPingAdded(FVector2D PosPingMinimap)
 {
-	//creer un widget
-	UPointOfInterestWidget* POI;
-
 	//
 	if (IsValid(PingIconWidgetClass))
 	{
-		POI = CreateWidget<UPointOfInterestWidget>(PingOverlay, PingIconWidgetClass);
-
-		if (POI)
+		if (!PingPOI)
 		{
-			// Put the POI to the center of the minimap as the base position
-			if (UOverlaySlot* OverlaySlot = Cast<UOverlaySlot>(PingOverlay->AddChild(POI)); OverlaySlot)
+			PingPOI = CreateWidget<UPointOfInterestWidget>(PingOverlay, PingIconWidgetClass);
+			if (PingPOI)
 			{
-				OverlaySlot->SetHorizontalAlignment(EHorizontalAlignment::HAlign_Center);
-				OverlaySlot->SetVerticalAlignment(EVerticalAlignment::VAlign_Center);
+				// Put the POI to the center of the minimap as the base position
+				if (UOverlaySlot* OverlaySlot = Cast<UOverlaySlot>(PingOverlay->AddChild(PingPOI)); OverlaySlot)
+				{
+					OverlaySlot->SetHorizontalAlignment(EHorizontalAlignment::HAlign_Center);
+					OverlaySlot->SetVerticalAlignment(EVerticalAlignment::VAlign_Center);
+				}
 			}
 		}
 	}
-	
+	PingLocation = PosPingMinimap;
+	bPingActive = true;
+}
 
+void UMinimapWidget::OnPingDestroyed()
+{
+	bPingActive = false;
 }
 
 void UMinimapWidget::OnSoldierRemovedFromTeam(ASoldier* _Soldier)
@@ -187,6 +191,35 @@ void UMinimapWidget::OnUpdatePOIs()
 		const float DiffY = (PlayerPosition.Y - CenterScreen.Y) / Coeff;
 		const FVector2D DiffVec = { DiffY, -DiffX };
 		PlayerIconImage->SetRenderTranslation(DiffVec);
+	}
+
+	//-----Ping-----
+
+	if (IsValid(PingPOI))
+	{
+
+		const float DiffX = (CenterScreen.X - PingLocation.X) / Coeff;
+		const float DiffY = (PingLocation.Y - CenterScreen.Y) / Coeff; // Implicit * -1
+		const FVector2D DiffVec = { DiffX, DiffY };
+
+		// The POI is too far from the player
+		if (!bPingActive || (!PingPOI->bPersistant && !IsInDisplay(DiffVec, PingPOI->GetTickSpaceGeometry().GetLocalSize())))
+		{
+			PingPOI->SetVisibility(ESlateVisibility::Collapsed);
+		}
+		else
+		{
+
+			// Angle between soldier and player (center of the minimap)
+			const float Angle = FMath::Atan2(/* 0.f*/ -DiffY, /* 0.f*/ -DiffX);
+			MapPanel->GetDesiredSize();
+			const float Length = FMath::Clamp(DiffVec.Size(), 0.f, (ScaleBoxMap->GetTickSpaceGeometry().GetLocalSize().Y - PingPOI->GetTickSpaceGeometry().GetLocalSize().Y) / 2.f);
+
+			const FVector2D SoldierPosOnMinimap = -FVector2D{ FMath::Sin(Angle) * Length, FMath::Cos(Angle) * Length };
+			PingPOI->SetRenderTranslation(SoldierPosOnMinimap);
+
+			PingPOI->SetVisibility(ESlateVisibility::Visible);
+		}
 	}
 
 	for (UPointOfInterestWidget* POI : POIList)

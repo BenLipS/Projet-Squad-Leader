@@ -50,11 +50,21 @@ public:
 	UFUNCTION()
 	AAISquadManager* GetSquadManager();
 
+	UFUNCTION(Client, Reliable)
+	void SpawnClientPing(FVector2D PingLocation);
+	void SpawnClientPing_Implementation(FVector2D PingLocation);
+
 	UFUNCTION()
 	void SpawnPing(FVector PingLocation);
 
+
+
 	UFUNCTION()
 	void DestroyPing();
+
+	UFUNCTION(Client, Reliable)
+	void DestroyClientPing();
+	void DestroyClientPing_Implementation();
 
 //////////////// Camera
 public:

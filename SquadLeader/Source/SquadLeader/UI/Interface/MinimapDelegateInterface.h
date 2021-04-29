@@ -27,6 +27,7 @@ public:
 	virtual void OnUpdatePOIs() override;
 	virtual void OnFullMapDisplayBegin() override;
 	virtual void OnFullMapDisplayEnd() override;
+	virtual void OnPingDestroyed() override;
 
 	void AddMinimapDelegate(IMinimapInterface* _NewDelegate);
 	void RemoveMinimapDelegate(IMinimapInterface* _RemoveDelegate);

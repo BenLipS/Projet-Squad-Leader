@@ -31,6 +31,15 @@ class SQUADLEADER_API UMinimapWidget : public USL_UserWidget, public IMinimapInt
 	GENERATED_BODY()
 
 protected:
+	UPROPERTY()
+	UPointOfInterestWidget* PingPOI = nullptr;
+
+	UPROPERTY()
+	FVector2D PingLocation = FVector2D::ZeroVector;
+
+	UPROPERTY()
+	bool bPingActive = false;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	float Dimensions;
 
@@ -125,6 +134,7 @@ public:
 	virtual void OnSoldierRemovedFromTeam(ASoldier* _Soldier) override;
 	virtual void OnControlAreaAdded(AControlArea* _ControlArea) override;
 	virtual void OnPingAdded(FVector2D PosPingMinimap) override;
+	virtual void OnPingDestroyed() override;
 	virtual void OnUpdatePOIs() override;
 
 	virtual void OnFullMapDisplayBegin() override;

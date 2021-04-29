@@ -57,4 +57,5 @@ public:
 	virtual void OnUpdatePOIs() override {}
 	virtual void OnFullMapDisplayBegin() override {}
 	virtual void OnFullMapDisplayEnd() override {}
+	virtual void OnPingDestroyed() override {}
 };

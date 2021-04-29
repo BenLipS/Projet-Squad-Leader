@@ -31,6 +31,9 @@ public:
 	virtual void OnPingAdded(FVector2D PosPingActor) = 0;
 
 	UFUNCTION()
+	virtual void OnPingDestroyed() = 0;
+
+	UFUNCTION()
 	virtual void OnUpdatePOIs() = 0;
 
 	UFUNCTION()

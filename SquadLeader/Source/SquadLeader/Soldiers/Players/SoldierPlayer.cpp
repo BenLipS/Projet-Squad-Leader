@@ -231,6 +231,17 @@ void ASoldierPlayer::cycleBetweenTeam()
 	else ServerCycleBetweenTeam();
 }
 
+void ASoldierPlayer::SpawnClientPing_Implementation(FVector2D ActorLocationIn)
+{
+	if (ASoldierPlayerController* PC = GetController<ASoldierPlayerController>(); PC)
+	{
+		if (auto HUD = PC->GetHUD<IMinimapInterface>(); HUD)
+		{
+			HUD->OnPingAdded(ActorLocationIn);
+		}
+	}
+}
+
 void ASoldierPlayer::SpawnPing(FVector PingLocation)
 {
 	FTransform PingTransform;
@@ -239,31 +250,44 @@ void ASoldierPlayer::SpawnPing(FVector PingLocation)
 		PingMesh->Destroy();
 	
 	PingMesh = GetWorld()->SpawnActorDeferred<AActor>(PingClass, PingTransform, this, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
-	if (PingMesh) PingMesh->FinishSpawning(PingTransform);
-	
+	if (PingMesh)
+	{
+		PingMesh->FinishSpawning(PingTransform);
+
+		if (ASoldierPlayerController* PC = GetController<ASoldierPlayerController>(); PC)
+		{
+			if (auto HUD = PC->GetHUD<IMinimapInterface>(); HUD)
+			{
+				HUD->OnPingAdded({ PingMesh->GetActorLocation().X, PingMesh->GetActorLocation().Y });
+			}
+		}
+		SpawnClientPing({ PingMesh->GetActorLocation().X, PingMesh->GetActorLocation().Y });
+	}
+}
+
+void ASoldierPlayer::DestroyPing() {
+	if (PingMesh)
+	{
+		PingMesh->Destroy();
+		if (ASoldierPlayerController* PC = GetController<ASoldierPlayerController>(); PC)
+		{
+			if (auto HUD = PC->GetHUD<IMinimapInterface>(); HUD)
+			{
+				HUD->OnPingDestroyed();
+			}
+		}
+	}
+}
+
+void ASoldierPlayer::DestroyClientPing_Implementation()
+{
 	if (ASoldierPlayerController* PC = GetController<ASoldierPlayerController>(); PC)
 	{
 		if (auto HUD = PC->GetHUD<IMinimapInterface>(); HUD)
 		{
-
+			HUD->OnPingDestroyed();
 		}
 	}
-
-
-	/*if (ASL_HUD* HUD = GetHUD<ASL_HUD>(); HUD)
-	{
-		OnPingAdded()
-	}
-	
-
-	////// HUD
-	AddPingToHUD()
-	{
-
-	}*/
-}
-void ASoldierPlayer::DestroyPing() {
-	if(PingMesh) PingMesh->Destroy();
 }
 
 void ASoldierPlayer::LevelUp()

@@ -58,6 +58,14 @@ void IMinimapDelegateInterface::OnFullMapDisplayEnd()
 	}
 }
 
+void IMinimapDelegateInterface::OnPingDestroyed()
+{
+	for (auto MinimapInterface : MinimapDelegates)
+	{
+		MinimapInterface->OnPingDestroyed();
+	}
+}
+
 void IMinimapDelegateInterface::AddMinimapDelegate(IMinimapInterface* _NewDelegate)
 {
 	MinimapDelegates.AddUnique(_NewDelegate);
