@@ -1,13 +1,14 @@
 #include "SoldierPlayerController.h"
 #include "SoldierPlayerState.h"
 #include "SoldierPlayer.h"
+#include "../../SquadLeaderGameInstance.h"
 #include "AbilitySystemComponent.h"
 #include "SquadLeader/Weapons/SL_Weapon.h"
 #include "../SoldierTeam.h"
 #include "../../AI/AISquadManager.h"
 #include "../../UI/SL_HUD.h"
-#include "SquadLeader/SquadLeader.h"
 #include "SquadLeader/UI/Interface/AbilityCooldownDelegateInterface.h"
+#include "SquadLeader/SquadLeader.h"
 
 //TODO: rmove next include -> only use for the team init -> only use on temporary debug
 #include "../../GameState/SquadLeaderGameState.h"
@@ -285,12 +286,16 @@ void ASoldierPlayerController::OnEnnemyTicket_Received_Implementation(int newTic
 	}
 }
 
-void ASoldierPlayerController::OnGameEnd_Implementation(const FString& TextToDisplay)
+void ASoldierPlayerController::OnGameEnd_Implementation(const int MatchResult, float GameDuration)
 {
 	if (auto HUD = GetHUD<IGameEndInterface>(); HUD)
 	{
-		HUD->OnGameEnd(TextToDisplay);
+		if (MatchResult == 1) HUD->OnGameEnd("VICTORY !");
+		else HUD->OnGameEnd("DEFEAT !");
 	}
+
+	auto XP = GetPawn<ASoldier>()->GetEXP();
+	GetGameInstance<USquadLeaderGameInstance>()->UpdateNetworkStatus(MatchResult, GameDuration, XP, GetPlayerState<ASoldierPlayerState>()->PersonalRecord);  // notify the server
 }
 
 void ASoldierPlayerController::OnOrderGiven_Implementation(MissionType Order, FVector Pos)

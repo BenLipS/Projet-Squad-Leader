@@ -16,6 +16,8 @@ void ASoldierPlayerState::BeginPlay()
 {
 	Super::BeginPlay();
 	InitializeAttributeChangeCallbacks();
+
+	PersonalRecord = NewObject<AKillStats>();
 }
 
 void ASoldierPlayerState::InitializeAttributeChangeCallbacks()
@@ -35,8 +37,7 @@ void ASoldierPlayerState::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	// everyone
-	//DOREPLIFETIME(ASoldierPlayerState, var);
+	DOREPLIFETIME(ASoldierPlayerState, PersonalRecord);
 }
 
 ASoldierTeam* ASoldierPlayerState::GetTeam()

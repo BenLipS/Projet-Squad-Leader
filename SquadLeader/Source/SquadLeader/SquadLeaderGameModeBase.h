@@ -21,18 +21,34 @@ public:
 	virtual void StartPlay() override;
 	ASquadLeaderGameModeBase();
 
-	void InitGameWithGameState();
-
 	virtual void PreLogin(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage) override;
 	virtual void Logout(AController* Exiting) override;
 
-public:
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "GameData")
-		int NbMaxPlayer = 6;
+protected:
+	void ChangeGameState();
+	void FetchGameParam();
 
 protected:
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Respawn")
-	float RespawnDelay;
+	UPROPERTY(BlueprintReadOnly, Category = "GameData")
+	int NbMaxPlayer = 6;
+	UPROPERTY(BlueprintReadOnly, Category = "GameData")
+	float Weather = 0;
+	UPROPERTY(BlueprintReadOnly, Category = "GameData")
+	float RespawnDelay = 5.0f;
+	UPROPERTY(BlueprintReadOnly, Category = "GameData")
+	int BaseTicketsNumber = 100;
+	UPROPERTY(BlueprintReadOnly, Category = "GameData")
+	int AIBasicAssaultNumber = 6;
+	UPROPERTY(BlueprintReadOnly, Category = "GameData")
+	int AIBasicHeavyNumber = 6;
+	UPROPERTY(BlueprintReadOnly, Category = "GameData")
+	int StartingAISquadNumber = 3;
+
+public:
+	int const GetBaseTicketForTeam() {return BaseTicketsNumber;}
+	int const GetBaseAIBasicAssaultNumberForTeam() { return AIBasicAssaultNumber; }
+	int const GetBaseAIBasicHeavyNumberForTeam() { return AIBasicHeavyNumber; }
+	int const GetBaseSquadAINumber() { return StartingAISquadNumber; }
 	
 public:
 	void SoldierDied(AController* _Controller);
