@@ -16,7 +16,7 @@
 void UMinimapWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
-	if (IsValid(MaterialCollection))
+	if (bIsPlayerCentered && IsValid(MaterialCollection))
 	{
 		FVector ActorPosition = GetOwningPlayerPawn()->GetActorLocation();
 
@@ -24,6 +24,7 @@ void UMinimapWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 
 		UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MaterialCollection, FName("Y"), ActorPosition.Y);
 	}
+
 	auto ActorRotation = GetOwningPlayer()->GetPawn<ASoldier>()->GetMesh()->GetComponentRotation();
 	PlayerIconImage->SetRenderTransformAngle(ActorRotation.Yaw);
 }
@@ -31,14 +32,14 @@ void UMinimapWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 bool UMinimapWidget::IsInDisplay(FVector2D DifferenceVec, FVector2D SizeIn)
 {
 	FVector2D size;
-	if (IsValid(MapPanel))
-		size = MapPanel->GetDesiredSize();
+	if (IsValid(ScaleBoxMap))
+		size = ScaleBoxMap->GetTickSpaceGeometry().GetLocalSize();
 	else
 		size = GetDesiredSize();
 	switch (MapShape)
 	{
 	case MapShapePolicy::eCIRCLE :
-		return (DifferenceVec.Size() + (SizeIn.Size() / 2.f)) <= (size.Size() / 2.f);
+		return (DifferenceVec.Size() + (SizeIn.Y / 2.f)) <= (size.Y / 2.f);
 		break;
 
 	case MapShapePolicy::eSQUARE :
@@ -52,7 +53,6 @@ bool UMinimapWidget::IsInDisplay(FVector2D DifferenceVec, FVector2D SizeIn)
 
 UMinimapWidget::UMinimapWidget(const FObjectInitializer& _ObjectInitializer) : USL_UserWidget(_ObjectInitializer),
 Dimensions{ 10'000.f },
-Zoom{ 1.f },
 POIList{}
 {
 }
@@ -173,19 +173,33 @@ void UMinimapWidget::OnUpdatePOIs()
 		return;
 
 	const FVector2D PlayerPosition = FVector2D{ Player->GetActorLocation().X, Player->GetActorLocation().Y };
+	const float Coeff = Dimensions * UKismetMaterialLibrary::GetScalarParameterValue(GetWorld(), MaterialCollection, FName("Zoom")) / ScaleBoxMap->GetTickSpaceGeometry().GetLocalSize().Y; // Assume MinimapImage is 
+	
+	FVector2D CenterScreen;
+	if (bIsPlayerCentered)
+	{
+		CenterScreen = PlayerPosition;
+	}
+	else
+	{
+		CenterScreen = FVector2D{10000.f, 10000.f };
+		const float DiffX = (PlayerPosition.X - CenterScreen.X) / Coeff;
+		const float DiffY = (PlayerPosition.Y - CenterScreen.Y) / Coeff;
+		const FVector2D DiffVec = { DiffY, -DiffX };
+		PlayerIconImage->SetRenderTranslation(DiffVec);
+	}
 
 	for (UPointOfInterestWidget* POI : POIList)
 	{
 		const FVector2D ActorPosition = FVector2D{ POI->OwningActor->GetActorLocation().X, POI->OwningActor->GetActorLocation().Y };
-
 		// Diff position between soldier and player
-		const float Coeff = Dimensions * Zoom / MinimapImage->GetDesiredSize().X; // Assume MinimapImage is 
-		const float DiffX = (PlayerPosition.X - ActorPosition.X) / Coeff;
-		const float DiffY = (ActorPosition.Y - PlayerPosition.Y) / Coeff; // Implicit * -1
+		
+		const float DiffX = (CenterScreen.X - ActorPosition.X) / Coeff;
+		const float DiffY = (ActorPosition.Y - CenterScreen.Y) / Coeff; // Implicit * -1
 		const FVector2D DiffVec = { DiffX, DiffY };
 
 		// The POI is too far from the player
-		if (!POI->bPersistant && !IsInDisplay(FVector2D::ZeroVector, POI->GetDesiredSize()))
+		if (!POI->bPersistant && !IsInDisplay(DiffVec, POI->GetTickSpaceGeometry().GetLocalSize()))
 		{
 			POI->SetVisibility(ESlateVisibility::Collapsed);
 			continue;
@@ -194,7 +208,7 @@ void UMinimapWidget::OnUpdatePOIs()
 		// Angle between soldier and player (center of the minimap)
 		const float Angle = FMath::Atan2(/* 0.f*/ - DiffY, /* 0.f*/ - DiffX);
 		MapPanel->GetDesiredSize();
-		const float Length = FMath::Clamp(DiffVec.Size(), 0.f, (MinimapImage->GetDesiredSize().Y));
+		const float Length = FMath::Clamp(DiffVec.Size(), 0.f, (ScaleBoxMap->GetTickSpaceGeometry().GetLocalSize().Y - POI->GetTickSpaceGeometry().GetLocalSize().Y) /2.f);
 
 		const FVector2D SoldierPosOnMinimap = -FVector2D{ FMath::Sin(Angle) * Length, FMath::Cos(Angle) * Length };
 		POI->SetRenderTranslation(SoldierPosOnMinimap);
@@ -204,8 +218,19 @@ void UMinimapWidget::OnUpdatePOIs()
 
 void UMinimapWidget::OnFullMapDisplayBegin()
 {
+	if (IsValid(MinimapToMap))
+	{
+		PlayAnimationForward(MinimapToMap);
+		bIsPlayerCentered = false;
+	}
 }
 
 void UMinimapWidget::OnFullMapDisplayEnd()
 {
+	if (IsValid(MinimapToMap))
+	{
+		PlayAnimationReverse(MinimapToMap);
+		bIsPlayerCentered = true;
+		PlayerIconImage->SetRenderTranslation(FVector2D::ZeroVector);
+	}
 }

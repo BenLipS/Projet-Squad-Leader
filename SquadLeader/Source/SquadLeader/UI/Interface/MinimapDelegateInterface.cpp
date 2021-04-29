@@ -42,6 +42,22 @@ void IMinimapDelegateInterface::OnUpdatePOIs()
 	}
 }
 
+void IMinimapDelegateInterface::OnFullMapDisplayBegin()
+{
+	for (auto MinimapInterface : MinimapDelegates)
+	{
+		MinimapInterface->OnFullMapDisplayBegin();
+	}
+}
+
+void IMinimapDelegateInterface::OnFullMapDisplayEnd()
+{
+	for (auto MinimapInterface : MinimapDelegates)
+	{
+		MinimapInterface->OnFullMapDisplayEnd();
+	}
+}
+
 void IMinimapDelegateInterface::AddMinimapDelegate(IMinimapInterface* _NewDelegate)
 {
 	MinimapDelegates.AddUnique(_NewDelegate);

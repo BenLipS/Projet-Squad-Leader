@@ -48,11 +48,13 @@ public:
 	virtual void OnAllyTicketChanged(int newTicket) override;
 	virtual void OnEnnemyTicketChanged(int newTicket) override;
 
-//-----IControlAreaInterface-----
+//-----IMinimapInterface-----
 public:
 	virtual void OnControlAreaAdded(AControlArea* _ControlArea) override;
 	virtual void OnSoldierAddedToTeam(ASoldier* _Soldier) override {}
 	virtual void OnSoldierRemovedFromTeam(ASoldier* _Soldier) override {}
 	virtual void OnPingAdded(FVector2D _Ping) override {}
 	virtual void OnUpdatePOIs() override {}
+	virtual void OnFullMapDisplayBegin() override {}
+	virtual void OnFullMapDisplayEnd() override {}
 };

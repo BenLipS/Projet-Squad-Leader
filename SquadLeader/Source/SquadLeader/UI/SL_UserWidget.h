@@ -14,10 +14,17 @@ class SQUADLEADER_API USL_UserWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "SL_UserWidget")
+	int32 DesiredZOrderInViewport = 0;
+
+public:
+	int32 GetDesiredZOrderInViewport();
+
 public:
 	USL_UserWidget(const FObjectInitializer& ObjectInitializer);
 
-	virtual void AddToViewport(int32 ZOrder = 0);
+	virtual void AddToViewport();
 
 	/*Call by HUD to setup the delegate interface*/
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)

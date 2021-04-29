@@ -5,9 +5,11 @@
 #include "Components/Overlay.h"
 #include "Components/ScaleBox.h"
 #include "Components/CanvasPanel.h"
+#include "Components/TextBlock.h"
 #include "../SL_UserWidget.h"
 #include "../Interface/MinimapInterface.h"
 #include "../Interface/MinimapDelegateInterface.h"
+#include "Animation/WidgetAnimation.h"
 #include "MinimapWidget.generated.h"
 
 class ASoldier;
@@ -32,8 +34,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	float Dimensions;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float Zoom;
+	/*UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float Zoom;*/
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UOverlay* MinimapSoldierOverlay;
@@ -49,13 +51,18 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UImage* PlayerIconImage;
-
+	
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UCanvasPanel* MapPanel;
 
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UScaleBox* ScaleBoxMap;
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetAnim), Transient)
+	UWidgetAnimation* MinimapToMap;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	class UMaterialParameterCollection* MaterialCollection;
-	//class UMaterialParameterCollectionInstance* MaterialCollectionInstance;
 
 	// Max length a POI can be from the player icon to be visible
 	/*UPROPERTY(EditAnywhere, BlueprintReadOnly)
@@ -63,6 +70,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	MapShapePolicy MapShape = MapShapePolicy::eCIRCLE;
+
+	UPROPERTY(BlueprintReadOnly)
+	bool bIsPlayerCentered = true;
 
 //////////////// Points of interest
 	TArray<UPointOfInterestWidget*> POIList;
@@ -117,6 +127,6 @@ public:
 	virtual void OnPingAdded(FVector2D PosPingMinimap) override;
 	virtual void OnUpdatePOIs() override;
 
-	virtual void OnFullMapDisplayBegin();
-	virtual void OnFullMapDisplayEnd();
+	virtual void OnFullMapDisplayBegin() override;
+	virtual void OnFullMapDisplayEnd() override;
 };

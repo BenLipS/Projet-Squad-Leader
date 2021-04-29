@@ -32,4 +32,10 @@ public:
 
 	UFUNCTION()
 	virtual void OnUpdatePOIs() = 0;
+
+	UFUNCTION()
+	virtual void OnFullMapDisplayBegin() = 0;
+
+	UFUNCTION()
+	virtual void OnFullMapDisplayEnd() = 0;
 };
