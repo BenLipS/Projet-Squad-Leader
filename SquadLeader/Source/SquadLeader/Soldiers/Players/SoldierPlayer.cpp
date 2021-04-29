@@ -23,6 +23,17 @@ ASCInputBound{ false }
 void ASoldierPlayer::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (MaterialGlitchInterface && IsLocallyControlled())
+	{
+		MaterialGlitchInstance = UKismetMaterialLibrary::CreateDynamicMaterialInstance(GetWorld(), MaterialGlitchInterface);
+		MaterialBrokenGlassRightInstance = UKismetMaterialLibrary::CreateDynamicMaterialInstance(GetWorld(), MaterialBrokenGlassRightInterface);
+		MaterialBrokenGlassLeftInstance = UKismetMaterialLibrary::CreateDynamicMaterialInstance(GetWorld(), MaterialBrokenGlassLeftInterface);
+
+		PostProcessVolume->AddOrUpdateBlendable(MaterialBrokenGlassRightInstance, 0.f);
+		PostProcessVolume->AddOrUpdateBlendable(MaterialBrokenGlassLeftInstance, 0.f);
+		SetWeightGlitchEffect(0.f);
+	}
 }
 
 // Server only 
@@ -209,12 +220,6 @@ void ASoldierPlayer::OnReceiveDamage(const FVector& _ImpactPoint, const FVector&
 		//if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("Gauche"));
 		AddHitLeft();
 	}
-
-	//Call PP_Right 
-	//Param the scalar
-
-	//Call PP_Left
-	//Param the scalar
 }
 
 void ASoldierPlayer::ResetPosteffects()
@@ -240,17 +245,20 @@ void ASoldierPlayer::AddHitLeft()
 {
 	if (HitLeft < 3) {
 		HitLeft++;
-
-		GetWorldTimerManager().SetTimer(FTimerHandle{}, this, &ASoldierPlayer::RemoveHitLeft, 5.f, false);
+		FTimerHandle Timer;
+		GetWorldTimerManager().SetTimer(Timer, this, &ASoldierPlayer::RemoveHitLeft, 5.f, false);
 	}
+	UpdateBrokenGlassEffect();
 }
 
 void ASoldierPlayer::AddHitRight()
 {
 	if (HitRight < 3) {
 		HitRight++;
-		GetWorldTimerManager().SetTimer(FTimerHandle{}, this, &ASoldierPlayer::RemoveHitRight, 5.f, false);
+		FTimerHandle Timer;
+		GetWorldTimerManager().SetTimer(Timer, this, &ASoldierPlayer::RemoveHitRight, 5.f, false);
 	}
+	UpdateBrokenGlassEffect();
 }
 
 void ASoldierPlayer::RemoveHitLeft()
@@ -258,6 +266,7 @@ void ASoldierPlayer::RemoveHitLeft()
 	if (HitLeft > 0) {
 		HitLeft--;
 	}
+	UpdateBrokenGlassEffect();
 }
 
 void ASoldierPlayer::RemoveHitRight()
@@ -265,4 +274,16 @@ void ASoldierPlayer::RemoveHitRight()
 	if (HitRight > 0) {
 		HitRight--;
 	}
+	UpdateBrokenGlassEffect();
+}
+
+void ASoldierPlayer::UpdateBrokenGlassEffect()
+{
+	if(HitRight > 0)PostProcessVolume->AddOrUpdateBlendable(MaterialBrokenGlassRightInstance, 1.f);
+	else PostProcessVolume->AddOrUpdateBlendable(MaterialBrokenGlassRightInstance, 1.f);
+	if (HitLeft > 0)PostProcessVolume->AddOrUpdateBlendable(MaterialBrokenGlassLeftInstance, 1.f);
+	else PostProcessVolume->AddOrUpdateBlendable(MaterialBrokenGlassLeftInstance, 1.f);
+
+	MaterialBrokenGlassRightInstance->SetScalarParameterValue("Bullet Amount", NbOfHitToPPIntensity(HitRight));
+	MaterialBrokenGlassLeftInstance->SetScalarParameterValue("Bullet Amount", NbOfHitToPPIntensity(HitLeft));
 }

@@ -66,7 +66,19 @@ public:  // Respawn
 	UFUNCTION()
 	void OnSquadChanged(const TArray<FSoldierAIData>& newValue);
 
-///////////////
+///////////////Broken Glass Effect
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Camera|PostEffects|BrokenGlass")
+		UMaterialInterface* MaterialBrokenGlassRightInterface = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Camera|PostEffects|BrokenGlass")
+		UMaterialInstanceDynamic* MaterialBrokenGlassRightInstance = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Camera|PostEffects|BrokenGlass")
+		UMaterialInterface* MaterialBrokenGlassLeftInterface = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Camera|PostEffects|BrokenGlass")
+		UMaterialInstanceDynamic* MaterialBrokenGlassLeftInstance = nullptr;
+
 	virtual void OnReceiveDamage(const FVector& _ImpactPoint, const FVector& _SourcePoint) override;
 	UFUNCTION()
 	void ResetPosteffects();
@@ -80,6 +92,8 @@ public:  // Respawn
 	void RemoveHitLeft();
 	UFUNCTION()
 	void RemoveHitRight();
+	UFUNCTION()
+	void UpdateBrokenGlassEffect();
 	UPROPERTY()
 	int HitLeft = 0;
 	UPROPERTY()
