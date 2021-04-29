@@ -55,7 +55,7 @@ void UFollowFlockingBTTaskNode::TickTask(class UBehaviorTreeComponent& OwnerComp
 
 	if(arrive == ResultState::Success)
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
-	if (arrive == ResultState::Failed || Cast<AAIGeneralController>(OwnerComp.GetOwner())->StopCurrentBehavior) {
+	if (/*arrive == ResultState::Failed || */Cast<AAIGeneralController>(OwnerComp.GetOwner())->StopCurrentBehavior) {
 		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
 		AIGeneralController->StopMovement();
 	}
