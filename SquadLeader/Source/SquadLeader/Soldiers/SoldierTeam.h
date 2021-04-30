@@ -43,19 +43,30 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GlobalTeamData")
 		int Id = 0;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "GlobalTeamData")
-		int NbAIBasicAssault = 6;
+	UPROPERTY(EditAnywhere, Category = "GlobalTeamData")
+		int OverrideNbAIBasicAssault = -1;
+	UPROPERTY(EditAnywhere, Category = "GlobalTeamData")
+		int OverrideNbAIBasicHeavy = -1;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "GlobalTeamData")
-		int NbAIBasicHeavy = 6;
+	UPROPERTY(EditAnywhere, Category = "GlobalTeamData")
+		int OverrideTickets = -1;
 
 protected:  // Soldier List
 	UPROPERTY(BlueprintReadOnly, Replicated, Category = "SoldierList")
 		TArray<ASoldier*> SoldierList;
 
+	UPROPERTY(BlueprintReadOnly, Replicated)
+		int NbAIBasicAssault = 0;
+	UPROPERTY(BlueprintReadOnly, Replicated)
+		int NbAIBasicHeavy = 0;
+
 public:
 	UFUNCTION(BlueprintCallable, Category = "SoldierList")
 		TArray<ASoldier*> GetSoldierList() const;
+	UFUNCTION(BlueprintCallable)
+		int const GetNbAIBasicAssault() { return NbAIBasicAssault; }
+	UFUNCTION(BlueprintCallable)
+		int const GetNbAIBasicHeavy() { return NbAIBasicHeavy; }
 
 protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "SoldierList")
@@ -104,8 +115,8 @@ public:
 		TArray<ASoldierSpawn*> GetUsableSpawnPoints();
 
 protected:  // Tickets
-	UPROPERTY(EditAnywhere, Replicated, Category = "Tickets")
-	int Tickets = 5;  // default value, must be changed in blueprint
+	UPROPERTY(Replicated)
+	int Tickets = 100;  // default value, will be changed base on the gameMode base param
 
 	UFUNCTION(Server, Reliable)
 	void InformAllPlayerController();

@@ -22,6 +22,39 @@ void ASoldierTeam::PreInitialisation()
 	if (auto GS = GetWorld()->GetGameState<ASquadLeaderGameState>(); GS) {
 		GS->AddSoldierTeam(this);
 	}
+
+	// fetch data from the gamemode (so only on server)
+	if (auto GM = GetWorld()->GetAuthGameMode<ASquadLeaderGameModeBase>(); GM) {
+		// ticket number
+		if (OverrideTickets < 0) {
+			// take gameMode data
+			Tickets = GM->GetBaseTicketForTeam();
+		}
+		else {
+			// take override data
+			Tickets = OverrideTickets;
+		}
+
+		// number of basic assault AI
+		if (OverrideNbAIBasicAssault < 0) {
+			// take gameMode data
+			NbAIBasicAssault = GM->GetBaseAIBasicAssaultNumberForTeam();
+		}
+		else {
+			// take override data
+			NbAIBasicAssault = OverrideNbAIBasicAssault;
+		}
+		
+		// number of basic heavy AI
+		if (OverrideNbAIBasicHeavy < 0) {
+			// take gameMode data
+			NbAIBasicHeavy = GM->GetBaseAIBasicHeavyNumberForTeam();
+		}
+		else {
+			// take override data
+			NbAIBasicHeavy = OverrideNbAIBasicHeavy;
+		}
+	}
 }
 
 int ASoldierTeam::GetPriority() const

@@ -12,6 +12,9 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "NavigationSystem.h"
 
+#include "../SquadLeaderGameInstance.h"
+#include "../MainMenu/GameParam/GameParam.h"
+
 #include<algorithm>
 // temp include, need to be replace by more robust code
 #include "../Soldiers/Soldier.h"
@@ -26,6 +29,18 @@ void AAISquadManager::Init(ASoldierTeam* _Team, ASoldierPlayer* _Player)
 {
 	Team = _Team;
 	Leader = _Player;
+
+	// fetch information from the game mode if available (so server only)
+	if (GetLocalRole() == ROLE_Authority) {
+		if (OverrideStartNumberOfSoldiers < 0) {
+			// get game mode params directly from the source because "StartPlay" is not guaranteed to have been already called
+			UGameParam* ImportedGameParam = GetGameInstance<USquadLeaderGameInstance>()->GameParam.GetDefaultObject();
+			StartNumberOfSoldiers = ImportedGameParam->StartingNbAISquad;
+		}
+		else {
+			StartNumberOfSoldiers = OverrideStartNumberOfSoldiers;
+		}
+	}
 
 	const FTransform PlayerTransform = Leader->GetTransform();
 	FActorSpawnParameters SpawnInfo;
