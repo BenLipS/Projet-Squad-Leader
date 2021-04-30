@@ -134,7 +134,7 @@ void ASoldier::Tick(float DeltaTime)
 
 			m_package.m_type = Type::Soldier;
 			m_package.ActorID = this->GetUniqueID();
-			//GM->InfluenceMap->ReceivedMessage(m_package);
+			GM->InfluenceMap->ReceivedMessage(m_package);
 		}
 	}
 }

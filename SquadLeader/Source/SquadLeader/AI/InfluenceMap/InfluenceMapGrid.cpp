@@ -10,22 +10,6 @@
 #include "EngineUtils.h"
 
 
-void FTileBase::Reset() {
-	m_value = 0.f;
-	in_update = false;
-	Types.Empty();
-	ActorsID.Empty();
-}
-
-void FTileBase::ReduceInfluence() {
-	if (in_update)
-		in_update = false;
-	else if (m_value >= 0.05f)
-		m_value -= 0.05f;
-	else
-		Reset();
-}
-
 AInfluenceMapGrid::AInfluenceMapGrid() {
 	//Set this AInfo to be call every Tick. 
 	PrimaryActorTick.bCanEverTick = true;
@@ -35,7 +19,6 @@ void AInfluenceMapGrid::BeginPlay() {
 	Super::BeginPlay();
 	if (GetLocalRole() == ROLE_Authority) {
 		InitGrid();
-		m_neighboors.Init(FNeighboor(), nbr_tile);
 		FindNeighboor();
 	}
 }
@@ -49,20 +32,21 @@ void AInfluenceMapGrid::Tick(float DeltaSeconds) {
 
 void AInfluenceMapGrid::InitGrid() noexcept {
 	UNavigationSystemV1* navSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
-	auto box_ = navSys->GetLevelBounds(GetWorld()->GetCurrentLevel());
 
 	for (int y = m_tile_height / 2.f; y <= m_grid_height; y += m_tile_height) {
 		for (int x = m_tile_width / 2.f; x <= m_grid_width; x += m_tile_width) {
-			FTileBase m_tile;
-			auto _location = FVector(x, y, m_startLocation.Z);
-			if (IsValid(_location)) {
-				_location.Z += m_height;
-				m_tile.m_location = _location;
-				m_influencemap.Add(m_tile);
+			FTileBase Tile;
+			auto Location = FVector(x, y, m_startLocation.Z);
+			if (IsValid(Location)) {
+				Location.Z += m_height;
+				Tile.Location = Location;
+				Tile.InfluenceTeam.Add(1, FInfluenceTeamData());
+				Tile.InfluenceTeam.Add(2, FInfluenceTeamData());
+				Grid.Add(Tile);
 			}
 		}
 	}
-	nbr_tile = m_influencemap.Num();
+	nbr_tile = Grid.Num();
 }
 
 bool AInfluenceMapGrid::IsValid(FVector _location) const {
@@ -79,17 +63,16 @@ bool AInfluenceMapGrid::IsValid(FVector _location) const {
 
 void AInfluenceMapGrid::DrawGrid() const {
 	if (m_DrawCharacterInfluence) {
-		for (FTileBase _tile : m_influencemap) {
-			if(_tile.Types.Contains(Type::Projectile))
-				DrawDebugSolidBox(GetWorld(), _tile.m_location, FVector(95.f, 95.f, 10.f), FColor(255 * _tile.m_value, 0, 255 * _tile.m_value));
-			else if (_tile.Teams.Num() > 1) {
-				DrawDebugSolidBox(GetWorld(), _tile.m_location, FVector(95.f, 95.f, 10.f), FColor(255, 255, 0));
-			}
-			else if(_tile.Teams.Num() == 1){
-				if (_tile.Teams.Contains(1))
-					DrawDebugSolidBox(GetWorld(), _tile.m_location, FVector(95.f, 95.f, 10.f), FColor(0, 0, 255 * _tile.m_value));
-				else if (_tile.Teams.Contains(2))
-					DrawDebugSolidBox(GetWorld(), _tile.m_location, FVector(95.f, 95.f, 10.f), FColor(255 * _tile.m_value, 0, 0));
+		for (const FTileBase& Tile : Grid) {
+			const float ValueTeam1 = Tile.InfluenceTeam[1].InfluenceValue;
+			const float ValueTeam2 = Tile.InfluenceTeam[2].InfluenceValue;
+			if(ValueTeam1 > 0.0f && ValueTeam2 > 0.0f)
+				DrawDebugSolidBox(GetWorld(), Tile.Location, FVector(95.f, 95.f, 10.f), FColor(255 * ValueTeam2, 0, 255 * ValueTeam1));
+			else {
+				if(ValueTeam1 > 0.0f)
+					DrawDebugSolidBox(GetWorld(), Tile.Location, FVector(95.f, 95.f, 10.f), FColor(0, 0, 255 * ValueTeam1));
+				else if(ValueTeam2 > 0.0f)
+					DrawDebugSolidBox(GetWorld(), Tile.Location, FVector(95.f, 95.f, 10.f), FColor(255 * ValueTeam2, 0, 0));
 			}
 		}
 	}
@@ -97,49 +80,49 @@ void AInfluenceMapGrid::DrawGrid() const {
 
 void AInfluenceMapGrid::UpdateGrid() noexcept {
 
-	for (int32 index = m_index_team1.Num() - 1; index >= 0; --index) {
-		const uint32 index_tile = m_index_team1[index];
-		if (!(m_influencemap[index_tile].Types.Contains(Type::ControlArea))) {
-			m_influencemap[index_tile].Reset();
-		}
-		else {
-			m_influencemap[index_tile].m_value = ControlAreaInfluence;
-		}
-	}
+	//for (int32 index = m_index_team1.Num() - 1; index >= 0; --index) {
+	//	const uint32 index_tile = m_index_team1[index];
+	//	if (!(m_influencemap[index_tile].Types.Contains(Type::ControlArea))) {
+	//		m_influencemap[index_tile].Reset();
+	//	}
+	//	else {
+	//		m_influencemap[index_tile].m_value = ControlAreaInfluence;
+	//	}
+	//}
 
-	for (int32 index = m_index_team2.Num() - 1; index >= 0; --index) {
-		const uint32 index_tile = m_index_team2[index];
-		if (!(m_influencemap[index_tile].Types.Contains(Type::ControlArea))) {
-			m_influencemap[index_tile].Reset();
-		}
-		else {
-			m_influencemap[index_tile].m_value = ControlAreaInfluence;
-		}
-	}
+	//for (int32 index = m_index_team2.Num() - 1; index >= 0; --index) {
+	//	const uint32 index_tile = m_index_team2[index];
+	//	if (!(m_influencemap[index_tile].Types.Contains(Type::ControlArea))) {
+	//		m_influencemap[index_tile].Reset();
+	//	}
+	//	else {
+	//		m_influencemap[index_tile].m_value = ControlAreaInfluence;
+	//	}
+	//}
 
-	auto functor = [&](const uint32 index) { return !m_influencemap[index].in_update; };
-	m_index_team1.RemoveAll(functor);
-	m_index_team2.RemoveAll(functor);
+	//auto functor = [&](const uint32 index) { return !m_influencemap[index].in_update; };
+	//m_index_team1.RemoveAll(functor);
+	//m_index_team2.RemoveAll(functor);
 }
 
 bool AInfluenceMapGrid::FindTileIndex(const FVector Location, uint32& Index) const noexcept {
 	int begin = 0;
-	int end = m_influencemap.Num() - 1;
+	int end = Grid.Num() - 1;
 	int middle = begin;
 	bool find = false;
 
 	while (!find && begin <= end) {
 		middle = (begin + end) / 2;
-		const FTileBase Tile = m_influencemap[middle];
-		if (IsOnTile(Location, Tile.m_location))
+		const FTileBase Tile = Grid[middle];
+		if (IsOnTile(Location, Tile.Location))
 			find = true;
-		else if (Location.Y >= Tile.m_location.Y - (m_tile_height / 2.0f) && Location.Y <= Tile.m_location.Y + (m_tile_height / 2.f))
-			if (Location.X > Tile.m_location.X)
+		else if (Location.Y >= Tile.Location.Y - (m_tile_height / 2.0f) && Location.Y <= Tile.Location.Y + (m_tile_height / 2.f))
+			if (Location.X > Tile.Location.X)
 				begin = middle + 1;
 			else
 				end = middle - 1;
 		else
-			if (Location.Y > Tile.m_location.Y - (m_tile_height / 2.0f))
+			if (Location.Y > Tile.Location.Y - (m_tile_height / 2.0f))
 				begin = middle + 1;
 			else
 				end = middle - 1;
@@ -160,16 +143,16 @@ bool AInfluenceMapGrid::FindIndexModifyinTeam1(const FVector2D Location, uint32&
 
 		while (!find && begin <= end) {
 			middle = (begin + end) / 2;
-			const FTileBase Tile = m_influencemap[m_index_team1[middle]];
-			if (IsOnTileUpdate(Location, Tile.m_location))
+			const FTileBase Tile = Grid[m_index_team1[middle]];
+			if (IsOnTileUpdate(Location, Tile.Location))
 				find = true;
-			else if (Location.Y >= Tile.m_location.Y - (m_tile_height / 2.0f) && Location.Y <= Tile.m_location.Y + (m_tile_height / 2.f))
-				if (Location.X > Tile.m_location.X)
+			else if (Location.Y >= Tile.Location.Y - (m_tile_height / 2.0f) && Location.Y <= Tile.Location.Y + (m_tile_height / 2.f))
+				if (Location.X > Tile.Location.X)
 					begin = middle + 1;
 				else
 					end = middle - 1;
 			else
-				if (Location.Y > Tile.m_location.Y - (m_tile_height / 2.0f))
+				if (Location.Y > Tile.Location.Y - (m_tile_height / 2.0f))
 					begin = middle + 1;
 				else
 					end = middle - 1;
@@ -193,16 +176,16 @@ bool AInfluenceMapGrid::FindIndexModifyinTeam2(const FVector2D Location, uint32&
 
 		while (!find && begin <= end) {
 			middle = (begin + end) / 2;
-			const FTileBase Tile = m_influencemap[m_index_team2[middle]];
-			if (IsOnTileUpdate(Location, Tile.m_location))
+			const FTileBase Tile = Grid[m_index_team2[middle]];
+			if (IsOnTileUpdate(Location, Tile.Location))
 				find = true;
-			else if (Location.Y >= Tile.m_location.Y - (m_tile_height / 2.0f) && Location.Y <= Tile.m_location.Y + (m_tile_height / 2.f))
-				if (Location.X > Tile.m_location.X)
+			else if (Location.Y >= Tile.Location.Y - (m_tile_height / 2.0f) && Location.Y <= Tile.Location.Y + (m_tile_height / 2.f))
+				if (Location.X > Tile.Location.X)
 					begin = middle + 1;
 				else
 					end = middle - 1;
 			else
-				if (Location.Y > Tile.m_location.Y - (m_tile_height / 2.0f))
+				if (Location.Y > Tile.Location.Y - (m_tile_height / 2.0f))
 					begin = middle + 1;
 				else
 					end = middle - 1;
@@ -218,10 +201,10 @@ bool AInfluenceMapGrid::FindIndexModifyinTeam2(const FVector2D Location, uint32&
 }
 
 bool AInfluenceMapGrid::IsOnTile(FVector _location, FVector tile_location) const noexcept {
-	float width = m_tile_width / 2.f;
-	float height = m_tile_height / 2.f;
-	bool on_axis_x = _location.X <= tile_location.X + width && _location.X >= tile_location.X - width;
-	bool on_axis_y = _location.Y <= tile_location.Y + height && _location.Y >= tile_location.Y - height;
+	const float width = m_tile_width / 2.f;
+	const float height = m_tile_height / 2.f;
+	const bool on_axis_x = _location.X <= tile_location.X + width && _location.X >= tile_location.X - width;
+	const bool on_axis_y = _location.Y <= tile_location.Y + height && _location.Y >= tile_location.Y - height;
 
 	return on_axis_x && on_axis_y;
 }
@@ -243,21 +226,21 @@ void AInfluenceMapGrid::Neighboors(int index) noexcept {
 	const int index_left = index - 1;
 	const int index_right = index + 1;
 
-	if (FindTileIndex(FVector(m_influencemap[index].m_location.X, m_influencemap[index].m_location.Y + m_tile_height, m_influencemap[index].m_location.Z), index_up))
+	if (FindTileIndex(FVector(Grid[index].Location.X, Grid[index].Location.Y + m_tile_height, Grid[index].Location.Z), index_up))
 		IsNeighboor(index, index_up);
 	if (index_right < nbr_tile)
 		IsNeighboor(index, index_right);
 		
-	if (FindTileIndex(FVector(m_influencemap[index].m_location.X, m_influencemap[index].m_location.Y - m_tile_width, m_influencemap[index].m_location.Z), index_down))
+	if (FindTileIndex(FVector(Grid[index].Location.X, Grid[index].Location.Y - m_tile_width, Grid[index].Location.Z), index_down))
 		IsNeighboor(index, index_down);
 	if (index_left >= 0)
 		IsNeighboor(index, index_left);
 }
 
 void AInfluenceMapGrid::IsNeighboor(int index_1, int index_2) noexcept {
-	int distance = FVector::Dist(m_influencemap[index_1].m_location, m_influencemap[index_2].m_location);
+	int distance = FVector::Dist(Grid[index_1].Location, Grid[index_2].Location);
 	if (distance <= 200.f) {
-		m_neighboors[index_1].m_neighboor.Add(index_2);
+		Grid[index_1].Neighboors.m_neighboor.Add(index_2);
 	}
 }
 
@@ -270,7 +253,7 @@ void AInfluenceMapGrid::InfluenceSoldier(int index, int start_index, int source_
 	if (distance > CharacterAreaInfluence)
 		return;
 
-	for (int neighboor : m_neighboors[index].m_neighboor) {
+	for (int neighboor : Grid[index].Neighboors.m_neighboor) {
 		if (neighboor != start_index) {
 			UpdateTile(neighboor, CharacterInfluence, Team, Type::Soldier, actorID, ActorDataIndex);
 			InfluenceSoldier(neighboor, index, source_index, distance + 1, actorID, Team, ActorDataIndex);
@@ -282,7 +265,7 @@ void AInfluenceMapGrid::InfluenceControlArea(int index, int start_index, int sou
 	if (distance > ControlAreaAreaInfluence)
 		return;
 
-	for (int neighboor : m_neighboors[index].m_neighboor) {
+	for (int neighboor : Grid[index].Neighboors.m_neighboor) {
 		if (neighboor != start_index) {
 			UpdateTile(neighboor, ControlAreaInfluence, Team, Type::ControlArea, actorID, ActorDataIndex);
 			InfluenceControlArea(neighboor, index, source_index, distance + 1, actorID, Team, ActorDataIndex);
@@ -295,7 +278,7 @@ void AInfluenceMapGrid::InfluenceProjectile(int index, int start_index, int sour
 	if (distance > ProjectileAreaInfluence)
 		return;
 
-	for (int neighboor : m_neighboors[index].m_neighboor) {
+	for (int neighboor : Grid[index].Neighboors.m_neighboor) {
 		if (neighboor != start_index) {
 			UpdateTile(neighboor, ProjectileInfluence, Team, Type::Projectile, actorID, ActorDataIndex);
 			InfluenceProjectile(neighboor, index, source_index, distance + 1, actorID, Team, ActorDataIndex);
@@ -364,61 +347,56 @@ void AInfluenceMapGrid::TimeFunction() {
 
 void AInfluenceMapGrid::UpdateTile(int index, float value, int team, Type type, uint32 actorID, uint16& ActorDataIndex) noexcept {
 
-	//if (m_influencemap[index].Types.Contains(Type::ControlArea))
-	//	return;
-
-	auto bool2 = m_influencemap[index].ActorsID.Contains(actorID);
+	auto bool2 = Grid[index].ActorsID.Contains(actorID);
 
 	if (!bool2) {
 
-		if (m_influencemap[index].ActorsID.Num() >= 1) {
-			if (m_influencemap[index].m_value + 0.1f <= 1.f)
-				m_influencemap[index].m_value += 0.1f;
-			else
-				m_influencemap[index].m_value = 1.f;
-		}
+		if (type == Type::ControlArea)
+			Grid[index].InfluenceTeam[team].InfluenceValue += 0.5f;
 		else {
-			m_influencemap[index].m_value = value;
-		}
-
-		if (!(m_influencemap[index].Teams.Contains(team)))
-			m_influencemap[index].Teams.Add(team);
-
-		if (type != Type::Projectile) {
-			if (team == 1)
-				AddUpdateTileTeam1(index);
+			const float ValueInfluenceTile = Grid[index].InfluenceTeam[team].InfluenceValue;
+			if (ValueInfluenceTile > 0.0f)
+				Grid[index].InfluenceTeam[team].InfluenceValue += 0.1f;
 			else
-				AddUpdateTileTeam2(index);
+				Grid[index].InfluenceTeam[team].InfluenceValue = 0.3f;
 		}
-		else {
+		
+		if (team == 1)
 			AddUpdateTileTeam1(index);
+		else
 			AddUpdateTileTeam2(index);
-		}
 
-		m_influencemap[index].ActorsID.Add(actorID);
+
+		Grid[index].ActorsID.Add(actorID);
 	}
-
-	m_influencemap[index].in_update = true;
-	if(!(m_influencemap[index].Types.Contains(type)))
-		m_influencemap[index].Types.Add(type);
 
 	ActorsData[ActorDataIndex].AddIndexs(index);
 }
 
 float AInfluenceMapGrid::GetValue(const FVector2D Location, const uint8 Team) {
-	uint32 index = -1;
-	float Cost = 1.f;
-	if (Team == 1) {
+	uint32 index = 0;
+	float Cost = 0.0f;
+
+	switch (Team) {
+	case 1:
 		if (FindIndexModifyinTeam1(Location, index)) {
-			Cost += m_influencemap[index].m_value * 10.f;
+			const float Value = Grid[index].InfluenceTeam[2].InfluenceValue - Grid[index].InfluenceTeam[1].InfluenceValue;
+			if (Value > 0.0f)
+				Cost = Value;
 		}
-	}
-	else {
+		break;
+	case 2:
 		if (FindIndexModifyinTeam2(Location, index)) {
-			Cost += m_influencemap[index].m_value * 10.f;
+			const float Value = Grid[index].InfluenceTeam[1].InfluenceValue - Grid[index].InfluenceTeam[2].InfluenceValue;
+			if (Value > 0.0f)
+				Cost = Value;
 		}
+		break;
+
+	default:
+		break;
 	}
-	return Cost;
+	return Cost * 100.f;
 }
 
 void AInfluenceMapGrid::AddUpdateTileTeam1(const uint32 index) {
@@ -456,8 +434,6 @@ bool AInfluenceMapGrid::ActorAlreadyExist(const uint32 ActorID, uint16& Index) c
 
 void AInfluenceMapGrid::DeleteInfluence(const uint16 IndexActor, const uint8 Team) noexcept{
 	for (uint32 index : ActorsData[IndexActor].IndexInfluence) {
-		m_influencemap[index].Reset();
-		m_influencemap[index].Teams.Empty();
 		//Pour le moment c'est seulement les Obstacles
 		/*if (Team == 1)
 			m_index_team1.Remove(index);
@@ -472,42 +448,51 @@ void AInfluenceMapGrid::DeleteInfluence(const uint16 IndexActor, const uint8 Tea
 }
 
 void AInfluenceMapGrid::UpdateControlArea(const uint16 IndexControlArea, const uint8 Team) noexcept {
-	for (uint32 index : ActorsData[IndexControlArea].IndexInfluence) {
-		//Si on update un point de contrôle alors l'équipe qui capture domine complètement
-		//À voir si on laisse comme ça
-		for (uint32 team_id : m_influencemap[index].Teams) {
-			if(team_id != Team && team_id == 1)
-				m_index_team1.Remove(index);
-			if (team_id != Team && team_id == 2)
-				m_index_team2.Remove(index);
-		}
 
-		m_influencemap[index].Teams.Empty();
-		m_influencemap[index].Teams.Add(Team);
+	switch (Team) {
+	case 1:
+		for (uint32 index : ActorsData[IndexControlArea].IndexInfluence) {
+			m_index_team2.Remove(index);
+			m_index_team1.Add(index);
+			Grid[index].InfluenceTeam[2].InfluenceValue -= ControlAreaInfluence;
+			Grid[index].InfluenceTeam[1].InfluenceValue += ControlAreaInfluence;
+		}
+		break;
+	case 2:
+		for (uint32 index : ActorsData[IndexControlArea].IndexInfluence) {
+			m_index_team1.Remove(index);
+			m_index_team2.Add(index);
+			Grid[index].InfluenceTeam[1].InfluenceValue -= ControlAreaInfluence;
+			Grid[index].InfluenceTeam[2].InfluenceValue += ControlAreaInfluence;
+		}
+		break;
+	default:
+		break;
 	}
+
 }
 
 void AInfluenceMapGrid::UpdateSoldier(const uint16 IndexSoldier, const uint8 Team, const uint32 SoldierID) noexcept {
 	if (ActorsData[IndexSoldier].IndexInfluence.Num() > 0) {
 		for (uint32 index : ActorsData[IndexSoldier].IndexInfluence) {
-			m_influencemap[index].ActorsID.Remove(SoldierID);
+			Grid[index].ActorsID.Remove(SoldierID);
 
-			if (m_influencemap[index].ActorsID.Num() >= 1)
-				m_influencemap[index].m_value =  0.5f;
-
+			if (Grid[index].InfluenceTeam[Team].InfluenceValue > CharacterInfluence)
+				Grid[index].InfluenceTeam[Team].InfluenceValue -= 0.3f;
 			else {
-				m_influencemap[index].Teams.Remove(Team);
-				m_influencemap[index].m_value = 0.0f;
-
-				if (Team == 1)
+				Grid[index].InfluenceTeam[Team].InfluenceValue = 0.0f;
+				switch (Team) {
+				case 1:
 					m_index_team1.Remove(index);
-				else
+					break;
+				case 2:
 					m_index_team2.Remove(index);
+					break;
+				default:
+					break;
+				}
 			}
 		}
 		ActorsData[IndexSoldier].IndexInfluence.Empty();
-	}
-	else {
-		return;
 	}
 }

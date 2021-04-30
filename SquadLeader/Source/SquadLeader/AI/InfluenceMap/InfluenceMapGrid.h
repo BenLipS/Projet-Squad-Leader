@@ -39,9 +39,24 @@ struct SQUADLEADER_API FGridPackage {
 	uint32 ActorID;
 };
 
+
+USTRUCT()
+struct SQUADLEADER_API FInfluenceTeamData {
+	GENERATED_USTRUCT_BODY()
+
+		FInfluenceTeamData() {}
+
+	float InfluenceValue = 0.0f;
+
+	//The list of the different type on the tile(Soldier, COntrolArea, Projectile, etc.)
+	TArray<TEnumAsByte<Type>> Types;
+};
+
+
+
 /*
 * This struct represent a Tile-Base for the grid
-* it contains a value, a location and the information of witch team they are of the influence
+* 
 */
 USTRUCT()
 struct SQUADLEADER_API FTileBase {
@@ -51,31 +66,15 @@ struct SQUADLEADER_API FTileBase {
 	FTileBase() {
 	}
 
-	//value of the tile
-	float m_value = 0.f;
-
 	//the position of the tile in the world
-	FVector m_location;
+	FVector Location;
+
+	FNeighboor Neighboors;
 	
-	//List of all the team that are on the tile
-	//This will help to determine if there's a conflict on a certain position
-	TArray<uint32> Teams;
+	TMap<uint8, FInfluenceTeamData> InfluenceTeam;
 
-	//The list of the different type on the tile(Soldier, COntrolArea, Projectile, etc.)
-	TArray<TEnumAsByte<Type>> Types;
-
-	//ID of the actor's that have influence on the tile
-	TArray<uint32> ActorsID;
-
-	bool in_update = false;
-
-public:
-
-	void Reset();
-
-	void ReduceInfluence();
+	TArray<uint32> ActorsID; 
 };
-
 
 USTRUCT()
 struct SQUADLEADER_API FActorData {
@@ -224,16 +223,10 @@ private:
 	* Array of the tile-base for the influence map
 	*/
 	UPROPERTY()
-		TArray<FTileBase> m_influencemap;
+		TArray<FTileBase> Grid;
 
 	//The number of tile in the end
 	int nbr_tile = 0;
-	
-	/*
-	* List the neighboors of a tile
-	*/
-	UPROPERTY()
-		TArray<FNeighboor> m_neighboors;
 
 	/*
 	* Will contains the index of the tile that need
@@ -252,22 +245,22 @@ private:
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Influence Value")
-		float ProjectileInfluence = 0.7f;
+		float ProjectileInfluence = 0.9f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Influence Value")
-		int ProjectileAreaInfluence = 2;
+		int ProjectileAreaInfluence = 3;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Influence Value")
-		float ControlAreaInfluence = 1.f;
+		float ControlAreaInfluence = 0.5f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Influence Value")
 		int ControlAreaAreaInfluence = 10;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Influence Value")
-		float CharacterInfluence = 0.7f;
+		float CharacterInfluence = 0.3f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Influence Value")
-		int CharacterAreaInfluence = 10;
+		int CharacterAreaInfluence = 8;
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Update Tick")
