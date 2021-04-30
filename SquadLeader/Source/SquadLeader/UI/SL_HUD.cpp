@@ -30,12 +30,7 @@ void ASL_HUD::BeginPlay()
 	SetAIStateLink();
 	BindSoldierTeamChanges();
 	BindControlAreas();
-	GetProfileData();
 	//TODO : Init Tickets
-}
-
-void ASL_HUD::GetProfileData() {
-	GetGameInstance<USquadLeaderGameInstance>()->ProfileInfo(this);
 }
 
 void ASL_HUD::SetPlayerStateLink()

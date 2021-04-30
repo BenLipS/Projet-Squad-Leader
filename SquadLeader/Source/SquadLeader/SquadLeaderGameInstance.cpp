@@ -1,6 +1,7 @@
 #include "SquadLeaderGameInstance.h"
 #include "MainMenu/SLMainMenuGameModeBase.h"
 #include "UI/SL_HUD.h"
+#include "UI/Interface/StatInfoInterface.h"
 #include "UI/Menu/MenuListInfo.h"
 #include <iostream>
 
@@ -112,7 +113,7 @@ void USquadLeaderGameInstance::NoConnexionComportment() {
 }
 
 
-void USquadLeaderGameInstance::ProfileInfo(ASL_HUD* HUD)
+void USquadLeaderGameInstance::ProfileInfo()
 {
     TMap<FString, FString> statsIn;
     statsIn.Add("Player Id", UserData.Id);
@@ -136,8 +137,17 @@ void USquadLeaderGameInstance::ProfileInfo(ASL_HUD* HUD)
     statsIn.Add("Score", FString::FromInt(UserData.Score));
     statsIn.Add("Playtime", FString::FromInt(UserData.PlayTime));
     
-    HUD->OnStatsInfoCleanOrder();
-    HUD->OnStatsInfoReceived(statsIn);
+
+    if (auto PC = GetPrimaryPlayerController(); PC)
+    {
+        if (auto HUD = PC->GetHUD<IStatInfoInterface>(); HUD)
+        {
+            HUD->OnStatsInfoCleanOrder();
+            HUD->OnStatsInfoReceived(statsIn);
+        }
+    }
+
+    
 }
 
 
