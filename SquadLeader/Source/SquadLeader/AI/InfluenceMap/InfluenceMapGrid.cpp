@@ -355,7 +355,7 @@ void AInfluenceMapGrid::UpdateTile(int index, float value, int team, Type type, 
 			Grid[index].InfluenceTeam[team].InfluenceValue += 0.5f;
 		else {
 			const float ValueInfluenceTile = Grid[index].InfluenceTeam[team].InfluenceValue;
-			if (ValueInfluenceTile > 0.0f)
+			if (ValueInfluenceTile >= 0.3f)
 				Grid[index].InfluenceTeam[team].InfluenceValue += 0.1f;
 			else
 				Grid[index].InfluenceTeam[team].InfluenceValue = 0.3f;
@@ -368,9 +368,9 @@ void AInfluenceMapGrid::UpdateTile(int index, float value, int team, Type type, 
 
 
 		Grid[index].ActorsID.Add(actorID);
-	}
 
-	ActorsData[ActorDataIndex].AddIndexs(index);
+		ActorsData[ActorDataIndex].AddIndexs(index);
+	}
 }
 
 float AInfluenceMapGrid::GetValue(const FVector2D Location, const uint8 Team) {
@@ -477,9 +477,10 @@ void AInfluenceMapGrid::UpdateSoldier(const uint16 IndexSoldier, const uint8 Tea
 		for (uint32 index : ActorsData[IndexSoldier].IndexInfluence) {
 			Grid[index].ActorsID.Remove(SoldierID);
 
-			if (Grid[index].InfluenceTeam[Team].InfluenceValue > CharacterInfluence)
-				Grid[index].InfluenceTeam[Team].InfluenceValue -= 0.3f;
-			else {
+			Grid[index].InfluenceTeam[Team].InfluenceValue -= 0.1f;
+			
+			if(Grid[index].InfluenceTeam[Team].InfluenceValue < CharacterInfluence) 
+			{
 				Grid[index].InfluenceTeam[Team].InfluenceValue = 0.0f;
 				switch (Team) {
 				case 1:

@@ -30,4 +30,8 @@ public:
 protected:
 	UPROPERTY()
 	uint8 TickNumber = 0;
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Team ID")
+		uint8 Team = 1;
 };

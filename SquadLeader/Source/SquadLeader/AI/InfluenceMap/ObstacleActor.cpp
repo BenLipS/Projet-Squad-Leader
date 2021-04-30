@@ -39,21 +39,21 @@ void AObstacleActor::InitObstacleActor() {
 	if (GM && GM->InfluenceMap) {
 		FGridPackage Package;
 		Package.m_location_on_map = GetActorLocation();
-		Package.team_value = 1;
-		Package.m_type = Type::Projectile;
+		Package.team_value = Team;
+		Package.m_type = Type::Soldier;
 		Package.ActorID = this->GetUniqueID();
 		GM->InfluenceMap->ReceivedMessage(Package);
 	}
 }
 
 void AObstacleActor::DestroyObstacle() {
-	GEngine->AddOnScreenDebugMessage(10, 1.f, FColor::Cyan, TEXT("big explosion or new update of the Obstacle"));
+	//GEngine->AddOnScreenDebugMessage(10, 1.f, FColor::Cyan, TEXT("big explosion or new update of the Obstacle"));
 	auto GM = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
 	if (GM && GM->InfluenceMap) {
 		FGridPackage Package;
 		Package.m_location_on_map = GetActorLocation();
-		Package.team_value = 1;
-		Package.m_type = Type::Projectile;
+		Package.team_value = Team;
+		Package.m_type = Type::Soldier;
 		Package.ActorID = this->GetUniqueID();
 		GM->InfluenceMap->ReceivedMessage(Package);
 	}
