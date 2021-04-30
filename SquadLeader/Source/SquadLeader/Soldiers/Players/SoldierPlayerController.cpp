@@ -1,13 +1,14 @@
 #include "SoldierPlayerController.h"
 #include "SoldierPlayerState.h"
 #include "SoldierPlayer.h"
+#include "../../SquadLeaderGameInstance.h"
 #include "AbilitySystemComponent.h"
 #include "SquadLeader/Weapons/SL_Weapon.h"
 #include "../SoldierTeam.h"
 #include "../../AI/AISquadManager.h"
 #include "../../UI/SL_HUD.h"
-#include "SquadLeader/SquadLeader.h"
 #include "SquadLeader/UI/Interface/AbilityCooldownDelegateInterface.h"
+#include "SquadLeader/SquadLeader.h"
 
 //TODO: rmove next include -> only use for the team init -> only use on temporary debug
 #include "../../GameState/SquadLeaderGameState.h"
@@ -50,12 +51,9 @@ void ASoldierPlayerController::BindMainAbilities()
 {
 	if (IAbilityCooldownDelegateInterface* HUD = GetHUD<IAbilityCooldownDelegateInterface>(); HUD)
 	{
-
-		HUD->AddAbilityID(ESoldierAbilityInputID::Ability2, "A");
-		HUD->AddAbilityID(ESoldierAbilityInputID::Ability1, "E");
-		
-		// TODO: Uncomment when the third ability is ready
-		//HUD->AddAbilityID(ESoldierAbilityInputID::Ability3);
+		HUD->AddAbilityID(ESoldierAbilityInputID::Ability1, "Q");
+		HUD->AddAbilityID(ESoldierAbilityInputID::Ability2, "E");
+		HUD->AddAbilityID(ESoldierAbilityInputID::Ability3, "F");
 	}
 }
 
@@ -288,12 +286,16 @@ void ASoldierPlayerController::OnEnnemyTicket_Received_Implementation(int newTic
 	}
 }
 
-void ASoldierPlayerController::OnGameEnd_Implementation(const FString& TextToDisplay)
+void ASoldierPlayerController::OnGameEnd_Implementation(const int MatchResult, float GameDuration)
 {
 	if (auto HUD = GetHUD<IGameEndInterface>(); HUD)
 	{
-		HUD->OnGameEnd(TextToDisplay);
+		if (MatchResult == 1) HUD->OnGameEnd("VICTORY !");
+		else HUD->OnGameEnd("DEFEAT !");
 	}
+
+	auto XP = GetPawn<ASoldier>()->GetEXP();
+	GetGameInstance<USquadLeaderGameInstance>()->UpdateNetworkStatus(MatchResult, GameDuration, XP, GetPlayerState<ASoldierPlayerState>()->PersonalRecord);  // notify the server
 }
 
 void ASoldierPlayerController::OnOrderGiven_Implementation(MissionType Order, FVector Pos)
@@ -327,18 +329,15 @@ void ASoldierPlayerController::BroadCastManagerData()
 		CurrentHUD->OnSquadChanged(SquadManagerData.SquadData);
 }
 
+// TODO: Use the soldier list - Don't use all the actors from the world
 void ASoldierPlayerController::OnWallVisionActivate_Implementation()
 {
 	for (AActor* Actor : GetWorld()->PersistentLevel->Actors)
 	{
 		if (ASoldier* Soldier = Cast<ASoldier>(Actor); Soldier)
 		{
-			auto team1 = Soldier->GetPlayerState();
-			auto team2 = GetTeam();
 			if (Soldier->GetTeam() != GetTeam())
-			{
 				Soldier->GetMesh()->SetRenderCustomDepth(true);
-			}
 		}
 	}
 }
@@ -348,12 +347,7 @@ void ASoldierPlayerController::OnWallVisionDeactivate_Implementation()
 	for (AActor* Actor : GetWorld()->PersistentLevel->Actors)
 	{
 		if (ASoldier* Soldier = Cast<ASoldier>(Actor); Soldier)
-		{
-			if (Soldier->GetMesh()->bRenderCustomDepth)
-			{
-				Soldier->GetMesh()->SetRenderCustomDepth(false);
-			}
-		}
+			Soldier->GetMesh()->SetRenderCustomDepth(false);
 	}
 }
 

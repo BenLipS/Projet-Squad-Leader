@@ -6,12 +6,16 @@
 #include "../../AI/AISquadManager.h"
 #include "../../AbilitySystem/Soldiers/GameplayAbilitySoldier.h"
 #include "../../Spawn/SoldierSpawn.h"
+#include "Kismet/KismetMaterialLibrary.h"
 #include "DrawDebugHelpers.h"
+#include "TimerManager.h"
 
-ASoldierPlayer::ASoldierPlayer(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer),
-NbAIsForNextLevelUp{ 0.f },
-ASCInputBound{ false }
+ASoldierPlayer::ASoldierPlayer(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer)
 {
+	PostProcessVolume = CreateDefaultSubobject<UPostProcessComponent>(TEXT("PostProcessVolume"));
+	PostProcessVolume->bUnbound = false;
+	PostProcessVolume->bEnabled = true;
+	PostProcessVolume->AttachToComponent(ThirdPersonCameraComponent, FAttachmentTransformRules::KeepRelativeTransform);
 }
 
 /*
@@ -22,6 +26,30 @@ ASCInputBound{ false }
 void ASoldierPlayer::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (!IsLocallyControlled())
+		return;
+
+	ensure(MaterialGlitchInterface);
+	ensure(MaterialBrokenGlassRightInterface);
+	ensure(MaterialBrokenGlassLeftInterface);
+
+	// Glitch
+	if (MaterialGlitchInterface)
+	{
+		MaterialGlitchInstance = UKismetMaterialLibrary::CreateDynamicMaterialInstance(GetWorld(), MaterialGlitchInterface);
+		SetWeightGlitchEffect(0.f);
+	}
+
+	// Broken glass
+	if (MaterialBrokenGlassRightInterface && MaterialBrokenGlassLeftInterface)
+	{
+		MaterialBrokenGlassRightInstance = UKismetMaterialLibrary::CreateDynamicMaterialInstance(GetWorld(), MaterialBrokenGlassRightInterface);
+		MaterialBrokenGlassLeftInstance = UKismetMaterialLibrary::CreateDynamicMaterialInstance(GetWorld(), MaterialBrokenGlassLeftInterface);
+
+		PostProcessVolume->AddOrUpdateBlendable(MaterialBrokenGlassRightInstance, 0.f);
+		PostProcessVolume->AddOrUpdateBlendable(MaterialBrokenGlassLeftInstance, 0.f);
+	}
 }
 
 // Server only 
@@ -54,6 +82,55 @@ void ASoldierPlayer::OnRep_PlayerState()
 	//-----HUD-----
 	if (ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(GetController()); PC)
 		PC->CreateHUD();
+}
+
+void ASoldierPlayer::DeadTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
+{
+	Super::DeadTagChanged(CallbackTag, NewCount);
+
+	if (!IsLocallyControlled())
+		return;
+
+	if (NewCount == 0) // Respawn
+	{
+		HitRight = 0;
+		HitLeft = 0;
+		UpdateBrokenGlassEffect();
+		SetWeightGlitchEffect(0.f);
+	}
+}
+
+void ASoldierPlayer::OnBlurredVisionFromJammer(const bool _IsBlurred)
+{
+	if (!IsLocallyControlled())
+		return;
+
+	if (_IsBlurred) // Apply the glitches
+		SetWeightGlitchEffect(1.f);
+	else if (WeightGlitchEffect >= 0.1f)
+		StartReducingGlitch();
+	else
+		EndGlitch();
+}
+
+void ASoldierPlayer::StartReducingGlitch()
+{
+	GetWorldTimerManager().SetTimer(TimerGlitchReduction, this, &ASoldierPlayer::ReduceGlitch, TimeBetweenReductionGlitch, true);
+	ReduceGlitch();
+}
+
+void ASoldierPlayer::ReduceGlitch()
+{
+	if (const float NewWeight = WeightGlitchEffect * ReductionMultiplierGlitch; NewWeight >= MinimumWeightForGlitchReduction)
+		SetWeightGlitchEffect(NewWeight);
+	else
+		EndGlitch();
+}
+
+void ASoldierPlayer::EndGlitch()
+{
+	GetWorld()->GetTimerManager().ClearTimer(TimerGlitchReduction);
+	SetWeightGlitchEffect(0.f);
 }
 
 void ASoldierPlayer::LockControls()
@@ -97,6 +174,12 @@ void ASoldierPlayer::Turn(const float _Val)
 		else
 			ServerSyncControlRotation(SyncControlRotation);
 	}
+}
+
+void ASoldierPlayer::SetWeightGlitchEffect(const float _Weight)
+{
+	WeightGlitchEffect = _Weight;
+	PostProcessVolume->AddOrUpdateBlendable(MaterialGlitchInstance, _Weight);
 }
 
 void ASoldierPlayer::SetAbilitySystemComponent()
@@ -189,4 +272,96 @@ void ASoldierPlayer::OnSquadChanged(const TArray<FSoldierAIData>& newValue)
 	{
 		PC->OnSquadChanged(newValue);
 	}
+}
+
+void ASoldierPlayer::OnReceiveDamage(const FVector& _ImpactPoint, const FVector& _SourcePoint)
+{
+	if (!IsLocallyControlled())
+	{
+		if (GetLocalRole() == ROLE_Authority)
+			ClientOnReceiveDamage(_ImpactPoint, _SourcePoint);
+		return;
+	}
+
+	FVector ShootDir2D = _ImpactPoint - _SourcePoint;
+	ShootDir2D.Z = 0;
+	FVector FowardVector2D = GetActorForwardVector();
+	FowardVector2D.Z = 0;
+
+	const int Det = ShootDir2D.X * FowardVector2D.Y - ShootDir2D.Y * FowardVector2D.X;
+
+	if (Det >= 0) {//Hit right side
+		//if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("Droite"));
+		AddHitRight();
+	}
+	else {//Hit left side
+		//if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("Gauche"));
+		AddHitLeft();
+	}
+}
+
+void ASoldierPlayer::ClientOnReceiveDamage_Implementation(const FVector& _ImpactPoint, const FVector& _SourcePoint)
+{
+	OnReceiveDamage(_ImpactPoint, _SourcePoint);
+}
+
+float ASoldierPlayer::NbOfHitToPPIntensity(int NbHit)
+{
+	switch (NbHit) {
+		case 1:
+			return 0.2f;
+		case 2:
+			return 0.8f;
+		case 3:
+			return 2.f;
+		default:
+			return 0.f;
+	}
+}
+
+void ASoldierPlayer::AddHitLeft()
+{
+	if (HitLeft < 3) {
+		HitLeft++;
+		FTimerHandle Timer;
+		GetWorldTimerManager().SetTimer(Timer, this, &ASoldierPlayer::RemoveHitLeft, 5.f, false);
+	}
+	UpdateBrokenGlassEffect();
+}
+
+void ASoldierPlayer::AddHitRight()
+{
+	if (HitRight < 3) {
+		HitRight++;
+		FTimerHandle Timer;
+		GetWorldTimerManager().SetTimer(Timer, this, &ASoldierPlayer::RemoveHitRight, 5.f, false);
+	}
+	UpdateBrokenGlassEffect();
+}
+
+void ASoldierPlayer::RemoveHitLeft()
+{
+	if (HitLeft > 0) {
+		HitLeft--;
+	}
+	UpdateBrokenGlassEffect();
+}
+
+void ASoldierPlayer::RemoveHitRight()
+{
+	if (HitRight > 0) {
+		HitRight--;
+	}
+	UpdateBrokenGlassEffect();
+}
+
+void ASoldierPlayer::UpdateBrokenGlassEffect()
+{
+	if(HitRight > 0)PostProcessVolume->AddOrUpdateBlendable(MaterialBrokenGlassRightInstance, 1.f);
+	else PostProcessVolume->AddOrUpdateBlendable(MaterialBrokenGlassRightInstance, 1.f);
+	if (HitLeft > 0)PostProcessVolume->AddOrUpdateBlendable(MaterialBrokenGlassLeftInstance, 1.f);
+	else PostProcessVolume->AddOrUpdateBlendable(MaterialBrokenGlassLeftInstance, 1.f);
+
+	MaterialBrokenGlassRightInstance->SetScalarParameterValue("Bullet Amount", NbOfHitToPPIntensity(HitRight));
+	MaterialBrokenGlassLeftInstance->SetScalarParameterValue("Bullet Amount", NbOfHitToPPIntensity(HitLeft));
 }

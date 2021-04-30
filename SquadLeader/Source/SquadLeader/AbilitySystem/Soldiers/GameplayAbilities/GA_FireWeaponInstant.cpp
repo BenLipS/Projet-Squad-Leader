@@ -2,10 +2,11 @@
 #include "SquadLeader/Weapons/SL_Weapon.h"
 #include "SquadLeader/Weapons/Shield.h"
 #include "SquadLeader/Soldiers/Soldier.h"
-#include "SquadLeader/AbilitySystem/Soldiers/AbilityTasks/SL_WaitTargetDataUsingActor.h"
 #include "SquadLeader/AbilitySystem/Soldiers/Trace/SL_LineTrace.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/CollisionProfile.h"
+#include "SquadLeader/AbilitySystem/Soldiers/AbilityTasks/SL_ServerWaitForClientTargetData.h"
+#include "SquadLeader/AbilitySystem/Soldiers/AbilityTasks/SL_WaitTargetDataUsingActor.h"
 #include "Abilities/Tasks/AbilityTask_WaitDelay.h"
 
 UGA_FireWeaponInstant::UGA_FireWeaponInstant() :
@@ -51,6 +52,9 @@ void UGA_FireWeaponInstant::EndAbility(const FGameplayAbilitySpecHandle Handle, 
 	if (ServerWaitForClientTargetDataTask && ServerWaitForClientTargetDataTask->IsActive())
 		ServerWaitForClientTargetDataTask->EndTask();
 
+	if (TaskWaitDelay && TaskWaitDelay->IsActive())
+		TaskWaitDelay->EndTask();
+
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
@@ -69,7 +73,7 @@ void UGA_FireWeaponInstant::FireBullet()
 		|| SourceSoldier->GetAbilitySystemComponent()->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("State.ReloadingWeapon"))))
 	{
 		// Wait for the next fire
-		UAbilityTask_WaitDelay* TaskWaitDelay = UAbilityTask_WaitDelay::WaitDelay(this, SourceWeapon->GetTimeBetweenShots());
+		TaskWaitDelay = UAbilityTask_WaitDelay::WaitDelay(this, SourceWeapon->GetTimeBetweenShots());
 		TaskWaitDelay->OnFinish.AddDynamic(this, &UGA_FireWeaponInstant::FireBullet);
 		TaskWaitDelay->ReadyForActivation();
 		return;
@@ -94,7 +98,7 @@ void UGA_FireWeaponInstant::FireBullet()
 	TaskWaitTarget->ReadyForActivation();
 
 	// Wait for the next fire
-	UAbilityTask_WaitDelay* TaskWaitDelay = UAbilityTask_WaitDelay::WaitDelay(this, SourceWeapon->GetTimeBetweenShots());
+	TaskWaitDelay = UAbilityTask_WaitDelay::WaitDelay(this, SourceWeapon->GetTimeBetweenShots());
 	TaskWaitDelay->OnFinish.AddDynamic(this, &UGA_FireWeaponInstant::FireBullet);
 	TaskWaitDelay->ReadyForActivation();
 
@@ -113,15 +117,17 @@ void UGA_FireWeaponInstant::HandleTargetData(const FGameplayAbilityTargetDataHan
 
 	FGameplayEffectSpecHandle DamageEffectSpecHandle = MakeOutgoingGameplayEffectSpec(GE_DamageClass, GetAbilityLevel());
 	DamageEffectSpecHandle.Data->SetSetByCallerMagnitude(FGameplayTag::RequestGameplayTag(FName("Data.Damage")), SourceWeapon->GetWeaponDamage());
-	const FGameplayAbilityTargetData* Data = _Data.Get(0);
+	const FGameplayAbilityTargetData* Data = _Data.Get(_Data.Data.Num() - 1);
 
 	for (TWeakObjectPtr<AActor> Actor : Data->GetActors())
 	{
 		if (ASoldier* TargetSoldier = Cast<ASoldier>(Actor); TargetSoldier && TargetSoldier->GetAbilitySystemComponent())
 		{
-			ApplyDamages(_Data, DamageEffectSpecHandle, TargetSoldier->GetAbilitySystemComponent());
-			TargetSoldier->OnReceiveDamage(Data->GetHitResult()->ImpactPoint, Data->GetHitResult()->TraceStart);
-			break;
+			if (SourceSoldier->GetTeam() != TargetSoldier->GetTeam())
+			{
+				ApplyDamages(_Data, DamageEffectSpecHandle, TargetSoldier->GetAbilitySystemComponent());
+				TargetSoldier->OnReceiveDamage(Data->GetHitResult()->ImpactPoint, Data->GetHitResult()->TraceStart);
+			}
 		}
 		else if (AShield* Shield = Cast<AShield>(Actor); Shield)
 		{
@@ -131,7 +137,7 @@ void UGA_FireWeaponInstant::HandleTargetData(const FGameplayAbilityTargetDataHan
 
 	// Gameplay cue
 	FGameplayEffectContextHandle EffectContext = DamageEffectSpecHandle.Data->GetEffectContext();
-	EffectContext.AddHitResult(*_Data.Get(0)->GetHitResult());
+	EffectContext.AddHitResult(*Data->GetHitResult());
 
 	FGameplayCueParameters GC_Parameters;
 	GC_Parameters.Instigator = SourceSoldier;
@@ -150,8 +156,7 @@ void UGA_FireWeaponInstant::ApplyEffectsToSource()
 
 void UGA_FireWeaponInstant::ApplyDamages(const FGameplayAbilityTargetDataHandle& _Data, const FGameplayEffectSpecHandle& _DamageEffectSpecHandle, UAbilitySystemComponent* _TargetASC)
 {
-	if (Cast<ASoldier>(_TargetASC->GetAvatarActor())->GetTeam() != SourceSoldier->GetTeam())
-		SourceSoldier->GetAbilitySystemComponent()->ApplyGameplayEffectSpecToTarget(*_DamageEffectSpecHandle.Data.Get(), _TargetASC);
+	SourceSoldier->GetAbilitySystemComponent()->ApplyGameplayEffectSpecToTarget(*_DamageEffectSpecHandle.Data.Get(), _TargetASC);
 }
 
 void UGA_FireWeaponInstant::ApplyDamages(AShield* _Shield, const float _Damages)
@@ -174,6 +179,7 @@ void UGA_FireWeaponInstant::ConfigLineTrace()
 		return;
 	}
 
+	LineTrace->SetInstigator(SourceSoldier);
 	LineTrace->ResetSpread(); // Spread is only reseted here - Continuous fire won't reset then
 	LineTrace->TraceProfile = FCollisionProfileName{ SourceWeapon->CollisionProfileName };
 	LineTrace->bIgnoreBlockingHits = false;

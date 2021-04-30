@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "GameplayAbilitySpec.h"
 #include "SquadLeader/Soldiers/Soldier.h"
+#include "SquadLeader/Weapons/Shield.h"
 
 ASL_Trace::ASL_Trace():
 BaseSpread{ 0.f },
@@ -37,7 +38,7 @@ float ASL_Trace::GetCurrentSpread() const
 	float FinalSpread = BaseSpread + CurrentTargetingSpread;
 
 	UAbilitySystemComponent* ASC = OwningAbility->GetCurrentActorInfo()->AbilitySystemComponent.Get();
-	
+
 	if (ASC && ASC->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("State.Aiming"))))
 		return FinalSpread * AimingSpreadMod;
 	return FinalSpread;
@@ -140,11 +141,7 @@ void ASL_Trace::Tick(float DeltaSeconds)
 void ASL_Trace::LineTraceWithFilter(TArray<FHitResult>& OutHitResults, const UWorld* World, const FGameplayTargetDataFilterHandle FilterHandle, const FVector& Start, const FVector& End, FName ProfileName, const FCollisionQueryParams Params)
 {
 	check(World);
-
-	FHitResult HitResult;
-	World->LineTraceSingleByProfile(HitResult, Start, End, ProfileName, Params);
-
-	OutHitResults = { HitResult };
+	World->LineTraceMultiByProfile(OutHitResults, Start, End, ProfileName, Params);
 	return;
 }
 
@@ -187,7 +184,7 @@ FVector ASL_Trace::GenerateRandomFireTrajectory(const FVector& _Start, FVector&&
 {
 	FVector TrajectoryNormal = (_End - _Start).GetSafeNormal();
 	if (TrajectoryNormal.IsZero())
-		TrajectoryNormal = {1.f, 0.f, 0.f}; // TODO What should be the default ?
+		TrajectoryNormal = { 1.f, 0.f, 0.f }; // TODO What should be the default ?
 
 	const float ConeHalfAngle = FMath::DegreesToRadians(GetCurrentSpread() * 0.5f);
 	FRandomStream WeaponRandomStream(FMath::Rand());
@@ -239,6 +236,7 @@ TArray<FHitResult> ASL_Trace::PerformTrace()
 
 		TArray<FHitResult> TraceHitResults;
 		DoTrace(TraceHitResults, SourceActor->GetWorld(), Filter, TraceStart, TraceEnd, TraceProfile.Name, Params);
+		FilterTraceWithShield(TraceHitResults);
 
 		if (TraceHitResults.Num() < 1)
 		{
@@ -253,4 +251,24 @@ TArray<FHitResult> ASL_Trace::PerformTrace()
 		ReturnHitResults.Append(TraceHitResults);
 	}
 	return ReturnHitResults;
+}
+
+void ASL_Trace::FilterTraceWithShield(TArray<FHitResult>& _HitResults)
+{
+	ASoldier* SoldierShooter = Cast<ASoldier>(GetInstigator());
+
+	for (int32 i = 0; i < _HitResults.Num(); ++i)
+	{
+		if (AShield* Shield = Cast<AShield>(_HitResults[i].Actor); Shield)
+		{
+			ASoldier* OwnerOfShield = Cast<ASoldier>(Shield->GetInstigator());
+
+			// Remove every data after the shield since it should block the trace
+			if (SoldierShooter && OwnerOfShield && SoldierShooter->GetTeam() != OwnerOfShield->GetTeam())
+			{
+				_HitResults.RemoveAt(FMath::Min(i + 1, _HitResults.Num() - 1), _HitResults.Num() - i - 1);
+				return;
+			}
+		}
+	}
 }

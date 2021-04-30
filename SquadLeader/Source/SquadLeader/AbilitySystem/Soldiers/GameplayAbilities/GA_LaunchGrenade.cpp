@@ -8,8 +8,8 @@ UGA_LaunchGrenade::UGA_LaunchGrenade()
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 
-	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Grenade"))); // Must define another tag in the BP subclasses to be more specific
-	ThrownProjectileEventTag = FGameplayTag::RequestGameplayTag(FName("Event.Ability.GrenadeThrown"));
+	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Grenade")));
+	ThrownProjectileEventTag = FGameplayTag::RequestGameplayTag(FName("Event.Ability.ProjectileThrown"));
 }
 
 bool UGA_LaunchGrenade::CanActivateAbility(const FGameplayAbilitySpecHandle _Handle, const FGameplayAbilityActorInfo* _ActorInfo, const FGameplayTagContainer* _SourceTags, const FGameplayTagContainer* _TargetTags, OUT FGameplayTagContainer* _OptionalRelevantTags) const
@@ -80,11 +80,19 @@ void UGA_LaunchGrenade::MontageSentEvent(FGameplayTag _EventTag, FGameplayEventD
 
 void UGA_LaunchGrenade::ThrowProjectile()
 {
-	// Create projectile then launch it
-	FActorSpawnParameters SpawnInfo;
-	SpawnInfo.Owner = SourceSoldier;
-	SpawnInfo.Instigator = SourceSoldier;
-	SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	const FName SocketHandName = bThrowWithRightHand ? FName{ SourceSoldier->WeaponAttachPointRightHand } : FName{ SourceSoldier->WeaponAttachPointLeftHand };
 
-	GetWorld()->SpawnActor<ASL_Projectile>(ProjectileClass, SpawnInfo.Owner->GetActorLocation(), Cast<ASoldier>(SpawnInfo.Owner)->CurrentCameraComponent->GetForwardVector().Rotation(), SpawnInfo);
+	FTransform Transform{ SourceSoldier->CurrentCameraComponent->GetForwardVector().Rotation(), SourceSoldier->GetMesh()->GetSocketLocation(SocketHandName) };
+
+	ASL_Projectile* Projectile = GetWorld()->SpawnActorDeferred<ASL_Projectile>(ProjectileClass, Transform, SourceSoldier, SourceSoldier, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+
+	if (Projectile)
+	{
+		if (SourceSoldier && SourceSoldier->GetTeam() && SourceSoldier->GetTeam()->Id == 1)
+			Projectile->SetCollisionProfile(PN_Projectile1);
+		else
+			Projectile->SetCollisionProfile(PN_Projectile2);
+
+		Projectile->FinishSpawning(Transform);
+	}
 }

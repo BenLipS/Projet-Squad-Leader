@@ -38,6 +38,7 @@ void AAIGeneralController::BeginPlay() {
 	Super::BeginPlay();
 	RunBehaviorTree(m_behaviorTree);
 	Init();
+	blackboard->SetValueAsBool("IsStun", true);
 }
 
 void AAIGeneralController::Init() {

@@ -21,10 +21,6 @@ ASoldier::ASoldier(const FObjectInitializer& _ObjectInitializer) : Super(_Object
 bAbilitiesInitialized{ false },
 WeaponAttachPointRightHand{ FName("WeaponSocketRightHand") },
 WeaponAttachPointLeftHand{ FName("WeaponSocketLeftHand") },
-MaxInputForward{ 1.0f },
-MaxInputBackward{ -0.5f },
-MaxInputLeft{ -0.7f },
-MaxInputRight{ 0.7f },
 bChangedWeaponLocally{ false },
 FieldOfViewNormal{ 90.f },
 LevelUpFXRelativeLocation{ FVector{0.f} },
@@ -220,6 +216,21 @@ UAttributeSetSoldier* ASoldier::GetAttributeSet() const
 	return AttributeSet;
 }
 
+TSubclassOf<UGameplayAbilitySoldier> ASoldier::GetClassAbility1() const
+{
+	return Ability1;
+}
+
+TSubclassOf<UGameplayAbilitySoldier> ASoldier::GetClassAbility2() const
+{
+	return Ability2;
+}
+
+TSubclassOf<UGameplayAbilitySoldier> ASoldier::GetClassAbility3() const
+{
+	return Ability3;
+}
+
 void ASoldier::InitializeAttributes()
 {
 	check(AbilitySystemComponent);
@@ -243,10 +254,32 @@ void ASoldier::InitializeAbilities()
 		return;
 
 	check(AbilitySystemComponent);
+
+	InitializeStartupAbilities();
+	InitializeMainFightingAbilities();
+
+	bAbilitiesInitialized = true;
+}
+
+void ASoldier::InitializeStartupAbilities()
+{
+	for (TSubclassOf<UGameplayAbilitySoldier>& StartupAbility : StartupAbilities)
+	{
+		if (!StartupAbility) // Empty element from blueprint
+		{
+			UE_LOG(LogTemp, Error, TEXT("%s() Invalid ability in StartupAbilities. Check the blueprint of the soldier"), *FString(__FUNCTION__));
+			continue;
+		}
+
+		AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(StartupAbility, GetCharacterLevel(), static_cast<int32>(StartupAbility.GetDefaultObject()->AbilityInputID), this));
+	}
+}
+
+void ASoldier::InitializeMainFightingAbilities()
+{
 	check(Ability1);
 	check(Ability2);
-
-	// TODO: Separate the part below into 2 functions
+	//check(Ability3);
 
 	// Grant main fighting abilities
 	if (Ability1)
@@ -267,18 +300,14 @@ void ASoldier::InitializeAbilities()
 		UE_LOG(LogTemp, Error, TEXT("%s() Invalid Ability2. Check the blueprint of the soldier"), *FString(__FUNCTION__));
 	}
 
-	// Grant startup abilities
-	for (TSubclassOf<UGameplayAbilitySoldier>& StartupAbility : StartupAbilities)
+	if (Ability3)
 	{
-		if (!StartupAbility) // Empty element from blueprint
-		{
-			UE_LOG(LogTemp, Error, TEXT("%s() Invalid ability in StartupAbilities. Check the blueprint of the soldier"), *FString(__FUNCTION__));
-			continue;
-		}
-
-		AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(StartupAbility, GetCharacterLevel(), static_cast<int32>(StartupAbility.GetDefaultObject()->AbilityInputID), this));
+		AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(Ability3, GetCharacterLevel(), static_cast<int32>(ESoldierAbilityInputID::Ability3), this));
 	}
-	bAbilitiesInitialized = true;
+	else // Empty element from blueprint
+	{
+		//UE_LOG(LogTemp, Error, TEXT("%s() Invalid Ability2. Check the blueprint of the soldier"), *FString(__FUNCTION__));
+	}
 }
 
 void ASoldier::AddStartupEffects()
@@ -306,6 +335,7 @@ void ASoldier::AddStartupEffects()
 void ASoldier::InitializeTagChangeCallbacks()
 {
 	AbilitySystemComponent->RegisterGameplayTagEvent(FGameplayTag::RequestGameplayTag(FName("State.Dead")), EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ASoldier::DeadTagChanged);
+	AbilitySystemComponent->RegisterGameplayTagEvent(FGameplayTag::RequestGameplayTag(FName("State.Debuff.Vision.BlurredFromJammer")), EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ASoldier::BlurredFromJammerTagChanged);
 }
 
 void ASoldier::InitializeAttributeChangeCallbacks()
@@ -376,6 +406,15 @@ void ASoldier::DeadTagChanged(const FGameplayTag _CallbackTag, int32 _NewCount)
 	}
 }
 
+void ASoldier::BlurredFromJammerTagChanged(const FGameplayTag _CallbackTag, int32 _NewCount)
+{
+	OnBlurredVisionFromJammer(_NewCount > 0);
+}
+
+void ASoldier::OnBlurredVisionFromJammer(const bool _IsBlurred) {
+
+};
+
 bool ASoldier::ActivateAbilities(const FGameplayTagContainer& _TagContainer)
 {
 	return AbilitySystemComponent->TryActivateAbilitiesByTag(_TagContainer);
@@ -442,13 +481,13 @@ void ASoldier::setToThirdCameraPerson()
 void ASoldier::MoveForward(const float _Val)
 {
 	if (_Val != 0.0f)
-		AddMovementInput(UKismetMathLibrary::GetForwardVector(FRotator(0, GetControlRotation().Yaw, 0)), FMath::Clamp(_Val, MaxInputBackward, MaxInputForward));
+		AddMovementInput(UKismetMathLibrary::GetForwardVector(FRotator(0, GetControlRotation().Yaw, 0)), _Val);
 }
 
 void ASoldier::MoveRight(const float _Val)
 {
 	if (_Val != 0.0f)
-		AddMovementInput(UKismetMathLibrary::GetRightVector(FRotator(0, GetControlRotation().Yaw, 0)), FMath::Clamp(_Val, MaxInputLeft, MaxInputRight));
+		AddMovementInput(UKismetMathLibrary::GetRightVector(FRotator(0, GetControlRotation().Yaw, 0)), _Val);
 }
 
 void ASoldier::LookUp(const float _Val)

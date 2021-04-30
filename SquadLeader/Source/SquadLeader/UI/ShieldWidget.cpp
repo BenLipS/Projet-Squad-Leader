@@ -12,14 +12,16 @@ void UShieldWidget::OnPlayerShieldChanged(float newValue)
 {
 	Shield = newValue;
 	ProgressBarShield->SetPercent(Shield / MaxShield);
-	TextShield->SetText(FText::FromString(FString::SanitizeFloat(Shield, 0) + "/" + FString::SanitizeFloat(MaxShield, 0)));
+	//TextShield->SetText(FText::FromString(FString::SanitizeFloat(Shield, 0) + "/" + FString::SanitizeFloat(MaxShield, 0)));
+	//TextShield->SetText(FText::FromString(FString::SanitizeFloat(Shield, 0)));
 }
 
 void UShieldWidget::OnPlayerMaxShieldChanged(float newValue)
 {
 	MaxShield = newValue;
 	ProgressBarShield->SetPercent(Shield / MaxShield);
-	TextShield->SetText(FText::FromString(FString::SanitizeFloat(Shield, 0) + "/" + FString::SanitizeFloat(MaxShield, 0)));
+	ProgressBarShield->SetNbSplit(MaxShield / ShieldSegment);
+	//TextShield->SetText(FText::FromString(FString::SanitizeFloat(Shield, 0) + "/" + FString::SanitizeFloat(MaxShield, 0)));
 }
 
 void UShieldWidget::SetupDelegateToObject_Implementation(UObject* ObjectIn)

@@ -1,5 +1,6 @@
 #include "AreaEffect.h"
 #include "../Soldiers/Soldier.h"
+#include "SquadLeader/Weapons/Shield.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -55,15 +56,17 @@ void AAreaEffect::OnReadyToApplyEffects()
 	CollisionShape.SetSphere(Radius);
 
 	TArray<FHitResult> HitActors;
-	FVector StartTrace = GetActorLocation();
-	FVector EndTrace = StartTrace;
+	const FVector StartTrace = GetActorLocation();
+	const FVector EndTrace = StartTrace;
 
-	if (GetWorld()->SweepMultiByChannel(HitActors, StartTrace, EndTrace, FQuat::FQuat(), ECC_WorldStatic, CollisionShape))
+	FCollisionQueryParams QueryParams{};
+	QueryParams.AddIgnoredActor(this);
+
+	if (GetWorld()->SweepMultiByChannel(HitActors, StartTrace, EndTrace, FQuat::FQuat(), ECC_WorldStatic, CollisionShape, QueryParams))
 	{
-		for (auto ItTargetActor = HitActors.CreateIterator(); ItTargetActor; ++ItTargetActor)
+		for (int32 i = 0; i < HitActors.Num(); ++i)
 		{
-			AActor* TargetActor = ItTargetActor->GetActor();
-
+			AActor* TargetActor = HitActors[i].GetActor();
 			if (TargetActor == nullptr)
 				continue;
 
@@ -71,6 +74,13 @@ void AAreaEffect::OnReadyToApplyEffects()
 
 			if (ASoldier* TargetSoldier = Cast<ASoldier>(TargetActor); TargetSoldier && TargetSoldier->GetAbilitySystemComponent())
 			{
+				// Make sure there is no object blocking the effect
+				TArray<FHitResult> HitActorsBeforeSoldier = HitActors;
+				HitActorsBeforeSoldier.RemoveAt(i, HitActors.Num() - i);
+
+				if (!ValidateEffectOnSoldier(HitActors[i], HitActorsBeforeSoldier))
+					continue;
+
 				UAbilitySystemComponent* TargetASC = TargetSoldier->GetAbilitySystemComponent();
 				ApplyDamages(TargetASC, DistActorArea);
 				ApplyGameplayEffects(TargetASC);
@@ -79,6 +89,28 @@ void AAreaEffect::OnReadyToApplyEffects()
 			ApplyImpulse(TargetActor, DistActorArea);
 		}
 	}
+}
+
+bool AAreaEffect::ValidateEffectOnSoldier(const FHitResult& _HitSoldier, const TArray<FHitResult>& _HitActors)
+{
+	if (bIgnoreBlock || _HitActors.Num() <= 0) // No object between the soldier and the area effect
+		return true;
+
+	TArray<FHitResult> HitResults;
+	FCollisionQueryParams QueryParams;
+	QueryParams.AddIgnoredActor(this);
+
+	ECollisionChannel CollisionChannel = ECC_Projectile2;
+	if (SourceSoldier && SourceSoldier->GetTeam() && SourceSoldier->GetTeam()->Id == 1)
+		CollisionChannel = ECC_Projectile1;
+
+	const FVector StartTrace = GetActorLocation();
+	const FVector EndTrace = _HitSoldier.ImpactPoint;
+	GetWorld()->LineTraceMultiByChannel(HitResults, StartTrace, EndTrace + 10.f * (EndTrace - StartTrace), CollisionChannel, QueryParams);
+
+	FilterTraceWithShield(HitResults);
+
+	return (HitResults.Last().Actor == _HitSoldier.Actor);
 }
 
 void AAreaEffect::DestroyAreaEffect()
@@ -154,6 +186,20 @@ FVector AAreaEffect::DetermineImpulse(AActor* _Actor, const float _DistActorArea
 		CurrentStrenghImpulse *= CurveImpulseStrengh->GetFloatValue(_DistActorArea / Radius);
 
 	return CurrentStrenghImpulse;
+}
+
+void AAreaEffect::FilterTraceWithShield(TArray<FHitResult>& _HitResults)
+{
+	ASoldier* SoldierShooter = Cast<ASoldier>(GetInstigator());
+
+	for (int32 i = 0; i < _HitResults.Num(); ++i)
+	{
+		if (AShield* Shield = Cast<AShield>(_HitResults[i].Actor); Shield)
+		{
+			_HitResults.RemoveAt(FMath::Min(i + 1, _HitResults.Num() - 1), _HitResults.Num() - i - 1);
+			return;
+		}
+	}
 }
 
 void AAreaEffect::ShowAnimation()

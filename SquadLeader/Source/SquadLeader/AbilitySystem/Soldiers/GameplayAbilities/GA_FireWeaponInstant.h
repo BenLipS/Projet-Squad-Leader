@@ -2,9 +2,11 @@
 
 #include "CoreMinimal.h"
 #include "../GameplayAbilitySoldier.h"
-#include "SquadLeader/AbilitySystem/Soldiers/AbilityTasks/SL_ServerWaitForClientTargetData.h"
 #include "../GameplayEffects/States/GE_StateFiring.h"
 #include "GA_FireWeaponInstant.generated.h"
+
+class USL_ServerWaitForClientTargetData;
+class UAbilityTask_WaitDelay;
 
 UCLASS()
 class SQUADLEADER_API UGA_FireWeaponInstant : public UGameplayAbilitySoldier
@@ -43,6 +45,7 @@ protected:
 
 	// Cache values
 	USL_ServerWaitForClientTargetData* ServerWaitForClientTargetDataTask;
+	UAbilityTask_WaitDelay* TaskWaitDelay;
 	class ASL_Weapon* SourceWeapon;
 	class ASoldier* SourceSoldier;
 	class ASL_LineTrace* LineTrace;

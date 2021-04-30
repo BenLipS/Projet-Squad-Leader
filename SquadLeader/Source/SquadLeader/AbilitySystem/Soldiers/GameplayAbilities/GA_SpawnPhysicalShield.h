@@ -24,6 +24,9 @@ protected:
 	void MontageInterruptedOrCancelled();
 
 	UFUNCTION()
+	void MontageSentEvent(FGameplayTag _EventTag, FGameplayEventData _EventData);
+
+	UFUNCTION()
 	void SpawnShield();
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
@@ -42,4 +45,8 @@ protected:
 	// Scale the shield mesh
 	UPROPERTY(EditDefaultsOnly, Category = "Mesh")
 	FVector ShieldScale;
+
+	// Event tag to notify from the montage to spawn the shield
+	UPROPERTY(EditDefaultsOnly, Category = "Shield")
+	FGameplayTag SpawnShieldEventTag;
 };

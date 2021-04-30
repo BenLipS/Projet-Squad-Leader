@@ -95,6 +95,20 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Ability System Component|Abilities")
 	TSubclassOf<UGameplayAbilitySoldier> Ability2;
 
+	// Ability3
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Ability System Component|Abilities")
+	TSubclassOf<UGameplayAbilitySoldier> Ability3;
+
+public:
+	UFUNCTION()
+	TSubclassOf<UGameplayAbilitySoldier> GetClassAbility1() const;
+
+	UFUNCTION()
+	TSubclassOf<UGameplayAbilitySoldier> GetClassAbility2() const;
+
+	UFUNCTION()
+	TSubclassOf<UGameplayAbilitySoldier> GetClassAbility3() const;
+
 	// Additional effect (like hp regen)
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Ability System Component|Effects")
 	TArray<TSubclassOf<UGameplayEffect>> StartupEffects;
@@ -107,9 +121,24 @@ protected:
 	bool bAbilitiesInitialized;	
 	virtual void InitializeAttributes();
 	void InitializeAbilities();
+	void InitializeStartupAbilities();
+	virtual void InitializeMainFightingAbilities();
 	void AddStartupEffects();
 	void InitializeTagChangeCallbacks();
 	virtual void InitializeAttributeChangeCallbacks();
+
+public:
+	UFUNCTION(BlueprintCallable, Category = "Abilities")
+	bool ActivateAbilities(const FGameplayTagContainer& _TagContainer);
+
+	UFUNCTION(BlueprintCallable, Category = "Abilities")
+	bool ActivateAbility(const FGameplayTag& _Tag);
+
+	UFUNCTION(BlueprintCallable, Category = "Abilities")
+	void CancelAbilities(const FGameplayTagContainer& _TagContainer);
+
+	UFUNCTION(BlueprintCallable, Category = "Abilities")
+	void CancelAbility(const FGameplayTag& _Tag);
 
 public:
 	TSubclassOf<UGE_UpdateStats> GetStatAttributeEffects() const;
@@ -126,19 +155,11 @@ public:
 
 protected:
 	virtual void DeadTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
+	virtual void BlurredFromJammerTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 
 public:
-	UFUNCTION(BlueprintCallable, Category = "Abilities")
-	bool ActivateAbilities(const FGameplayTagContainer& _TagContainer);
-
-	UFUNCTION(BlueprintCallable, Category = "Abilities")
-	bool ActivateAbility(const FGameplayTag& _Tag);
-
-	UFUNCTION(BlueprintCallable, Category = "Abilities")
-	void CancelAbilities(const FGameplayTagContainer& _TagContainer);
-
-	UFUNCTION(BlueprintCallable, Category = "Abilities")
-	void CancelAbility(const FGameplayTag& _Tag);
+	UFUNCTION()
+	virtual void OnBlurredVisionFromJammer(const bool _IsBlurred);
 
 //////////////// Attributes
 public:
@@ -265,20 +286,8 @@ public:
 	UFUNCTION()
 	void MoveForward(const float _Val);
 
-	UPROPERTY(EditDefaultsOnly, Meta = (ClampMin = 0.0f, ClamMax = 1.0f), Category = "Movement")
-	float MaxInputForward;
-
-	UPROPERTY(EditDefaultsOnly, Meta = (ClampMin = -1.0f, ClamMax = 0.0f), Category = "Movement")
-	float MaxInputBackward;
-
 	UFUNCTION()
 	void MoveRight(const float _Val);
-
-	UPROPERTY(EditDefaultsOnly, Meta = (ClampMin = -1.0f, ClamMax = 0.0f), Category = "Movement")
-	float MaxInputLeft;
-
-	UPROPERTY(EditDefaultsOnly, Meta = (ClampMin = 0.0f, ClamMax = 1.0f), Category = "Movement")
-	float MaxInputRight;
 
 	// Looking direction
 	UFUNCTION()

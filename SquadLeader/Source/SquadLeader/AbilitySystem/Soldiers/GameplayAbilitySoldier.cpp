@@ -10,17 +10,30 @@ UGameplayAbilitySoldier::UGameplayAbilitySoldier()
 
 	// Default tags that block this ability from activating
 	ActivationBlockedTags.AddTag(FGameplayTag::RequestGameplayTag(FName("State.Dead")));
-	ActivationBlockedTags.AddTag(FGameplayTag::RequestGameplayTag(FName("State.Debuff")));
+	ActivationBlockedTags.AddTag(FGameplayTag::RequestGameplayTag(FName("State.Debuff.Movement")));
 }
 
 void UGameplayAbilitySoldier::ActivateAbility(const FGameplayAbilitySpecHandle _Handle, const FGameplayAbilityActorInfo* _OwnerInfo, const FGameplayAbilityActivationInfo _ActivationInfo, const FGameplayEventData* _TriggerEventData)
 {
-	if (ASoldierPlayer* SoldierPlayer = Cast<ASoldierPlayer>(_OwnerInfo->AvatarActor); SoldierPlayer)
+	if (ASoldierPlayer* SoldierPlayer = Cast<ASoldierPlayer>(_OwnerInfo->AvatarActor); SoldierPlayer && SoldierPlayer->IsLocallyControlled())
 	{
-		if (AbilityID == ESoldierAbilityInputID::Ability1 || AbilityID == ESoldierAbilityInputID::Ability2)
+		if (AbilityID == ESoldierAbilityInputID::Ability1 || AbilityID == ESoldierAbilityInputID::Ability2 || AbilityID == ESoldierAbilityInputID::Ability3)
+		{
 			SoldierPlayer->GetController<ASoldierPlayerController>()->NotifyMainAbilityCooldown(CooldownDuration.Value, AbilityID);
+		}
+		else if (GetClass() == SoldierPlayer->GetClassAbility1())
+		{
+			SoldierPlayer->GetController<ASoldierPlayerController>()->NotifyMainAbilityCooldown(CooldownDuration.Value, ESoldierAbilityInputID::Ability1);
+		}
+		else if (GetClass() == SoldierPlayer->GetClassAbility2())
+		{
+			SoldierPlayer->GetController<ASoldierPlayerController>()->NotifyMainAbilityCooldown(CooldownDuration.Value, ESoldierAbilityInputID::Ability2);
+		}
+		else if (GetClass() == SoldierPlayer->GetClassAbility3())
+		{
+			SoldierPlayer->GetController<ASoldierPlayerController>()->NotifyMainAbilityCooldown(CooldownDuration.Value, ESoldierAbilityInputID::Ability3);
+		}
 	}
-
 	Super::ActivateAbility(_Handle, _OwnerInfo, _ActivationInfo, _TriggerEventData);
 }
 
