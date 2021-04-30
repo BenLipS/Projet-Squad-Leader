@@ -40,6 +40,12 @@ protected:
 	UPROPERTY()
 	bool bPingActive = false;
 
+	UPROPERTY()
+	bool bMapInteractive = false;
+
+	UPROPERTY()
+	bool bMapKeyPressed = false;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	float Dimensions;
 
@@ -63,6 +69,9 @@ protected:
 	
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UCanvasPanel* MapPanel;
+	
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UCanvasPanel* MapPanelContainer;
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UScaleBox* ScaleBoxMap;
@@ -115,6 +124,14 @@ protected:
 	//virtual int32 NativePaint(const FPaintArgs& Args, const FGeometry& AllottedGeometry, const FSlateRect& MyCullingRect, FSlateWindowElementList& OutDrawElements, int32 LayerId, 	const FWidgetStyle& InWidgetStyle, 	bool bParentEnabled) const override;
 
 	bool IsInDisplay(FVector2D DifferenceVec, FVector2D Size);
+
+	virtual void OnAnimationFinished_Implementation(const UWidgetAnimation* Animation) override;
+
+	void SetInteractivity(bool InInteractivity);
+
+	virtual void NativeConstruct() override;
+
+	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 
 public:
 	UMinimapWidget(const FObjectInitializer& _ObjectInitializer);

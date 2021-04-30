@@ -10,6 +10,9 @@
 #include "Materials/MaterialParameterCollectionInstance.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
+#include "SquadLeader/Soldiers/Players/SoldierPlayerController.h"
+#include "SquadLeader/UI/SL_HUD.h"
+#include "Input/Reply.h"
 
 #include "Blueprint/WidgetTree.h"
 
@@ -49,6 +52,88 @@ bool UMinimapWidget::IsInDisplay(FVector2D DifferenceVec, FVector2D SizeIn)
 	default:
 		return false;
 	}
+}
+
+void UMinimapWidget::OnAnimationFinished_Implementation(const UWidgetAnimation* Animation)
+{
+	if (IsValid(MinimapToMap) && MinimapToMap == Animation)
+	{
+		SetInteractivity(bMapKeyPressed);
+	}
+}
+
+void UMinimapWidget::SetInteractivity(bool InInteractivity)
+{
+	if (bMapInteractive != InInteractivity)
+	{
+		bMapInteractive = InInteractivity;
+		if (auto PC = GetOwningPlayer<ASoldierPlayerController>(); PC)
+		{
+			if (bMapInteractive)
+			{
+				PC->SetShowMouseCursor(true);
+				PC->ClientIgnoreLookInput(true);
+				//PC->ClientIgnoreMoveInput(true);
+
+				FInputModeGameAndUI InputMode;
+				InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::LockAlways);
+				InputMode.SetWidgetToFocus(TakeWidget());
+				InputMode.SetHideCursorDuringCapture(true);
+
+				/*FInputModeUIOnly InputMode;
+				InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::LockAlways);*/
+
+				PC->SetInputMode(InputMode);
+
+
+				FVector2D Center = UWidgetLayoutLibrary::GetViewportSize(GetWorld()) / 2.0f;
+				PC->SetMouseLocation(Center.X, Center.Y);
+			}
+			else
+			{
+				PC->SetShowMouseCursor(false);
+				PC->ClientIgnoreLookInput(false);
+				/*PC->ClientIgnoreMoveInput(false);*/
+
+				FInputModeGameOnly InputMode;
+				InputMode.SetConsumeCaptureMouseDown(false);
+				PC->SetInputMode(InputMode);
+			}
+		}
+	}
+	
+}
+
+void UMinimapWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+	
+	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MaterialCollection, FName("Dimensions"), Dimensions);
+	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MaterialCollection, FName("Zoom"), 0.5f);
+	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MaterialCollection, FName("CenterMapX"), 10000.f);
+	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MaterialCollection, FName("CenterMapY"), 10000.f);
+
+}
+
+FReply UMinimapWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+	FVector2D posInWorld;
+	if (bMapInteractive && InMouseEvent.GetEffectingButton() == EKeys::LeftMouseButton)
+	{
+		FVector2D PosMouse = InMouseEvent.GetScreenSpacePosition();
+		FVector2D PosMap = MapPanelContainer->GetTickSpaceGeometry().GetAbsolutePositionAtCoordinates(FVector2D::ZeroVector);
+		FVector2D SizeMap = MapPanelContainer->GetTickSpaceGeometry().GetAbsoluteSize();
+		posInWorld = (PosMouse - PosMap) / SizeMap * 20000.f;
+		posInWorld.Y = 20000.f - posInWorld.Y;
+
+		FVector posIn3DWorld(posInWorld.Y, posInWorld.X, 0.f);
+
+		if (ASoldierPlayerController* PC = GetOwningPlayer<ASoldierPlayerController>(); PC)
+		{
+			PC->OnOrderGiven(MissionType::ePATROL, posIn3DWorld);
+		}
+	}
+	return Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
 }
 
 UMinimapWidget::UMinimapWidget(const FObjectInitializer& _ObjectInitializer) : USL_UserWidget(_ObjectInitializer),
@@ -251,6 +336,7 @@ void UMinimapWidget::OnUpdatePOIs()
 
 void UMinimapWidget::OnFullMapDisplayBegin()
 {
+	bMapKeyPressed = true;
 	if (IsValid(MinimapToMap))
 	{
 		PlayAnimationForward(MinimapToMap);
@@ -260,6 +346,8 @@ void UMinimapWidget::OnFullMapDisplayBegin()
 
 void UMinimapWidget::OnFullMapDisplayEnd()
 {
+	bMapKeyPressed = false;
+	SetInteractivity(false);
 	if (IsValid(MinimapToMap))
 	{
 		PlayAnimationReverse(MinimapToMap);
