@@ -28,7 +28,7 @@ ASL_Projectile::ASL_Projectile() : CollisionProfileNameMesh{ FName{"BlockAllDyna
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileComp"));
 	ProjectileMovement->UpdatedComponent = CollisionComp;
 
-	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
+	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
 	Mesh->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
 }
 
@@ -72,7 +72,7 @@ void ASL_Projectile::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME(ASL_Projectile, CollisionProfileNameMesh);
 }
 
-UStaticMeshComponent* ASL_Projectile::GetMesh() const
+USkeletalMeshComponent* ASL_Projectile::GetMesh() const
 {
 	return Mesh;
 }
@@ -80,8 +80,9 @@ UStaticMeshComponent* ASL_Projectile::GetMesh() const
 void ASL_Projectile::SetCollisionProfile(const FName& _Name)
 {
 	CollisionProfileNameMesh = _Name;
-	Mesh->SetCollisionProfileName(CollisionProfileNameMesh);
 	CollisionComp->SetCollisionProfileName(CollisionProfileNameMesh);
+	if (Mesh)
+		Mesh->SetCollisionProfileName(CollisionProfileNameMesh);
 }
 
 FName ASL_Projectile::GetCollisionProfile() const

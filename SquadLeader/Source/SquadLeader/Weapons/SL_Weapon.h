@@ -40,11 +40,11 @@ public:
 //////////////// Mesh
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Mesh")
-	UStaticMeshComponent* WeaponMesh;
+	USkeletalMeshComponent* WeaponMesh;
 
 public:
 	UFUNCTION(BlueprintCallable)
-	UStaticMeshComponent* GetWeaponMesh() const;
+	USkeletalMeshComponent* GetWeaponMesh() const;
 
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Mesh")

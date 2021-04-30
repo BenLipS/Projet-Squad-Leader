@@ -25,11 +25,11 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 protected:
-	UPROPERTY(EditDefaultsOnly, Category = "Mesh")
-	UStaticMeshComponent* Mesh;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Mesh")
+	USkeletalMeshComponent* Mesh;
 
 public:
-	UStaticMeshComponent* GetMesh() const;
+	USkeletalMeshComponent* GetMesh() const;
 
 protected:
 	// CollisionProfileName of the mesh

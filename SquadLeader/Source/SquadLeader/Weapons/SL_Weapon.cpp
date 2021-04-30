@@ -30,7 +30,7 @@ ASL_Weapon::ASL_Weapon() :
 	NetUpdateFrequency = 100.0f; // TODO: Tweak it
 
 	// Mesh
-	WeaponMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WeaponMesh"));
+	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
 
 	// Tags
 	WeaponAbilityTag = FGameplayTag::RequestGameplayTag("Ability.Skill.FireWeapon");
@@ -80,7 +80,7 @@ void ASL_Weapon::SetOwningSoldier(ASoldier* _InOwningCharacter)
 	SetInstigator(OwningSoldier);
 }
 
-UStaticMeshComponent* ASL_Weapon::GetWeaponMesh() const
+USkeletalMeshComponent* ASL_Weapon::GetWeaponMesh() const
 {
 	return WeaponMesh;
 }
