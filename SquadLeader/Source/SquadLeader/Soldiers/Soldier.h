@@ -275,9 +275,11 @@ public:
 	UPROPERTY(VisibleDefaultsOnly, Category = "Mesh")
 	USkeletalMeshComponent* FirstPersonMesh;
 
+	// Default right hand attach point if the weapon does not give one
 	UPROPERTY(EditDefaultsOnly, Category = "Inventory|Weapon")
 	FName WeaponAttachPointRightHand;
 
+	// Default left hand attach point if the weapon does not give one
 	UPROPERTY(EditDefaultsOnly, Category = "Inventory|Weapon")
 	FName WeaponAttachPointLeftHand;
 
@@ -344,6 +346,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Inventory|Weapon")
 	ASL_Weapon* GetCurrentWeapon() const;
 
+	UFUNCTION(BlueprintCallable, Category = "Inventory|Weapon")
+	TArray<ASL_Weapon*> GetAllWeapons() const;
+
 	// Define the attach point for the mesh as right hand - This is the default point - this will be useful to handle animations
 	UFUNCTION(BlueprintCallable, Category = "Inventory|Weapon")
 	void UseCurrentWeaponWithRightHand();
@@ -368,7 +373,13 @@ public:
 	void ServerEquipWeapon_Implementation(ASL_Weapon* _NewWeapon);
 
 protected:
+	// Return true if a weapon with the same class already exists
+	UFUNCTION(BlueprintCallable, Category = "Inventory|Weapon")
 	bool DoesWeaponExistInInventory(ASL_Weapon* _Weapon);
+
+	// Return the weapon in inventoery that matches the given weapon. Return nullptr if there is no such weapon
+	UFUNCTION(BlueprintCallable, Category = "Inventory|Weapon")
+	ASL_Weapon* GetWeaponWithSameClassInInventory(ASL_Weapon* _Weapon);
 
 	void SetCurrentWeapon(ASL_Weapon* _NewWeapon, ASL_Weapon* _LastWeapon);
 
@@ -472,14 +483,6 @@ public:
 	// Respawn
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Animation|Montages")
 	UAnimMontage* RespawnMontage;
-
-	// Weapon fire
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Animation|Montages")
-	UAnimMontage* WeaponFireMontage;
-
-	// Reload weapon
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Animation|Montages")
-	UAnimMontage* ReloadWeaponMontage;
 
 	// Throw projectile
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Animation|Montages")

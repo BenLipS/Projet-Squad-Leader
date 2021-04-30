@@ -110,7 +110,7 @@ void UGA_FireWeaponInstant::HandleTargetData(const FGameplayAbilityTargetDataHan
 	if (!_Data.IsValid(0))
 		return;
 
-	if (UAnimMontage* FireMontage = SourceSoldier->WeaponFireMontage; FireMontage)
+	if (UAnimMontage* FireMontage = SourceWeapon->FireMontage; FireMontage)
 		SourceSoldier->PlayAnimMontage(FireMontage);
 
 	ApplyEffectsToSource();

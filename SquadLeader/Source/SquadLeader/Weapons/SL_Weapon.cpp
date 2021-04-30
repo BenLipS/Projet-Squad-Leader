@@ -9,20 +9,7 @@
 #include "../Soldiers/Players/SoldierPlayerController.h"
 #include "../UI/SL_HUD.h"
 
-ASL_Weapon::ASL_Weapon() :
-	MuzzleAttachPoint{ FName("Muzzle") },
-	Damage{ FScalableFloat{1.f} },
-	MaxRange{ 999'999.f },
-	FieldOfViewAim {50.f},
-	TimeBetweenShots { 0.1f },
-	CurrentAmmo{ 50 },
-	MaxAmmo{ 50 },
-	bInfiniteAmmo{ false },
-	BaseSpread{ 0.f },
-	AimingSpreadMod{ 1.f },
-	TargetingSpreadIncrement{ 0.f },
-	TargetingSpreadMax{ 0.f },
-	CollisionProfileName{ FName{"InstantWeaponFire"} }
+ASL_Weapon::ASL_Weapon()
 {
 	PrimaryActorTick.bCanEverTick = false;
 	bReplicates = true;
@@ -40,8 +27,9 @@ ASL_Weapon::ASL_Weapon() :
 
 void ASL_Weapon::BeginPlay()
 {
-	ResetWeapon();
 	Super::BeginPlay();
+
+	ForceUpdateAmmo();
 }
 
 void ASL_Weapon::EndPlay(EEndPlayReason::Type _EndPlayReason)
@@ -53,6 +41,12 @@ void ASL_Weapon::EndPlay(EEndPlayReason::Type _EndPlayReason)
 		SphereTraceTargetActor->Destroy();
 
 	Super::EndPlay(_EndPlayReason);
+}
+
+void ASL_Weapon::Destroyed()
+{
+	RemoveAbilities();
+	Super::Destroyed();
 }
 
 void ASL_Weapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -90,11 +84,27 @@ FName ASL_Weapon::GetMuzzleAttachPoint() const
 	return MuzzleAttachPoint;
 }
 
+FName ASL_Weapon::GetRightHandAttachPoint() const
+{
+	return RightHandAttachPoint;
+}
+
+FName ASL_Weapon::GetLeftHandAttachPoint() const
+{
+	return LeftHandAttachPoint;
+}
+
 void ASL_Weapon::ResetWeapon()
 {
 	// Force HUD Update
 	SetMaxAmmo(MaxAmmo);
 	SetCurrentAmmo(MaxAmmo);
+}
+
+void ASL_Weapon::ForceUpdateAmmo()
+{
+	SetMaxAmmo(MaxAmmo);
+	SetCurrentAmmo(CurrentAmmo);
 }
 
 UAbilitySystemComponent* ASL_Weapon::GetAbilitySystemComponent() const
@@ -194,6 +204,11 @@ bool ASL_Weapon::IsFullAmmo() const noexcept
 	return CurrentAmmo == MaxAmmo;
 }
 
+bool ASL_Weapon::HasAmmo() const noexcept
+{
+	return CurrentAmmo > 0;
+}
+
 void ASL_Weapon::SetCurrentAmmo(const int32 _NewAmmo)
 {
 	CurrentAmmo = _NewAmmo;
@@ -212,8 +227,13 @@ void ASL_Weapon::SetCurrentAmmo(const int32 _NewAmmo)
 
 void ASL_Weapon::DecrementAmmo()
 {
-	if (!bInfiniteAmmo)
-		SetCurrentAmmo(CurrentAmmo - 1);
+	if (bInfiniteAmmo)
+		return;
+
+	SetCurrentAmmo(CurrentAmmo - 1);
+
+	if (!HasAmmo())
+		OnOutOfAmmo();
 }
 
 void ASL_Weapon::SetMaxAmmo(const int32 _NewMaxAmmo)
@@ -228,11 +248,6 @@ void ASL_Weapon::SetMaxAmmo(const int32 _NewMaxAmmo)
 				HUD->OnMaxAmmoChanged(MaxAmmo);
 		}
 	}
-}
-
-bool ASL_Weapon::HasAmmo() const noexcept
-{
-	return CurrentAmmo > 0;
 }
 
 void ASL_Weapon::ReloadWeapon()

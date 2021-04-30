@@ -27,7 +27,7 @@ void UGA_FireWeapon::ActivateAbility(const FGameplayAbilitySpecHandle Handle, co
 	ASoldier* SourceSoldier = Cast<ASoldier>(ActorInfo->AvatarActor);
 	SourceWeapon = Cast<ASL_Weapon>(SourceSoldier->GetCurrentWeapon());
 
-	UAbilitySystemSoldier* ASC = Cast<UAbilitySystemSoldier>(SourceSoldier->GetAbilitySystemComponent());
+	UAbilitySystemSoldier* ASC = Cast<UAbilitySystemSoldier>(GetAbilitySystemComponentFromActorInfo());
 
 	if (!ASC)
 	{
@@ -35,17 +35,11 @@ void UGA_FireWeapon::ActivateAbility(const FGameplayAbilitySpecHandle Handle, co
 		return;
 	}
 
-	InstantAbilityHandle = ASC->FindAbilitySpecHandleForClass(GA_FireWeaponInstantClass, SourceWeapon);
-	GA_FireWeaponInstantInstance = Cast<UGA_FireWeaponInstant>(ASC->GetPrimaryAbilityInstanceFromHandle(InstantAbilityHandle));
-
-	if (!GA_FireWeaponInstantInstance)
-	{
-		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
-		return;
-	}
-
 	if (SourceWeapon->HasAmmo() || SourceWeapon->HasInfiniteAmmo())
+	{
+		InstantAbilityHandle = ASC->FindAbilitySpecHandleForClass(GA_FireWeaponInstantClass, SourceWeapon);
 		HandleFire();
+	}
 	else
 		ReloadWeapon();
 
@@ -80,7 +74,10 @@ void UGA_FireWeapon::HandleFire()
 	}
 	else // if (SourceWeapon->GetFireMode() == FGameplayTag::RequestGameplayTag(FName("Weapon.FireMode.Automatic")))
 	{
-		if (!BatchRPCTryActivateAbility(InstantAbilityHandle, false))
+		UAbilitySystemSoldier* ASC = Cast<UAbilitySystemSoldier>(GetAbilitySystemComponentFromActorInfo());
+		GA_FireWeaponInstantInstance = Cast<UGA_FireWeaponInstant>(ASC->GetPrimaryAbilityInstanceFromHandle(InstantAbilityHandle));
+
+		if (!GA_FireWeaponInstantInstance || !BatchRPCTryActivateAbility(InstantAbilityHandle, false))
 		{
 			EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
 			return;

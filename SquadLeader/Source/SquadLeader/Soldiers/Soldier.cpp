@@ -618,14 +618,37 @@ ASL_Weapon* ASoldier::GetCurrentWeapon() const
 	return CurrentWeapon;
 }
 
+TArray<ASL_Weapon*> ASoldier::GetAllWeapons() const
+{
+	return Inventory.Weapons;
+}
+
 void ASoldier::UseCurrentWeaponWithRightHand()
 {
-	CurrentWeapon->GetWeaponMesh()->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, WeaponAttachPointRightHand);
+	if (!CurrentWeapon->GetWeaponMesh())
+	{
+		return;
+		UE_LOG(LogTemp, Error, TEXT("%s() No mesh on the weapon"), *FString(__FUNCTION__));
+	}
+
+	// Get attach point name provided by the weapon. If the name is empty we use the default point from soldier
+	const FName AttachPoint = CurrentWeapon->GetRightHandAttachPoint() != NAME_None ? CurrentWeapon->GetRightHandAttachPoint() : WeaponAttachPointRightHand;
+
+	CurrentWeapon->GetWeaponMesh()->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, AttachPoint);
 }
 
 void ASoldier::UseCurrentWeaponWithLeftHand()
 {
-	CurrentWeapon->GetWeaponMesh()->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, WeaponAttachPointLeftHand);
+	if (!CurrentWeapon->GetWeaponMesh())
+	{
+		return;
+		UE_LOG(LogTemp, Error, TEXT("%s() No mesh on the weapon"), *FString(__FUNCTION__));
+	}
+
+	// Get attach point name provided by the weapon. If the name is empty we use the default point from soldier
+	const FName AttachPoint = CurrentWeapon->GetLeftHandAttachPoint() != NAME_None ? CurrentWeapon->GetLeftHandAttachPoint() : WeaponAttachPointLeftHand;
+
+	CurrentWeapon->GetWeaponMesh()->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, AttachPoint);
 }
 
 bool ASoldier::AddWeaponToInventory(ASL_Weapon* _NewWeapon, const bool _bEquipWeapon)
@@ -633,15 +656,28 @@ bool ASoldier::AddWeaponToInventory(ASL_Weapon* _NewWeapon, const bool _bEquipWe
 	if (!_NewWeapon || GetLocalRole() < ROLE_Authority)
 		return false;
 
-	if (DoesWeaponExistInInventory(_NewWeapon))
+	if (_bEquipWeapon)
 	{
-		_NewWeapon->Destroy(); // TODO: Do I really need to destroy the weapon ?
+		// We check if a similar weapon exist to equip it
+		if (ASL_Weapon* ExistingWeapon = GetWeaponWithSameClassInInventory(_NewWeapon); ExistingWeapon)
+		{
+			Inventory.Weapons.Remove(ExistingWeapon);
+			ExistingWeapon->Destroy();
+			EquipWeapon(_NewWeapon);
+			ClientSyncCurrentWeapon(CurrentWeapon);
+			return true;
+		}
+		// else we add the new weapon to the inventory - this is done below
+
+	}
+	else if (DoesWeaponExistInInventory(_NewWeapon))
+	{
+		_NewWeapon->Destroy();
 		return false;
 	}
 
 	Inventory.Weapons.Add(_NewWeapon);
 	_NewWeapon->SetOwningSoldier(this);
-	_NewWeapon->AddAbilities();
 
 	if (_bEquipWeapon)
 	{
@@ -675,15 +711,20 @@ bool ASoldier::ServerEquipWeapon_Validate(ASL_Weapon* _NewWeapon)
 
 bool ASoldier::DoesWeaponExistInInventory(ASL_Weapon* _Weapon)
 {
-	if (!_Weapon)
-		return false;
+	return !!GetWeaponWithSameClassInInventory(_Weapon);
+}
 
-	for (ASL_Weapon* Weapon : Inventory.Weapons)
+ASL_Weapon* ASoldier::GetWeaponWithSameClassInInventory(ASL_Weapon* _Weapon)
+{
+	if (!_Weapon)
+		return nullptr;
+
+	for (ASL_Weapon* ExistingWeapon : Inventory.Weapons)
 	{
-		if (Weapon && Weapon->GetClass() == _Weapon->GetClass())
-			return true;
+		if (ExistingWeapon && ExistingWeapon->GetClass() == _Weapon->GetClass())
+			return ExistingWeapon;
 	}
-	return false;
+	return nullptr;
 }
 
 void ASoldier::SetCurrentWeapon(ASL_Weapon* _NewWeapon, ASL_Weapon* _LastWeapon)
@@ -699,37 +740,42 @@ void ASoldier::SetCurrentWeapon(ASL_Weapon* _NewWeapon, ASL_Weapon* _LastWeapon)
 	}
 
 	UnEquipWeapon(_LastWeapon);
+	if (_LastWeapon)
+		_LastWeapon->RemoveAbilities();
 
 	if (_NewWeapon)
 	{
+		// Clear out potential NoWeaponTag
 		if (AbilitySystemComponent)
-		{
-			// Clear out potential NoWeaponTag
 			AbilitySystemComponent->RemoveLooseGameplayTag(CurrentWeaponTag);
-		}
 
 		// Weapons coming from OnRep_CurrentWeapon won't have the owner set
 		CurrentWeapon = _NewWeapon;
 		CurrentWeapon->SetOwningSoldier(this);
+		CurrentWeapon->AddAbilities();
 		CurrentWeaponTag = CurrentWeapon->WeaponTag;
 
 		if (AbilitySystemComponent)
 			AbilitySystemComponent->AddLooseGameplayTag(CurrentWeaponTag);
 
+		// Visual part
 		UseCurrentWeaponWithRightHand();
-		CurrentWeapon->GetWeaponMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		CurrentWeapon->SetActorHiddenInGame(false);
+		CurrentWeapon->ForceUpdateAmmo();
 
-		// TODO: Do update for HUD through player controller here
+		if (CurrentWeapon->GetWeaponMesh())
+			CurrentWeapon->GetWeaponMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-		// TODO: Play montage/ sound cue on the needs
+		// Reload if the new weapon is empty
+		if (!CurrentWeapon->HasAmmo())
+			ActivateAbility(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.ReloadWeapon")));
 	}
 }
 
 void ASoldier::UnEquipWeapon(ASL_Weapon* _WeaponToUnEquip)
 {
-	// TODO: See if we need this function
-	//if (_WeaponToUnEquip)
-	//	_WeaponToUnEquip->UnEquip();
+	if (_WeaponToUnEquip)
+		_WeaponToUnEquip->SetActorHiddenInGame(true);
 }
 
 void ASoldier::OnRep_CurrentWeapon(ASL_Weapon* _LastWeapon)
