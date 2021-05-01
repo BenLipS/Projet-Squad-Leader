@@ -13,6 +13,7 @@
 #include "SquadLeader/Soldiers/Players/SoldierPlayerController.h"
 #include "SquadLeader/UI/SL_HUD.h"
 #include "Input/Reply.h"
+#include "../ControlAreaInfoWidget.h"
 
 #include "Blueprint/WidgetTree.h"
 
@@ -201,7 +202,7 @@ void UMinimapWidget::OnSoldierAddedToTeam(ASoldier* _Soldier)
 
 void UMinimapWidget::OnControlAreaAdded(AControlArea* _ControlArea)
 {
-	UPointOfInterestWidget* POI = CreateWidget<UPointOfInterestWidget>(MinimapControlAreaOverlay, ControlAreaIconWidgetClass);
+	UControlAreaInfoWidget* POI = CreateWidget<UControlAreaInfoWidget>(MinimapControlAreaOverlay, ControlAreaIconWidgetClass);
 
 	if (POI)
 	{
@@ -213,6 +214,14 @@ void UMinimapWidget::OnControlAreaAdded(AControlArea* _ControlArea)
 		}
 
 		POI->OwningActor = _ControlArea;
+		POI->bPersistant = true;
+		POI->OnControlAreaOwnerChange(0);
+		POI->OnControlAreaCapturerChange(0);
+		POI->OnControlAreaPercentageChange(0.f);
+
+		_ControlArea->OnOwnerChanged.AddDynamic(POI, &UControlAreaInfoWidget::OnControlAreaOwnerChange);
+		_ControlArea->OnCapturerChanged.AddDynamic(POI, &UControlAreaInfoWidget::OnControlAreaCapturerChange);
+		_ControlArea->OnPercentageChanged.AddDynamic(POI, &UControlAreaInfoWidget::OnControlAreaPercentageChange);
 
 		POIList.Add(POI);
 	}
