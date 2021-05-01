@@ -63,10 +63,12 @@ void UGA_WallVision::EndAbility(const FGameplayAbilitySpecHandle Handle, const F
 
 void UGA_WallVision::MontageCompletedOrBlendedOut()
 {
+	SourceSoldier->UseCurrentWeaponWithRightHand();
 }
 
 void UGA_WallVision::MontageInterruptedOrCancelled()
 {
+	SourceSoldier->UseCurrentWeaponWithRightHand();
 	CancelAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true);
 }
 
