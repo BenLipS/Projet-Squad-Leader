@@ -87,7 +87,7 @@ void PlayerData::WriteFile(FString FileName, FString Content) {
         // We use the LoadFileToString to load the file into
         if (FFileHelper::SaveStringToFile(StringToWrite, *file))
         {
-            UE_LOG(LogTemp, Warning, TEXT("FileManipulation: Succesfuly Written: \"%s\" to the text file"), *StringToWrite);
+            //UE_LOG(LogTemp, Warning, TEXT("FileManipulation: Succesfuly Written: \"%s\" to the text file"), *StringToWrite);
         }
         else
         {

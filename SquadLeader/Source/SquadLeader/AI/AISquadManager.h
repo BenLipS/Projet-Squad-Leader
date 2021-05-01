@@ -56,8 +56,10 @@ public:
 	TArray<AAISquadController*> AISquadList;
 
 protected:
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-	uint8 StartNumberOfSoldiers = 3;
+	UPROPERTY(EditDefaultsOnly)
+		int OverrideStartNumberOfSoldiers = -1;
+	UPROPERTY(BlueprintReadOnly)
+		uint8 StartNumberOfSoldiers = 3;
 
 public:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)

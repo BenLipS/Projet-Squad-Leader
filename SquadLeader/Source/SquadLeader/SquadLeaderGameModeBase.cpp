@@ -3,17 +3,17 @@
 #include "UObject/ConstructorHelpers.h"
 #include "Soldiers/Players/SoldierPlayerController.h"
 #include "Soldiers/Players/SoldierPlayerState.h"
-#include "SquadLeaderGameInstance.h"
 #include "Soldiers/Soldier.h"
+#include "AbilitySystemGlobals.h"
+#include "SquadLeaderGameInstance.h"
+#include "MainMenu/GameParam/GameParam.h"
 
-#include "Interface/PreInitable.h"
 #include "GameState/SquadLeaderGameState.h"
 #include "GameState/SquadLeaderInitGameState.h"
 #include "GameState/SquadLeaderCloseGameState.h"
-#include "AbilitySystemGlobals.h"
 
 
-ASquadLeaderGameModeBase::ASquadLeaderGameModeBase() : RespawnDelay{ 3.f }
+ASquadLeaderGameModeBase::ASquadLeaderGameModeBase()
 {
 	static ConstructorHelpers::FClassFinder<ASoldierPlayerController> PlayerControllerObject(TEXT("/Game/BluePrints/Soldiers/Players/BP_SoldierPlayerController"));
 	static ConstructorHelpers::FClassFinder<ASoldierPlayerState> PlayerStateObject(TEXT("/Game/BluePrints/Soldiers/Players/BP_SoldierPlayerState"));
@@ -26,27 +26,6 @@ ASquadLeaderGameModeBase::ASquadLeaderGameModeBase() : RespawnDelay{ 3.f }
 
 	ListAISquadManagers = {};
 	UAbilitySystemGlobals::Get().InitGlobalData();
-}
-
-void ASquadLeaderGameModeBase::InitGameWithGameState() {
-	// set parameters for GameState's spawn
-	FActorSpawnParameters SpawnInfo;
-	SpawnInfo.Instigator = GetInstigator();
-	SpawnInfo.ObjectFlags |= RF_Transient;
-	
-	// change gameState
-	GameStateClass = ASquadLeaderInitGameState::StaticClass();
-
-	// spawn and set GameState
-	UWorld* World = GetWorld();
-	GameState = World->SpawnActor<ASquadLeaderInitGameState>(GameStateClass, SpawnInfo);
-	World->SetGameState(GameState);
-	if (GameState)
-	{
-		GameState->AuthorityGameMode = this;
-	}
-
-	InitGameState();
 }
 
 
@@ -84,7 +63,7 @@ void ASquadLeaderGameModeBase::PreLogin(const FString& Options, const FString& A
 
 	// send a message to remove the match in the match-macking system
 	if (AlreadyConnectedPlayerNumber >= 6) {
-		// TODO Thomas Ba
+		// GetGameInstance<USquadLeaderGameInstance>()->RemoveGameOnServer()  // TODO Thomas Ba
 	}
 
 	FGameModeEvents::GameModePreLoginEvent.Broadcast(this, UniqueId, ErrorMessage);
@@ -94,15 +73,36 @@ void ASquadLeaderGameModeBase::Logout(AController* Exiting)
 {
 	// notifies that a player has left
 	if (GEngine)GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Black, TEXT("A player left the game."));  // message for the server only
+	// TODO: ensure that the player is correctly destroy
 
 	// do the basic job
 	Super::Logout(Exiting);
 }
 
 
+void ASquadLeaderGameModeBase::ChangeGameState() {
+	// set parameters for GameState's spawn
+	FActorSpawnParameters SpawnInfo;
+	SpawnInfo.Instigator = GetInstigator();
+	SpawnInfo.ObjectFlags |= RF_Transient;
+	
+	// change gameState
+	GameStateClass = ASquadLeaderInitGameState::StaticClass();
+
+	// spawn and set GameState
+	UWorld* World = GetWorld();
+	GameState = World->SpawnActor<ASquadLeaderInitGameState>(GameStateClass, SpawnInfo);
+	World->SetGameState(GameState);
+	if (GameState)
+	{
+		GameState->AuthorityGameMode = this;
+	}
+	InitGameState();
+}
+
+
 void ASquadLeaderGameModeBase::StartPlay() {
-	// Set the GameState
-	//InitGameWithGameState();
+	FetchGameParam();
 
 	// Launch the game initialization from the GameState 
 	if (auto SLInitGameState = Cast<ASquadLeaderInitGameState>(GameState); SLInitGameState) {
@@ -118,6 +118,18 @@ void ASquadLeaderGameModeBase::StartPlay() {
 	GetWorldTimerManager().SetTimer(Handle, this, &ASquadLeaderGameModeBase::GrantOverTimeEXPToSoldier, TimeBetweenGrantedEXP, true);
 
 	Super::StartPlay();
+}
+
+void ASquadLeaderGameModeBase::FetchGameParam()
+{
+	// import game param from SquadLeaderGameInstance's GameParam object
+	UGameParam* ImportedGameParam = GetGameInstance<USquadLeaderGameInstance>()->GameParam.GetDefaultObject();
+	RespawnDelay = ImportedGameParam->RespawnDuration;
+	Weather = ImportedGameParam->Weather;
+	BaseTicketsNumber = ImportedGameParam->NbTickets;
+	AIBasicAssaultNumber = ImportedGameParam->NbAIBasicAssault;
+	AIBasicHeavyNumber = ImportedGameParam->NbAIBasicHeavy;
+	StartingAISquadNumber = ImportedGameParam->StartingNbAISquad;
 }
 
 
@@ -216,10 +228,10 @@ void ASquadLeaderGameModeBase::EndGame(ASoldierTeam* WinningTeam)
 		if (auto PC = Cast<ASoldierPlayerController>(PCIterator->Get()); PC)
 		{
 			if (PC->GetTeam() == WinningTeam) {
-				PC->OnGameEnd("VICTORY !");
+				PC->OnGameEnd(1, GetGameTimeSinceCreation());
 			}
 			else {
-				PC->OnGameEnd("DEFEAT !");
+				PC->OnGameEnd(-1, GetGameTimeSinceCreation());
 			}
 		}
 	}
@@ -256,23 +268,47 @@ void ASquadLeaderGameModeBase::GrantOverTimeEXPToSoldier()
 void ASquadLeaderGameModeBase::NotifySoldierKilled(ASoldier* _DeadSoldier, ASoldier* _Killer)
 {
 	// Grant EXP to the killed player
-	if (ASoldierPlayer* _DeadSoldierPlayer = Cast<ASoldierPlayer>(_DeadSoldier); _DeadSoldierPlayer)
+	if (ASoldierPlayer* _DeadSoldierPlayer = Cast<ASoldierPlayer>(_DeadSoldier); _DeadSoldierPlayer) {
 		_DeadSoldierPlayer->GrantEXP(EXP_Death);
+
+		// Find if the killer is a soldier or an AI
+		if (_Killer->IsA<ASoldierPlayer>()) {
+			if (auto PS = _DeadSoldierPlayer->GetPlayerState<ASoldierPlayerState>(); PS) PS->PersonalRecord->NbDeathByPlayer++;
+		}
+		else {  // the killer is an AI
+			if (auto PS = _DeadSoldierPlayer->GetPlayerState<ASoldierPlayerState>(); PS) PS->PersonalRecord->NbDeathByAI++;
+		}
+	}
 
 	// Only Grant EXP to enemies
 	if (_DeadSoldier->GetTeam() == _Killer->GetTeam())
 		return;
 
 	// Grant EXP to the killer player
-	if (_Killer->IsA<ASoldierPlayer>())
+	if (ASoldierPlayer* _KillerPlayer = Cast<ASoldierPlayer>(_Killer); _KillerPlayer)
 	{
-		_Killer->GrantEXP(EXP_Kill);
+		_KillerPlayer->GrantEXP(EXP_Kill);
+
+		// Find if the dead soldier is a soldier or an AI
+		if (_DeadSoldier->IsA<ASoldierPlayer>()) {
+			if (auto PS = _KillerPlayer->GetPlayerState<ASoldierPlayerState>(); PS) PS->PersonalRecord->NbKillPlayer++;
+		}
+		else {  // the dead soldier is an AI
+			if (auto PS = _KillerPlayer->GetPlayerState<ASoldierPlayerState>(); PS) PS->PersonalRecord->NbKillAI++;
+		}
 	}
 	// Grant EXP to the leader if the killer is a squad AI
 	else if (AAISquadController* SquadController = Cast<AAISquadController>(_Killer->GetController()); SquadController && SquadController->SquadManager)
 	{	
-		if (ASoldierPlayer* Leader = SquadController->SquadManager->Leader; Leader)
+		if (ASoldierPlayer* Leader = SquadController->SquadManager->Leader; Leader) {
 			Leader->GrantEXP(EXP_KillSquad);
+			if (_DeadSoldier->IsA<ASoldierPlayer>()) {
+				if (auto PS = Leader->GetPlayerState<ASoldierPlayerState>(); PS) PS->PersonalRecord->NbKillPlayer++;
+			}
+			else {  // the dead soldier is an AI
+				if (auto PS = Leader->GetPlayerState<ASoldierPlayerState>(); PS) PS->PersonalRecord->NbKillAI++;
+			}
+		}
 	}
 }
 
