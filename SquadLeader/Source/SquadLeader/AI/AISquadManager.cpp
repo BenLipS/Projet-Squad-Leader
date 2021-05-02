@@ -52,6 +52,8 @@ void AAISquadManager::Init(ASoldierTeam* _Team, ASoldierPlayer* _Player)
 		FTransform TransformAI = PlayerTransform;
 		TransformAI.SetLocation(PlayerTransform.GetLocation() + FVector{ 300.f, 0.f, 0.f }.RotateAngleAxis(Angle, FVector{ 0.f, 0.f, 1.f }));
 
+		TransformAI.SetScale3D(FVector::OneVector);
+
 		// TODO: Spawn all the classAIs. Perhaps use a TArray
 		ASoldierAI* SquadAI = GetWorld()->SpawnActorDeferred<ASoldierAI>(ClassAI1, TransformAI, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 		if (SquadAI)
