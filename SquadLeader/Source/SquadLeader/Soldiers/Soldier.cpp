@@ -657,9 +657,8 @@ bool ASoldier::AddWeaponToInventory(ASL_Weapon* _NewWeapon, const bool _bEquipWe
 		// We check if a similar weapon exist to equip it
 		if (ASL_Weapon* ExistingWeapon = GetWeaponWithSameClassInInventory(_NewWeapon); ExistingWeapon)
 		{
-			Inventory.Weapons.Remove(ExistingWeapon);
-			ExistingWeapon->Destroy();
-			EquipWeapon(_NewWeapon);
+			_NewWeapon->Destroy();
+			EquipWeapon(ExistingWeapon);
 			ClientSyncCurrentWeapon(CurrentWeapon);
 			return true;
 		}
@@ -693,6 +692,18 @@ void ASoldier::EquipWeapon(ASL_Weapon* _NewWeapon)
 	}
 	else
 		SetCurrentWeapon(_NewWeapon, CurrentWeapon);
+}
+
+void ASoldier::EquipWeapon(UClass* _WeaponClass)
+{
+	for (ASL_Weapon* ExistingWeapon : Inventory.Weapons)
+	{
+		if (ExistingWeapon && ExistingWeapon->GetClass() == _WeaponClass)
+		{
+			EquipWeapon(ExistingWeapon);
+			ClientSyncCurrentWeapon(CurrentWeapon);
+		}
+	}
 }
 
 void ASoldier::ServerEquipWeapon_Implementation(ASL_Weapon* _NewWeapon)

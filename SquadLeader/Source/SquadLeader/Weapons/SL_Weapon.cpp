@@ -18,6 +18,7 @@ ASL_Weapon::ASL_Weapon()
 
 	// Mesh
 	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
+	WeaponMesh->SetupAttachment(RootComponent);
 
 	// Tags
 	WeaponAbilityTag = FGameplayTag::RequestGameplayTag("Ability.Skill.FireWeapon");

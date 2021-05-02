@@ -352,8 +352,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Inventory|Weapon")
 	bool AddWeaponToInventory(ASL_Weapon* _NewWeapon, const bool _bEquipWeapon = false);
 
-	UFUNCTION(BlueprintCallable, Category = "Inventory|Weapon")
+	//UFUNCTION(BlueprintCallable, Category = "Inventory|Weapon")
 	void EquipWeapon(ASL_Weapon* _NewWeapon);
+
+	// aJOUTE MATCHINGCLASS
+	UFUNCTION(BlueprintCallable, Category = "Inventory|Weapon")
+	void EquipWeapon(UClass* _WeaponClass);
 
 	UFUNCTION(Server, Reliable, Category = "Inventory|Weapon")
 	void ServerEquipWeapon(ASL_Weapon* _NewWeapon);
