@@ -38,6 +38,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Formation Behaviour")
 	float StopHysteresisDistanceForFormation = 100.f;
 
+	UPROPERTY()
+	FVector FormationPosBeforeTransform = FVector::ZeroVector;
+
 /////////// Respawn
 public:
 	AAISquadController();

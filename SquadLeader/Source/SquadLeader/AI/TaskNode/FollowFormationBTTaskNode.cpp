@@ -30,10 +30,10 @@ EBTNodeResult::Type UFollowFormationBTTaskNode::ExecuteTask(UBehaviorTreeCompone
 
 void UFollowFormationBTTaskNode::TickTask(class UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) {
 	AAISquadController* AISquadController = Cast<AAISquadController>(OwnerComp.GetOwner());
-	
-	if ((AISquadController->get_blackboard()->GetValueAsVector("FormationLocation") - (Cast<AAISquadController>(OwnerComp.GetOwner())->GetPawn()->GetActorLocation())).Size() < AISquadController->StopHysteresisDistanceForFormation)
+	int test = (AISquadController->FormationPosBeforeTransform - AISquadController->GetPawn()->GetActorLocation()).Size();
+	if ((AISquadController->FormationPosBeforeTransform - AISquadController->GetPawn()->GetActorLocation()).Size() < AISquadController->StopHysteresisDistanceForFormation)
 		HysteresisDoFollow = false;
-	if ((AISquadController->get_blackboard()->GetValueAsVector("FormationLocation") - (Cast<AAISquadController>(OwnerComp.GetOwner())->GetPawn()->GetActorLocation())).Size() > AISquadController->HysteresisDistanceForFormation)
+	if ((AISquadController->FormationPosBeforeTransform - AISquadController->GetPawn()->GetActorLocation()).Size() > AISquadController->HysteresisDistanceForFormation)
 		HysteresisDoFollow = true;
 
 	if (HysteresisDoFollow) {
@@ -47,9 +47,9 @@ void UFollowFormationBTTaskNode::TickTask(class UBehaviorTreeComponent& OwnerCom
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	}
 
-	if ((AISquadController->get_blackboard()->GetValueAsVector("FormationLocation") - (Cast<AAISquadController>(OwnerComp.GetOwner())->GetPawn()->GetActorLocation())).Size() < AISquadController->StopHysteresisRunningDistanceForFormation)
+	if ((AISquadController->FormationPosBeforeTransform - (Cast<AAISquadController>(OwnerComp.GetOwner())->GetPawn()->GetActorLocation())).Size() < AISquadController->StopHysteresisRunningDistanceForFormation)
 		AISquadController->HysteresisDoRunningFormation = false;
-	if ((AISquadController->get_blackboard()->GetValueAsVector("FormationLocation") - (Cast<AAISquadController>(OwnerComp.GetOwner())->GetPawn()->GetActorLocation())).Size() > AISquadController->HysteresisRunningDistanceForFormation)
+	if ((AISquadController->FormationPosBeforeTransform - (Cast<AAISquadController>(OwnerComp.GetOwner())->GetPawn()->GetActorLocation())).Size() > AISquadController->HysteresisRunningDistanceForFormation)
 		AISquadController->HysteresisDoRunningFormation = true;
 
 	if (AISquadController->HysteresisDoRunningFormation && !AISquadController->IsRunning) {

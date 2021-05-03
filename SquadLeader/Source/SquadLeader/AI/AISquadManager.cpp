@@ -177,7 +177,7 @@ void AAISquadManager::UpdateCircleFormation()
 		Offset = Offset.RotateAngleAxis(angle, { 0, 0, 1 });
 		Offset = Offset.RotateAngleAxis(AnglePerAI * AISquadList.IndexOfByKey(BoidController), { 0, 0, 1 });
 		Pos = LocPlayer + Offset;
-		//DrawDebugPoint(Leader->GetWorld(), Pos, 20, FColor::Yellow);
+		DrawDebugPoint(Leader->GetWorld(), Pos, 20, FColor::Yellow);
 		FormationPos.Add(Pos);
 		});
 }
