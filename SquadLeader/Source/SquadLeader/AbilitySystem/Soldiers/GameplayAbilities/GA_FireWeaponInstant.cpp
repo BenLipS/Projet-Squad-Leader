@@ -107,7 +107,8 @@ void UGA_FireWeaponInstant::FireBullet()
 
 void UGA_FireWeaponInstant::HandleTargetData(const FGameplayAbilityTargetDataHandle& _Data)
 {
-	if (!_Data.IsValid(0))
+	// We only work on the last data element which is the blocked element - TODO: Check rare case where it is not a blocked element. It is possible if we fire through an ally shield but don't reach anything else
+	if (!_Data.IsValid(_Data.Data.Num() - 1))
 		return;
 
 	if (UAnimMontage* FireMontage = SourceWeapon->FireMontage; FireMontage)
@@ -115,28 +116,28 @@ void UGA_FireWeaponInstant::HandleTargetData(const FGameplayAbilityTargetDataHan
 
 	ApplyEffectsToSource();
 
-	FGameplayEffectSpecHandle DamageEffectSpecHandle = MakeOutgoingGameplayEffectSpec(GE_DamageClass, GetAbilityLevel());
-	DamageEffectSpecHandle.Data->SetSetByCallerMagnitude(FGameplayTag::RequestGameplayTag(FName("Data.Damage")), SourceWeapon->GetWeaponDamage());
 	const FGameplayAbilityTargetData* Data = _Data.Get(_Data.Data.Num() - 1);
+	const float BaseWeaponDamage = SourceWeapon->GetWeaponDamage();
 
 	for (TWeakObjectPtr<AActor> Actor : Data->GetActors())
 	{
+		// Target is soldier
 		if (ASoldier* TargetSoldier = Cast<ASoldier>(Actor); TargetSoldier && TargetSoldier->GetAbilitySystemComponent())
 		{
-			if (SourceSoldier->GetTeam() != TargetSoldier->GetTeam())
-			{
-				ApplyDamages(_Data, DamageEffectSpecHandle, TargetSoldier->GetAbilitySystemComponent());
+			if (ApplyDamages(_Data, TargetSoldier, BaseWeaponDamage))
 				TargetSoldier->OnReceiveDamage(Data->GetHitResult()->ImpactPoint, Data->GetHitResult()->TraceStart);
-			}
 		}
+		// Target is shield
 		else if (AShield* Shield = Cast<AShield>(Actor); Shield)
 		{
-			ApplyDamages(Shield, SourceWeapon->GetWeaponDamage());
+			ApplyDamages(Shield, BaseWeaponDamage);
 		}
 	}
 
 	// Gameplay cue
-	FGameplayEffectContextHandle EffectContext = DamageEffectSpecHandle.Data->GetEffectContext();
+	UAbilitySystemSoldier* ASC = Cast<UAbilitySystemSoldier>(GetAbilitySystemComponentFromActorInfo());
+
+	FGameplayEffectContextHandle EffectContext = ASC->MakeEffectContext();
 	EffectContext.AddHitResult(*Data->GetHitResult());
 
 	FGameplayCueParameters GC_Parameters;
@@ -154,15 +155,37 @@ void UGA_FireWeaponInstant::ApplyEffectsToSource()
 	SourceSoldier->GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*FiringEffectSpecHandle.Data.Get());
 }
 
-void UGA_FireWeaponInstant::ApplyDamages(const FGameplayAbilityTargetDataHandle& _Data, const FGameplayEffectSpecHandle& _DamageEffectSpecHandle, UAbilitySystemComponent* _TargetASC)
+bool UGA_FireWeaponInstant::ApplyDamages(const FGameplayAbilityTargetDataHandle& _Data, ASoldier* _TargetSoldier, const float _Damage)
 {
-	SourceSoldier->GetAbilitySystemComponent()->ApplyGameplayEffectSpecToTarget(*_DamageEffectSpecHandle.Data.Get(), _TargetASC);
+	if (SourceSoldier->GetTeam() != _TargetSoldier->GetTeam())
+	{
+		// Check for head shot damage - TODO: Have a multiplier for each weapon
+		const float FinalDamage = IsHeadShot(*_Data.Data[0].Get()->GetHitResult()) ? _Damage * 2.5f : _Damage;
+
+		FGameplayEffectSpecHandle DamageEffectSpecHandle = MakeOutgoingGameplayEffectSpec(GE_DamageClass, GetAbilityLevel());
+		DamageEffectSpecHandle.Data->SetSetByCallerMagnitude(FGameplayTag::RequestGameplayTag(FName("Data.Damage")), FinalDamage);
+
+		UAbilitySystemSoldier* TargetASC = _TargetSoldier->GetAbilitySystemComponent();
+		SourceSoldier->GetAbilitySystemComponent()->ApplyGameplayEffectSpecToTarget(*DamageEffectSpecHandle.Data.Get(), TargetASC);
+
+		return true;
+	}
+	return false;
 }
 
-void UGA_FireWeaponInstant::ApplyDamages(AShield* _Shield, const float _Damages)
+bool UGA_FireWeaponInstant::ApplyDamages(AShield* _Shield, const float _Damages)
 {
 	if (_Shield->GetTeam() != SourceSoldier->GetTeam())
+	{
 		_Shield->ApplyDamages(_Damages);
+		return true;
+	}
+	return false;
+}
+
+bool UGA_FireWeaponInstant::IsHeadShot(const FHitResult& _HitResult) const
+{
+	return _HitResult.BoneName.IsEqual(FName{ "head" }, ENameCase::IgnoreCase);
 }
 
 void UGA_FireWeaponInstant::ReloadWeapon()
