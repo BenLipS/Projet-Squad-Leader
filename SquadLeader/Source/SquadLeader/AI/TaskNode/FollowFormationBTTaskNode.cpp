@@ -16,7 +16,7 @@ EBTNodeResult::Type UFollowFormationBTTaskNode::ExecuteTask(UBehaviorTreeCompone
 {
 	// Obtenir un pointeur sur AIEnemyController
 	AAISquadController* AISquadController = Cast<AAISquadController>(OwnerComp.GetOwner());
-	// Appeler la fonctionUpdateNextTargetPoint qui contient la logique pour sélectionner
+	// Appeler la fonctionUpdateNextTargetPoint qui contient la logique pour slectionner
 	 // le prochain TargetPoint
 	HysteresisDoFollow = false;
 	AISquadController->HysteresisDoRunningFormation = false;
@@ -30,7 +30,6 @@ EBTNodeResult::Type UFollowFormationBTTaskNode::ExecuteTask(UBehaviorTreeCompone
 
 void UFollowFormationBTTaskNode::TickTask(class UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) {
 	AAISquadController* AISquadController = Cast<AAISquadController>(OwnerComp.GetOwner());
-	int test = (AISquadController->FormationPosBeforeTransform - AISquadController->GetPawn()->GetActorLocation()).Size();
 	if ((AISquadController->FormationPosBeforeTransform - AISquadController->GetPawn()->GetActorLocation()).Size() < AISquadController->StopHysteresisDistanceForFormation)
 		HysteresisDoFollow = false;
 	if ((AISquadController->FormationPosBeforeTransform - AISquadController->GetPawn()->GetActorLocation()).Size() > AISquadController->HysteresisDistanceForFormation)
