@@ -110,7 +110,7 @@ bool AAreaEffect::ValidateEffectOnSoldier(const FHitResult& _HitSoldier, const T
 
 	FilterTraceWithShield(HitResults);
 
-	return (HitResults.Last().Actor == _HitSoldier.Actor);
+	return HitResults.Num() > 0 && HitResults.Last().Actor == _HitSoldier.Actor;
 }
 
 void AAreaEffect::DestroyAreaEffect()

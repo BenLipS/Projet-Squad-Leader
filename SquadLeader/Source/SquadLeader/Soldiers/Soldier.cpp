@@ -34,7 +34,6 @@ ImpactHitFXScale{ FVector{1.f} }
 	InitMovements();
 	InitMeshes();
 	setup_stimulus();
-	GetCapsuleComponent()->BodyInstance.SetObjectType(ECC_Player);
 
 	Inventory = FSoldier_Inventory{};
 	CurrentWeaponTag = FGameplayTag::RequestGameplayTag(FName("Weapon.Equipped.None"));
@@ -392,6 +391,7 @@ void ASoldier::DeadTagChanged(const FGameplayTag _CallbackTag, int32 _NewCount)
 		if (RespawnMontage)
 		{
 			// Remove any interaction with the world during the respawn animation - avoid damage while the player can't play
+			GetCharacterMovement()->Velocity = FVector(0.f);
 			GetCharacterMovement()->GravityScale = 0.f;
 			GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
@@ -530,10 +530,11 @@ FVector ASoldier::GetLookingAtPosition(const float _MaxRange) const
 	const FVector ViewDir = ViewRot.Vector();
 	FVector ViewEnd = ViewStart + (ViewDir * _MaxRange);
 
-	// Get first blocking hit
+	// Get first blocking hit - InstantWeaponFire is a preset for instant fire weapon
 	FHitResult HitResult;
-	GetWorld()->LineTraceSingleByChannel(HitResult, ViewStart, ViewEnd, ECC_WorldDynamic, Params);
+	GetWorld()->LineTraceSingleByProfile(HitResult, ViewStart, ViewEnd, FName{"InstantWeaponFire"}, Params);
 
+	//if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Black, FString::Printf(TEXT("Tick for: %s"), *HitResult.Component->GetName()));
 	//::DrawDebugLine(GetWorld(), ViewStart, HitResult.bBlockingHit ? HitResult.Location : ViewEnd, FColor::Blue, false, 2.f);
 
 	return HitResult.bBlockingHit ? HitResult.Location : ViewEnd;
