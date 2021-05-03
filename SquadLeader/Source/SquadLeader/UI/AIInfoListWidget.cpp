@@ -63,7 +63,7 @@ void UAIInfoListWidget::OnSquadMemberMissionChanged(int index, AIBasicState newM
 {
 	if (AIInfoWidgetList.IsValidIndex(index))
 	{
-		//AIInfoWidgetList[index]->OnMaxShieldChanged(newMission);
+		AIInfoWidgetList[index]->OnMissionChanged(newMission);
 	}
 }
 

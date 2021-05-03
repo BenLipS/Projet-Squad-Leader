@@ -38,6 +38,9 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	USlateBrushAsset* FormationImage;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	USlateBrushAsset* DefaultImage;
+
 	float Health = 100;
 	float MaxHealth = 100;
 

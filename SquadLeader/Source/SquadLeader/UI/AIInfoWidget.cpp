@@ -2,9 +2,11 @@
 
 
 #include "AIInfoWidget.h"
+#include "Slate/SlateBrushAsset.h"
 
 UAIInfoWidget::UAIInfoWidget(const FObjectInitializer& ObjectInitializer) : USL_UserWidget(ObjectInitializer)
 {
+	OnMissionChanged(Mission);
 }
 
 void UAIInfoWidget::OnHealthChanged(float newValue)
@@ -36,9 +38,29 @@ void UAIInfoWidget::OnMissionChanged(AIBasicState newValue)
 {
 	//ImageMission->SetBrush();
 	//ImageMission->getBrus
+	if (Mission != newValue)
+	{
+		Mission = newValue;
+		auto brushMission = GetBrushFromMission(Mission);
+		if (IsValid(brushMission))
+		{
+			ImageMission->SetBrushFromAsset(brushMission);
+		}
+	}
 }
 
 USlateBrushAsset* UAIInfoWidget::GetBrushFromMission(AIBasicState missionIn)
 {
-	return nullptr;
+	switch (missionIn)
+	{
+	case AIBasicState::Attacking:
+		return AttackingImage;
+		break;
+	case AIBasicState::Formation:
+		return FormationImage;
+		break;
+	default:
+		return DefaultImage;
+		break;
+	}
 }
