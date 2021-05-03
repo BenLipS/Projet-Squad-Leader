@@ -1,5 +1,6 @@
 #include "GA_Run.h"
 #include "../../../Soldiers/Soldier.h"
+#include "SquadLeader/Weapons/SL_Weapon.h"
 
 UGA_Run::UGA_Run()
 {
@@ -26,8 +27,13 @@ void UGA_Run::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGa
 
 bool UGA_Run::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, OUT FGameplayTagContainer* OptionalRelevantTags) const
 {
-	ASoldier* soldier = Cast<ASoldier>(ActorInfo->AvatarActor.Get());
-	return soldier && Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags);
+	if (!Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags))
+		return false;
+
+	const ASoldier* Soldier = Cast<ASoldier>(ActorInfo->AvatarActor.Get());
+	const ASL_Weapon* Weapon = Soldier->GetCurrentWeapon();
+	
+	return Soldier && (!Weapon || !Weapon->IsHeavyWeapon());
 }
 
 void UGA_Run::InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo)

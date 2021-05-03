@@ -397,7 +397,9 @@ protected:
 	void ClientSyncCurrentWeapon_Implementation(ASL_Weapon* _InWeapon);
 	bool ClientSyncCurrentWeapon_Validate(ASL_Weapon* _InWeapon);
 
+// Field of view
 public:
+	// Normal field of view
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Stats")
 	float FieldOfViewNormal;
 
@@ -406,6 +408,12 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	void StopAiming();
+
+protected:
+	bool bIsAiming = false;
+
+public:
+	bool IsAiming() const noexcept;
 
 //////////////// Soldier team
 	UPROPERTY(EditAnywhere, Category = "PlayerTeam")

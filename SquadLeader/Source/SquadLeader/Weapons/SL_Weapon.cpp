@@ -180,6 +180,16 @@ FGameplayTag ASL_Weapon::GetFireMode() const noexcept
 	return FireMode;
 }
 
+float ASL_Weapon::GetMoveSpeedMultiplier() const noexcept
+{
+	return MoveSpeedMultiplier;
+}
+
+bool ASL_Weapon::IsHeavyWeapon() const noexcept
+{
+	return IsHeavy;
+}
+
 float ASL_Weapon::GetTimeBetweenShots() const noexcept
 {
 	return TimeBetweenShots;

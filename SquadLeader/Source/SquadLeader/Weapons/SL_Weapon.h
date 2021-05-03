@@ -141,6 +141,23 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Stats")
 	float GetFieldOfViewAim() const noexcept;
 
+// Weight
+protected:
+	// Multiplier to influence owner move speed
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Stats|Weight", meta = (ClampMax = "1.0"))
+	float MoveSpeedMultiplier = 1.f;
+
+	// If true the owner should not be able to jump or crouch
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Stats|Weight")
+	bool IsHeavy = false;
+
+public:
+	UFUNCTION(BlueprintCallable, Category = "Stats|Ammo")
+	float GetMoveSpeedMultiplier() const noexcept;
+
+	UFUNCTION(BlueprintCallable, Category = "Stats|Ammo")
+	bool IsHeavyWeapon() const noexcept;
+
 // Ammo
 protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Replicated, Category = "Stats|Ammo")

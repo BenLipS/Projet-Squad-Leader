@@ -540,8 +540,6 @@ FVector ASoldier::GetLookingAtPosition(const float _MaxRange) const
 	return HitResult.bBlockingHit ? HitResult.Location : ViewEnd;
 }
 
-// TODO: For now, we directly change the move speed multiplier with a setter. This is should be changed 
-// through a GE. It should use the execalculation to consider all the buffs/debbufs
 bool ASoldier::StartRunning()
 {
 	AttributeSet->SetMoveSpeedMultiplier(1.8f);
@@ -928,12 +926,21 @@ void ASoldier::StartAiming()
 
 	FirstPersonCameraComponent->SetFieldOfView(CurrentWeapon->GetFieldOfViewAim());
 	ThirdPersonCameraComponent->SetFieldOfView(CurrentWeapon->GetFieldOfViewAim());
+
+	bIsAiming = true;
 }
 
 void ASoldier::StopAiming()
 {
 	FirstPersonCameraComponent->SetFieldOfView(FieldOfViewNormal);
 	ThirdPersonCameraComponent->SetFieldOfView(FieldOfViewNormal);
+
+	bIsAiming = false;
+}
+
+bool ASoldier::IsAiming() const noexcept
+{
+	return bIsAiming;
 }
 
 FRotator ASoldier::GetSyncControlRotation() const noexcept
