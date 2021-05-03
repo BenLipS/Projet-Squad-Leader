@@ -6,6 +6,7 @@
 #include "../../AI/AISquadManager.h"
 #include "../../AbilitySystem/Soldiers/GameplayAbilitySoldier.h"
 #include "../../Spawn/SoldierSpawn.h"
+#include "SquadLeader/UI/Interface/MinimapInterface.h"
 #include "Kismet/KismetMaterialLibrary.h"
 #include "DrawDebugHelpers.h"
 #include "TimerManager.h"
@@ -228,6 +229,65 @@ void ASoldierPlayer::cycleBetweenTeam()
 		SquadManager->UpdateSquadTeam(GetTeam());
 	}
 	else ServerCycleBetweenTeam();
+}
+
+void ASoldierPlayer::SpawnClientPing_Implementation(FVector2D ActorLocationIn)
+{
+	if (ASoldierPlayerController* PC = GetController<ASoldierPlayerController>(); PC)
+	{
+		if (auto HUD = PC->GetHUD<IMinimapInterface>(); HUD)
+		{
+			HUD->OnPingAdded(ActorLocationIn);
+		}
+	}
+}
+
+void ASoldierPlayer::SpawnPing(FVector PingLocation)
+{
+	FTransform PingTransform;
+	PingTransform.SetLocation(PingLocation);
+	if (PingMesh) 
+		PingMesh->Destroy();
+	
+	PingMesh = GetWorld()->SpawnActorDeferred<AActor>(PingClass, PingTransform, this, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+	if (PingMesh)
+	{
+		PingMesh->FinishSpawning(PingTransform);
+
+		if (ASoldierPlayerController* PC = GetController<ASoldierPlayerController>(); PC)
+		{
+			if (auto HUD = PC->GetHUD<IMinimapInterface>(); HUD)
+			{
+				HUD->OnPingAdded({ PingMesh->GetActorLocation().X, PingMesh->GetActorLocation().Y });
+			}
+		}
+		SpawnClientPing({ PingMesh->GetActorLocation().X, PingMesh->GetActorLocation().Y });
+	}
+}
+
+void ASoldierPlayer::DestroyPing() {
+	if (PingMesh)
+	{
+		PingMesh->Destroy();
+		if (ASoldierPlayerController* PC = GetController<ASoldierPlayerController>(); PC)
+		{
+			if (auto HUD = PC->GetHUD<IMinimapInterface>(); HUD)
+			{
+				HUD->OnPingDestroyed();
+			}
+		}
+	}
+}
+
+void ASoldierPlayer::DestroyClientPing_Implementation()
+{
+	if (ASoldierPlayerController* PC = GetController<ASoldierPlayerController>(); PC)
+	{
+		if (auto HUD = PC->GetHUD<IMinimapInterface>(); HUD)
+		{
+			HUD->OnPingDestroyed();
+		}
+	}
 }
 
 void ASoldierPlayer::LevelUp()

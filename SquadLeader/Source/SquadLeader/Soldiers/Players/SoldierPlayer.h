@@ -36,6 +36,12 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "SquadManager")
 	class AAISquadManager* SquadManager;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Ping")
+		TSubclassOf<class AActor> PingClass;
+
+	UPROPERTY()
+	AActor* PingMesh;
+
 	// Number of AIs to add for the next level up
 	UPROPERTY(EditDefaultsOnly, Category = "SquadManager")
 	FScalableFloat NbAIsForNextLevelUp = 0.f;
@@ -44,12 +50,29 @@ public:
 	UFUNCTION()
 	AAISquadManager* GetSquadManager();
 
+	UFUNCTION(Client, Reliable)
+	void SpawnClientPing(FVector2D PingLocation);
+	void SpawnClientPing_Implementation(FVector2D PingLocation);
+
+	UFUNCTION()
+	void SpawnPing(FVector PingLocation);
+
+
+
+	UFUNCTION()
+	void DestroyPing();
+
+	UFUNCTION(Client, Reliable)
+	void DestroyClientPing();
+	void DestroyClientPing_Implementation();
+
 //////////////// Camera
 public:
 	virtual void LookUp(const float _Val) override;
 	virtual void Turn(const float _Val) override;
 
 	virtual void cycleBetweenTeam() override;
+
 
 //////////////// Post Effects
 // Glitch effect

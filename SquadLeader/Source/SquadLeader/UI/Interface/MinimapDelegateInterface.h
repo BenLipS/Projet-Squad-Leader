@@ -20,10 +20,14 @@ private:
 	TArray<IMinimapInterface*> MinimapDelegates;
 
 public:
-	virtual void OnSoldierAddedToTeam(ASoldier* _Soldier);
-	virtual void OnSoldierRemovedFromTeam(ASoldier* _Soldier);
-	virtual void OnControlAreaAdded(AControlArea* _ControlArea);
-	virtual void OnUpdatePOIs();
+	virtual void OnSoldierAddedToTeam(ASoldier* _Soldier) override;
+	virtual void OnSoldierRemovedFromTeam(ASoldier* _Soldier) override;
+	virtual void OnControlAreaAdded(AControlArea* _ControlArea) override;
+	virtual void OnPingAdded(FVector2D PosPingActor) override;
+	virtual void OnUpdatePOIs() override;
+	virtual void OnFullMapDisplayBegin() override;
+	virtual void OnFullMapDisplayEnd() override;
+	virtual void OnPingDestroyed() override;
 
 	void AddMinimapDelegate(IMinimapInterface* _NewDelegate);
 	void RemoveMinimapDelegate(IMinimapInterface* _RemoveDelegate);
