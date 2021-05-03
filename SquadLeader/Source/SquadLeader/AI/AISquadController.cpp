@@ -16,7 +16,6 @@ bool AAISquadController::GetValidFormationPos()
 	UNavigationSystemV1* navSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
 
 	FVector startLocation = UNavigationSystemV1::ProjectPointToNavigation(GetWorld(), SquadManager->Leader->GetLocation());
-	DrawDebugPoint(GetWorld(), startLocation, 20, FColor::Red);
 	
 	FVector endLocation = FormationPosBeforeTransform;
 
@@ -87,7 +86,6 @@ void AAISquadController::FollowFormation() {
 	if (SquadManager->Leader) {
 		GetValidFormationPos();
 		//EPathFollowingRequestResult::Type _movetoResult = MoveToLocation(blackboard->GetValueAsVector("FormationLocation"), 5.f);
-		DrawDebugPoint(GetWorld(), blackboard->GetValueAsVector("FormationLocation"), 12, FColor::Purple);
 	}
 }
 
