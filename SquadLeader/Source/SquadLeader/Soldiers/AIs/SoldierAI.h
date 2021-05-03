@@ -2,11 +2,12 @@
 
 #include "CoreMinimal.h"
 #include "../Soldier.h"
+#include "../../AI/Mission.h"
 #include "SoldierAI.generated.h"
-
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FAIFloatChangedController, float, newValue, AAISquadController*, controller);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAIFloatChanged, float, newValue);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAIStateChanged, AIBasicState, newValue);
 
 //For client knowledge purpose
 USTRUCT()
@@ -26,15 +27,20 @@ struct FSoldierAIData
 	UPROPERTY(EditAnywhere)
 	float MaxShield;
 
+	UPROPERTY(EditAnywhere)
+	AIBasicState MissionState;
+
 	void OnHealthChanged(float newHealth);
 	void OnMaxHealthChanged(float newMaxHealth);
 	void OnShieldChanged(float newShield);
 	void OnMaxShieldChanged(float newMaxShield);
+	void OnStateChanged(AIBasicState newState);
 
 	FAIFloatChanged OnHealthNotify;
 	FAIFloatChanged OnMaxHealthNotify;
 	FAIFloatChanged OnShieldNotify;
 	FAIFloatChanged OnMaxShieldNotify;
+	FAIStateChanged OnStateNotify;
 
 	FSoldierAIData() = default;
 };

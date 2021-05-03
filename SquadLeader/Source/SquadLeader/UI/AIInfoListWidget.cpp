@@ -59,6 +59,14 @@ void UAIInfoListWidget::OnSquadMaxShieldChanged(int index, float newMaxShield)
 	}
 }
 
+void UAIInfoListWidget::OnSquadMemberMissionChanged(int index, AIBasicState newMission)
+{
+	if (AIInfoWidgetList.IsValidIndex(index))
+	{
+		//AIInfoWidgetList[index]->OnMaxShieldChanged(newMission);
+	}
+}
+
 void UAIInfoListWidget::SetupDelegateToObject_Implementation(UObject* ObjectIn)
 {
 	if (ISquadDelegateInterface* SquadDelegateInterface = Cast<ISquadDelegateInterface>(ObjectIn); SquadDelegateInterface)

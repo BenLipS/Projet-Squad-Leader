@@ -1,5 +1,5 @@
 #include "SoldierAI.h"
-#include "../../AI/AIGeneralController.h"
+//#include "../../AI/AIGeneralController.h"
 #include "../../AI/AISquadController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
@@ -214,4 +214,10 @@ void FSoldierAIData::OnMaxShieldChanged(float newMaxShield)
 {
 	MaxShield = newMaxShield;
 	OnMaxShieldNotify.Broadcast(MaxShield);
+}
+
+void FSoldierAIData::OnStateChanged(AIBasicState newState)
+{
+	MissionState = newState;
+	OnStateNotify.Broadcast(MissionState);
 }

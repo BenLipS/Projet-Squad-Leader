@@ -36,6 +36,8 @@ public:
 
 	virtual void OnSquadMaxShieldChanged(int index, float newMaxShield);
 
+	virtual void OnSquadMemberMissionChanged(int index, AIBasicState newMission);
+
 	void AddSquadDelegate(ISquadInterface* newDelegate);
 	void RemoveSquadDelegate(ISquadInterface* removeDelegate);
 };

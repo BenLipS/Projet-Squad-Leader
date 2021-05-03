@@ -114,6 +114,10 @@ public:
 	void OnSquadMemberMaxShieldChanged_Implementation(int index, float newMaxShield);
 
 	UFUNCTION(Client, Reliable)
+	void OnSquadMemberMissionChanged(int index, AIBasicState newMission);
+	void OnSquadMemberMissionChanged_Implementation(int index, AIBasicState newMission);
+
+	UFUNCTION(Client, Reliable)
 	void OnTextNotification_Received(const FString& notificationString);
 	void OnTextNotification_Received_Implementation(const FString& notificationString);
 

@@ -339,6 +339,16 @@ void AAISquadManager::OnSquadMemberMaxShieldChange(float newMaxShield, AAISquadC
 	}
 }
 
+void AAISquadManager::OnSquadMemberMissionChange(AIBasicState newValue, AAISquadController* SoldierController)
+{
+	int index;
+	index = AISquadList.Find(SoldierController);
+	if (index != INDEX_NONE)
+	{
+		OnMemberStateChanged.Broadcast(index, newValue);
+	}
+}
+
 void FAISquadManagerData::OnSquadDataChanged(const TArray<FSoldierAIData>& newValue)
 {
 	SquadData = newValue;

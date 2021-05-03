@@ -35,6 +35,20 @@ enum class MissionPriority : uint8{
 	eURGENT
 };
 
+/**
+ * This enum contains the different state of the AI
+ */
+UENUM()
+enum class AIBasicState : uint8 {
+	Attacking UMETA(DisplayName = "Attacking"),
+	Patroling UMETA(DisplayName = "Patroling"),
+	Capturing UMETA(DisplayName = "Capturing"),
+	Search UMETA(DisplayName = "Searching"),
+	Defend UMETA(DisplayName = "Defending"),
+	Moving UMETA(DisplayName = "Moving"),
+	Formation UMETA(DisplayName = "Formation"),
+};
+
 UCLASS()
 class SQUADLEADER_API UMission : public UObject
 {

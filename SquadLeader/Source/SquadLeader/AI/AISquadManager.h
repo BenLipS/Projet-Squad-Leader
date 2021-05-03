@@ -14,7 +14,8 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSquadInfoArrayChanged, const TArray<FSoldierAIData>&, SquadArray);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FSquadMemberDataChanged, int, Index, float, newValue);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FSquadMemberFloatDataChanged, int, Index, float, newValue);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FSquadMemberStateDataChanged, int, Index, AIBasicState, newValue);
 
 UENUM()
 enum class FormationType { Circle, Arrow };
@@ -42,10 +43,11 @@ public:
 	//-----DELEGATE-----
 	FSquadInfoArrayChanged OnSquadChanged;
 
-	FSquadMemberDataChanged OnMemberHealthChanged;
-	FSquadMemberDataChanged OnMemberMaxHealthChanged;
-	FSquadMemberDataChanged OnMemberShieldChanged;
-	FSquadMemberDataChanged OnMemberMaxShieldChanged;
+	FSquadMemberFloatDataChanged OnMemberHealthChanged;
+	FSquadMemberFloatDataChanged OnMemberMaxHealthChanged;
+	FSquadMemberFloatDataChanged OnMemberShieldChanged;
+	FSquadMemberFloatDataChanged OnMemberMaxShieldChanged;
+	FSquadMemberStateDataChanged OnMemberStateChanged;
 
 public:
 	AAISquadManager();
@@ -139,6 +141,9 @@ public:
 
 	UFUNCTION()
 	void OnSquadMemberMaxShieldChange(float newValue, AAISquadController* SoldierController);
+
+	UFUNCTION()
+	void OnSquadMemberMissionChange(AIBasicState newValue, AAISquadController* SoldierController);
 
 	//for healing coordination
 	UPROPERTY()

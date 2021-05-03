@@ -31,3 +31,14 @@ void UAIInfoWidget::OnMaxShieldChanged(float newValue)
 	MaxShield = newValue;
 	ProgressBarShield->SetPercent(Shield / MaxShield);
 }
+
+void UAIInfoWidget::OnMissionChanged(AIBasicState newValue)
+{
+	//ImageMission->SetBrush();
+	//ImageMission->getBrus
+}
+
+USlateBrushAsset* UAIInfoWidget::GetBrushFromMission(AIBasicState missionIn)
+{
+	return nullptr;
+}
