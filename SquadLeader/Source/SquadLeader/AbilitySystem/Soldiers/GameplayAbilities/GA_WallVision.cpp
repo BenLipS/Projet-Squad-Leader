@@ -3,6 +3,7 @@
 #include "../../../Soldiers/Players/SoldierPlayerController.h"
 #include "Abilities/Tasks/AbilityTask_WaitDelay.h"
 #include "SquadLeader/AbilitySystem/Soldiers/AbilityTasks/AbilityTask_PlayMontageAndWaitForEvent.h"
+#include "GameFramework/Actor.h"
 
 UGA_WallVision::UGA_WallVision()
 {
@@ -83,13 +84,15 @@ void UGA_WallVision::StartWallVision()
 		PC->OnWallVisionActivate();
 		UAbilityTask_WaitDelay* TaskWaitDelay = UAbilityTask_WaitDelay::WaitDelay(this, DurationVision);
 		TaskWaitDelay->OnFinish.AddDynamic(this, &UGA_WallVision::EndWallVision);
+		SourceSoldier->UpdateWallVisionPostEffect(1.f);
 		TaskWaitDelay->ReadyForActivation();
 	}
 	else
-		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, false, false);
 }
 
 void UGA_WallVision::EndWallVision()
 {
-	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+ 	SourceSoldier->UpdateWallVisionPostEffect(0.f);
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, false, false);
 }
