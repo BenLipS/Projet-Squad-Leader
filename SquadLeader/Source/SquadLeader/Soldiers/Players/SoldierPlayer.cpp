@@ -56,7 +56,7 @@ void ASoldierPlayer::BeginPlay()
 	{
 		MaterialWallVisionViewInstance = UKismetMaterialLibrary::CreateDynamicMaterialInstance(GetWorld(), MaterialWallVisionViewInterface);
 		PostProcessVolume->AddOrUpdateBlendable(MaterialWallVisionViewInstance, 0.f);
-		
+	}
 	// Blood
 	if (MaterialBloodInterface)
 	{
