@@ -2,43 +2,50 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "UObject/NoExportTypes.h"
+#include "Core.h"
+#include "GameFramework/Info.h"
+#include "Net/UnrealNetwork.h"
 #include "GameParam.generated.h"
 
 /**
  * 
  */
-UCLASS(Blueprintable)
-class SQUADLEADER_API UGameParam : public UObject
+UCLASS()
+class SQUADLEADER_API AGameParam : public AInfo
 {
 	GENERATED_BODY()
-	
-public:
-	UPROPERTY(EditDefaultsOnly)
-	FString Name;
-	UPROPERTY(EditDefaultsOnly)
-	int LevelTarget;
-	UPROPERTY(EditDefaultsOnly)
-	int LevelRange;
-	UPROPERTY(EditDefaultsOnly)
-	int NbAIBasicAssault;
-	UPROPERTY(EditDefaultsOnly)
-	int NbAIBasicHeavy;
-	UPROPERTY(EditDefaultsOnly)
-	int LevelAIBasic;
-	UPROPERTY(EditDefaultsOnly)
-	int StartingNbAISquad;
-	UPROPERTY(EditDefaultsOnly)
-	int LevelAISquad;
-	UPROPERTY(EditDefaultsOnly)
-	int NbTickets;
-	UPROPERTY(EditDefaultsOnly)
-	int Weather;
-	UPROPERTY(EditDefaultsOnly)
-	int RespawnDuration;
-	UPROPERTY(EditDefaultsOnly)
-	bool FriendOnly;
 
-	void RandomiseParam(UGameParam* MinConfig, UGameParam* MaxConfig);
+public:
+	// Sets default values for this actor's properties
+	AGameParam();
+	// for replication purpose
+	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
+
+
+	UPROPERTY(EditDefaultsOnly, Replicated)
+		FString Name;
+	UPROPERTY(EditDefaultsOnly, Replicated)
+		int LevelTarget;
+	UPROPERTY(EditDefaultsOnly, Replicated)
+		int LevelRange;
+	UPROPERTY(EditDefaultsOnly, Replicated)
+		int NbAIBasicAssault;
+	UPROPERTY(EditDefaultsOnly, Replicated)
+		int NbAIBasicHeavy;
+	UPROPERTY(EditDefaultsOnly, Replicated)
+		int LevelAIBasic;
+	UPROPERTY(EditDefaultsOnly, Replicated)
+		int StartingNbAISquad;
+	UPROPERTY(EditDefaultsOnly, Replicated)
+		int LevelAISquad;
+	UPROPERTY(EditDefaultsOnly, Replicated)
+		int NbTickets;
+	UPROPERTY(EditDefaultsOnly, Replicated)
+		int Weather;
+	UPROPERTY(EditDefaultsOnly, Replicated)
+		int RespawnDuration;
+	UPROPERTY(EditDefaultsOnly, Replicated)
+		bool FriendOnly;
+
+	void RandomiseParam(AGameParam* MinConfig, AGameParam* MaxConfig);
 };

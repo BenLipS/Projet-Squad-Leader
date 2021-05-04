@@ -123,7 +123,7 @@ void ASquadLeaderGameModeBase::StartPlay() {
 void ASquadLeaderGameModeBase::FetchGameParam()
 {
 	// import game param from SquadLeaderGameInstance's GameParam object
-	UGameParam* ImportedGameParam = GetGameInstance<USquadLeaderGameInstance>()->GameParam.GetDefaultObject();
+	AGameParam* ImportedGameParam = GetGameInstance<USquadLeaderGameInstance>()->GameParam.GetDefaultObject();
 	RespawnDelay = ImportedGameParam->RespawnDuration;
 	Weather = ImportedGameParam->Weather;
 	BaseTicketsNumber = ImportedGameParam->NbTickets;
