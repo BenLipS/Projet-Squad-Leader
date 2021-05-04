@@ -36,8 +36,8 @@ float USoldierMovementComponent::GetMaxSpeed() const
 		// Weapon
 		const float MoveSpeedWeaponMultiplier = Soldier->GetCurrentWeapon() ? Soldier->GetCurrentWeapon()->GetMoveSpeedMultiplier() : 1.f;
 
-		// Run & Aim
-		const float MoveSpeedMultiplierRun = ASC && !Soldier->IsAiming() ? ASC->GetNumericAttribute(UAttributeSetSoldier::GetMoveSpeedMultiplierAttribute()) : 1.f;
+		// Run - if not aiming or firing
+		const float MoveSpeedMultiplierRun = ASC && !Soldier->IsAiming() && !Soldier->IsFiring() ? ASC->GetNumericAttribute(UAttributeSetSoldier::GetMoveSpeedMultiplierAttribute()) : 1.f;
 
 		if (IsCrouching())
 			FinalSpeed = ASC ? ASC->GetNumericAttribute(UAttributeSetSoldier::GetMoveSpeedCrouchAttribute()) : MaxWalkSpeedCrouched;

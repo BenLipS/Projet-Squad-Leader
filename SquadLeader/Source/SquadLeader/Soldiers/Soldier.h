@@ -380,6 +380,17 @@ protected:
 	void OnRep_Inventory();
 
 //////////////// Weapons
+public:
+	void OnStartFiring();
+	void OnStopFiring();
+
+protected:
+	bool bIsFiring = false;
+
+public:
+	bool IsFiring() const noexcept;
+
+protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Inventory|Weapon")
 	TArray<TSubclassOf<ASL_Weapon>> DefaultInventoryWeaponClasses;
 

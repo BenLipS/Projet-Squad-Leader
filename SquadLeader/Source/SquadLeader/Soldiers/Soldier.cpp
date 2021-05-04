@@ -700,6 +700,21 @@ void ASoldier::OnRep_Inventory()
 	}
 }
 
+void ASoldier::OnStartFiring()
+{
+	bIsFiring = true;
+}
+
+void ASoldier::OnStopFiring()
+{
+	bIsFiring = false;
+}
+
+bool ASoldier::IsFiring() const noexcept
+{
+	return bIsFiring;
+}
+
 ASL_Weapon* ASoldier::GetCurrentWeapon() const
 {
 	return CurrentWeapon;
