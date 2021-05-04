@@ -585,7 +585,7 @@ void ASoldier::StopRunning()
 
 bool ASoldier::IsRunning() const noexcept
 {
-	return bIsRunning;
+	return bIsRunning && GetCharacterMovement()->Velocity.Size() > 0.0f;
 }
 
 void ASoldier::StartAiming()
@@ -618,8 +618,10 @@ void ASoldier::UpdateFOV()
 	else
 		CurrentFOV = BaseFOVNormal;
 
+	ZoomFOVAdd = (CurrentFOV - ThirdPersonCameraComponent->FieldOfView) / TimeFOVAnimation * TimeBetweenFOVChange;
+
 	// Start camera FOV animation
-	if (CurrentFOV < ThirdPersonCameraComponent->FieldOfView) // Zoom in
+	if (ZoomFOVAdd < 0.f) // Zoom in
 	{
 		GetWorldTimerManager().SetTimer(TimerFOVAnimation, this, &ASoldier::ZoomInFOV, TimeBetweenFOVChange, true);
 		ZoomInFOV();
@@ -633,7 +635,7 @@ void ASoldier::UpdateFOV()
 
 void ASoldier::ZoomInFOV()
 {
-	const float NewCameraFOV = ThirdPersonCameraComponent->FieldOfView * ZoomInFOVMultiplier;
+	const float NewCameraFOV = ThirdPersonCameraComponent->FieldOfView + ZoomFOVAdd;
 
 	if (NewCameraFOV > CurrentFOV)
 	{
@@ -646,7 +648,7 @@ void ASoldier::ZoomInFOV()
 
 void ASoldier::ZoomOutFOV()
 {
-	const float NewCameraFOV = ThirdPersonCameraComponent->FieldOfView * ZoomOutFOVMultiplier;
+	const float NewCameraFOV = ThirdPersonCameraComponent->FieldOfView + ZoomFOVAdd;
 
 	if (NewCameraFOV < CurrentFOV)
 	{

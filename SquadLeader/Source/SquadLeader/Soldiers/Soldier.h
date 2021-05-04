@@ -357,15 +357,17 @@ private:
 	FTimerHandle TimerFOVAnimation;
 
 protected:
+	// Time to realize an entire FOV animation
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Camera|FOV")
+	float TimeFOVAnimation = 0.15f;
+
+	// Time between each FOV change
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Camera|FOV", meta = (ClampMin = "0.0", UIMin = "0.0"))
 	float TimeBetweenFOVChange = 0.01f;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Camera|FOV", meta = (ClampMin = "0.001", UIMin = "0.001", ClampMax = "0.9999", UIMax = "0.9999"))
-	float ZoomInFOVMultiplier = 0.9f;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Camera|FOV", meta = (ClampMin = "1.0001", UIMin = "1.0001"))
-	float ZoomOutFOVMultiplier = 1.1f;
-
+private:
+	// Value to add to FOV for animation. This is calculated with TimeFOVAnimation and TimeBetweenFOVChange
+	float ZoomFOVAdd;
 
 //////////////// Inventory
 protected:
