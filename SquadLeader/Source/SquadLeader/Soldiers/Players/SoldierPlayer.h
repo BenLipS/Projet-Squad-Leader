@@ -158,6 +158,17 @@ public:
 	UPROPERTY()
 	int HitRight = 0;
 
+	//WallVion
+protected:
+	UPROPERTY(BlueprintReadWrite, Category = "Camera|PostEffects|WallVision")
+		UMaterialInstanceDynamic* MaterialWallVisionViewInstance = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Camera|PostEffects|WallVision")
+		UMaterialInterface* MaterialWallVisionViewInterface = nullptr;
+public:
+
+	void UpdateWallVisionPostEffect(float PostEffectValue);
+
 //////////////// Ability System Component
 protected:
 	void SetAbilitySystemComponent();

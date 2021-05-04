@@ -51,6 +51,12 @@ void ASoldierPlayer::BeginPlay()
 		PostProcessVolume->AddOrUpdateBlendable(MaterialBrokenGlassRightInstance, 0.f);
 		PostProcessVolume->AddOrUpdateBlendable(MaterialBrokenGlassLeftInstance, 0.f);
 	}
+	// Wall Vision
+	if (MaterialWallVisionViewInterface)
+	{
+		MaterialWallVisionViewInstance = UKismetMaterialLibrary::CreateDynamicMaterialInstance(GetWorld(), MaterialWallVisionViewInterface);
+		PostProcessVolume->AddOrUpdateBlendable(MaterialWallVisionViewInstance, 0.f);
+	}
 }
 
 // Server only 
@@ -424,4 +430,12 @@ void ASoldierPlayer::UpdateBrokenGlassEffect()
 
 	MaterialBrokenGlassRightInstance->SetScalarParameterValue("Bullet Amount", NbOfHitToPPIntensity(HitRight));
 	MaterialBrokenGlassLeftInstance->SetScalarParameterValue("Bullet Amount", NbOfHitToPPIntensity(HitLeft));
+}
+
+void ASoldierPlayer::UpdateWallVisionPostEffect(float PostEffectValue) {
+	if (!IsLocallyControlled())
+	{
+		return;
+	}
+	PostProcessVolume->AddOrUpdateBlendable(MaterialWallVisionViewInstance, PostEffectValue);
 }
