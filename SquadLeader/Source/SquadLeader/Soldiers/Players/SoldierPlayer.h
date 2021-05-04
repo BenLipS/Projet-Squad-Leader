@@ -140,6 +140,14 @@ protected:
 	void ClientOnReceiveDamage_Implementation(const FVector& _ImpactPoint, const FVector& _SourcePoint);
 
 //////////////// Hit reactions
+	//Blood effect
+	void HealthChanged(const FOnAttributeChangeData& _Data) override;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Camera|PostEffects|Blood")
+	UMaterialInstanceDynamic* MaterialBloodInstance = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Camera|PostEffects|Blood")
+	UMaterialInterface* MaterialBloodInterface = nullptr;
 public:
 	UFUNCTION()
 	float NbOfHitToPPIntensity(int NbHit) const;
@@ -170,7 +178,16 @@ protected:
 	void DisableHitMontage();
 
 	UFUNCTION()
-	void StartHitReactMontage(UAnimMontage* _HitReactMontage);
+	void StartHitReactMontage(UAnimMontage* _HitReactMontage);//WallVion
+protected:
+	UPROPERTY(BlueprintReadWrite, Category = "Camera|PostEffects|WallVision")
+	UMaterialInstanceDynamic* MaterialWallVisionViewInstance = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Camera|PostEffects|WallVision")
+	UMaterialInterface* MaterialWallVisionViewInterface = nullptr;
+public:
+
+	void UpdateWallVisionPostEffect(float PostEffectValue);
 
 //////////////// Ability System Component
 protected:
