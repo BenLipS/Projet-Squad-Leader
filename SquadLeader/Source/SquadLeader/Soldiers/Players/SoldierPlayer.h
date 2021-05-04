@@ -140,6 +140,14 @@ protected:
 	void ClientOnReceiveDamage(const FVector& _ImpactPoint, const FVector& _SourcePoint);
 	void ClientOnReceiveDamage_Implementation(const FVector& _ImpactPoint, const FVector& _SourcePoint);
 
+	//Blood effect
+	void HealthChanged(const FOnAttributeChangeData& _Data) override;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Camera|PostEffects|Blood")
+		UMaterialInstanceDynamic* MaterialBloodInstance = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Camera|PostEffects|Blood")
+		UMaterialInterface* MaterialBloodInterface = nullptr;
 public:
 	UFUNCTION()
 	float NbOfHitToPPIntensity(int NbHit);

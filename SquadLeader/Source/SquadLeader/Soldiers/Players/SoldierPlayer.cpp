@@ -51,6 +51,12 @@ void ASoldierPlayer::BeginPlay()
 		PostProcessVolume->AddOrUpdateBlendable(MaterialBrokenGlassRightInstance, 0.f);
 		PostProcessVolume->AddOrUpdateBlendable(MaterialBrokenGlassLeftInstance, 0.f);
 	}
+	// Blood
+	if (MaterialBloodInterface)
+	{
+		MaterialBloodInstance = UKismetMaterialLibrary::CreateDynamicMaterialInstance(GetWorld(), MaterialBloodInterface);
+		PostProcessVolume->AddOrUpdateBlendable(MaterialBloodInstance, 0.f);
+	}
 }
 
 // Server only 
@@ -358,11 +364,41 @@ void ASoldierPlayer::OnReceiveDamage(const FVector& _ImpactPoint, const FVector&
 		//if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("Gauche"));
 		AddHitLeft();
 	}
+
 }
 
 void ASoldierPlayer::ClientOnReceiveDamage_Implementation(const FVector& _ImpactPoint, const FVector& _SourcePoint)
 {
 	OnReceiveDamage(_ImpactPoint, _SourcePoint);
+}
+
+void ASoldierPlayer::HealthChanged(const FOnAttributeChangeData& _Data)
+{
+	Super::HealthChanged(_Data);
+
+	if (!MaterialBloodInstance)
+		return;
+
+	PostProcessVolume->AddOrUpdateBlendable(MaterialBloodInstance, 1.f);
+	float BloodIntensity = 0.2f;
+
+	float HealthPourcentage = 1 - (GetMaxHealth() - GetHealth()) / GetMaxHealth();
+
+	if (HealthPourcentage < 0.99) {
+		BloodIntensity = 0.1;
+	}
+	if (HealthPourcentage < 0.5) {
+		BloodIntensity = 0.2;
+	}
+	if (HealthPourcentage < 0.3) {
+		BloodIntensity = 0.3;
+	}
+	
+	MaterialBloodInstance->SetScalarParameterValue("RadiusIntensity", BloodIntensity);
+
+	if (HealthPourcentage >= 0.99f) {
+		PostProcessVolume->AddOrUpdateBlendable(MaterialBloodInstance, 0.f);
+	}
 }
 
 float ASoldierPlayer::NbOfHitToPPIntensity(int NbHit)
