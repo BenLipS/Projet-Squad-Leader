@@ -51,6 +51,14 @@ void ISquadDelegateInterface::OnSquadMemberMissionChanged(int index, AIBasicStat
 	}
 }
 
+void ISquadDelegateInterface::OnSquadMemberClassChanged(int index, SoldierClass newClass)
+{
+	for (auto SquadInterface : SquadDelegates)
+	{
+		SquadInterface->OnSquadMemberClassChanged(index, newClass);
+	}
+}
+
 void ISquadDelegateInterface::AddSquadDelegate(ISquadInterface* newDelegate)
 {
 	SquadDelegates.AddUnique(newDelegate);

@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
 #include "SquadLeader/AI/Mission.h"
+#include "SquadLeader/Soldiers/Soldier.h"
+
 
 #include "SquadInterface.generated.h"
 
@@ -40,4 +42,7 @@ public:
 
 	UFUNCTION()
 	virtual void OnSquadMemberMissionChanged(int index, AIBasicState newMission) = 0;
+
+	UFUNCTION()
+	virtual void OnSquadMemberClassChanged(int index, SoldierClass newClass) = 0;
 };

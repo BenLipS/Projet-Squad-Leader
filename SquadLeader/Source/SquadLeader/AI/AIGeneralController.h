@@ -67,6 +67,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Flocking Behaviour")
 		void SetPatrolPoint();
 
+	UFUNCTION(BlueprintCallable, Category = "Attribute")
+	virtual SoldierClass GetClass() { return SoldierClass::NONE; }
+
 	/*
 	* When doing the flocking we'll check if the AI
 	* is arrive at his destination
@@ -174,6 +177,9 @@ public:
 	*/
 	UFUNCTION()
 	virtual void SetState(AIBasicState _state) noexcept;
+
+	UFUNCTION()
+	AIBasicState GetState();
 
 	UFUNCTION()
 	virtual void CheckIfRegenShield() {};

@@ -283,6 +283,19 @@ void ASoldierPlayerController::OnSquadMemberMissionChanged_Implementation(int in
 	// Erreur syncronisation client / serveur
 }
 
+void ASoldierPlayerController::OnSquadMemberClassChanged_Implementation(int index, SoldierClass newClass)
+{
+	if (SquadManagerData.SquadData.IsValidIndex(index))
+	{
+		SquadManagerData.SquadData[index].ClassSoldier = newClass;
+		//Appel au HUD
+		if (auto CurrentHUD = GetHUD<ASL_HUD>(); CurrentHUD)
+		{
+			CurrentHUD->OnSquadMemberClassChanged(index, newClass);
+		}
+	}
+}
+
 void ASoldierPlayerController::OnTextNotification_Received_Implementation(const FString& notificationString)
 {
 	if (ASL_HUD* CurrentHUD = GetHUD<ASL_HUD>(); CurrentHUD)

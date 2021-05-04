@@ -18,12 +18,15 @@ void UAIInfoListWidget::OnSquadChanged(const TArray<FSoldierAIData>& newValue)
 	for (auto Soldier : newValue)
 	{
 		UAIInfoWidget* newEntry = WidgetTree->ConstructWidget<UAIInfoWidget>(AIInfoWidgetClass);
+		AIInfoWidgetList.Add(newEntry);
+		AIInfoContainer->AddChildToVerticalBox(newEntry);
+
 		newEntry->OnHealthChanged(Soldier.Health);
 		newEntry->OnMaxHealthChanged(Soldier.MaxHealth);
 		newEntry->OnShieldChanged(Soldier.Shield);
 		newEntry->OnMaxShieldChanged(Soldier.MaxShield);
-		AIInfoWidgetList.Add(newEntry);
-		AIInfoContainer->AddChildToVerticalBox(newEntry);
+		newEntry->OnMissionChanged(Soldier.MissionState);
+		newEntry->OnClassChanged(Soldier.ClassSoldier);
 	}
 }
 
@@ -64,6 +67,14 @@ void UAIInfoListWidget::OnSquadMemberMissionChanged(int index, AIBasicState newM
 	if (AIInfoWidgetList.IsValidIndex(index))
 	{
 		AIInfoWidgetList[index]->OnMissionChanged(newMission);
+	}
+}
+
+void UAIInfoListWidget::OnSquadMemberClassChanged(int index, SoldierClass newClass)
+{
+	if (AIInfoWidgetList.IsValidIndex(index))
+	{
+		AIInfoWidgetList[index]->OnClassChanged(newClass);
 	}
 }
 

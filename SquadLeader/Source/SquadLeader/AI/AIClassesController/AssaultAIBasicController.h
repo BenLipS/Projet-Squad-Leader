@@ -25,4 +25,6 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, Category = "OverHeat")
 		int NUmberOfEnemyToOverHeat = 2;
+
+	virtual SoldierClass GetClass() override { return SoldierClass::ASSAULT; }
 };

@@ -70,6 +70,7 @@ void AAISquadManager::Init(ASoldierTeam* _Team, ASoldierPlayer* _Player)
 
 	m_inFormation = true;
 	TypeOfFormation = FormationType::Circle;
+	BroadCastSquadData();
 }
 
 void AAISquadManager::Tick(float DeltaTime)
@@ -293,6 +294,8 @@ void AAISquadManager::BroadCastSquadData()
 			data.MaxHealth = SoldierAI->GetMaxHealth();
 			data.Shield = SoldierAI->GetShield();
 			data.MaxShield = SoldierAI->GetMaxShield();
+			data.MissionState = AIC->GetState();
+			data.ClassSoldier = AIC->GetClass();
 			SoldierData.Add(data);
 		}
 	}
@@ -346,6 +349,16 @@ void AAISquadManager::OnSquadMemberMissionChange(AIBasicState newValue, AAISquad
 	if (index != INDEX_NONE)
 	{
 		OnMemberStateChanged.Broadcast(index, newValue);
+	}
+}
+
+void AAISquadManager::OnSquadMemberClassChange(SoldierClass newValue, AAISquadController* SoldierController)
+{
+	int index;
+	index = AISquadList.Find(SoldierController);
+	if (index != INDEX_NONE)
+	{
+		OnMemberClassChanged.Broadcast(index, newValue);
 	}
 }
 
