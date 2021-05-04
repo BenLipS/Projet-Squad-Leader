@@ -288,6 +288,7 @@ void ASoldierPlayer::DestroyPing() {
 				HUD->OnPingDestroyed();
 			}
 		}
+		DestroyClientPing();
 	}
 }
 
