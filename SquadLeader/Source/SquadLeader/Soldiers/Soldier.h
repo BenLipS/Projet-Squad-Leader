@@ -492,6 +492,22 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Animation|Montages")
 	UAnimMontage* CastSpellMontage;
 
+	// Hit react - Front
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Animation|Montages|Hit React")
+	UAnimMontage* HitReactFrontMontage;
+
+	// Hit react - Back
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Animation|Montages|Hit React")
+	UAnimMontage* HitReactBackMontage;
+
+	// Hit react - Right
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Animation|Montages|Hit React")
+	UAnimMontage* HitReactRightMontage;
+
+	// Hit react - Left
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Animation|Montages|Hit React")
+	UAnimMontage* HitReactLeftMontage;
+
 protected:
 	void HandleDeathMontage();
 

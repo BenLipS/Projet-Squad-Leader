@@ -108,7 +108,7 @@ void UGA_FireWeaponInstant::FireBullet()
 void UGA_FireWeaponInstant::HandleTargetData(const FGameplayAbilityTargetDataHandle& _Data)
 {
 	// We only work on the last data element which is the blocked element - TODO: Check rare case where it is not a blocked element. It is possible if we fire through an ally shield but don't reach anything else
-	if (!_Data.IsValid(_Data.Data.Num() - 1))
+	if (_Data.Data.Num() <= 0 || !_Data.IsValid(_Data.Data.Num() - 1))
 		return;
 
 	if (UAnimMontage* FireMontage = SourceWeapon->FireMontage; FireMontage)

@@ -117,23 +117,38 @@ protected:
 	void ClientOnReceiveDamage(const FVector& _ImpactPoint, const FVector& _SourcePoint);
 	void ClientOnReceiveDamage_Implementation(const FVector& _ImpactPoint, const FVector& _SourcePoint);
 
+//////////////// Hit reactions
 public:
 	UFUNCTION()
-	float NbOfHitToPPIntensity(int NbHit);
+	float NbOfHitToPPIntensity(int NbHit) const;
 	UFUNCTION()
-	void AddHitLeft();
+	void AddBrokenGlassOnLeft();
 	UFUNCTION()
-	void AddHitRight();
+	void AddBrokenGlassOnRight();
 	UFUNCTION()
-	void RemoveHitLeft();
+	void RemoveBrokenGlassOnLeft();
 	UFUNCTION()
-	void RemoveHitRight();
+	void RemoveBrokenGlassOnRight();
 	UFUNCTION()
 	void UpdateBrokenGlassEffect();
+
+protected:
 	UPROPERTY()
 	int HitLeft = 0;
 	UPROPERTY()
 	int HitRight = 0;
+
+	UPROPERTY()
+	bool bHitMontageActivated = false;
+
+	UFUNCTION()
+	void ActivateHitMontage();
+
+	UFUNCTION()
+	void DisableHitMontage();
+
+	UFUNCTION()
+	void StartHitReactMontage(UAnimMontage* _HitReactMontage);
 
 //////////////// Ability System Component
 protected:

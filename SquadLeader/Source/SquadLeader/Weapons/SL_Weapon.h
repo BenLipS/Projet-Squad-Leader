@@ -253,6 +253,7 @@ public:
 	float GetTargetingSpreadMax() const noexcept;
 
 //////////////// Animations
+public:
 	// Fire
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Animation|Montages")
 	UAnimMontage* FireMontage;
