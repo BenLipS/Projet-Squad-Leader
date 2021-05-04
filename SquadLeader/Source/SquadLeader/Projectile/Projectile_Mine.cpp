@@ -44,9 +44,9 @@ void AProjectile_Mine::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActo
 		Super::OnOverlapBegin(OverlappedComp, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
 }
 
-void AProjectile_Mine::OnExplode()
+void AProjectile_Mine::OnEndOfDelay()
 {
-	Super::OnExplode();
+	Destroy();
 }
 
 void AProjectile_Mine::OnStick()

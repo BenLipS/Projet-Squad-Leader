@@ -62,7 +62,7 @@ void ASL_Projectile::BeginPlay()
 	//	temp->IgnoreActorWhenMoving(GetOwner(), true);
 
 	if (ExplosionDelay > 0.0f)
-		GetWorldTimerManager().SetTimer(TimerExplosion, this, &ASL_Projectile::OnExplode, ExplosionDelay, true);
+		GetWorldTimerManager().SetTimer(TimerExplosion, this, &ASL_Projectile::OnEndOfDelay, ExplosionDelay, true);
 }
 
 void ASL_Projectile::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -90,6 +90,11 @@ FName ASL_Projectile::GetCollisionProfile() const
 	return CollisionProfileNameMesh;
 }
 
+void ASL_Projectile::OnEndOfDelay()
+{
+	OnExplode();
+}
+
 void ASL_Projectile::OnExplode()
 {
 	for (auto AreaEffectClass : AreaEffectList)
@@ -106,16 +111,11 @@ void ASL_Projectile::OnExplode()
 		}
 
 	}
-	DeleteProjectile();
+	Destroy();
 }
 
 void ASL_Projectile::OnStick()
 {
-}
-
-void ASL_Projectile::DeleteProjectile()
-{
-	Destroy();
 }
 
 void ASL_Projectile::InitVelocity()

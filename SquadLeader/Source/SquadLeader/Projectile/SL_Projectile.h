@@ -82,7 +82,6 @@ protected:
 
 	FTimerHandle TimerExplosion;
 
-	void DeleteProjectile();
 	virtual void InitVelocity();
 
 public:
@@ -91,6 +90,9 @@ public:
 
 	UFUNCTION()
 	virtual void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+	virtual void OnEndOfDelay();
 
 	UFUNCTION(BlueprintCallable, Category = "Projectile")
 	virtual void OnExplode();
