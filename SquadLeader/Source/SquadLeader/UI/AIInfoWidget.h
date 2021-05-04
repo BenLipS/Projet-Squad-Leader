@@ -23,6 +23,9 @@ class SQUADLEADER_API UAIInfoWidget : public USL_UserWidget, public IUserObjectL
 
 protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UImage* ClassImageBackground;
+
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UImage* ClassImage;
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
@@ -61,6 +64,9 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "AIInfoWidget | Support")
 	USlateBrushAsset* SupportIcon;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "AIInfoWidget | Support")
+	USlateBrushAsset* SupportIconBackground;
+
 	UPROPERTY()
 	UMaterialInstanceDynamic* StatusMaterial;
 
@@ -98,6 +104,9 @@ public:
 protected:
 	UFUNCTION()
 	USlateBrushAsset* GetBrushFromClass(SoldierClass classIn);
+
+	UFUNCTION()
+	USlateBrushAsset* GetBrushBackgroundFromClass(SoldierClass classIn);
 
 	UFUNCTION()
 	FLinearColor GetColorFromClass(SoldierClass classIn);

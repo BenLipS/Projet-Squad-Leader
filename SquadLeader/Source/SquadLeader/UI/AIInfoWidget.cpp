@@ -70,7 +70,13 @@ void UAIInfoWidget::OnClassChanged(SoldierClass newValue)
 
 		auto iconClass = GetBrushFromClass(AIClass);
 
-		ClassImage->SetBrushFromAsset(iconClass);
+		if(IsValid(iconClass))
+			ClassImage->SetBrushFromAsset(iconClass);
+
+		auto iconBackgroundClass = GetBrushBackgroundFromClass(AIClass);
+
+		if(IsValid(iconBackgroundClass))
+			ClassImageBackground->SetBrushFromAsset(iconBackgroundClass);
 	}
 }
 
@@ -79,6 +85,7 @@ USlateBrushAsset* UAIInfoWidget::GetBrushFromMission(AIBasicState missionIn)
 	switch (missionIn)
 	{
 	case AIBasicState::Attacking:
+	case AIBasicState::Moving:
 		return AttackingImage;
 		break;
 	case AIBasicState::Formation:
@@ -103,6 +110,20 @@ USlateBrushAsset* UAIInfoWidget::GetBrushFromClass(SoldierClass classIn)
 	case SoldierClass::SUPPORT:
 		return SupportIcon;
 		break;
+	default:
+		return nullptr;
+		break;
+	}
+}
+
+USlateBrushAsset* UAIInfoWidget::GetBrushBackgroundFromClass(SoldierClass classIn)
+{
+	switch (classIn)
+	{
+	case SoldierClass::SUPPORT:
+		return SupportIconBackground;
+	case SoldierClass::ASSAULT:
+	case SoldierClass::HEAVY:
 	default:
 		return nullptr;
 		break;
