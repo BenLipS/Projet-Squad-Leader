@@ -6,6 +6,7 @@
 #include "../../AI/AISquadManager.h"
 #include "../../AbilitySystem/Soldiers/GameplayAbilitySoldier.h"
 #include "../../Spawn/SoldierSpawn.h"
+#include "SquadLeader/UI/Interface/MinimapInterface.h"
 #include "Kismet/KismetMaterialLibrary.h"
 #include "DrawDebugHelpers.h"
 #include "TimerManager.h"
@@ -49,6 +50,12 @@ void ASoldierPlayer::BeginPlay()
 
 		PostProcessVolume->AddOrUpdateBlendable(MaterialBrokenGlassRightInstance, 0.f);
 		PostProcessVolume->AddOrUpdateBlendable(MaterialBrokenGlassLeftInstance, 0.f);
+	}
+	// Blood
+	if (MaterialBloodInterface)
+	{
+		MaterialBloodInstance = UKismetMaterialLibrary::CreateDynamicMaterialInstance(GetWorld(), MaterialBloodInterface);
+		PostProcessVolume->AddOrUpdateBlendable(MaterialBloodInstance, 0.f);
 	}
 }
 
@@ -230,6 +237,65 @@ void ASoldierPlayer::cycleBetweenTeam()
 	else ServerCycleBetweenTeam();
 }
 
+void ASoldierPlayer::SpawnClientPing_Implementation(FVector2D ActorLocationIn)
+{
+	if (ASoldierPlayerController* PC = GetController<ASoldierPlayerController>(); PC)
+	{
+		if (auto HUD = PC->GetHUD<IMinimapInterface>(); HUD)
+		{
+			HUD->OnPingAdded(ActorLocationIn);
+		}
+	}
+}
+
+void ASoldierPlayer::SpawnPing(FVector PingLocation)
+{
+	FTransform PingTransform;
+	PingTransform.SetLocation(PingLocation);
+	if (PingMesh) 
+		PingMesh->Destroy();
+	
+	PingMesh = GetWorld()->SpawnActorDeferred<AActor>(PingClass, PingTransform, this, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+	if (PingMesh)
+	{
+		PingMesh->FinishSpawning(PingTransform);
+
+		if (ASoldierPlayerController* PC = GetController<ASoldierPlayerController>(); PC)
+		{
+			if (auto HUD = PC->GetHUD<IMinimapInterface>(); HUD)
+			{
+				HUD->OnPingAdded({ PingMesh->GetActorLocation().X, PingMesh->GetActorLocation().Y });
+			}
+		}
+		SpawnClientPing({ PingMesh->GetActorLocation().X, PingMesh->GetActorLocation().Y });
+	}
+}
+
+void ASoldierPlayer::DestroyPing() {
+	if (PingMesh)
+	{
+		PingMesh->Destroy();
+		if (ASoldierPlayerController* PC = GetController<ASoldierPlayerController>(); PC)
+		{
+			if (auto HUD = PC->GetHUD<IMinimapInterface>(); HUD)
+			{
+				HUD->OnPingDestroyed();
+			}
+		}
+	}
+}
+
+void ASoldierPlayer::DestroyClientPing_Implementation()
+{
+	if (ASoldierPlayerController* PC = GetController<ASoldierPlayerController>(); PC)
+	{
+		if (auto HUD = PC->GetHUD<IMinimapInterface>(); HUD)
+		{
+			HUD->OnPingDestroyed();
+		}
+	}
+}
+
 void ASoldierPlayer::LevelUp()
 {
 	Super::LevelUp();
@@ -298,11 +364,41 @@ void ASoldierPlayer::OnReceiveDamage(const FVector& _ImpactPoint, const FVector&
 		//if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("Gauche"));
 		AddHitLeft();
 	}
+
 }
 
 void ASoldierPlayer::ClientOnReceiveDamage_Implementation(const FVector& _ImpactPoint, const FVector& _SourcePoint)
 {
 	OnReceiveDamage(_ImpactPoint, _SourcePoint);
+}
+
+void ASoldierPlayer::HealthChanged(const FOnAttributeChangeData& _Data)
+{
+	Super::HealthChanged(_Data);
+
+	if (!MaterialBloodInstance)
+		return;
+
+	PostProcessVolume->AddOrUpdateBlendable(MaterialBloodInstance, 1.f);
+	float BloodIntensity = 0.2f;
+
+	float HealthPourcentage = 1 - (GetMaxHealth() - GetHealth()) / GetMaxHealth();
+
+	if (HealthPourcentage < 0.99) {
+		BloodIntensity = 0.1;
+	}
+	if (HealthPourcentage < 0.5) {
+		BloodIntensity = 0.2;
+	}
+	if (HealthPourcentage < 0.3) {
+		BloodIntensity = 0.3;
+	}
+	
+	MaterialBloodInstance->SetScalarParameterValue("RadiusIntensity", BloodIntensity);
+
+	if (HealthPourcentage >= 0.99f) {
+		PostProcessVolume->AddOrUpdateBlendable(MaterialBloodInstance, 0.f);
+	}
 }
 
 float ASoldierPlayer::NbOfHitToPPIntensity(int NbHit)

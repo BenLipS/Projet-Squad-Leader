@@ -37,12 +37,18 @@ void ASoldierPlayerController::CreateHUD_Implementation()
 	if (CurrentHUD)
 		return;
 	ClientSetHUD(HUDClass);
-	if (ASL_HUD* HUD = GetHUD<ASL_HUD>(); HUD)
+	if (InputComponent)
 	{
-		if (InputComponent)
+		if (auto HUD = GetHUD<ASL_HUD>(); HUD)
 		{
 			InputComponent->BindAction("GiveOrder", IE_Pressed, HUD, &ASL_HUD::OnOrderInputPressed);
 			InputComponent->BindAction("GiveOrder", IE_Released, HUD, &ASL_HUD::OnOrderInputReleased);
+		}
+
+		if (auto HUD = GetHUD<ASL_HUD>(); HUD)
+		{
+			InputComponent->BindAction("DisplayMap", IE_Pressed, HUD, &ASL_HUD::OnFullMapDisplayBegin);
+			InputComponent->BindAction("DisplayMap", IE_Released, HUD, &ASL_HUD::OnFullMapDisplayEnd);
 		}
 	}
 }

@@ -177,7 +177,6 @@ void AAISquadManager::UpdateCircleFormation()
 		Offset = Offset.RotateAngleAxis(angle, { 0, 0, 1 });
 		Offset = Offset.RotateAngleAxis(AnglePerAI * AISquadList.IndexOfByKey(BoidController), { 0, 0, 1 });
 		Pos = LocPlayer + Offset;
-		//DrawDebugPoint(Leader->GetWorld(), Pos, 20, FColor::Yellow);
 		FormationPos.Add(Pos);
 		});
 }
@@ -214,7 +213,7 @@ void AAISquadManager::UpdateMission(const MissionType _MissionType, const FVecto
 			_patrolMisssion->InitPatrolMission(1, MissionPriority::eMIDDLE);
 			AISquad->SetMission<UPatrolMission*>(_patrolMisssion);
 			AISquad->SetObjectifLocation(_Location);
-
+			
 			AISquad->SetUpMission(true, false, _Location);
 		}
 	};
@@ -222,7 +221,7 @@ void AAISquadManager::UpdateMission(const MissionType _MissionType, const FVecto
 	switch (_MissionType)
 	{
 	case MissionType::FormationCircle:
-
+		Leader->DestroyPing();
 		for (AAISquadController* AISquad : AISquadList) {
 			AISquad->EmptyMissionList();
 			UFormationMission* _formationMission = Cast<UFormationMission>(NewObject<UFormationMission>(this, UFormationMission::StaticClass()));
@@ -235,7 +234,7 @@ void AAISquadManager::UpdateMission(const MissionType _MissionType, const FVecto
 		m_inFormation = true;
 		break;
 	case MissionType::FormationArrow:
-
+		Leader->DestroyPing();
 		for (AAISquadController* AISquad : AISquadList) {
 			AISquad->EmptyMissionList();
 			UFormationMission* _formationMission = Cast<UFormationMission>(NewObject<UFormationMission>(this, UFormationMission::StaticClass()));
@@ -260,6 +259,7 @@ void AAISquadManager::UpdateMission(const MissionType _MissionType, const FVecto
 	case MissionType::ePATROL:
 		for_each_sqaud(true, false);
 		m_inFormation = false;
+		Leader->SpawnPing(_Location);
 		//GEngine->AddOnScreenDebugMessage(4563, 4.f, FColor::Red, FString::Printf(TEXT("Order MoveTo on (%s,%s,%s) from %s"), *FString::SanitizeFloat(_Location.X), *FString::SanitizeFloat(_Location.Y), *FString::SanitizeFloat(_Location.Z), *Leader->GetName()));
 		break;
 	default:

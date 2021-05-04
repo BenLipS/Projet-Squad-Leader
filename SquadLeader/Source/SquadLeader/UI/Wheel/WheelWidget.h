@@ -70,7 +70,7 @@ protected:
 public:
 	const TArray<class UWheelWidgetElement*>& GetItems();
 
-	void AddToViewport(int32 ZOrder = 0) override;
+	void AddToViewport() override;
 	void RemoveFromViewport();
 
 protected:
