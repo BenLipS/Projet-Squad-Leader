@@ -22,7 +22,6 @@ bAbilitiesInitialized{ false },
 WeaponAttachPointRightHand{ FName("WeaponSocketRightHand") },
 WeaponAttachPointLeftHand{ FName("WeaponSocketLeftHand") },
 bChangedWeaponLocally{ false },
-FieldOfViewNormal{ 90.f },
 LevelUpFXRelativeLocation{ FVector{0.f} },
 LevelUpFXRotator{ FRotator{} },
 LevelUpFXScale{ FVector{1.f} },
@@ -63,6 +62,8 @@ void ASoldier::BeginPlay()
 	}
 	else
 		setToThirdCameraPerson();
+
+	CurrentFOV = BaseFOVNormal;
 
 	// Teams
 	// TODO: Clients must be aware of their team. If we really want a security with the server, we should call this function
@@ -540,16 +541,6 @@ FVector ASoldier::GetLookingAtPosition(const float _MaxRange) const
 	return HitResult.bBlockingHit ? HitResult.Location : ViewEnd;
 }
 
-bool ASoldier::StartRunning()
-{
-	AttributeSet->SetMoveSpeedMultiplier(1.8f);
-	return true;
-}
-
-void ASoldier::StopRunning()
-{
-	AttributeSet->SetMoveSpeedMultiplier(1.f);
-}
 
 bool ASoldier::Walk()
 {
@@ -572,6 +563,105 @@ void ASoldier::Landed(const FHitResult& _Hit)
 		EffectTagsToRemove.AddTag(FGameplayTag::RequestGameplayTag(FName("State.Jumping")));
 		AbilitySystemComponent->RemoveActiveEffectsWithGrantedTags(EffectTagsToRemove);
 	}
+}
+
+bool ASoldier::StartRunning()
+{
+	AttributeSet->SetMoveSpeedMultiplier(1.8f);
+
+	bIsRunning = true;
+	UpdateFOV();
+
+	return true;
+}
+
+void ASoldier::StopRunning()
+{
+	AttributeSet->SetMoveSpeedMultiplier(1.f);
+
+	bIsRunning = false;
+	UpdateFOV();
+}
+
+bool ASoldier::IsRunning() const noexcept
+{
+	return bIsRunning;
+}
+
+void ASoldier::StartAiming()
+{
+	if (!CurrentWeapon)
+		return;
+
+	bIsAiming = true;
+	UpdateFOV();
+}
+
+void ASoldier::StopAiming()
+{
+	bIsAiming = false;
+	UpdateFOV();
+}
+
+bool ASoldier::IsAiming() const noexcept
+{
+	return bIsAiming;
+}
+
+void ASoldier::UpdateFOV()
+{
+	// Update current FOV
+	if (bIsAiming)
+		CurrentFOV = CurrentWeapon->GetFieldOfViewAim();
+	else if (bIsRunning)
+		CurrentFOV = BaseFOVRunning;
+	else
+		CurrentFOV = BaseFOVNormal;
+
+	// Start camera FOV animation
+	if (CurrentFOV < ThirdPersonCameraComponent->FieldOfView) // Zoom in
+	{
+		GetWorldTimerManager().SetTimer(TimerFOVAnimation, this, &ASoldier::ZoomInFOV, TimeBetweenFOVChange, true);
+		ZoomInFOV();
+	}
+	else // Zoom out
+	{
+		GetWorldTimerManager().SetTimer(TimerFOVAnimation, this, &ASoldier::ZoomOutFOV, TimeBetweenFOVChange, true);
+		ZoomOutFOV();
+	}
+}
+
+void ASoldier::ZoomInFOV()
+{
+	const float NewCameraFOV = ThirdPersonCameraComponent->FieldOfView * ZoomInFOVMultiplier;
+
+	if (NewCameraFOV > CurrentFOV)
+	{
+		FirstPersonCameraComponent->SetFieldOfView(NewCameraFOV);
+		ThirdPersonCameraComponent->SetFieldOfView(NewCameraFOV);
+	}
+	else
+		FinishFOVAnimation();
+}
+
+void ASoldier::ZoomOutFOV()
+{
+	const float NewCameraFOV = ThirdPersonCameraComponent->FieldOfView * ZoomOutFOVMultiplier;
+
+	if (NewCameraFOV < CurrentFOV)
+	{
+		FirstPersonCameraComponent->SetFieldOfView(NewCameraFOV);
+		ThirdPersonCameraComponent->SetFieldOfView(NewCameraFOV);
+	}
+	else
+		FinishFOVAnimation();
+}
+
+void ASoldier::FinishFOVAnimation()
+{
+	GetWorld()->GetTimerManager().ClearTimer(TimerFOVAnimation);
+	FirstPersonCameraComponent->SetFieldOfView(CurrentFOV);
+	ThirdPersonCameraComponent->SetFieldOfView(CurrentFOV);
 }
 
 void ASoldier::SpawnDefaultInventory()
@@ -917,30 +1007,6 @@ void ASoldier::Respawn()
 
 void ASoldier::OnReceiveDamage(const FVector& _ImpactPoint, const FVector& _SourcePoint)
 {
-}
-
-void ASoldier::StartAiming()
-{
-	if (!CurrentWeapon)
-		return;
-
-	FirstPersonCameraComponent->SetFieldOfView(CurrentWeapon->GetFieldOfViewAim());
-	ThirdPersonCameraComponent->SetFieldOfView(CurrentWeapon->GetFieldOfViewAim());
-
-	bIsAiming = true;
-}
-
-void ASoldier::StopAiming()
-{
-	FirstPersonCameraComponent->SetFieldOfView(FieldOfViewNormal);
-	ThirdPersonCameraComponent->SetFieldOfView(FieldOfViewNormal);
-
-	bIsAiming = false;
-}
-
-bool ASoldier::IsAiming() const noexcept
-{
-	return bIsAiming;
 }
 
 FRotator ASoldier::GetSyncControlRotation() const noexcept

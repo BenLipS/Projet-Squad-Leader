@@ -73,7 +73,6 @@ public:
 
 	virtual void cycleBetweenTeam() override;
 
-
 //////////////// Post Effects
 // Glitch effect
 protected:
@@ -98,7 +97,7 @@ protected:
 	float TimeBetweenReductionGlitch = 0.1f;
 
 	// Multiplier to reduce weight of the glitch effect - Should be lower than 1
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Camera|PostEffects|GlitchEffect", meta = (ClampMin = "0.001", UIMin = "0.999"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Camera|PostEffects|GlitchEffect", meta = (ClampMin = "0.001", UIMin = "0.001"))
 	float ReductionMultiplierGlitch = 0.9f;
 
 	// Minimum weight for smooth glitch reduction before ending the glitch 

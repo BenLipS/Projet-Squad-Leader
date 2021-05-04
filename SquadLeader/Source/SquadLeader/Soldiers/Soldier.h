@@ -284,14 +284,15 @@ public:
 	FName WeaponAttachPointLeftHand;
 
 //////////////// Movement
-	// Move direction
+public:
+// Move direction
 	UFUNCTION()
 	void MoveForward(const float _Val);
 
 	UFUNCTION()
 	void MoveRight(const float _Val);
 
-	// Looking direction
+// Looking direction
 	UFUNCTION()
 	virtual void LookUp(const float _Val);
 
@@ -302,16 +303,69 @@ public:
 	virtual FVector GetLookingAtPosition(const float _MaxRange = 99999.f) const;
 
 	// Run
-	UFUNCTION(BlueprintCallable, Category = "Movement")
+	UFUNCTION(BlueprintCallable, Category = "Movement|Run")
 	bool StartRunning();
 
-	UFUNCTION(BlueprintCallable, Category = "Movement")
+	UFUNCTION(BlueprintCallable, Category = "Movement|Run")
 	void StopRunning();
 
+	UFUNCTION(BlueprintCallable, Category = "Movement|Run")
+	bool IsRunning() const noexcept;
+
+protected:
+	bool bIsRunning = false;
+
+public:
 	UFUNCTION(BlueprintCallable, Category = "Movement")
 	bool Walk();
 
 	virtual void Landed(const FHitResult& _Hit) override;
+
+// Field of view
+public:
+	UFUNCTION(BlueprintCallable, Category = "Movement|Aim")
+	void StartAiming();
+
+	UFUNCTION(BlueprintCallable, Category = "Movement|Aim")
+	void StopAiming();
+
+	UFUNCTION(BlueprintCallable, Category = "Movement|Aim")
+	bool IsAiming() const noexcept;
+
+protected:
+	bool bIsAiming = false;
+
+	// Normal FOV in idle or walking mode
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Camera|FOV")
+	float BaseFOVNormal = 90.f;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Camera|FOV")
+	float BaseFOVRunning = 100;
+
+public:
+	UFUNCTION(BlueprintCallable, Category = "Camera|FOV")
+	void UpdateFOV();
+
+private:
+	// FOV after checking soldier mode (running state etc...)
+	float CurrentFOV;
+
+	void ZoomInFOV();
+	void ZoomOutFOV();
+	void FinishFOVAnimation();
+
+	FTimerHandle TimerFOVAnimation;
+
+protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Camera|FOV", meta = (ClampMin = "0.0", UIMin = "0.0"))
+	float TimeBetweenFOVChange = 0.01f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Camera|FOV", meta = (ClampMin = "0.001", UIMin = "0.001", ClampMax = "0.9999", UIMax = "0.9999"))
+	float ZoomInFOVMultiplier = 0.9f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Camera|FOV", meta = (ClampMin = "1.0001", UIMin = "1.0001"))
+	float ZoomOutFOVMultiplier = 1.1f;
+
 
 //////////////// Inventory
 protected:
@@ -355,7 +409,6 @@ public:
 	//UFUNCTION(BlueprintCallable, Category = "Inventory|Weapon")
 	void EquipWeapon(ASL_Weapon* _NewWeapon);
 
-	// aJOUTE MATCHINGCLASS
 	UFUNCTION(BlueprintCallable, Category = "Inventory|Weapon")
 	void EquipWeapon(UClass* _WeaponClass);
 
@@ -397,25 +450,8 @@ protected:
 	void ClientSyncCurrentWeapon_Implementation(ASL_Weapon* _InWeapon);
 	bool ClientSyncCurrentWeapon_Validate(ASL_Weapon* _InWeapon);
 
-// Field of view
-public:
-	// Normal field of view
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Stats")
-	float FieldOfViewNormal;
-
-	UFUNCTION(BlueprintCallable, Category = "Weapon")
-	void StartAiming();
-
-	UFUNCTION(BlueprintCallable, Category = "Weapon")
-	void StopAiming();
-
-protected:
-	bool bIsAiming = false;
-
-public:
-	bool IsAiming() const noexcept;
-
 //////////////// Soldier team
+public:
 	UPROPERTY(EditAnywhere, Category = "PlayerTeam")
 	ASoldierTeam* InitialTeam;  // for debug use
 
