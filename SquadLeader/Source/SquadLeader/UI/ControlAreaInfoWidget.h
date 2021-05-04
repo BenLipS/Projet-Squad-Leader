@@ -5,13 +5,14 @@
 #include "CoreMinimal.h"
 #include "SL_UserWidget.h"
 #include "Components/Image.h"
+#include "Minimap/PointOfInterestWidget.h"
 #include "ControlAreaInfoWidget.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class SQUADLEADER_API UControlAreaInfoWidget : public USL_UserWidget
+class SQUADLEADER_API UControlAreaInfoWidget : public UPointOfInterestWidget
 {
 
 	GENERATED_BODY()
