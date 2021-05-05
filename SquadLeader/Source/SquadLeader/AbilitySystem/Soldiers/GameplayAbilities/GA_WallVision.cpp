@@ -57,8 +57,10 @@ void UGA_WallVision::ActivateAbility(const FGameplayAbilitySpecHandle Handle, co
 void UGA_WallVision::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
 	if (ASoldierPlayerController* PC = SourceSoldier->GetController<ASoldierPlayerController>(); PC)
+	{
 		PC->OnWallVisionDeactivate();
-
+		SourceSoldier->UpdateWallVisionPostEffect(0.f);
+	}
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
@@ -95,6 +97,5 @@ void UGA_WallVision::StartWallVision()
 
 void UGA_WallVision::EndWallVision()
 {
- 	SourceSoldier->UpdateWallVisionPostEffect(0.f);
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, false, false);
 }
