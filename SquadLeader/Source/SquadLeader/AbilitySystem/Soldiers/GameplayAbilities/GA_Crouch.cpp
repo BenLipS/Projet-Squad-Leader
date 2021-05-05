@@ -1,5 +1,6 @@
 #include "GA_Crouch.h"
 #include "../../../Soldiers/Soldier.h"
+#include "SquadLeader/Weapons/SL_Weapon.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 UGA_Crouch::UGA_Crouch()
@@ -30,8 +31,13 @@ bool UGA_Crouch::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 	if (!Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags))
 		return false;
 
-	const ASoldier* soldier = CastChecked<ASoldier>(ActorInfo->AvatarActor.Get(), ECastCheckedType::NullAllowed);
-	return soldier && soldier->CanCrouch();
+	const ASoldier* Soldier = Cast<ASoldier>(ActorInfo->AvatarActor.Get());
+
+	if (!Soldier || !Soldier->CanCrouch())
+		return false;
+
+	const ASL_Weapon* Weapon = Soldier->GetCurrentWeapon();
+	return !Weapon || !Weapon->IsHeavyWeapon();
 }
 
 void UGA_Crouch::InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo)

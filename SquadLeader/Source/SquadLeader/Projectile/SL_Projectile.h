@@ -25,11 +25,11 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 protected:
-	UPROPERTY(EditDefaultsOnly, Category = "Mesh")
-	UStaticMeshComponent* Mesh;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Mesh")
+	USkeletalMeshComponent* Mesh;
 
 public:
-	UStaticMeshComponent* GetMesh() const;
+	USkeletalMeshComponent* GetMesh() const;
 
 protected:
 	// CollisionProfileName of the mesh
@@ -82,7 +82,6 @@ protected:
 
 	FTimerHandle TimerExplosion;
 
-	void DeleteProjectile();
 	virtual void InitVelocity();
 
 public:
@@ -91,6 +90,9 @@ public:
 
 	UFUNCTION()
 	virtual void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+	virtual void OnEndOfDelay();
 
 	UFUNCTION(BlueprintCallable, Category = "Projectile")
 	virtual void OnExplode();

@@ -19,8 +19,8 @@ UCLASS()
 class SQUADLEADER_API ASL_Weapon : public AActor, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	ASL_Weapon();
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Ability System")
@@ -29,6 +29,7 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(EEndPlayReason::Type _EndPlayReason) override;
+	virtual void Destroyed() override;
 
 public:
 	virtual void PreReplication(IRepChangedPropertyTracker& _ChangedPropertyTracker) override;
@@ -37,22 +38,40 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual void ResetWeapon();
 
+	// For the HUD
+	void ForceUpdateAmmo();
+
 //////////////// Mesh
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Mesh")
-	UStaticMeshComponent* WeaponMesh;
+	USkeletalMeshComponent* WeaponMesh;
 
 public:
 	UFUNCTION(BlueprintCallable)
-	UStaticMeshComponent* GetWeaponMesh() const;
+	USkeletalMeshComponent* GetWeaponMesh() const;
 
+// Attach points
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Mesh")
-	FName MuzzleAttachPoint;
+	FName MuzzleAttachPoint = FName{ "Muzzle" };
+
+	// Default right hand attach point a character could use - 
+	UPROPERTY(EditDefaultsOnly, Category = "Mesh")
+	FName RightHandAttachPoint;
+
+	// Default left hand attach point if the weapon does not give one
+	UPROPERTY(EditDefaultsOnly, Category = "Mesh")
+	FName LeftHandAttachPoint;
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Mesh")
 	FName GetMuzzleAttachPoint() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Mesh")
+	FName GetRightHandAttachPoint() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Mesh")
+	FName GetLeftHandAttachPoint() const;
 
 //////////////// Owning Soldier
 
@@ -99,18 +118,18 @@ protected:
 protected:
 // Damage
 	UPROPERTY(BluePrintReadWrite, EditAnywhere, Category = "Stats|Damage")
-	FScalableFloat  Damage;
+	FScalableFloat Damage = FScalableFloat{ 1.f };
 
 // Range
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Stats")
-	float MaxRange;
+	float MaxRange = 999999.f;
 
 public:
 	float GetMaxRange() const noexcept;
 
 // Aim
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Stats")
-	float FieldOfViewAim;
+	float FieldOfViewAim = 50.f;
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Stats|Ammo")
@@ -122,19 +141,40 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Stats")
 	float GetFieldOfViewAim() const noexcept;
 
+// Weight
+protected:
+	// Multiplier to influence owner move speed
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Stats|Weight", meta = (ClampMax = "1.0"))
+	float MoveSpeedMultiplier = 1.f;
+
+	// If true the owner should not be able to jump or crouch
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Stats|Weight")
+	bool IsHeavy = false;
+
+public:
+	UFUNCTION(BlueprintCallable, Category = "Stats|Ammo")
+	float GetMoveSpeedMultiplier() const noexcept;
+
+	UFUNCTION(BlueprintCallable, Category = "Stats|Ammo")
+	bool IsHeavyWeapon() const noexcept;
+
 // Ammo
 protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Replicated, Category = "Stats|Ammo")
-	float TimeBetweenShots;
+	float TimeBetweenShots = 0.1f;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Replicated, Category = "Stats|Ammo")
-	int32 CurrentAmmo;
+	int32 CurrentAmmo = 50;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Replicated, Category = "Stats|Ammo")
-	int32 MaxAmmo;
+	int32 MaxAmmo = 50 ;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Stats|Ammo")
-	bool bInfiniteAmmo;
+	bool bInfiniteAmmo = false;
+
+	// Wheter the weapon can be reloaded right after reaching 0 ammo
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Stats|Ammo")
+	bool bReloadIfOutOfAmmo = true;
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Stats|Ammo")
@@ -157,6 +197,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Stats|Ammo")
 	void DecrementAmmo();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnOutOfAmmo();
 
 	UFUNCTION(BlueprintCallable, Category = "Stats|Ammo")
 	void SetMaxAmmo(const int32 _NewMaxAmmo);
@@ -182,19 +225,19 @@ public:
 protected:
 	// Constant spread on fire. It defines the angle of the cone to randomly generate a fire
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Stats|Accuracy")
-	float BaseSpread;
+	float BaseSpread = 0.f;
 
 	// Multiplier of the final spread when aiming
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Stats|Accuracy")
-	float AimingSpreadMod;
+	float AimingSpreadMod = 1.f;
 
 	// Increment this value to the final spread after a fire. This is accumulated for automatic weapon
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Stats|Accuracy")
-	float TargetingSpreadIncrement;
+	float TargetingSpreadIncrement = 0.f;
 
 	// Max increase of the spread.This works with TargetingSpreadIncrement
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Stats|Accuracy")
-	float TargetingSpreadMax;
+	float TargetingSpreadMax = 0.f;
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Stats|Accuracy")
@@ -209,11 +252,21 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Stats|Accuracy")
 	float GetTargetingSpreadMax() const noexcept;
 
+//////////////// Animations
+public:
+	// Fire
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Animation|Montages")
+	UAnimMontage* FireMontage;
+
+	// Reload
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Animation|Montages")
+	UAnimMontage* ReloadMontage;
+
 //////////////// Collision
 public:
 	// Collision profile - See Preset in Engine - Collision 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Collision")
-	FName CollisionProfileName;
+	FName CollisionProfileName = FName{ "InstantWeaponFire" };
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Collision")
 	bool bDebugTrace = true;
