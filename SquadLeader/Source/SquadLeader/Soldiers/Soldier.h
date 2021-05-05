@@ -4,6 +4,7 @@
 #include "GameFramework/Character.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "camera/cameracomponent.h"
+#include "Camera/CameraShake.h"
 #include "AbilitySystemInterface.h"
 #include "../AbilitySystem/Soldiers/AttributeSetSoldier.h"
 #include "../AbilitySystem/Soldiers/AbilitySystemSoldier.h"
@@ -254,6 +255,20 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
 	USpringArmComponent* SpringArmComponent;
 
+// Camera Shake
+protected:
+	// TODO: Should we have one camera shake per weapon then put this variable in the weapon ?
+	// We may have one generic camerashake here
+	UPROPERTY(EditDefaultsOnly, Category = "Camera|Camera Shake")
+	TSubclassOf<UMatineeCameraShake> CameraShakeFireClass;
+
+public:
+	TSubclassOf<UMatineeCameraShake> GetCameraShakeFireClass() const;
+
+	// This need to use the new camera shake sequence. Matinee is deprecated 
+	UFUNCTION(BlueprintImplementableEvent)
+	void ShakeCamera(TSubclassOf<UMatineeCameraShake> _CameraShakeClass);
+
 protected:
 	UPROPERTY(BlueprintReadOnly, Replicated)
 	FRotator SyncControlRotation;
@@ -286,21 +301,34 @@ public:
 	UPROPERTY(VisibleDefaultsOnly, Category = "Mesh")
 	USkeletalMeshComponent* FirstPersonMesh;
 
+	// Relative transform of the mesh in capsule component - Cache value from BeginPlay. It is used for ragdoll
+	UPROPERTY(BlueprintReadOnly, Category = "Mesh")
+	FTransform CacheRelativeTransformMeshInCapsule;
+
+	// Default right hand attach point if the weapon does not give one
 	UPROPERTY(EditDefaultsOnly, Category = "Inventory|Weapon")
 	FName WeaponAttachPointRightHand;
 
+	// Default left hand attach point if the weapon does not give one
 	UPROPERTY(EditDefaultsOnly, Category = "Inventory|Weapon")
 	FName WeaponAttachPointLeftHand;
 
+	UFUNCTION()
+	void StartRagdoll();
+
+	UFUNCTION()
+	void StopRagdoll();
+
 //////////////// Movement
-	// Move direction
+public:
+// Move direction
 	UFUNCTION()
 	void MoveForward(const float _Val);
 
 	UFUNCTION()
 	void MoveRight(const float _Val);
 
-	// Looking direction
+// Looking direction
 	UFUNCTION()
 	virtual void LookUp(const float _Val);
 
@@ -311,16 +339,71 @@ public:
 	virtual FVector GetLookingAtPosition(const float _MaxRange = 99999.f) const;
 
 	// Run
-	UFUNCTION(BlueprintCallable, Category = "Movement")
+	UFUNCTION(BlueprintCallable, Category = "Movement|Run")
 	bool StartRunning();
 
-	UFUNCTION(BlueprintCallable, Category = "Movement")
+	UFUNCTION(BlueprintCallable, Category = "Movement|Run")
 	void StopRunning();
 
+	UFUNCTION(BlueprintCallable, Category = "Movement|Run")
+	bool IsRunning() const noexcept;
+
+protected:
+	bool bIsRunning = false;
+
+public:
 	UFUNCTION(BlueprintCallable, Category = "Movement")
 	bool Walk();
 
 	virtual void Landed(const FHitResult& _Hit) override;
+
+// Field of view
+public:
+	UFUNCTION(BlueprintCallable, Category = "Movement|Aim")
+	void StartAiming();
+
+	UFUNCTION(BlueprintCallable, Category = "Movement|Aim")
+	void StopAiming();
+
+	UFUNCTION(BlueprintCallable, Category = "Movement|Aim")
+	bool IsAiming() const noexcept;
+
+protected:
+	bool bIsAiming = false;
+
+	// Normal FOV in idle or walking mode
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Camera|FOV")
+	float BaseFOVNormal = 90.f;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Camera|FOV")
+	float BaseFOVRunning = 100;
+
+public:
+	UFUNCTION(BlueprintCallable, Category = "Camera|FOV")
+	void UpdateFOV();
+
+private:
+	// FOV after checking soldier mode (running state etc...)
+	float CurrentFOV;
+
+	void ZoomInFOV();
+	void ZoomOutFOV();
+	void FinishFOVAnimation();
+
+	FTimerHandle TimerFOVAnimation;
+
+protected:
+	// Time to realize an entire FOV animation
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Camera|FOV")
+	float TimeFOVAnimation = 0.15f;
+
+	// Time between each FOV change
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Camera|FOV", meta = (ClampMin = "0.0", UIMin = "0.0"))
+	float TimeBetweenFOVChange = 0.01f;
+
+private:
+	// Value to add to FOV for animation. This is calculated with TimeFOVAnimation and TimeBetweenFOVChange
+	float ZoomFOVAdd;
 
 //////////////// Inventory
 protected:
@@ -333,6 +416,17 @@ protected:
 	void OnRep_Inventory();
 
 //////////////// Weapons
+public:
+	void OnStartFiring();
+	void OnStopFiring();
+
+protected:
+	bool bIsFiring = false;
+
+public:
+	bool IsFiring() const noexcept;
+
+protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Inventory|Weapon")
 	TArray<TSubclassOf<ASL_Weapon>> DefaultInventoryWeaponClasses;
 
@@ -342,6 +436,9 @@ protected:
 public:
 	UFUNCTION(BlueprintCallable, Category = "Inventory|Weapon")
 	ASL_Weapon* GetCurrentWeapon() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Inventory|Weapon")
+	TArray<ASL_Weapon*> GetAllWeapons() const;
 
 	// Define the attach point for the mesh as right hand - This is the default point - this will be useful to handle animations
 	UFUNCTION(BlueprintCallable, Category = "Inventory|Weapon")
@@ -358,8 +455,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Inventory|Weapon")
 	bool AddWeaponToInventory(ASL_Weapon* _NewWeapon, const bool _bEquipWeapon = false);
 
-	UFUNCTION(BlueprintCallable, Category = "Inventory|Weapon")
+	//UFUNCTION(BlueprintCallable, Category = "Inventory|Weapon")
 	void EquipWeapon(ASL_Weapon* _NewWeapon);
+
+	UFUNCTION(BlueprintCallable, Category = "Inventory|Weapon")
+	void EquipWeapon(UClass* _WeaponClass);
 
 	UFUNCTION(Server, Reliable, Category = "Inventory|Weapon")
 	void ServerEquipWeapon(ASL_Weapon* _NewWeapon);
@@ -367,7 +467,13 @@ public:
 	void ServerEquipWeapon_Implementation(ASL_Weapon* _NewWeapon);
 
 protected:
+	// Return true if a weapon with the same class already exists
+	UFUNCTION(BlueprintCallable, Category = "Inventory|Weapon")
 	bool DoesWeaponExistInInventory(ASL_Weapon* _Weapon);
+
+	// Return the weapon in inventoery that matches the given weapon. Return nullptr if there is no such weapon
+	UFUNCTION(BlueprintCallable, Category = "Inventory|Weapon")
+	ASL_Weapon* GetWeaponWithSameClassInInventory(ASL_Weapon* _Weapon);
 
 	void SetCurrentWeapon(ASL_Weapon* _NewWeapon, ASL_Weapon* _LastWeapon);
 
@@ -393,17 +499,8 @@ protected:
 	void ClientSyncCurrentWeapon_Implementation(ASL_Weapon* _InWeapon);
 	bool ClientSyncCurrentWeapon_Validate(ASL_Weapon* _InWeapon);
 
-public:
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Stats")
-	float FieldOfViewNormal;
-
-	UFUNCTION(BlueprintCallable, Category = "Weapon")
-	void StartAiming();
-
-	UFUNCTION(BlueprintCallable, Category = "Weapon")
-	void StopAiming();
-
 //////////////// Soldier team
+public:
 	UPROPERTY(EditAnywhere, Category = "PlayerTeam")
 	ASoldierTeam* InitialTeam;  // for debug use
 
@@ -472,14 +569,6 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Animation|Montages")
 	UAnimMontage* RespawnMontage;
 
-	// Weapon fire
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Animation|Montages")
-	UAnimMontage* WeaponFireMontage;
-
-	// Reload weapon
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Animation|Montages")
-	UAnimMontage* ReloadWeaponMontage;
-
 	// Throw projectile
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Animation|Montages")
 	UAnimMontage* ThrowProjectileMontage;
@@ -487,6 +576,22 @@ public:
 	// Cast Spell - For miscellaneous abilities
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Animation|Montages")
 	UAnimMontage* CastSpellMontage;
+
+	// Hit react - Front
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Animation|Montages|Hit React")
+	UAnimMontage* HitReactFrontMontage;
+
+	// Hit react - Back
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Animation|Montages|Hit React")
+	UAnimMontage* HitReactBackMontage;
+
+	// Hit react - Right
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Animation|Montages|Hit React")
+	UAnimMontage* HitReactRightMontage;
+
+	// Hit react - Left
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Animation|Montages|Hit React")
+	UAnimMontage* HitReactLeftMontage;
 
 protected:
 	void HandleDeathMontage();
@@ -508,10 +613,4 @@ public:
 	// Projectile forwardVector to launch from
 	UFUNCTION()
 	virtual FVector GetLookingDirection();
-
-//////////////// TODO Review
-public:
-	// This need to use the new camera shake sequence. Matinee is deprecated 
-	UFUNCTION(BlueprintImplementableEvent)
-	void ShakeCamera();
 };

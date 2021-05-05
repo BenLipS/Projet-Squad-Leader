@@ -9,6 +9,7 @@
 #include "../../UI/SL_HUD.h"
 #include "SquadLeader/UI/Interface/AbilityCooldownDelegateInterface.h"
 #include "SquadLeader/SquadLeader.h"
+#include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 
 //TODO: rmove next include -> only use for the team init -> only use on temporary debug
 #include "../../GameState/SquadLeaderGameState.h"
@@ -366,13 +367,20 @@ void ASoldierPlayerController::BroadCastManagerData()
 // TODO: Use the soldier list - Don't use all the actors from the world
 void ASoldierPlayerController::OnWallVisionActivate_Implementation()
 {
-	for (AActor* Actor : GetWorld()->PersistentLevel->Actors)
+	bool Active = false;
+	TArray<AActor*> FoundActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASoldier::StaticClass(), FoundActors);
+	for (AActor* Actor : FoundActors)
 	{
 		if (ASoldier* Soldier = Cast<ASoldier>(Actor); Soldier)
-		{
-			if (Soldier->GetTeam() != GetTeam())
+			if (Soldier->GetTeam() != GetTeam()) {
 				Soldier->GetMesh()->SetRenderCustomDepth(true);
-		}
+				Active = true;
+			}
+	}
+	if (!Active) {
+		FTimerHandle Timer;
+		GetWorldTimerManager().SetTimer(Timer, this, &ASoldierPlayerController::OnWallVisionActivate_Implementation, 2.f, false);
 	}
 }
 

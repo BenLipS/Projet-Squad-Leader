@@ -22,6 +22,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	ASoldier* SourceSoldier = nullptr;
+	FName ProfileAreaEffectCollisionName;
 
 //////////////// Effects
 protected:

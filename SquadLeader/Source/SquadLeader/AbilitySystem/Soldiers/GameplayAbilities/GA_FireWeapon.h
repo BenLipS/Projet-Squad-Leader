@@ -5,6 +5,8 @@
 #include "SquadLeader/Weapons/SL_Weapon.h"
 #include "GA_FireWeapon.generated.h"
 
+class ASoldier;
+
 UCLASS()
 class SQUADLEADER_API UGA_FireWeapon : public UGameplayAbilitySoldier
 {
@@ -27,6 +29,7 @@ protected:
 
 protected:
 	ASL_Weapon* SourceWeapon;
+	ASoldier* SourceSoldier;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Ability")
 	TSubclassOf<class UGA_FireWeaponInstant> GA_FireWeaponInstantClass;

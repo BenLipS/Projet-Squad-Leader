@@ -1,5 +1,6 @@
 #include "SoldierMovementComponent.h"
 #include "Soldier.h"
+#include "SquadLeader/Weapons/SL_Weapon.h"
 #include "../AbilitySystem/Soldiers/AbilitySystemSoldier.h"
 #include "../AbilitySystem/Soldiers/AttributeSetSoldier.h"
 
@@ -28,15 +29,22 @@ float USoldierMovementComponent::GetMaxSpeed() const
 	case MOVE_Walking:
 	case MOVE_NavWalking:
 	{
+		// Direction
 		const float AngleDirection = CalculateDirection(Soldier->GetVelocity(), Soldier->GetActorRotation());
 		const float MoveSpeedDirectionMultiplier = CurveMoveSpeedMultiplierDirection ? CurveMoveSpeedMultiplierDirection->GetFloatValue(AngleDirection) : 1.f;
+
+		// Weapon
+		const float MoveSpeedWeaponMultiplier = Soldier->GetCurrentWeapon() ? Soldier->GetCurrentWeapon()->GetMoveSpeedMultiplier() : 1.f;
+
+		// Run - if not aiming or firing
+		const float MoveSpeedMultiplierRun = ASC && !Soldier->IsAiming() && !Soldier->IsFiring() ? ASC->GetNumericAttribute(UAttributeSetSoldier::GetMoveSpeedMultiplierAttribute()) : 1.f;
 
 		if (IsCrouching())
 			FinalSpeed = ASC ? ASC->GetNumericAttribute(UAttributeSetSoldier::GetMoveSpeedCrouchAttribute()) : MaxWalkSpeedCrouched;
 		else
 			FinalSpeed = ASC ? ASC->GetNumericAttribute(UAttributeSetSoldier::GetMoveSpeedWalkAttribute()) : MaxWalkSpeed;
 
-		FinalSpeed *= MoveSpeedDirectionMultiplier;
+		FinalSpeed *= MoveSpeedDirectionMultiplier * MoveSpeedWeaponMultiplier * MoveSpeedMultiplierRun;
 		break;
 	}
 
@@ -62,8 +70,7 @@ float USoldierMovementComponent::GetMaxSpeed() const
 		break;
 	}
 
-	const float MoveSpeedMultiplier = ASC ? ASC->GetNumericAttribute(UAttributeSetSoldier::GetMoveSpeedMultiplierAttribute()) : 1.f;
-	return FinalSpeed * MoveSpeedMultiplier;
+	return FinalSpeed;
 }
 
 float USoldierMovementComponent::CalculateDirection(const FVector& _Velocity, const FRotator& _BaseRotation) const
