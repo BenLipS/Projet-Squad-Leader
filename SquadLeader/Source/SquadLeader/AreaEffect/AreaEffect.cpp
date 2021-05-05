@@ -1,5 +1,6 @@
 #include "AreaEffect.h"
 #include "../Soldiers/Soldier.h"
+#include "../Soldiers/Players/SoldierPlayerController.h"
 #include "SquadLeader/Weapons/Shield.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -155,8 +156,13 @@ void AAreaEffect::ApplyDamages(UAbilitySystemComponent* _TargetASC, const float 
 		FGameplayEffectContextHandle EffectContext = SourceASC->MakeEffectContext();
 		FGameplayEffectSpecHandle DamageEffectSpecHandle = SourceASC->MakeOutgoingSpec(GE_DamageClass, SourceSoldier->GetCharacterLevel(), EffectContext);
 
-		DamageEffectSpecHandle.Data->SetSetByCallerMagnitude(FGameplayTag::RequestGameplayTag(FName("Data.Damage")), DetermineDamage(_DistActorArea));
+		const float Damage = DetermineDamage(_DistActorArea);
+		DamageEffectSpecHandle.Data->SetSetByCallerMagnitude(FGameplayTag::RequestGameplayTag(FName("Data.Damage")), Damage);
 		SourceASC->ApplyGameplayEffectSpecToTarget(*DamageEffectSpecHandle.Data.Get(), _TargetASC);
+
+		// Notify HUD for hit marker
+		if (ASoldierPlayerController* PC = SourceSoldier->GetController<ASoldierPlayerController>(); PC)
+			PC->NotifySoldierHit(Damage, false);
 	}
 }
 
