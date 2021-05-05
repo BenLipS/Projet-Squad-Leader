@@ -35,6 +35,10 @@ void AAreaEffect::BeginPlay()
 	// Apply effect at least once
 	OnReadyToApplyEffects();
 
+	ProfileAreaEffectCollisionName = FName{ PN_Projectile2 };
+	if (SourceSoldier && SourceSoldier->GetTeam() && SourceSoldier->GetTeam()->Id == 1)
+		ProfileAreaEffectCollisionName = FName{ PN_Projectile1 };
+
 	if (Lifetime > 0.f)
 	{
 		GetWorldTimerManager().SetTimer(IntervalTimer, this, &AAreaEffect::OnReadyToApplyEffects, Interval, true);
@@ -62,7 +66,7 @@ void AAreaEffect::OnReadyToApplyEffects()
 	FCollisionQueryParams QueryParams{};
 	QueryParams.AddIgnoredActor(this);
 
-	if (GetWorld()->SweepMultiByChannel(HitActors, StartTrace, EndTrace, FQuat::FQuat(), ECC_WorldStatic, CollisionShape, QueryParams))
+	if (GetWorld()->SweepMultiByProfile(HitActors, StartTrace, EndTrace, FQuat::FQuat(), ProfileAreaEffectCollisionName, CollisionShape, QueryParams))
 	{
 		for (int32 i = 0; i < HitActors.Num(); ++i)
 		{

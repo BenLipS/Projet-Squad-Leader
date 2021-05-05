@@ -65,6 +65,8 @@ void ASoldier::BeginPlay()
 
 	CurrentFOV = BaseFOVNormal;
 
+	CacheRelativeTransformMeshInCapsule = GetMesh()->GetRelativeTransform();
+
 	// Teams
 	// TODO: Clients must be aware of their team. If we really want a security with the server, we should call this function
 	// from the server only, have a test to determine wheter we can change the team, then use a ClientSetTeam to replicate the change
@@ -367,11 +369,6 @@ void ASoldier::DeadTagChanged(const FGameplayTag _CallbackTag, int32 _NewCount)
 		if (GetTeam() && GetLocalRole() == ROLE_Authority)
 			GetTeam()->RemoveOneTicket();
 
-		//TODO. Should we keep the velocity to be more realistic ?
-		// Stop the soldier and remove any interaction with the other soldiers
-		GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Player, ECollisionResponse::ECR_Ignore);
-		GetCharacterMovement()->Velocity = FVector(0.f);
-
 		// Cancel abilities
 		AbilitySystemComponent->CancelAllAbilities();
 
@@ -379,7 +376,9 @@ void ASoldier::DeadTagChanged(const FGameplayTag _CallbackTag, int32 _NewCount)
 		if (ASquadLeaderGameModeBase* GameMode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode()); GameMode)
 			GameMode->SoldierDied(GetController());
 
-		HandleDeathMontage();
+		// Start ragdoll to the next frame so we can catch all impulses from the capsule before the death - This is useful for the explosion
+		//HandleDeathMontage();
+		GetWorldTimerManager().SetTimerForNextTick(this, &ASoldier::StartRagdoll);
 	}
 	else // If dead tag is removed - Handle respawn
 	{
@@ -388,13 +387,13 @@ void ASoldier::DeadTagChanged(const FGameplayTag _CallbackTag, int32 _NewCount)
 		AttributeSet->SetShield(AttributeSet->GetMaxShield());
 
 		ResetWeapons();
+		StopRagdoll();
 
 		if (RespawnMontage)
 		{
 			// Remove any interaction with the world during the respawn animation - avoid damage while the player can't play
 			GetCharacterMovement()->Velocity = FVector(0.f);
-			GetCharacterMovement()->GravityScale = 0.f;
-			GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 			PlayAnimMontage(RespawnMontage);
 			UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
@@ -1068,6 +1067,20 @@ bool ASoldier::MulticastSyncControlRotation_Validate(const FRotator& _Rotation)
 	return true;
 }
 
+void ASoldier::StartRagdoll()
+{
+	GetMesh()->SetSimulatePhysics(true);
+}
+
+void ASoldier::StopRagdoll()
+{
+	GetMesh()->SetSimulatePhysics(false);
+
+	// Re-attach the mesh to the capsule 
+	GetMesh()->AttachToComponent(GetCapsuleComponent(), FAttachmentTransformRules::KeepRelativeTransform);
+	GetMesh()->SetRelativeTransform(CacheRelativeTransformMeshInCapsule);
+}
+
 // network for debug team change
 void ASoldier::ServerCycleBetweenTeam_Implementation() {
 	cycleBetweenTeam();
@@ -1157,10 +1170,7 @@ void ASoldier::OnStartGameMontageCompleted(UAnimMontage* _Montage, bool _bInterr
 void ASoldier::OnRespawnMontageCompleted(UAnimMontage* _Montage, bool _bInterrupted)
 {
 	UnLockControls();
-
-	GetCharacterMovement()->GravityScale = 1.f;
-	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Player, ECollisionResponse::ECR_Overlap);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 }
 
 // TODO: Show particle from the hit location - not center of the soldier

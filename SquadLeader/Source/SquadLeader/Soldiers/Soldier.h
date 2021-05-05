@@ -290,6 +290,10 @@ public:
 	UPROPERTY(VisibleDefaultsOnly, Category = "Mesh")
 	USkeletalMeshComponent* FirstPersonMesh;
 
+	// Relative transform of the mesh in capsule component - Cache value from BeginPlay. It is used for ragdoll
+	UPROPERTY(BlueprintReadOnly, Category = "Mesh")
+	FTransform CacheRelativeTransformMeshInCapsule;
+
 	// Default right hand attach point if the weapon does not give one
 	UPROPERTY(EditDefaultsOnly, Category = "Inventory|Weapon")
 	FName WeaponAttachPointRightHand;
@@ -297,6 +301,12 @@ public:
 	// Default left hand attach point if the weapon does not give one
 	UPROPERTY(EditDefaultsOnly, Category = "Inventory|Weapon")
 	FName WeaponAttachPointLeftHand;
+
+	UFUNCTION()
+	void StartRagdoll();
+
+	UFUNCTION()
+	void StopRagdoll();
 
 //////////////// Movement
 public:
