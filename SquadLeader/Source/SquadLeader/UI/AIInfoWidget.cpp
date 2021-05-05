@@ -122,8 +122,13 @@ USlateBrushAsset* UAIInfoWidget::GetBrushBackgroundFromClass(SoldierClass classI
 	{
 	case SoldierClass::SUPPORT:
 		return SupportIconBackground;
+		break;
 	case SoldierClass::ASSAULT:
+		return AssaultIconBackground;
+		break;
 	case SoldierClass::HEAVY:
+		return HeavyIconBackground;
+		break;
 	default:
 		return nullptr;
 		break;

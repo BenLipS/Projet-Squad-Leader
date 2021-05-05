@@ -52,11 +52,17 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "AIInfoWidget | Assault")
 	USlateBrushAsset* AssaultIcon;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "AIInfoWidget | Assault")
+	USlateBrushAsset* AssaultIconBackground;
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "AIInfoWidget | Heavy")
 	FLinearColor HeavyColor;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "AIInfoWidget | Heavy")
 	USlateBrushAsset* HeavyIcon;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "AIInfoWidget | Heavy")
+	USlateBrushAsset* HeavyIconBackground;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "AIInfoWidget | Support")
 	FLinearColor SupportColor;
