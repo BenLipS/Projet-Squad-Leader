@@ -161,7 +161,12 @@ void AAreaEffect::ApplyImpulse(AActor* _Actor, const float _DistActorArea)
 	if (ASoldier* Soldier = Cast<ASoldier>(_Actor); Soldier)
 	{
 		Soldier->GetCharacterMovement()->AddImpulse(DetermineImpulse(_Actor, _DistActorArea));
-		Soldier->ShakeCamera();
+		//
+		// TODO uncomment camerashake - Each area effect shall have one
+		//
+		//
+		//
+		//Soldier->ShakeCamera();
 	}
 
 	//else if (UStaticMeshComponent * SM = Cast<UStaticMeshComponent>(_Actor->GetRootComponent()); SM && SM->Mobility == EComponentMobility::Movable)

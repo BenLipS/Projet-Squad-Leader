@@ -1026,6 +1026,11 @@ void ASoldier::OnReceiveDamage(const FVector& _ImpactPoint, const FVector& _Sour
 {
 }
 
+TSubclassOf<UMatineeCameraShake> ASoldier::GetCameraShakeFireClass() const
+{
+	return CameraShakeFireClass;
+}
+
 FRotator ASoldier::GetSyncControlRotation() const noexcept
 {
 	return SyncControlRotation;

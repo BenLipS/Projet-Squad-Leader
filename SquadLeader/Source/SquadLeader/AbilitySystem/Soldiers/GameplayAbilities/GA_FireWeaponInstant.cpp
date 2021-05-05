@@ -92,6 +92,9 @@ void UGA_FireWeaponInstant::FireBullet()
 
 	LineTrace->SetStartLocation(TraceStartLocation);
 
+	// Camera Shake
+	SourceSoldier->ShakeCamera(SourceSoldier->GetCameraShakeFireClass());
+
 	// Wait target data
 	USL_WaitTargetDataUsingActor* TaskWaitTarget = USL_WaitTargetDataUsingActor::WaitTargetDataWithReusableActor(this, NAME_None, EGameplayTargetingConfirmation::Instant, LineTrace, true);
 	TaskWaitTarget->ValidData.AddDynamic(this, &UGA_FireWeaponInstant::HandleTargetData);

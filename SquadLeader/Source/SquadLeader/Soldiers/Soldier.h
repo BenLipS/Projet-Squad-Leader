@@ -4,6 +4,7 @@
 #include "GameFramework/Character.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "camera/cameracomponent.h"
+#include "Camera/CameraShake.h"
 #include "AbilitySystemInterface.h"
 #include "../AbilitySystem/Soldiers/AttributeSetSoldier.h"
 #include "../AbilitySystem/Soldiers/AbilitySystemSoldier.h"
@@ -242,6 +243,20 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
 	USpringArmComponent* SpringArmComponent;
+
+// Camera Shake
+protected:
+	// TODO: Should we have one camera shake per weapon then put this variable in the weapon ?
+	// We may have one generic camerashake here
+	UPROPERTY(EditDefaultsOnly, Category = "Camera|Camera Shake")
+	TSubclassOf<UMatineeCameraShake> CameraShakeFireClass;
+
+public:
+	TSubclassOf<UMatineeCameraShake> GetCameraShakeFireClass() const;
+
+	// This need to use the new camera shake sequence. Matinee is deprecated 
+	UFUNCTION(BlueprintImplementableEvent)
+	void ShakeCamera(TSubclassOf<UMatineeCameraShake> _CameraShakeClass);
 
 protected:
 	UPROPERTY(BlueprintReadOnly, Replicated)
@@ -577,10 +592,4 @@ public:
 	// Projectile forwardVector to launch from
 	UFUNCTION()
 	virtual FVector GetLookingDirection();
-
-//////////////// TODO Review
-public:
-	// This need to use the new camera shake sequence. Matinee is deprecated 
-	UFUNCTION(BlueprintImplementableEvent)
-	void ShakeCamera();
 };
