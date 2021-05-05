@@ -2,6 +2,7 @@
 #include "SquadLeader/Weapons/SL_Weapon.h"
 #include "SquadLeader/Weapons/Shield.h"
 #include "SquadLeader/Soldiers/Soldier.h"
+#include "../../../Soldiers/Players/SoldierPlayerController.h"
 #include "SquadLeader/AbilitySystem/Soldiers/Trace/SL_LineTrace.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/CollisionProfile.h"
@@ -162,9 +163,20 @@ bool UGA_FireWeaponInstant::ApplyDamages(const FGameplayAbilityTargetDataHandle&
 {
 	if (SourceSoldier->GetTeam() != _TargetSoldier->GetTeam())
 	{
-		// Check for head shot damage - TODO: Have a multiplier for each weapon
-		const float FinalDamage = IsHeadShot(*_Data.Data[0].Get()->GetHitResult()) ? _Damage * 2.5f : _Damage;
+		float FinalDamage = _Damage;
+		bool bIsHeadShot = false;
 
+		if (IsHeadShot(*_Data.Data[0].Get()->GetHitResult()))
+		{
+			FinalDamage *= 2.5f; // TODO: Check for head shot damage - Have a multiplier for each weapon
+			bIsHeadShot = true;
+		}
+
+		// Notify HUD for hit marker
+		if (ASoldierPlayerController* PC = SourceSoldier->GetController<ASoldierPlayerController>(); PC)
+			PC->NotifySoldierHit(FinalDamage, bIsHeadShot);
+
+		// Apply damages
 		FGameplayEffectSpecHandle DamageEffectSpecHandle = MakeOutgoingGameplayEffectSpec(GE_DamageClass, GetAbilityLevel());
 		DamageEffectSpecHandle.Data->SetSetByCallerMagnitude(FGameplayTag::RequestGameplayTag(FName("Data.Damage")), FinalDamage);
 
