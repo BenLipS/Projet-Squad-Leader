@@ -31,6 +31,10 @@ void UControlAreaInfoWidget::OnControlAreaOwnerChange(int newOwner)
 			{
 				Owner = newOwner;
 				mat->SetVectorParameterValue("OutterColor", GetColorFromOwner(Owner) * 0.1f);
+				if (Owner != 0)
+				{
+					PlayAnimation(CaptureAnimation);
+				}
 			}
 			ImageControlArea->SetBrushFromMaterial(mat);
 		}
@@ -48,6 +52,14 @@ void UControlAreaInfoWidget::OnControlAreaPercentageChange(float Percentage)
 			mat->SetScalarParameterValue("Percentage_fill", Percentage);
 			ImageControlArea->SetBrushFromMaterial(mat);
 		}
+	}
+}
+
+void UControlAreaInfoWidget::OnControlAreaNameChange(FString NameIn)
+{
+	if (IsValid(ControlAreaName))
+	{
+		ControlAreaName->SetText(FText::FromString(NameIn));
 	}
 }
 

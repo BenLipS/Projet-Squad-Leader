@@ -33,6 +33,9 @@ void UCooldownElementWidget::OnCooldownEnded()
 	bIsInCooldown = false;
 	TextCooldown->SetVisibility(ESlateVisibility::Collapsed);
 	TimeRemaining = 0.f;
+
+	PlayAnimation(CD_Ready);
+
 	if (ImageCooldown)
 	{
 		auto mat = ImageCooldown->GetDynamicMaterial();
@@ -56,6 +59,7 @@ void UCooldownElementWidget::LaunchPartialCooldown(float Timer, float MaxTimer)
 void UCooldownElementWidget::LaunchCooldown(float Timer)
 {
 	LaunchPartialCooldown(Timer, Timer);
+	PlayAnimation(CD_Used);
 }
 
 ESoldierAbilityInputID UCooldownElementWidget::GetAbilityID()

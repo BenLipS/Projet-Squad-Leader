@@ -220,6 +220,7 @@ void UMinimapWidget::OnControlAreaAdded(AControlArea* _ControlArea)
 		POI->OnControlAreaOwnerChange(0);
 		POI->OnControlAreaCapturerChange(0);
 		POI->OnControlAreaPercentageChange(0.f);
+		POI->OnControlAreaNameChange(_ControlArea->ControlAreaName);
 
 		_ControlArea->OnOwnerChanged.AddDynamic(POI, &UControlAreaInfoWidget::OnControlAreaOwnerChange);
 		_ControlArea->OnCapturerChanged.AddDynamic(POI, &UControlAreaInfoWidget::OnControlAreaCapturerChange);
