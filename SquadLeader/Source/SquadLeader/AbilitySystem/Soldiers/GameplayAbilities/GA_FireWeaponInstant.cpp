@@ -168,7 +168,7 @@ bool UGA_FireWeaponInstant::ApplyDamages(const FGameplayAbilityTargetDataHandle&
 
 		if (IsHeadShot(*_Data.Data[0].Get()->GetHitResult()))
 		{
-			FinalDamage *= 2.5f; // TODO: Check for head shot damage - Have a multiplier for each weapon
+			FinalDamage *= SourceWeapon->GetHeadShotMultiplier();
 			bIsHeadShot = true;
 		}
 
