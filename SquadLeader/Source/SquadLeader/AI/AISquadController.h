@@ -66,6 +66,8 @@ public:
 
 	virtual void ResetBlackBoard() override;
 
+	virtual void SetState(AIBasicState _state) noexcept override;
+
 	void FormationState();
 
 	UFUNCTION()

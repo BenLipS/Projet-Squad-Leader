@@ -32,4 +32,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Heal")
 	float SinglePlayerRatioBeforeHeal = 0.2f;
+
+	virtual SoldierClass GetClass() override { return SoldierClass::SUPPORT; }
 };

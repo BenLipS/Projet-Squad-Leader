@@ -2,11 +2,13 @@
 
 #include "CoreMinimal.h"
 #include "../Soldier.h"
+#include "../../AI/Mission.h"
 #include "SoldierAI.generated.h"
-
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FAIFloatChangedController, float, newValue, AAISquadController*, controller);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAIFloatChanged, float, newValue);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAIStateChanged, AIBasicState, newValue);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAIClassChanged, SoldierClass, newValue);
 
 //For client knowledge purpose
 USTRUCT()
@@ -14,27 +16,37 @@ struct FSoldierAIData
 {
 	GENERATED_USTRUCT_BODY()
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY()
 	float Health;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY()
 	float MaxHealth;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY()
 	float Shield;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY()
 	float MaxShield;
+
+	UPROPERTY()
+	AIBasicState MissionState;
+
+	UPROPERTY()
+	SoldierClass ClassSoldier = SoldierClass::NONE;
 
 	void OnHealthChanged(float newHealth);
 	void OnMaxHealthChanged(float newMaxHealth);
 	void OnShieldChanged(float newShield);
 	void OnMaxShieldChanged(float newMaxShield);
+	void OnStateChanged(AIBasicState newState);
+	void OnClassChanged(SoldierClass newState);
 
 	FAIFloatChanged OnHealthNotify;
 	FAIFloatChanged OnMaxHealthNotify;
 	FAIFloatChanged OnShieldNotify;
 	FAIFloatChanged OnMaxShieldNotify;
+	FAIStateChanged OnStateNotify;
+	FAIClassChanged OnClassNotify;
 
 	FSoldierAIData() = default;
 };
@@ -121,6 +133,8 @@ public:
 	void InitializeAttributeChangeCallbacks() override;
 
 	void OnBlurredVisionFromJammer(const bool _IsBlurred) override;
+
+	virtual SoldierClass GetClass() override;
 
 	//-----Delegate-----	
 protected:

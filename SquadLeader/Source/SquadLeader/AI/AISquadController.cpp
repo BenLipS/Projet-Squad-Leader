@@ -100,6 +100,13 @@ void AAISquadController::ResetBlackBoard() {
 	blackboard->SetValueAsBool("IsInFormation", true);
 }
 
+void AAISquadController::SetState(AIBasicState _state) noexcept
+{
+	Super::SetState(_state);
+	if(IsValid(SquadManager))
+		SquadManager->OnSquadMemberMissionChange(m_state, this);
+}
+
 void AAISquadController::FormationState() {
 	blackboard->SetValueAsBool("is_attacking", false);
 	blackboard->SetValueAsBool("is_moving", false);

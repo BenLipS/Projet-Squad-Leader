@@ -43,6 +43,22 @@ void ISquadDelegateInterface::OnSquadMaxShieldChanged(int index, float newMaxShi
 	}
 }
 
+void ISquadDelegateInterface::OnSquadMemberMissionChanged(int index, AIBasicState newMission)
+{
+	for (auto SquadInterface : SquadDelegates)
+	{
+		SquadInterface->OnSquadMemberMissionChanged(index, newMission);
+	}
+}
+
+void ISquadDelegateInterface::OnSquadMemberClassChanged(int index, SoldierClass newClass)
+{
+	for (auto SquadInterface : SquadDelegates)
+	{
+		SquadInterface->OnSquadMemberClassChanged(index, newClass);
+	}
+}
+
 void ISquadDelegateInterface::AddSquadDelegate(ISquadInterface* newDelegate)
 {
 	SquadDelegates.AddUnique(newDelegate);

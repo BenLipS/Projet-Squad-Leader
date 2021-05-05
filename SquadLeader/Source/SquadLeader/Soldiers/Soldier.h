@@ -21,6 +21,14 @@ class UGameplayAbilitySoldier;
 class UGameplayEffect;
 class UGE_UpdateStats;
 
+UENUM()
+enum class SoldierClass : uint8 {
+	NONE,
+	ASSAULT,
+	HEAVY,
+	SUPPORT
+};
+
 USTRUCT()
 struct SQUADLEADER_API FSoldier_Inventory
 {
@@ -215,6 +223,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
 	uint8 GetInfluenceRadius() const noexcept;
+
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
+	virtual SoldierClass GetClass() { return SoldierClass::NONE; }
 
 	// Attribute changed callbacks
 	FDelegateHandle HealthChangedDelegateHandle;

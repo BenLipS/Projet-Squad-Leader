@@ -23,6 +23,12 @@ public:
 	void OnRep_PlayerState() override;
 	virtual void DeadTagChanged(const FGameplayTag CallbackTag, int32 NewCount) override;
 
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player class")
+	SoldierClass PlayerClass = SoldierClass::NONE;
+
+	virtual SoldierClass GetClass() override { return PlayerClass; }
+
 //////////////// Controllers
 protected:
 	virtual void LockControls() override;

@@ -22,4 +22,6 @@ public:
 	virtual void Tick(float DeltaSeconds) override;
 
 	virtual void setup_BehaviorTree() override;
+
+	virtual SoldierClass GetClass() override { return SoldierClass::HEAVY; }
 };

@@ -30,6 +30,11 @@ void UControlAreaWidget::OnAllyTicketChanged(int newTicket)
 	if (LeftTicketText)
 	{
 		LeftTicketText->SetText(FText::FromString(FString::FromInt(newTicket)));
+
+		if (IsValid(LeftGlow))
+		{
+			PlayAnimation(LeftGlow);
+		}
 	}
 }
 
@@ -38,6 +43,11 @@ void UControlAreaWidget::OnEnnemyTicketChanged(int newTicket)
 	if (RightTicketText)
 	{
 		RightTicketText->SetText(FText::FromString(FString::FromInt(newTicket)));
+
+		if (IsValid(RightGlow))
+		{
+			PlayAnimation(RightGlow);
+		}
 	}
 }
 
@@ -67,6 +77,7 @@ void UControlAreaWidget::OnControlAreaAdded(AControlArea* ControlArea)
 		newWidget->OnControlAreaOwnerChange(0);
 		newWidget->OnControlAreaCapturerChange(0);
 		newWidget->OnControlAreaPercentageChange(0.f);
+		newWidget->OnControlAreaNameChange(ControlArea->ControlAreaName);
 		ControlAreaList.Add(newWidget);
 		AreaContainer->AddChildToHorizontalBox(newWidget);
 		ControlArea->OnOwnerChanged.AddDynamic(newWidget, &UControlAreaInfoWidget::OnControlAreaOwnerChange);

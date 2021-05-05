@@ -102,6 +102,7 @@ void ASoldierPlayerController::OnPossess(APawn* InPawn)
 	Cast<ASoldierPlayer>(InPawn)->GetSquadManager()->OnMemberMaxHealthChanged.AddDynamic(this, &ASoldierPlayerController::OnSquadMemberMaxHealthChanged);
 	Cast<ASoldierPlayer>(InPawn)->GetSquadManager()->OnMemberShieldChanged.AddDynamic(this, &ASoldierPlayerController::OnSquadMemberShieldChanged);
 	Cast<ASoldierPlayer>(InPawn)->GetSquadManager()->OnMemberMaxShieldChanged.AddDynamic(this, &ASoldierPlayerController::OnSquadMemberMaxShieldChanged);
+	Cast<ASoldierPlayer>(InPawn)->GetSquadManager()->OnMemberStateChanged.AddDynamic(this, &ASoldierPlayerController::OnSquadMemberMissionChanged);
 	Cast<ASoldierPlayer>(InPawn)->GetSquadManager()->BroadCastSquadData();
 }
 
@@ -267,6 +268,33 @@ void ASoldierPlayerController::OnSquadMemberMaxShieldChanged_Implementation(int 
 		}
 	}
 	// Erreur syncronisation client / serveur
+}
+
+void ASoldierPlayerController::OnSquadMemberMissionChanged_Implementation(int index, AIBasicState newMission)
+{
+	if (SquadManagerData.SquadData.IsValidIndex(index))
+	{
+		SquadManagerData.SquadData[index].MissionState = newMission;
+		//Appel au HUD
+		if (auto CurrentHUD = GetHUD<ASL_HUD>(); CurrentHUD)
+		{
+			CurrentHUD->OnSquadMemberMissionChanged(index, newMission);
+		}
+	}
+	// Erreur syncronisation client / serveur
+}
+
+void ASoldierPlayerController::OnSquadMemberClassChanged_Implementation(int index, SoldierClass newClass)
+{
+	if (SquadManagerData.SquadData.IsValidIndex(index))
+	{
+		SquadManagerData.SquadData[index].ClassSoldier = newClass;
+		//Appel au HUD
+		if (auto CurrentHUD = GetHUD<ASL_HUD>(); CurrentHUD)
+		{
+			CurrentHUD->OnSquadMemberClassChanged(index, newClass);
+		}
+	}
 }
 
 void ASoldierPlayerController::OnTextNotification_Received_Implementation(const FString& notificationString)

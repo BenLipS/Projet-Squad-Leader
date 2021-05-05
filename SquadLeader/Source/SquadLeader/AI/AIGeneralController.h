@@ -11,23 +11,11 @@
 #include "../ControlArea/ControlArea.h"
 #include "NavFilters/NavigationQueryFilter.h"
 #include "Mission/MissionList.h"
+#include "Mission.h"
+
 #include "AIGeneralController.generated.h"
 
 class UFlockingComponent;
-
-/**
- * This enum contains the different state of the AI 
- */
-UENUM()
-enum AIBasicState {
-	Attacking UMETA(DisplayName = "Attacking"),
-	Patroling UMETA(DisplayName = "Patroling"),
-	Capturing UMETA(DisplayName = "Capturing"),
-	Search UMETA(DisplayName = "Searching"),
-	Defend UMETA(DisplayName = "Defending"),
-	Moving UMETA(DisplayName = "Moving"),
-	Formation UMETA(DisplayName = "Formation"),
-};
 
 /*
 * For a many function we need to send a signal 
@@ -78,6 +66,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Flocking Behaviour")
 		void SetPatrolPoint();
+
+	UFUNCTION(BlueprintCallable, Category = "Attribute")
+	virtual SoldierClass GetClass() { return SoldierClass::NONE; }
 
 	/*
 	* When doing the flocking we'll check if the AI
@@ -185,10 +176,13 @@ public:
 	* Set the state of an AI
 	*/
 	UFUNCTION()
-		void SetState(AIBasicState _state) noexcept;
+	virtual void SetState(AIBasicState _state) noexcept;
 
 	UFUNCTION()
-		virtual void CheckIfRegenShield() {};
+	AIBasicState GetState();
+
+	UFUNCTION()
+	virtual void CheckIfRegenShield() {};
 
 protected:
 	/*Set-up the BehaviorTree at the construction*/
@@ -306,14 +300,14 @@ protected:
 	* This here represent the state of an AI
 	*/
 	UPROPERTY()
-		int m_state;
+		AIBasicState m_state;
 
 	/*
 	* this variable is here to help when we loose vision of an enemy
 	* this way the AI will return to his old state before he was in the state attack
 	*/
 	UPROPERTY()
-		int m_old_state;
+		AIBasicState m_old_state;
 
 protected:
 	class UAISenseConfig_Sight* sight_config;

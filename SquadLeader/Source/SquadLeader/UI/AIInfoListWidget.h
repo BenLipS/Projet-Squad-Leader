@@ -43,4 +43,8 @@ public:
 	void OnSquadShieldChanged(int index, float newShield) override;
 
 	void OnSquadMaxShieldChanged(int index, float newMaxShield) override;
+
+	void OnSquadMemberMissionChanged(int index, AIBasicState newMission) override;
+
+	void OnSquadMemberClassChanged(int index, SoldierClass newClass) override;
 };

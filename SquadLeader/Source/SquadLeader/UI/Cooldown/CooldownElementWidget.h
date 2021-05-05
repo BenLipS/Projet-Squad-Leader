@@ -7,6 +7,7 @@
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "SquadLeader/SquadLeader.h"
+#include "Animation/WidgetAnimation.h"
 
 #include "CooldownElementWidget.generated.h"
 
@@ -27,6 +28,12 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UTextBlock* TextCooldown;
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetAnim), Transient)
+	UWidgetAnimation* CD_Ready;
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetAnim), Transient)
+	UWidgetAnimation* CD_Used;
 
 	
 	float TimeRemaining;

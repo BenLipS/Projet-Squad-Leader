@@ -9,6 +9,7 @@
 
 #include "Components/HorizontalBox.h"
 #include "Components/TextBlock.h"
+#include "Animation/WidgetAnimation.h"
 
 #include "ControlAreaWidget.generated.h"
 
@@ -32,6 +33,12 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UTextBlock* RightTicketText;
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetAnim), Transient)
+	UWidgetAnimation* LeftGlow;
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetAnim), Transient)
+	UWidgetAnimation* RightGlow;
 
 protected:
 	TArray<class UControlAreaInfoWidget*> ControlAreaList;
