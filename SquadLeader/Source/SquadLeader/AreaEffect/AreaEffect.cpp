@@ -33,12 +33,12 @@ void AAreaEffect::BeginPlay()
 	Super::BeginPlay();
 	SourceSoldier = Cast<ASoldier>(GetInstigator());
 
+	ProfileAreaEffectCollisionName = FName{ PN_AreaEffect2 };
+	if (SourceSoldier && SourceSoldier->GetTeam() && SourceSoldier->GetTeam()->Id == 1)
+		ProfileAreaEffectCollisionName = FName{ PN_AreaEffect1 };
+
 	// Apply effect at least once
 	OnReadyToApplyEffects();
-
-	ProfileAreaEffectCollisionName = FName{ PN_Projectile2 };
-	if (SourceSoldier && SourceSoldier->GetTeam() && SourceSoldier->GetTeam()->Id == 1)
-		ProfileAreaEffectCollisionName = FName{ PN_Projectile1 };
 
 	if (Lifetime > 0.f)
 	{

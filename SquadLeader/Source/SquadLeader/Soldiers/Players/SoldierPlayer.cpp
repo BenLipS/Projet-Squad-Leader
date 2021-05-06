@@ -387,8 +387,8 @@ void ASoldierPlayer::OnReceiveDamage(const FVector& _ImpactPoint, const FVector&
 	const float ForwardCosAngle = FVector::DotProduct(GetActorForwardVector(), -ShootDir);
 	const float RightCosAngle = FVector::DotProduct(GetActorRightVector(), -ShootDir);
 
-	if (GEngine) GEngine->AddOnScreenDebugMessage(33, 1.f, FColor::Green, FString::Printf(TEXT("Forward %f"), FMath::RadiansToDegrees(FMath::Acos(ForwardCosAngle))));
-	if (GEngine) GEngine->AddOnScreenDebugMessage(44, 1.f, FColor::Green, FString::Printf(TEXT("Right %f"), FMath::RadiansToDegrees(FMath::Acos(RightCosAngle))));
+	//if (GEngine) GEngine->AddOnScreenDebugMessage(33, 1.f, FColor::Green, FString::Printf(TEXT("Forward %f"), FMath::RadiansToDegrees(FMath::Acos(ForwardCosAngle))));
+	//if (GEngine) GEngine->AddOnScreenDebugMessage(44, 1.f, FColor::Green, FString::Printf(TEXT("Right %f"), FMath::RadiansToDegrees(FMath::Acos(RightCosAngle))));
 
 	const bool bHitOnright = RightCosAngle >= 0.f;
 	const bool bHitOnFront = ForwardCosAngle >= PI * 0.25f;
