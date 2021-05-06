@@ -149,11 +149,6 @@ void ASL_Weapon::RemoveAbilities()
 		ASC->ClearAbility(SpecHandle);
 }
 
-float ASL_Weapon::GetMaxRange() const noexcept
-{
-	return MaxRange;
-}
-
 float ASL_Weapon::GetWeaponDamage() const noexcept
 {
 	return IsValid(OwningSoldier) ? Damage.GetValueAtLevel(OwningSoldier->GetCharacterLevel()) : 1.f;
@@ -162,6 +157,16 @@ float ASL_Weapon::GetWeaponDamage() const noexcept
 void ASL_Weapon::SetWeaponDamage(const float _Damage) noexcept
 {
 	Damage = _Damage;
+}
+
+float ASL_Weapon::GetHeadShotMultiplier() const noexcept
+{
+	return HeadShotMultiplier;
+}
+
+float ASL_Weapon::GetMaxRange() const noexcept
+{
+	return MaxRange;
 }
 
 float ASL_Weapon::GetFieldOfViewAim() const noexcept
