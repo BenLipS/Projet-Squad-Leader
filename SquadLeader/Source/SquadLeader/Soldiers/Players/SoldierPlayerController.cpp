@@ -70,6 +70,13 @@ void ASoldierPlayerController::NotifyMainAbilityCooldown(const float _Cooldown, 
 		HUD->OnAbilityCooldownTriggered(_Cooldown, _ID);
 }
 
+void ASoldierPlayerController::NotifySoldierHit(const float _Damage, const bool _bIsHeadShot)
+{
+	if (IHitMarkerInterfaceDelegate* HUD = GetHUD<IHitMarkerInterfaceDelegate>(); HUD)
+		HUD->OnDamageReceived(_Damage, _bIsHeadShot);
+
+}
+
 // Server only
 void ASoldierPlayerController::OnPossess(APawn* InPawn)
 {
