@@ -72,6 +72,7 @@ void UMinimapWidget::SetInteractivity(bool InInteractivity)
 		{
 			if (bMapInteractive)
 			{
+				MapShape = MapShapePolicy::eSQUARE;
 				PC->SetShowMouseCursor(true);
 				PC->ClientIgnoreLookInput(true);
 				//PC->ClientIgnoreMoveInput(true);
@@ -92,6 +93,7 @@ void UMinimapWidget::SetInteractivity(bool InInteractivity)
 			}
 			else
 			{
+				MapShape = MapShapePolicy::eCIRCLE;
 				PC->SetShowMouseCursor(false);
 				PC->ClientIgnoreLookInput(false);
 				/*PC->ClientIgnoreMoveInput(false);*/
@@ -218,6 +220,7 @@ void UMinimapWidget::OnControlAreaAdded(AControlArea* _ControlArea)
 		POI->OnControlAreaOwnerChange(0);
 		POI->OnControlAreaCapturerChange(0);
 		POI->OnControlAreaPercentageChange(0.f);
+		POI->OnControlAreaNameChange(_ControlArea->ControlAreaName);
 
 		_ControlArea->OnOwnerChanged.AddDynamic(POI, &UControlAreaInfoWidget::OnControlAreaOwnerChange);
 		_ControlArea->OnCapturerChanged.AddDynamic(POI, &UControlAreaInfoWidget::OnControlAreaCapturerChange);
@@ -307,7 +310,16 @@ void UMinimapWidget::OnUpdatePOIs()
 			// Angle between soldier and player (center of the minimap)
 			const float Angle = FMath::Atan2(/* 0.f*/ -DiffY, /* 0.f*/ -DiffX);
 			MapPanel->GetDesiredSize();
-			const float Length = FMath::Clamp(DiffVec.Size(), 0.f, (ScaleBoxMap->GetTickSpaceGeometry().GetLocalSize().Y - PingPOI->GetTickSpaceGeometry().GetLocalSize().Y) / 2.f);
+			float Length;
+			if (MapShape == MapShapePolicy::eCIRCLE)
+			{
+				Length = FMath::Clamp(DiffVec.Size(), 0.f, (ScaleBoxMap->GetTickSpaceGeometry().GetLocalSize().Y - PingPOI->GetTickSpaceGeometry().GetLocalSize().Y) / 2.f);
+			}
+			else
+			{
+				Length = DiffVec.Size();
+			}
+			
 
 			const FVector2D SoldierPosOnMinimap = -FVector2D{ FMath::Sin(Angle) * Length, FMath::Cos(Angle) * Length };
 			PingPOI->SetRenderTranslation(SoldierPosOnMinimap);
@@ -335,8 +347,15 @@ void UMinimapWidget::OnUpdatePOIs()
 		// Angle between soldier and player (center of the minimap)
 		const float Angle = FMath::Atan2(/* 0.f*/ - DiffY, /* 0.f*/ - DiffX);
 		MapPanel->GetDesiredSize();
-		const float Length = FMath::Clamp(DiffVec.Size(), 0.f, (ScaleBoxMap->GetTickSpaceGeometry().GetLocalSize().Y - POI->GetTickSpaceGeometry().GetLocalSize().Y) /2.f);
-
+		float Length;
+		if (MapShape == MapShapePolicy::eCIRCLE)
+		{
+			Length = FMath::Clamp(DiffVec.Size(), 0.f, (ScaleBoxMap->GetTickSpaceGeometry().GetLocalSize().Y - POI->GetTickSpaceGeometry().GetLocalSize().Y) / 2.f);
+		}
+		else
+		{
+			Length = DiffVec.Size();
+		}
 		const FVector2D SoldierPosOnMinimap = -FVector2D{ FMath::Sin(Angle) * Length, FMath::Cos(Angle) * Length };
 		POI->SetRenderTranslation(SoldierPosOnMinimap);
 		POI->SetVisibility(ESlateVisibility::Visible);

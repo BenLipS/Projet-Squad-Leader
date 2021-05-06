@@ -10,6 +10,7 @@
 #include "Kismet/KismetMaterialLibrary.h"
 #include "DrawDebugHelpers.h"
 #include "TimerManager.h"
+#include "SquadLeader/Weapons/SL_Weapon.h"
 
 ASoldierPlayer::ASoldierPlayer(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer)
 {
@@ -51,12 +52,21 @@ void ASoldierPlayer::BeginPlay()
 		PostProcessVolume->AddOrUpdateBlendable(MaterialBrokenGlassRightInstance, 0.f);
 		PostProcessVolume->AddOrUpdateBlendable(MaterialBrokenGlassLeftInstance, 0.f);
 	}
+	// Wall Vision
+	if (MaterialWallVisionViewInterface)
+	{
+		MaterialWallVisionViewInstance = UKismetMaterialLibrary::CreateDynamicMaterialInstance(GetWorld(), MaterialWallVisionViewInterface);
+		PostProcessVolume->AddOrUpdateBlendable(MaterialWallVisionViewInstance, 0.f);
+	}
+
 	// Blood
 	if (MaterialBloodInterface)
 	{
 		MaterialBloodInstance = UKismetMaterialLibrary::CreateDynamicMaterialInstance(GetWorld(), MaterialBloodInterface);
 		PostProcessVolume->AddOrUpdateBlendable(MaterialBloodInstance, 0.f);
 	}
+
+	bHitMontageActivated = false;
 }
 
 // Server only 
@@ -189,6 +199,26 @@ void ASoldierPlayer::SetWeightGlitchEffect(const float _Weight)
 	PostProcessVolume->AddOrUpdateBlendable(MaterialGlitchInstance, _Weight);
 }
 
+void ASoldierPlayer::ActivateHitMontage()
+{
+	bHitMontageActivated = true;
+
+	// Wait a bit before enabling the hit montage again - So the montage can't be spammed
+	FTimerHandle TimerHitReactMontage{};
+	GetWorldTimerManager().SetTimer(TimerHitReactMontage, this, &ASoldierPlayer::DisableHitMontage, FMath::RandRange(0.75f, 1.25f), false);
+}
+
+void ASoldierPlayer::DisableHitMontage()
+{
+	bHitMontageActivated = false;
+}
+
+void ASoldierPlayer::StartHitReactMontage(UAnimMontage* _HitReactMontage)
+{
+	PlayAnimMontage(_HitReactMontage);
+	ActivateHitMontage();
+}
+
 void ASoldierPlayer::SetAbilitySystemComponent()
 {
 	check(IsValid(GetPlayerState()))
@@ -282,6 +312,7 @@ void ASoldierPlayer::DestroyPing() {
 				HUD->OnPingDestroyed();
 			}
 		}
+		DestroyClientPing();
 	}
 }
 
@@ -349,20 +380,50 @@ void ASoldierPlayer::OnReceiveDamage(const FVector& _ImpactPoint, const FVector&
 		return;
 	}
 
-	FVector ShootDir2D = _ImpactPoint - _SourcePoint;
-	ShootDir2D.Z = 0;
-	FVector FowardVector2D = GetActorForwardVector();
-	FowardVector2D.Z = 0;
+	const FVector ShootDir = FVector{ _ImpactPoint.X - _SourcePoint.X, _ImpactPoint.Y - _SourcePoint.Y, 0.f }.GetSafeNormal();
+	if (ShootDir.IsNearlyZero())
+		return;
 
-	const int Det = ShootDir2D.X * FowardVector2D.Y - ShootDir2D.Y * FowardVector2D.X;
+	const float ForwardCosAngle = FVector::DotProduct(GetActorForwardVector(), -ShootDir);
+	const float RightCosAngle = FVector::DotProduct(GetActorRightVector(), -ShootDir);
 
-	if (Det >= 0) {//Hit right side
-		//if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("Droite"));
-		AddHitRight();
+	if (GEngine) GEngine->AddOnScreenDebugMessage(33, 1.f, FColor::Green, FString::Printf(TEXT("Forward %f"), FMath::RadiansToDegrees(FMath::Acos(ForwardCosAngle))));
+	if (GEngine) GEngine->AddOnScreenDebugMessage(44, 1.f, FColor::Green, FString::Printf(TEXT("Right %f"), FMath::RadiansToDegrees(FMath::Acos(RightCosAngle))));
+
+	const bool bHitOnright = RightCosAngle >= 0.f;
+	const bool bHitOnFront = ForwardCosAngle >= PI * 0.25f;
+	const bool bHitOnBack = ForwardCosAngle <= PI * -0.25f;
+	const UAnimMontage* FireMontage = GetCurrentWeapon() ? GetCurrentWeapon()->FireMontage : nullptr;
+
+	if (bHitOnright) //Hit right side
+	{
+		AddBrokenGlassOnRight();
+
+		// Hit react montage is not available if there is another montage (except fire weapon)
+		if (bHitMontageActivated || (GetCurrentMontage() && GetCurrentMontage() != FireMontage))
+			return;
+
+		if (bHitOnFront && HitReactFrontMontage)
+			StartHitReactMontage(HitReactFrontMontage);
+		else if (bHitOnBack && HitReactBackMontage)
+			StartHitReactMontage(HitReactBackMontage);
+		else if (HitReactRightMontage)
+			StartHitReactMontage(HitReactRightMontage);
 	}
-	else {//Hit left side
-		//if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("Gauche"));
-		AddHitLeft();
+	else //Hit left side
+	{
+		AddBrokenGlassOnLeft();
+
+		// Hit react montage is not available if there is another montage (except fire weapon)
+		if (bHitMontageActivated || (GetCurrentMontage() && GetCurrentMontage() != FireMontage))
+			return;
+
+		if (bHitOnFront && HitReactFrontMontage)
+			StartHitReactMontage(HitReactFrontMontage);
+		else if (bHitOnBack && HitReactBackMontage)
+			StartHitReactMontage(HitReactBackMontage);
+		else if (HitReactLeftMontage)
+			StartHitReactMontage(HitReactLeftMontage);
 	}
 
 }
@@ -401,7 +462,7 @@ void ASoldierPlayer::HealthChanged(const FOnAttributeChangeData& _Data)
 	}
 }
 
-float ASoldierPlayer::NbOfHitToPPIntensity(int NbHit)
+float ASoldierPlayer::NbOfHitToPPIntensity(int NbHit) const
 {
 	switch (NbHit) {
 		case 1:
@@ -415,27 +476,27 @@ float ASoldierPlayer::NbOfHitToPPIntensity(int NbHit)
 	}
 }
 
-void ASoldierPlayer::AddHitLeft()
+void ASoldierPlayer::AddBrokenGlassOnLeft()
 {
 	if (HitLeft < 3) {
 		HitLeft++;
 		FTimerHandle Timer;
-		GetWorldTimerManager().SetTimer(Timer, this, &ASoldierPlayer::RemoveHitLeft, 5.f, false);
+		GetWorldTimerManager().SetTimer(Timer, this, &ASoldierPlayer::RemoveBrokenGlassOnLeft, 5.f, false);
 	}
 	UpdateBrokenGlassEffect();
 }
 
-void ASoldierPlayer::AddHitRight()
+void ASoldierPlayer::AddBrokenGlassOnRight()
 {
 	if (HitRight < 3) {
 		HitRight++;
 		FTimerHandle Timer;
-		GetWorldTimerManager().SetTimer(Timer, this, &ASoldierPlayer::RemoveHitRight, 5.f, false);
+		GetWorldTimerManager().SetTimer(Timer, this, &ASoldierPlayer::RemoveBrokenGlassOnRight, 5.f, false);
 	}
 	UpdateBrokenGlassEffect();
 }
 
-void ASoldierPlayer::RemoveHitLeft()
+void ASoldierPlayer::RemoveBrokenGlassOnLeft()
 {
 	if (HitLeft > 0) {
 		HitLeft--;
@@ -443,7 +504,7 @@ void ASoldierPlayer::RemoveHitLeft()
 	UpdateBrokenGlassEffect();
 }
 
-void ASoldierPlayer::RemoveHitRight()
+void ASoldierPlayer::RemoveBrokenGlassOnRight()
 {
 	if (HitRight > 0) {
 		HitRight--;
@@ -460,4 +521,12 @@ void ASoldierPlayer::UpdateBrokenGlassEffect()
 
 	MaterialBrokenGlassRightInstance->SetScalarParameterValue("Bullet Amount", NbOfHitToPPIntensity(HitRight));
 	MaterialBrokenGlassLeftInstance->SetScalarParameterValue("Bullet Amount", NbOfHitToPPIntensity(HitLeft));
+}
+
+void ASoldierPlayer::UpdateWallVisionPostEffect(float PostEffectValue) {
+	if (!IsLocallyControlled())
+	{
+		return;
+	}
+	PostProcessVolume->AddOrUpdateBlendable(MaterialWallVisionViewInstance, PostEffectValue);
 }

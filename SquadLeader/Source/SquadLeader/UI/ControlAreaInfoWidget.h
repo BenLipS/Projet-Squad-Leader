@@ -5,7 +5,10 @@
 #include "CoreMinimal.h"
 #include "SL_UserWidget.h"
 #include "Components/Image.h"
+#include "Components/TextBlock.h"
 #include "Minimap/PointOfInterestWidget.h"
+#include "Animation/WidgetAnimation.h"
+
 #include "ControlAreaInfoWidget.generated.h"
 
 /**
@@ -36,6 +39,12 @@ protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UImage* ImageControlArea;
 
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UTextBlock* ControlAreaName;
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetAnim), Transient)
+	UWidgetAnimation* CaptureAnimation;
+
 public:
 	UFUNCTION()
 	void OnControlAreaCapturerChange(int newOwner);
@@ -43,6 +52,9 @@ public:
 	void OnControlAreaOwnerChange(int newCapturer);
 	UFUNCTION()
 	void OnControlAreaPercentageChange(float Percentage);
+	
+	UFUNCTION()
+	void OnControlAreaNameChange(FString NameIn);
 
 private:
 	UFUNCTION()

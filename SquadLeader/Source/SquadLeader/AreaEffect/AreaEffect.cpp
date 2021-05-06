@@ -35,6 +35,10 @@ void AAreaEffect::BeginPlay()
 	// Apply effect at least once
 	OnReadyToApplyEffects();
 
+	ProfileAreaEffectCollisionName = FName{ PN_Projectile2 };
+	if (SourceSoldier && SourceSoldier->GetTeam() && SourceSoldier->GetTeam()->Id == 1)
+		ProfileAreaEffectCollisionName = FName{ PN_Projectile1 };
+
 	if (Lifetime > 0.f)
 	{
 		GetWorldTimerManager().SetTimer(IntervalTimer, this, &AAreaEffect::OnReadyToApplyEffects, Interval, true);
@@ -62,7 +66,7 @@ void AAreaEffect::OnReadyToApplyEffects()
 	FCollisionQueryParams QueryParams{};
 	QueryParams.AddIgnoredActor(this);
 
-	if (GetWorld()->SweepMultiByChannel(HitActors, StartTrace, EndTrace, FQuat::FQuat(), ECC_WorldStatic, CollisionShape, QueryParams))
+	if (GetWorld()->SweepMultiByProfile(HitActors, StartTrace, EndTrace, FQuat::FQuat(), ProfileAreaEffectCollisionName, CollisionShape, QueryParams))
 	{
 		for (int32 i = 0; i < HitActors.Num(); ++i)
 		{
@@ -110,7 +114,7 @@ bool AAreaEffect::ValidateEffectOnSoldier(const FHitResult& _HitSoldier, const T
 
 	FilterTraceWithShield(HitResults);
 
-	return (HitResults.Last().Actor == _HitSoldier.Actor);
+	return HitResults.Num() > 0 && HitResults.Last().Actor == _HitSoldier.Actor;
 }
 
 void AAreaEffect::DestroyAreaEffect()
@@ -161,7 +165,12 @@ void AAreaEffect::ApplyImpulse(AActor* _Actor, const float _DistActorArea)
 	if (ASoldier* Soldier = Cast<ASoldier>(_Actor); Soldier)
 	{
 		Soldier->GetCharacterMovement()->AddImpulse(DetermineImpulse(_Actor, _DistActorArea));
-		Soldier->ShakeCamera();
+		//
+		// TODO uncomment camerashake - Each area effect shall have one
+		//
+		//
+		//
+		//Soldier->ShakeCamera();
 	}
 
 	//else if (UStaticMeshComponent * SM = Cast<UStaticMeshComponent>(_Actor->GetRootComponent()); SM && SM->Mobility == EComponentMobility::Movable)

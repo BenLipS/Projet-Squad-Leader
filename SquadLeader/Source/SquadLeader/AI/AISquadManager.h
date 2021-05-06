@@ -14,7 +14,9 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSquadInfoArrayChanged, const TArray<FSoldierAIData>&, SquadArray);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FSquadMemberDataChanged, int, Index, float, newValue);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FSquadMemberFloatDataChanged, int, Index, float, newValue);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FSquadMemberStateDataChanged, int, Index, AIBasicState, newValue);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FSquadMemberClassDataChanged, int, Index, SoldierClass, newValue);
 
 UENUM()
 enum class FormationType { Circle, Arrow };
@@ -42,10 +44,12 @@ public:
 	//-----DELEGATE-----
 	FSquadInfoArrayChanged OnSquadChanged;
 
-	FSquadMemberDataChanged OnMemberHealthChanged;
-	FSquadMemberDataChanged OnMemberMaxHealthChanged;
-	FSquadMemberDataChanged OnMemberShieldChanged;
-	FSquadMemberDataChanged OnMemberMaxShieldChanged;
+	FSquadMemberFloatDataChanged OnMemberHealthChanged;
+	FSquadMemberFloatDataChanged OnMemberMaxHealthChanged;
+	FSquadMemberFloatDataChanged OnMemberShieldChanged;
+	FSquadMemberFloatDataChanged OnMemberMaxShieldChanged;
+	FSquadMemberStateDataChanged OnMemberStateChanged;
+	FSquadMemberClassDataChanged OnMemberClassChanged;
 
 public:
 	AAISquadManager();
@@ -122,6 +126,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void UpdateMission(const MissionType _MissionType, const FVector& _Location);
 
+	UFUNCTION()
+	FVector GetValidMissionLocation(const FVector& _Location);
+
 	// temp function, need to be replace by more robust code
 	void UpdateSquadTeam(ASoldierTeam* _NewTeam);
 
@@ -139,6 +146,12 @@ public:
 
 	UFUNCTION()
 	void OnSquadMemberMaxShieldChange(float newValue, AAISquadController* SoldierController);
+
+	UFUNCTION()
+	void OnSquadMemberMissionChange(AIBasicState newValue, AAISquadController* SoldierController);
+
+	UFUNCTION()
+	void OnSquadMemberClassChange(SoldierClass newValue, AAISquadController* SoldierController);
 
 	//for healing coordination
 	UPROPERTY()

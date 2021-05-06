@@ -52,6 +52,8 @@ void AAISquadManager::Init(ASoldierTeam* _Team, ASoldierPlayer* _Player)
 		FTransform TransformAI = PlayerTransform;
 		TransformAI.SetLocation(PlayerTransform.GetLocation() + FVector{ 300.f, 0.f, 0.f }.RotateAngleAxis(Angle, FVector{ 0.f, 0.f, 1.f }));
 
+		TransformAI.SetScale3D(FVector::OneVector);
+
 		// TODO: Spawn all the classAIs. Perhaps use a TArray
 		ASoldierAI* SquadAI = GetWorld()->SpawnActorDeferred<ASoldierAI>(ClassAI1, TransformAI, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 		if (SquadAI)
@@ -70,6 +72,7 @@ void AAISquadManager::Init(ASoldierTeam* _Team, ASoldierPlayer* _Player)
 
 	m_inFormation = true;
 	TypeOfFormation = FormationType::Circle;
+	BroadCastSquadData();
 }
 
 void AAISquadManager::Tick(float DeltaTime)
@@ -206,15 +209,16 @@ void AAISquadManager::UpdateArrowFormation()
 
 void AAISquadManager::UpdateMission(const MissionType _MissionType, const FVector& _Location)
 {
+	FVector ValidMissionLocation = GetValidMissionLocation(_Location);
 	auto for_each_sqaud = [&](bool hasOrder, bool isInFormation) {
 		for (AAISquadController* AISquad : AISquadList) {
 
 			UPatrolMission* _patrolMisssion = Cast<UPatrolMission>(NewObject<UPatrolMission>(this, UPatrolMission::StaticClass()));
 			_patrolMisssion->InitPatrolMission(1, MissionPriority::eMIDDLE);
 			AISquad->SetMission<UPatrolMission*>(_patrolMisssion);
-			AISquad->SetObjectifLocation(_Location);
+			AISquad->SetObjectifLocation(ValidMissionLocation);
 			
-			AISquad->SetUpMission(true, false, _Location);
+			AISquad->SetUpMission(true, false, ValidMissionLocation);
 		}
 	};
 
@@ -225,11 +229,11 @@ void AAISquadManager::UpdateMission(const MissionType _MissionType, const FVecto
 		for (AAISquadController* AISquad : AISquadList) {
 			AISquad->EmptyMissionList();
 			UFormationMission* _formationMission = Cast<UFormationMission>(NewObject<UFormationMission>(this, UFormationMission::StaticClass()));
-			_formationMission->InitFormation(1, MissionPriority::eBASIC, _Location);
+			_formationMission->InitFormation(1, MissionPriority::eBASIC, ValidMissionLocation);
 			AISquad->SetMission<UFormationMission*>(_formationMission);
 			TypeOfFormation = FormationType::Circle;
 			
-			AISquad->SetUpMission(false, true, _Location);
+			AISquad->SetUpMission(false, true, ValidMissionLocation);
 		}
 		m_inFormation = true;
 		break;
@@ -238,11 +242,11 @@ void AAISquadManager::UpdateMission(const MissionType _MissionType, const FVecto
 		for (AAISquadController* AISquad : AISquadList) {
 			AISquad->EmptyMissionList();
 			UFormationMission* _formationMission = Cast<UFormationMission>(NewObject<UFormationMission>(this, UFormationMission::StaticClass()));
-			_formationMission->InitFormation(1, MissionPriority::eBASIC, _Location);
+			_formationMission->InitFormation(1, MissionPriority::eBASIC, ValidMissionLocation);
 			AISquad->SetMission<UFormationMission*>(_formationMission);
 			TypeOfFormation = FormationType::Arrow;
 
-			AISquad->SetUpMission(false, true, _Location);
+			AISquad->SetUpMission(false, true, ValidMissionLocation);
 		}
 		m_inFormation = true;
 		break;
@@ -259,7 +263,7 @@ void AAISquadManager::UpdateMission(const MissionType _MissionType, const FVecto
 	case MissionType::ePATROL:
 		for_each_sqaud(true, false);
 		m_inFormation = false;
-		Leader->SpawnPing(_Location);
+		Leader->SpawnPing(ValidMissionLocation);
 		//GEngine->AddOnScreenDebugMessage(4563, 4.f, FColor::Red, FString::Printf(TEXT("Order MoveTo on (%s,%s,%s) from %s"), *FString::SanitizeFloat(_Location.X), *FString::SanitizeFloat(_Location.Y), *FString::SanitizeFloat(_Location.Z), *Leader->GetName()));
 		break;
 	default:
@@ -268,6 +272,11 @@ void AAISquadManager::UpdateMission(const MissionType _MissionType, const FVecto
 		//GEngine->AddOnScreenDebugMessage(4563, 4.f, FColor::Red, FString::Printf(TEXT("Order Unknown on (%s,%s,%s) from %s"), *FString::SanitizeFloat(_Location.X), *FString::SanitizeFloat(_Location.Y), *FString::SanitizeFloat(_Location.Z), *Leader->GetName()));
 		break;
 	}
+}
+
+FVector AAISquadManager::GetValidMissionLocation(const FVector& _Location)
+{
+	return UNavigationSystemV1::ProjectPointToNavigation(GetWorld(), _Location, NULL, NULL, FVector{0.f,0.f,1500.f});
 }
 
 // temp include, need to be replace by more robust code
@@ -293,6 +302,8 @@ void AAISquadManager::BroadCastSquadData()
 			data.MaxHealth = SoldierAI->GetMaxHealth();
 			data.Shield = SoldierAI->GetShield();
 			data.MaxShield = SoldierAI->GetMaxShield();
+			data.MissionState = AIC->GetState();
+			data.ClassSoldier = AIC->GetClass();
 			SoldierData.Add(data);
 		}
 	}
@@ -336,6 +347,26 @@ void AAISquadManager::OnSquadMemberMaxShieldChange(float newMaxShield, AAISquadC
 	if (index != INDEX_NONE)
 	{
 		OnMemberMaxShieldChanged.Broadcast(index, newMaxShield);
+	}
+}
+
+void AAISquadManager::OnSquadMemberMissionChange(AIBasicState newValue, AAISquadController* SoldierController)
+{
+	int index;
+	index = AISquadList.Find(SoldierController);
+	if (index != INDEX_NONE)
+	{
+		OnMemberStateChanged.Broadcast(index, newValue);
+	}
+}
+
+void AAISquadManager::OnSquadMemberClassChange(SoldierClass newValue, AAISquadController* SoldierController)
+{
+	int index;
+	index = AISquadList.Find(SoldierController);
+	if (index != INDEX_NONE)
+	{
+		OnMemberClassChanged.Broadcast(index, newValue);
 	}
 }
 

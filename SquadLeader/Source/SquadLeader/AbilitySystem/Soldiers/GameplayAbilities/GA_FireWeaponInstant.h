@@ -7,6 +7,7 @@
 
 class USL_ServerWaitForClientTargetData;
 class UAbilityTask_WaitDelay;
+class ASoldier;
 
 UCLASS()
 class SQUADLEADER_API UGA_FireWeaponInstant : public UGameplayAbilitySoldier
@@ -24,8 +25,10 @@ public:
 
 protected:
 	void ApplyEffectsToSource();
-	void ApplyDamages(const FGameplayAbilityTargetDataHandle& _Data, const FGameplayEffectSpecHandle& _DamageEffectSpecHandle, UAbilitySystemComponent* _TargetASC);
-	void ApplyDamages(class AShield* _Shield, const float _Damages);
+	bool ApplyDamages(const FGameplayAbilityTargetDataHandle& _Data, ASoldier* _TargetSoldier, const float _Damage);
+	bool ApplyDamages(class AShield* _Shield, const float _Damage);
+
+	bool IsHeadShot(const FHitResult& _HitResult) const;
 
 	void ReloadWeapon();
 	void ConfigLineTrace();

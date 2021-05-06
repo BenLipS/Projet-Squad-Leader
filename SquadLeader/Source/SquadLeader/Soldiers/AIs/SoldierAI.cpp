@@ -1,5 +1,5 @@
 #include "SoldierAI.h"
-#include "../../AI/AIGeneralController.h"
+//#include "../../AI/AIGeneralController.h"
 #include "../../AI/AISquadController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
@@ -170,6 +170,15 @@ void ASoldierAI::OnBlurredVisionFromJammer(const bool _IsBlurred)
 	}
 }
 
+SoldierClass ASoldierAI::GetClass()
+{
+	if (auto AIController = Cast<AAIGeneralController>(GetController()); AIController)
+	{
+		return AIController->GetClass();
+	}
+	return SoldierClass::NONE;
+}
+
 void ASoldierAI::HealthChanged(const FOnAttributeChangeData& Data)
 {
 	// TODO: Review callbacks with soldiers
@@ -214,4 +223,16 @@ void FSoldierAIData::OnMaxShieldChanged(float newMaxShield)
 {
 	MaxShield = newMaxShield;
 	OnMaxShieldNotify.Broadcast(MaxShield);
+}
+
+void FSoldierAIData::OnStateChanged(AIBasicState newState)
+{
+	MissionState = newState;
+	OnStateNotify.Broadcast(MissionState);
+}
+
+void FSoldierAIData::OnClassChanged(SoldierClass newState)
+{
+	ClassSoldier = newState;
+	OnClassNotify.Broadcast(ClassSoldier);
 }

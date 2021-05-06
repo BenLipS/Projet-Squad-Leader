@@ -25,7 +25,7 @@ void UGA_ReloadWeapon::ActivateAbility(const FGameplayAbilitySpecHandle Handle, 
 	ASoldier* SourceSoldier = Cast<ASoldier>(ActorInfo->AvatarActor);
 	SourceWeapon = Cast<ASL_Weapon>(SourceSoldier->GetCurrentWeapon());
 
-	if (UAnimMontage* ReloadWeaponMontage = SourceSoldier->ReloadWeaponMontage; ReloadWeaponMontage)
+	if (UAnimMontage* ReloadWeaponMontage = SourceWeapon->ReloadMontage; ReloadWeaponMontage)
 	{
 		UAbilityTask_PlayMontageAndWait* TaskPlayMontage = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, NAME_None, ReloadWeaponMontage, 1.0f, NAME_None, true, 1.0f);
 		TaskPlayMontage->OnCompleted.AddDynamic(this, &UGA_ReloadWeapon::MontageCompletedOrBlendedOut);
