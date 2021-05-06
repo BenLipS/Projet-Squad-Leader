@@ -15,6 +15,7 @@
 #include "Interface/TicketDelegateInterface.h"
 #include "Interface/GameEndDelegateInterface.h"
 #include "Interface/AbilityCooldownDelegateInterface.h"
+#include "Interface/HitMarkerInterfaceDelegate.h"
 
 #include "SL_HUD.generated.h"
 
@@ -31,7 +32,8 @@ class SQUADLEADER_API ASL_HUD : public AHUD,
 	public IMinimapDelegateInterface,
 	public ITicketDelegateInterface,
 	public IGameEndDelegateInterface,
-	public IAbilityCooldownDelegateInterface
+	public IAbilityCooldownDelegateInterface,
+	public IHitMarkerInterfaceDelegate
 
 {
 	GENERATED_BODY()
@@ -128,4 +130,6 @@ public:
 	//virtual void OnAbilityCooldownTriggered(float Timer, ESoldierAbilityInputID Key) override;
 	//virtual void AddAbilityID(ESoldierAbilityInputID Key) override;
 
+public:
+	//IHitMarkerInterfaceDelegate
 };

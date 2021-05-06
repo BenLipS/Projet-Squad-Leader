@@ -72,8 +72,8 @@ void ASoldierPlayerController::NotifyMainAbilityCooldown(const float _Cooldown, 
 
 void ASoldierPlayerController::NotifySoldierHit(const float _Damage, const bool _bIsHeadShot)
 {
-	/*if (IHitMarkerDelegateInterface* HUD = GetHUD<IHitMarkerDelegateInterface>(); HUD)
-		HUD->OnSoldierHitMarker(_Damage, _bIsHeadShot);*/
+	if (IHitMarkerInterfaceDelegate* HUD = GetHUD<IHitMarkerInterfaceDelegate>(); HUD)
+		HUD->OnDamageReceived(_Damage, _bIsHeadShot);
 
 }
 

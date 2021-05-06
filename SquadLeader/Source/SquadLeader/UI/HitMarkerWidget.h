@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "SL_UserWidget.h"
+#include "Interface/HitMarkerInterfaceDelegate.h"
 #include "Interface/HitMarkerInterface.h"
 #include "HitMarkerWidget.generated.h"
 
@@ -26,6 +27,9 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetAnim), Transient)
 	UWidgetAnimation* HitMarkerAnimation;
+
+public:
+	void SetupDelegateToObject_Implementation(UObject* ObjectIn) override;
 	
 //-----IHitMarkerInterface-----
 public:

@@ -18,3 +18,11 @@ void UHitMarkerWidget::OnDamageReceived(float damage, bool isHeadshot)
 		PlayAnimation(HitMarkerAnimation, 1 - ForceHitMarker, 1, EUMGSequencePlayMode::Forward, PlaySpeed);
 	}
 }
+
+void UHitMarkerWidget::SetupDelegateToObject_Implementation(UObject* ObjectIn)
+{
+	if (IHitMarkerInterfaceDelegate* HitMarkerInterfaceDelegate = Cast<IHitMarkerInterfaceDelegate>(ObjectIn); HitMarkerInterfaceDelegate)
+	{
+		HitMarkerInterfaceDelegate->AddHitMarkerDelegate(this);
+	}
+}
