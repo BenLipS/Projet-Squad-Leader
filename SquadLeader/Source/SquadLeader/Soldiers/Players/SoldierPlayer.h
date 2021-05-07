@@ -19,15 +19,46 @@ public:
 
 public:
 	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaTime) override;
 	void PossessedBy(AController* _newController) override;
 	void OnRep_PlayerState() override;
 	virtual void DeadTagChanged(const FGameplayTag CallbackTag, int32 NewCount) override;
+
+//////////////// Inits
+protected:
+	void InitCameraKiller();
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player class")
 	SoldierClass PlayerClass = SoldierClass::NONE;
 
 	virtual SoldierClass GetClass() override { return PlayerClass; }
+
+//////////////// Cameras
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
+	UCameraComponent* FollowKillerCamera;
+
+	FVector DeathLocation;
+
+protected:
+	void ActivateFollowKillerCamera();
+	void DeactivateFollowKillerCamera();
+
+public:
+	UCameraComponent* GetFollowKillerCamera() const;
+
+protected:
+	// Soldier to follow with FollowKillerCamera when the player is dead
+	UPROPERTY()
+	ASoldier* SoldierKiller;
+
+public:
+	void SetSoldierKiller(ASoldier* _SoldierKiller);
+
+	UFUNCTION(Client, Reliable)
+	void ClientSetSoldierKiller(ASoldier* _SoldierKiller);
+	void ClientSetSoldierKiller_Implementation(ASoldier* _SoldierKiller);
 
 //////////////// Controllers
 protected:
@@ -43,7 +74,7 @@ protected:
 	class AAISquadManager* SquadManager;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Ping")
-		TSubclassOf<class AActor> PingClass;
+	TSubclassOf<class AActor> PingClass;
 
 	UPROPERTY()
 	AActor* PingMesh;
@@ -62,8 +93,6 @@ public:
 
 	UFUNCTION()
 	void SpawnPing(FVector PingLocation);
-
-
 
 	UFUNCTION()
 	void DestroyPing();
