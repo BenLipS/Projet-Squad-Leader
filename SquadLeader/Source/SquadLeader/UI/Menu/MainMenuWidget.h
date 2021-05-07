@@ -4,13 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "MenuWidget.h"
+#include "../Interface/MenuGameInfoDelegateInterface.h"
+#include "../Interface/StatInfoDelegateInterface.h"
 #include "MainMenuWidget.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class SQUADLEADER_API UMainMenuWidget : public UMenuWidget, public IStatInfoDelegateInterface
+class SQUADLEADER_API UMainMenuWidget : public UMenuWidget, public IStatInfoDelegateInterface, public IMenuGameInfoDelegateInterface
 {
 	GENERATED_BODY()
 
@@ -21,4 +23,8 @@ public:
 public:
 	//	virtual void OnStatInfoReceived(FString Key, FString Value) override;
 	//	virtual void OnStatsInfoReceived(TMap<FString, FString> statsIn) override;
+
+	//-----MenuGameInfoDelegateInterface-----
+	//virtual void OnGameInfoReceived(FString Key, FString Value, FString IP) override;
+	//virtual void OnGamesInfoCleanOrder() override;
 };

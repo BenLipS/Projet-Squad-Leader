@@ -5,8 +5,4 @@
 
 void UHUBMenuWidget::SetupDelegateToObject_Implementation(UObject* ObjectIn)
 {
-	if (auto HUD = Cast<IMenuGameInfoDelegateInterface>(ObjectIn); HUD)
-	{
-		HUD->AddMenuGameInfoDelegate(this);
-	}
 }

@@ -9,4 +9,8 @@ void UMainMenuWidget::SetupDelegateToObject_Implementation(UObject* ObjectIn)
 	{
 		HUDStatInfo->AddStatInfoDelegate(this);
 	}
+	if (auto HUD = Cast<IMenuGameInfoDelegateInterface>(ObjectIn); HUD)
+	{
+		HUD->AddMenuGameInfoDelegate(this);
+	}
 }

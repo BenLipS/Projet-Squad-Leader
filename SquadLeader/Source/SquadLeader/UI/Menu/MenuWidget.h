@@ -5,8 +5,6 @@
 #include "CoreMinimal.h"
 
 #include "../SL_UserWidget.h"
-#include "../Interface/StatInfoDelegateInterface.h"
-#include "../Interface/StatInfoInterface.h"
 
 #include "MenuWidget.generated.h"
 
