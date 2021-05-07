@@ -30,4 +30,11 @@ protected:
 
 	UFUNCTION()
 	void EndOverHeat();
+//Effect
+public:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Animation|Particles")
+	TSubclassOf<AActor> OverHeatFXClass;
+
+	UPROPERTY()
+	AActor* OverHeatFX;
 };
