@@ -40,7 +40,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Replicated, Category = "Stats")
 	float Health = 100.f;
 
-	void DestroyShield();
+	virtual void Destroyed() override;
 
 public:
 	void SetHealth(const float _Health);
@@ -59,4 +59,8 @@ protected:
 public:
 	virtual ASoldierTeam* GetTeam() override;
 	virtual bool SetTeam(ASoldierTeam* _Team) override;
+
+protected:
+	void CreateInfluence(); 
+	void EraseInfluence();
 };

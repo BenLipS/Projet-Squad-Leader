@@ -120,6 +120,19 @@ protected:
 	UPROPERTY(BluePrintReadWrite, EditAnywhere, Category = "Stats|Damage")
 	FScalableFloat Damage = FScalableFloat{ 1.f };
 
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Stats|Damage")
+	float HeadShotMultiplier = 2.5f;
+
+public:
+	UFUNCTION(BlueprintCallable, Category = "Stats|Damage")
+	float GetWeaponDamage() const noexcept;
+
+	UFUNCTION(BlueprintCallable, Category = "Stats|Damage")
+	void SetWeaponDamage(const float _Damage) noexcept;
+
+	UFUNCTION(BlueprintCallable, Category = "Stats|Damage")
+	float GetHeadShotMultiplier() const noexcept;
+
 // Range
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Stats")
 	float MaxRange = 999999.f;
@@ -132,12 +145,6 @@ public:
 	float FieldOfViewAim = 50.f;
 
 public:
-	UFUNCTION(BlueprintCallable, Category = "Stats|Ammo")
-	float GetWeaponDamage() const noexcept;
-
-	UFUNCTION(BlueprintCallable, Category = "Stats|Ammo")
-	void SetWeaponDamage(const float _Damage) noexcept;
-
 	UFUNCTION(BlueprintCallable, Category = "Stats")
 	float GetFieldOfViewAim() const noexcept;
 

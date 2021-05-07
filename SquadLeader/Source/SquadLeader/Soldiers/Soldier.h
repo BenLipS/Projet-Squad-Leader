@@ -618,4 +618,11 @@ public:
 	// Projectile forwardVector to launch from
 	UFUNCTION()
 	virtual FVector GetLookingDirection();
+
+protected:
+	UPROPERTY()
+		FVector LastPosition; 
+
+	UPROPERTY()
+		FVector CurrentPosition;
 };
