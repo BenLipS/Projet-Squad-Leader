@@ -42,7 +42,10 @@ protected:
 	FVector DeathLocation;
 
 protected:
+	UFUNCTION()
 	void ActivateFollowKillerCamera();
+
+	UFUNCTION()
 	void DeactivateFollowKillerCamera();
 
 public:
