@@ -83,7 +83,7 @@ void ASoldierPlayer::Tick(float DeltaTime)
 
 	if (SoldierKiller)
 	{
-		const FRotator LookAtRotation = UKismetMathLibrary::FindLookAtRotation(CurrentCameraComponent->GetComponentLocation(), SoldierKiller->GetActorLocation());
+		const FRotator LookAtRotation = UKismetMathLibrary::FindLookAtRotation(DeathLocation, SoldierKiller->GetActorLocation());
 		FollowKillerCamera->SetWorldRotation(LookAtRotation.Quaternion());
 		FollowKillerCamera->SetWorldLocation(DeathLocation); // Force the camera to be to the same position regardless the soldier
 	}
@@ -149,6 +149,7 @@ void ASoldierPlayer::InitCameraKiller()
 {
 	FollowKillerCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowKillerCamera"));
 	FollowKillerCamera->SetupAttachment(GetMesh());
+	FollowKillerCamera->SetAbsolute(true, true, true);
 	FollowKillerCamera->SetFieldOfView(BaseFOVNormal);
 	FollowKillerCamera->Deactivate();
 }
@@ -193,6 +194,9 @@ UCameraComponent* ASoldierPlayer::GetFollowKillerCamera() const
 
 void ASoldierPlayer::ActivateFollowKillerCamera()
 {
+	if (!SoldierKiller)
+		return;
+
 	FollowKillerCamera->SetWorldLocation(DeathLocation);
 
 	CurrentCameraComponent->Deactivate();
