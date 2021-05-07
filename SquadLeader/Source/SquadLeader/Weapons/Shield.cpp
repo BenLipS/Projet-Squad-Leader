@@ -95,7 +95,7 @@ bool AShield::SetTeam(ASoldierTeam* _Team)
 }
 
 void AShield::CreateInfluence() {
-	GEngine->AddOnScreenDebugMessage(10, 1.0f, FColor::Purple, TEXT("Send Influence"));
+	//GEngine->AddOnScreenDebugMessage(10, 1.0f, FColor::Purple, TEXT("Send Influence"));
 	ASquadLeaderGameModeBase* GameMode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
 	if (GetTeam() && GameMode && GameMode->InfluenceMap) {
 		FGridPackageObstacle Package;
@@ -109,7 +109,7 @@ void AShield::CreateInfluence() {
 }
 
 void AShield::EraseInfluence() {
-	GEngine->AddOnScreenDebugMessage(20, 1.0f, FColor::Purple, TEXT("Erase Influence"));
+	//GEngine->AddOnScreenDebugMessage(20, 1.0f, FColor::Purple, TEXT("Erase Influence"));
 	ASquadLeaderGameModeBase* GameMode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
 	if (GetTeam() && GameMode && GameMode->InfluenceMap) {
 		FGridPackageObstacle Package;
