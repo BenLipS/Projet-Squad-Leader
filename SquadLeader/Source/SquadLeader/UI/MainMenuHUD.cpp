@@ -14,5 +14,5 @@ void AMainMenuHUD::BeginPlay()
 
 void AMainMenuHUD::GetProfileData()
 {
-	GetGameInstance<USquadLeaderGameInstance>()->ProfileInfo(this);
+	GetGameInstance<USquadLeaderGameInstance>()->ProfileInfo();
 }
