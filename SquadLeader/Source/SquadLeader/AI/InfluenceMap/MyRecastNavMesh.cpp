@@ -133,8 +133,9 @@ float dtQueryFilter_SL_TeamOne::getVirtualCost(const float* pa, const float* pb,
 }
 float dtQueryFilter_SL_TeamOne::GetCostInfluenceMap(const FVector2D StartPosition, const FVector2D EndPosition) const {
 	float Cost = 1.f;
-	if (InfluenceMap)
-		Cost = InfluenceMap->GetValue(StartPosition, 2);
+	//On commente pour voir si c'est bine ça qui fait drop des FPS
+	/*if (InfluenceMap)
+		Cost = InfluenceMap->GetValue(StartPosition, 2);*/
 	return Cost;
 }
 void dtQueryFilter_SL_TeamOne::SetInfluenceMap(AInfluenceMapGrid* influenceMap) {
@@ -246,8 +247,8 @@ float dtQueryFilter_SL_TeamTwo::getVirtualCost(const float* pa, const float* pb,
 }
 float dtQueryFilter_SL_TeamTwo::GetCostInfluenceMap(const FVector2D StartPosition, const FVector2D EndPosition) const {
 	float Cost = 1.f;
-	if (InfluenceMap)
-		Cost = InfluenceMap->GetValue(StartPosition, 1);
+	//if (InfluenceMap)
+	//	Cost = InfluenceMap->GetValue(StartPosition, 1);
 	return Cost;
 }
 void dtQueryFilter_SL_TeamTwo::SetInfluenceMap(AInfluenceMapGrid* influenceMap) {
