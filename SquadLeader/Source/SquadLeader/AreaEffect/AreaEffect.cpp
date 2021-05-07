@@ -223,6 +223,6 @@ void AAreaEffect::ShowAnimation()
 
 #ifdef UE_BUILD_DEBUG
 	if (bDebugTrace)
-		DrawDebugSphere(GetWorld(), GetActorLocation(), Radius, 50, FColor::Blue, false, Lifetime);
+		DrawDebugSphere(GetWorld(), GetActorLocation(), Radius, 50, FColor::Red, true, Lifetime);
 #endif
 }
