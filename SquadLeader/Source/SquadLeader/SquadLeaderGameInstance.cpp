@@ -1,6 +1,7 @@
 #include "SquadLeaderGameInstance.h"
 #include "MainMenu/SLMainMenuGameModeBase.h"
 #include "UI/Interface/StatInfoInterface.h"
+#include "UI/Interface/StatInfoInterface.h"
 #include "UI/Menu/MenuListInfo.h"
 #include <iostream>
 
@@ -51,6 +52,7 @@ void USquadLeaderGameInstance::LaunchGame()
         HttpCallCreateNewGame();
         HttpCallChangeConnectedStatus(2); // notify that the client is joining a new game
     }
+    // GetFirstGamePlayer()->ConsoleCommand("open HUB_Level?listen", true);
     GetFirstGamePlayer()->ConsoleCommand("open Factory_V1?listen", true);
 }
 
@@ -112,7 +114,7 @@ void USquadLeaderGameInstance::NoConnexionComportment() {
 }
 
 
-void USquadLeaderGameInstance::ProfileInfo(TScriptInterface<IStatInfoInterface> HUD)
+void USquadLeaderGameInstance::ProfileInfo()
 {
     TMap<FString, FString> statsIn;
     statsIn.Add("Player Id", UserData.Id);
@@ -136,8 +138,17 @@ void USquadLeaderGameInstance::ProfileInfo(TScriptInterface<IStatInfoInterface> 
     statsIn.Add("Score", FString::FromInt(UserData.Score));
     statsIn.Add("Playtime", FString::FromInt(UserData.PlayTime));
     
-    HUD->OnStatsInfoCleanOrder();
-    HUD->OnStatsInfoReceived(statsIn);
+
+    if (auto PC = GetPrimaryPlayerController(); PC)
+    {
+        if (auto HUD = PC->GetHUD<IStatInfoInterface>(); HUD)
+        {
+            HUD->OnStatsInfoCleanOrder();
+            HUD->OnStatsInfoReceived(statsIn);
+        }
+    }
+
+    
 }
 
 

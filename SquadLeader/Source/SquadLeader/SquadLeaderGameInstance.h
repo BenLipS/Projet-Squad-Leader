@@ -49,7 +49,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void JoinGame(FString IPAdress);
 	UFUNCTION(BlueprintCallable)
-		void ProfileInfo(TScriptInterface<class IStatInfoInterface> HUD);
+		void ProfileInfo();
 
 	UFUNCTION(BlueprintCallable)
 		bool const GetNetworkStatus() { return OnlineStatus; }
@@ -86,7 +86,7 @@ private:
 
 public:
 	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf <UGameParam> GameParam;
+	TSubclassOf <AGameParam> GameParam;
 private:
 	FString GameID = "";  // only define if a game is create
 };

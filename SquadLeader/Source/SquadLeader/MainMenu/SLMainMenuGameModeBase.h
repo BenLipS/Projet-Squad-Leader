@@ -20,11 +20,11 @@ public:
 
 	// basic games params
 	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf <UGameParam> DefaultGameParam;
+	TSubclassOf <AGameParam> DefaultGameParam;
 	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf <UGameParam> MinGameParam;
+	TSubclassOf <AGameParam> MinGameParam;
 	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf <UGameParam> MaxGameParam;
+	TSubclassOf <AGameParam> MaxGameParam;
 
 	//UGameParam CreateRandomGameParam();
 };
