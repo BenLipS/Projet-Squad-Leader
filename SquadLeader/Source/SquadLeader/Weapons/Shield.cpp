@@ -1,6 +1,7 @@
 #include "Shield.h"
 #include "SquadLeader/SquadLeader.h"
 #include "SquadLeader/Soldiers/Soldier.h"
+#include "../SquadLeaderGameModeBase.h"
 
 AShield::AShield()
 {
@@ -95,8 +96,27 @@ bool AShield::SetTeam(ASoldierTeam* _Team)
 
 void AShield::CreateInfluence() {
 	GEngine->AddOnScreenDebugMessage(10, 1.0f, FColor::Purple, TEXT("Send Influence"));
+	ASquadLeaderGameModeBase* GameMode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
+	if (GetTeam() && GameMode && GameMode->InfluenceMap) {
+		FGridPackageObstacle Package;
+		Package.m_location_on_map = this->GetActorLocation();
+		Package.team_value = GetTeam()->Id;
+		Package.m_type = Type::Obstacle;
+		Package.ActorID = this->GetUniqueID();
+		GameMode->InfluenceMap->ReceivedMessage(Package);
+	}
+	
 }
 
 void AShield::EraseInfluence() {
 	GEngine->AddOnScreenDebugMessage(20, 1.0f, FColor::Purple, TEXT("Erase Influence"));
+	ASquadLeaderGameModeBase* GameMode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
+	if (GetTeam() && GameMode && GameMode->InfluenceMap) {
+		FGridPackageObstacle Package;
+		Package.m_location_on_map = this->GetActorLocation();
+		Package.team_value = GetTeam()->Id;
+		Package.m_type = Type::Obstacle;
+		Package.ActorID = this->GetUniqueID();
+		GameMode->InfluenceMap->EraseObstacleInfluence(Package);
+	}
 }

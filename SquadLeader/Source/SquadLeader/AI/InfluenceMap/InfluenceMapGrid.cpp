@@ -40,6 +40,7 @@ void AInfluenceMapGrid::InitGrid() noexcept {
 			if (IsValid(Location)) {
 				Location.Z += m_height;
 				Tile.Location = Location;
+				Tile.State = TileState::Free;
 				Tile.InfluenceTeam.Add(1, FInfluenceTeamData());
 				Tile.InfluenceTeam.Add(2, FInfluenceTeamData());
 				Grid.Add(Tile);
@@ -66,7 +67,9 @@ void AInfluenceMapGrid::DrawGrid() const {
 		for (const FTileBase& Tile : Grid) {
 			const float ValueTeam1 = Tile.InfluenceTeam[1].InfluenceValue;
 			const float ValueTeam2 = Tile.InfluenceTeam[2].InfluenceValue;
-			if(ValueTeam1 > 0.0f && ValueTeam2 > 0.0f)
+			if(Tile.State == TileState::Block)
+				DrawDebugSolidBox(GetWorld(), Tile.Location, FVector(95.f, 95.f, 10.f), FColor::Silver);
+			else if(ValueTeam1 > 0.0f && ValueTeam2 > 0.0f)
 				DrawDebugSolidBox(GetWorld(), Tile.Location, FVector(95.f, 95.f, 10.f), FColor(255 * ValueTeam2, 0, 255 * ValueTeam1));
 			else {
 				if(ValueTeam1 > 0.0f)
@@ -249,39 +252,39 @@ void AInfluenceMapGrid::FindNeighboor()noexcept {
 		Neighboors(i);
 }
 
-void AInfluenceMapGrid::InfluenceSoldier(int index, int start_index, int source_index, int distance, uint32 actorID, uint32 Team, uint16& ActorDataIndex) noexcept {
+void AInfluenceMapGrid::CalculateSoldierInfluence(int index, int start_index, int source_index, int distance, uint32 actorID, uint32 Team, uint16& ActorDataIndex) noexcept {
 	if (distance > CharacterAreaInfluence)
 		return;
 
 	for (int neighboor : Grid[index].Neighboors.m_neighboor) {
-		if (neighboor != start_index) {
-			UpdateTile(neighboor, CharacterInfluence, Team, Type::Soldier, actorID, ActorDataIndex);
-			InfluenceSoldier(neighboor, index, source_index, distance + 1, actorID, Team, ActorDataIndex);
+		if (neighboor != start_index && Grid[neighboor].State == TileState::Free) {
+			UpdateTile(neighboor, CharacterInfluenceValue, Team, Type::Soldier, actorID, ActorDataIndex);
+			CalculateSoldierInfluence(neighboor, index, source_index, distance + 1, actorID, Team, ActorDataIndex);
 		}
 	}
 }
 
-void AInfluenceMapGrid::InfluenceControlArea(int index, int start_index, int source_index, int distance, uint32 actorID, uint32 Team, uint16& ActorDataIndex) noexcept {
+void AInfluenceMapGrid::CalculateControlAreaInfluence(int index, int start_index, int source_index, int distance, uint32 actorID, uint32 Team, uint16& ActorDataIndex) noexcept {
 	if (distance > ControlAreaAreaInfluence)
 		return;
 
 	for (int neighboor : Grid[index].Neighboors.m_neighboor) {
-		if (neighboor != start_index) {
-			UpdateTile(neighboor, ControlAreaInfluence, Team, Type::ControlArea, actorID, ActorDataIndex);
-			InfluenceControlArea(neighboor, index, source_index, distance + 1, actorID, Team, ActorDataIndex);
+		if (neighboor != start_index && Grid[neighboor].State == TileState::Free) {
+			UpdateTile(neighboor, ControlAreaInfluenceValue, Team, Type::ControlArea, actorID, ActorDataIndex);
+			CalculateControlAreaInfluence(neighboor, index, source_index, distance + 1, actorID, Team, ActorDataIndex);
 		}
 	}
 }
 
-void AInfluenceMapGrid::InfluenceProjectile(int index, int start_index, int source_index, int distance, uint32 actorID, uint32 Team, uint16& ActorDataIndex) noexcept {
+void AInfluenceMapGrid::CalculateProjectileInfluence(int index, int start_index, int source_index, int distance, uint32 actorID, uint32 Team, uint16& ActorDataIndex) noexcept {
 
 	if (distance > ProjectileAreaInfluence)
 		return;
 
 	for (int neighboor : Grid[index].Neighboors.m_neighboor) {
-		if (neighboor != start_index) {
-			UpdateTile(neighboor, ProjectileInfluence, Team, Type::Projectile, actorID, ActorDataIndex);
-			InfluenceProjectile(neighboor, index, source_index, distance + 1, actorID, Team, ActorDataIndex);
+		if (neighboor != start_index && Grid[neighboor].State == TileState::Free) {
+			UpdateTile(neighboor, ProjectileInfluenceValue, Team, Type::Projectile, actorID, ActorDataIndex);
+			CalculateProjectileInfluence(neighboor, index, source_index, distance + 1, actorID, Team, ActorDataIndex);
 		}
 	}
 }
@@ -300,17 +303,16 @@ void AInfluenceMapGrid::ReceivedMessage(FGridPackage _message) {
 
 			switch (_message.m_type) {
 			case Type::Soldier:
-				UpdateTile(Index, CharacterInfluence, _message.team_value, _message.m_type, _message.ActorID, IndexActor);
-				InfluenceSoldier(Index, Index, Index, 1, _message.ActorID, _message.team_value, IndexActor);
+				SoldierInfluence(_message, Index, IndexActor);
 				break;
 			case Type::ControlArea:
-				UpdateTile(Index, ControlAreaInfluence, _message.team_value, _message.m_type, _message.ActorID, IndexActor);
-				InfluenceControlArea(Index, Index, Index, 1, _message.ActorID, _message.team_value, IndexActor);
+				ControlAreaInfluence(_message, Index, IndexActor);
 				break;
 			case Type::Projectile:
-				UpdateTile(Index, ProjectileInfluence, _message.team_value, _message.m_type, _message.ActorID, IndexActor);
-				InfluenceProjectile(Index, Index, Index, 1, _message.ActorID, _message.team_value, IndexActor);
+				ProjectileInfluence(_message, Index, IndexActor);
 				break;
+			case Type::Obstacle:
+				ObstacleInfluence(_message, Index, IndexActor);
 			default:
 				break;
 			}
@@ -320,8 +322,8 @@ void AInfluenceMapGrid::ReceivedMessage(FGridPackage _message) {
 			switch (_message.m_type) {
 			case Type::Soldier:
 				UpdateSoldier(IndexActor, _message.team_value, _message.ActorID);
-				UpdateTile(Index, CharacterInfluence, _message.team_value, _message.m_type, _message.ActorID, IndexActor);
-				InfluenceSoldier(Index, Index, Index, 1, _message.ActorID, _message.team_value, IndexActor);
+				UpdateTile(Index, CharacterInfluenceValue, _message.team_value, _message.m_type, _message.ActorID, IndexActor);
+				CalculateSoldierInfluence(Index, Index, Index, 1, _message.ActorID, _message.team_value, IndexActor);
 				break;
 			case Type::ControlArea:
 				UpdateControlArea(IndexActor, _message.team_value);
@@ -458,16 +460,16 @@ void AInfluenceMapGrid::UpdateControlArea(const uint16 IndexControlArea, const u
 		for (uint32 index : ActorsData[IndexControlArea].IndexInfluence) {
 			m_index_team2.Remove(index);
 			m_index_team1.Add(index);
-			Grid[index].InfluenceTeam[2].InfluenceValue -= ControlAreaInfluence;
-			Grid[index].InfluenceTeam[1].InfluenceValue += ControlAreaInfluence;
+			Grid[index].InfluenceTeam[2].InfluenceValue -= ControlAreaInfluenceValue;
+			Grid[index].InfluenceTeam[1].InfluenceValue += ControlAreaInfluenceValue;
 		}
 		break;
 	case 2:
 		for (uint32 index : ActorsData[IndexControlArea].IndexInfluence) {
 			m_index_team1.Remove(index);
 			m_index_team2.Add(index);
-			Grid[index].InfluenceTeam[1].InfluenceValue -= ControlAreaInfluence;
-			Grid[index].InfluenceTeam[2].InfluenceValue += ControlAreaInfluence;
+			Grid[index].InfluenceTeam[1].InfluenceValue -= ControlAreaInfluenceValue;
+			Grid[index].InfluenceTeam[2].InfluenceValue += ControlAreaInfluenceValue;
 		}
 		break;
 	default:
@@ -483,7 +485,7 @@ void AInfluenceMapGrid::UpdateSoldier(const uint16 IndexSoldier, const uint8 Tea
 
 			Grid[index].InfluenceTeam[Team].InfluenceValue -= 0.1f;
 			
-			if (Grid[index].InfluenceTeam[Team].Types.Contains(Type::ControlArea) && Grid[index].InfluenceTeam[Team].InfluenceValue < CharacterInfluence) {
+			if (Grid[index].InfluenceTeam[Team].Types.Contains(Type::ControlArea) && Grid[index].InfluenceTeam[Team].InfluenceValue < CharacterInfluenceValue) {
 				Grid[index].InfluenceTeam[Team].InfluenceValue = 0.5f;
 				switch (Team) {
 				case 1:
@@ -496,7 +498,7 @@ void AInfluenceMapGrid::UpdateSoldier(const uint16 IndexSoldier, const uint8 Tea
 					break;
 				}
 			}
-			else if(Grid[index].InfluenceTeam[Team].InfluenceValue < CharacterInfluence) 
+			else if(Grid[index].InfluenceTeam[Team].InfluenceValue < CharacterInfluenceValue) 
 			{
 				Grid[index].InfluenceTeam[Team].InfluenceValue = 0.0f;
 				switch (Team) {
@@ -513,4 +515,29 @@ void AInfluenceMapGrid::UpdateSoldier(const uint16 IndexSoldier, const uint8 Tea
 		}
 		ActorsData[IndexSoldier].IndexInfluence.Empty();
 	}
+}
+
+void AInfluenceMapGrid::SoldierInfluence(FGridPackage Message, uint32 IndexTile, uint16 IndexActor) {
+	UpdateTile(IndexTile, CharacterInfluenceValue, Message.team_value, Message.m_type, Message.ActorID, IndexActor);
+	CalculateSoldierInfluence(IndexTile, IndexTile, IndexTile, 1, Message.ActorID, Message.team_value, IndexActor);
+}
+void AInfluenceMapGrid::ControlAreaInfluence(FGridPackage Message, uint32 IndexTile, uint16 IndexActor) {
+	UpdateTile(IndexTile, ControlAreaInfluenceValue, Message.team_value, Message.m_type, Message.ActorID, IndexActor);
+	CalculateControlAreaInfluence(IndexTile, IndexTile, IndexTile, 1, Message.ActorID, Message.team_value, IndexActor);
+}
+void AInfluenceMapGrid::ProjectileInfluence(FGridPackage Message, uint32 IndexTile, uint16 IndexActor) {
+	UpdateTile(IndexTile, ProjectileInfluenceValue, Message.team_value, Message.m_type, Message.ActorID, IndexActor);
+	CalculateProjectileInfluence(IndexTile, IndexTile, IndexTile, 1, Message.ActorID, Message.team_value, IndexActor);
+}
+void AInfluenceMapGrid::ObstacleInfluence(FGridPackage Message, uint32 IndexTile, uint16 IndexActor) {
+	//GEngine->AddOnScreenDebugMessage(30, 1.f, FColor::Orange, TEXT("Received Message from Obstacle"));
+	Grid[IndexTile].State = TileState::Block;
+}
+
+void AInfluenceMapGrid::EraseObstacleInfluence(FGridPackage Message) {
+	GEngine->AddOnScreenDebugMessage(30, 1.f, FColor::Orange, TEXT("Received Message from Obstacle, need to be destroy"));
+	uint32 Index = -1;
+
+	if (FindTileIndex(Message.m_location_on_map, Index))
+		Grid[Index].State = TileState::Free;
 }

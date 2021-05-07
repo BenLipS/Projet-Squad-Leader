@@ -28,6 +28,12 @@ enum Type {
 	None UMETA(DisplayName = "None"),
 };
 
+UENUM()
+enum TileState {
+	Free UMETA(DisplayName = "Free"),
+	Block UMETA(DisplayName = "Block"),
+};
+
 USTRUCT()
 struct SQUADLEADER_API FGridPackage {
 
@@ -40,6 +46,11 @@ struct SQUADLEADER_API FGridPackage {
 	uint32 ActorID;
 };
 
+USTRUCT()
+struct SQUADLEADER_API FGridPackageObstacle : public FGridPackage {
+	GENERATED_USTRUCT_BODY()
+		FGridPackageObstacle() {}
+};
 
 USTRUCT()
 struct SQUADLEADER_API FInfluenceTeamData {
@@ -52,8 +63,6 @@ struct SQUADLEADER_API FInfluenceTeamData {
 	//The list of the different type on the tile(Soldier, COntrolArea, Projectile, etc.)
 	TArray<TEnumAsByte<Type>> Types;
 };
-
-
 
 /*
 * This struct represent a Tile-Base for the grid
@@ -71,6 +80,8 @@ struct SQUADLEADER_API FTileBase {
 	FVector Location;
 
 	FNeighboor Neighboors;
+
+	TileState State;
 	
 	TMap<uint8, FInfluenceTeamData> InfluenceTeam;
 
@@ -85,9 +96,7 @@ public:
 public:
 	uint32 ActorID;
 	TArray<uint32> IndexInfluence;
-
 public:
-
 	void AddIndexs(const uint32 index) noexcept { IndexInfluence.Add(index); }
 };
 
@@ -168,14 +177,14 @@ private:
 	* Algorithm recursif
 	* calculate the influence of player on the grid
 	*/
-	void InfluenceSoldier(int index, int start_index, int source_index, int distance, uint32 actorID, uint32 Team, uint16& ActorDataIndex) noexcept;
+	void CalculateSoldierInfluence(int index, int start_index, int source_index, int distance, uint32 actorID, uint32 Team, uint16& ActorDataIndex) noexcept;
 
 	/*
 	* Calculate the influence of a control area
 	*/
-	void InfluenceControlArea(int index, int start_index, int source_index, int distance, uint32 actorID, uint32 Team, uint16& ActorDataIndex) noexcept;
+	void CalculateControlAreaInfluence(int index, int start_index, int source_index, int distance, uint32 actorID, uint32 Team, uint16& ActorDataIndex) noexcept;
 
-	void InfluenceProjectile(int index, int start_index, int source_index, int distance, uint32 actorID, uint32 Team, uint16& ActorDataIndex) noexcept;
+	void CalculateProjectileInfluence(int index, int start_index, int source_index, int distance, uint32 actorID, uint32 Team, uint16& ActorDataIndex) noexcept;
 
 	/*
 	* Calculate the time of execution of a function
@@ -246,19 +255,19 @@ private:
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Influence Value")
-		float ProjectileInfluence = 0.9f;
+		float ProjectileInfluenceValue = 0.9f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Influence Value")
 		int ProjectileAreaInfluence = 3;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Influence Value")
-		float ControlAreaInfluence = 0.5f;
+		float ControlAreaInfluenceValue = 0.5f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Influence Value")
 		int ControlAreaAreaInfluence = 10;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Influence Value")
-		float CharacterInfluence = 0.3f;
+		float CharacterInfluenceValue = 0.3f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Influence Value")
 		int CharacterAreaInfluence = 8;
@@ -281,4 +290,12 @@ protected:
 
 	void UpdateControlArea(const uint16 IndexControlArea, const uint8 Team) noexcept;
 	void UpdateSoldier(const uint16 IndexSoldier, const uint8 Team, const uint32 SoldierID) noexcept;
+
+	void SoldierInfluence(FGridPackage Message, uint32 IndexTile, uint16 IndexActor);
+	void ControlAreaInfluence(FGridPackage Message, uint32 IndexTile, uint16 IndexActor);
+	void ProjectileInfluence(FGridPackage Message, uint32 IndexTile, uint16 IndexActor);
+	void ObstacleInfluence(FGridPackage Message, uint32 IndexTile, uint16 IndexActor);
+
+public:
+	void EraseObstacleInfluence(FGridPackage Message);
 };
