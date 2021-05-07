@@ -15,11 +15,16 @@ bool AAISquadController::GetValidFormationPos()
 
 	UNavigationSystemV1* navSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
 
-	FVector startLocation = SquadManager->Leader->GetLocation();
-	FVector endLocation = blackboard->GetValueAsVector("FormationLocation");
+	FVector startLocation = UNavigationSystemV1::ProjectPointToNavigation(GetWorld(), SquadManager->Leader->GetLocation());
+	
+	FVector endLocation = FormationPosBeforeTransform;
+
+	blackboard->SetValueAsVector("FormationLocation", FormationPosBeforeTransform);
 
 	if (navSys->NavigationRaycast(GetWorld(), startLocation, endLocation, HitLocation)) {
 		blackboard->SetValueAsVector("FormationLocation", HitLocation);
+		if ((HitLocation - SquadManager->Leader->GetLocation()).Size() < 100.f)//if too close to player stop movement
+			StopMovement();
 		return false;
 	}
 	return true;
@@ -78,9 +83,10 @@ void AAISquadController::Init()
 }
 
 void AAISquadController::FollowFormation() {
-	GetValidFormationPos();
-	//EPathFollowingRequestResult::Type _movetoResult = MoveToLocation(blackboard->GetValueAsVector("FormationLocation"), 5.f);
-	//DrawDebugPoint(GetWorld(), blackboard->GetValueAsVector("FormationLocation"), 12, FColor::Purple);
+	if (SquadManager->Leader) {
+		GetValidFormationPos();
+		//EPathFollowingRequestResult::Type _movetoResult = MoveToLocation(blackboard->GetValueAsVector("FormationLocation"), 5.f);
+	}
 }
 
 void AAISquadController::Die() {
@@ -94,6 +100,13 @@ void AAISquadController::ResetBlackBoard() {
 	blackboard->SetValueAsBool("IsInFormation", true);
 }
 
+void AAISquadController::SetState(AIBasicState _state) noexcept
+{
+	Super::SetState(_state);
+	if(IsValid(SquadManager))
+		SquadManager->OnSquadMemberMissionChange(m_state, this);
+}
+
 void AAISquadController::FormationState() {
 	blackboard->SetValueAsBool("is_attacking", false);
 	blackboard->SetValueAsBool("is_moving", false);
@@ -104,7 +117,7 @@ void AAISquadController::FormationState() {
 }
 
 void AAISquadController::UpdateFormation(const FVector _position) {
-	get_blackboard()->SetValueAsVector("FormationLocation", _position);
+	FormationPosBeforeTransform = _position;
 }
 
 void AAISquadController::SetUpMission(bool hasOrder, bool isInFormation, FVector _Location){

@@ -22,7 +22,6 @@ bAbilitiesInitialized{ false },
 WeaponAttachPointRightHand{ FName("WeaponSocketRightHand") },
 WeaponAttachPointLeftHand{ FName("WeaponSocketLeftHand") },
 bChangedWeaponLocally{ false },
-FieldOfViewNormal{ 90.f },
 LevelUpFXRelativeLocation{ FVector{0.f} },
 LevelUpFXRotator{ FRotator{} },
 LevelUpFXScale{ FVector{1.f} },
@@ -34,7 +33,6 @@ ImpactHitFXScale{ FVector{1.f} }
 	InitMovements();
 	InitMeshes();
 	setup_stimulus();
-	GetCapsuleComponent()->BodyInstance.SetObjectType(ECC_Player);
 
 	Inventory = FSoldier_Inventory{};
 	CurrentWeaponTag = FGameplayTag::RequestGameplayTag(FName("Weapon.Equipped.None"));
@@ -64,6 +62,10 @@ void ASoldier::BeginPlay()
 	}
 	else
 		setToThirdCameraPerson();
+
+	CurrentFOV = BaseFOVNormal;
+
+	CacheRelativeTransformMeshInCapsule = GetMesh()->GetRelativeTransform();
 
 	// Teams
 	// TODO: Clients must be aware of their team. If we really want a security with the server, we should call this function
@@ -141,14 +143,14 @@ void ASoldier::InitCameras()
 
 	// 1st person camera
 	FirstPersonCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("FirstPersonCamera"));
-	FirstPersonCameraComponent->SetupAttachment(GetCapsuleComponent());
+	FirstPersonCameraComponent->SetupAttachment(GetMesh());
 	FirstPersonCameraComponent->SetRelativeLocation(FVector(2.f, 0.f, BaseEyeHeight));
 	FirstPersonCameraComponent->bUsePawnControlRotation = true;
 	FirstPersonCameraComponent->SetFieldOfView(90.f);
 
 	// 3rd person camera
 	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
-	SpringArmComponent->SetupAttachment(GetCapsuleComponent());
+	SpringArmComponent->SetupAttachment(GetMesh());
 	SpringArmComponent->TargetArmLength = 170;
 	SpringArmComponent->SetRelativeLocation(FVector(-30.f, 40.f, BaseEyeHeight));
 	SpringArmComponent->bEnableCameraLag = false;
@@ -367,11 +369,6 @@ void ASoldier::DeadTagChanged(const FGameplayTag _CallbackTag, int32 _NewCount)
 		if (GetTeam() && GetLocalRole() == ROLE_Authority)
 			GetTeam()->RemoveOneTicket();
 
-		//TODO. Should we keep the velocity to be more realistic ?
-		// Stop the soldier and remove any interaction with the other soldiers
-		GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Player, ECollisionResponse::ECR_Ignore);
-		GetCharacterMovement()->Velocity = FVector(0.f);
-
 		// Cancel abilities
 		AbilitySystemComponent->CancelAllAbilities();
 
@@ -379,7 +376,9 @@ void ASoldier::DeadTagChanged(const FGameplayTag _CallbackTag, int32 _NewCount)
 		if (ASquadLeaderGameModeBase* GameMode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode()); GameMode)
 			GameMode->SoldierDied(GetController());
 
-		HandleDeathMontage();
+		// Start ragdoll to the next frame so we can catch all impulses from the capsule before the death - This is useful for the explosion
+		//HandleDeathMontage();
+		GetWorldTimerManager().SetTimerForNextTick(this, &ASoldier::StartRagdoll);
 	}
 	else // If dead tag is removed - Handle respawn
 	{
@@ -388,12 +387,13 @@ void ASoldier::DeadTagChanged(const FGameplayTag _CallbackTag, int32 _NewCount)
 		AttributeSet->SetShield(AttributeSet->GetMaxShield());
 
 		ResetWeapons();
+		StopRagdoll();
 
 		if (RespawnMontage)
 		{
 			// Remove any interaction with the world during the respawn animation - avoid damage while the player can't play
-			GetCharacterMovement()->GravityScale = 0.f;
-			GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			GetCharacterMovement()->Velocity = FVector(0.f);
+			GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 			PlayAnimMontage(RespawnMontage);
 			UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
@@ -530,27 +530,16 @@ FVector ASoldier::GetLookingAtPosition(const float _MaxRange) const
 	const FVector ViewDir = ViewRot.Vector();
 	FVector ViewEnd = ViewStart + (ViewDir * _MaxRange);
 
-	// Get first blocking hit
+	// Get first blocking hit - InstantWeaponFire is a preset for instant fire weapon
 	FHitResult HitResult;
-	GetWorld()->LineTraceSingleByChannel(HitResult, ViewStart, ViewEnd, ECC_WorldDynamic, Params);
+	GetWorld()->LineTraceSingleByProfile(HitResult, ViewStart, ViewEnd, FName{"InstantWeaponFire"}, Params);
 
+	//if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Black, FString::Printf(TEXT("Tick for: %s"), *HitResult.Component->GetName()));
 	//::DrawDebugLine(GetWorld(), ViewStart, HitResult.bBlockingHit ? HitResult.Location : ViewEnd, FColor::Blue, false, 2.f);
 
 	return HitResult.bBlockingHit ? HitResult.Location : ViewEnd;
 }
 
-// TODO: For now, we directly change the move speed multiplier with a setter. This is should be changed 
-// through a GE. It should use the execalculation to consider all the buffs/debbufs
-bool ASoldier::StartRunning()
-{
-	AttributeSet->SetMoveSpeedMultiplier(1.8f);
-	return true;
-}
-
-void ASoldier::StopRunning()
-{
-	AttributeSet->SetMoveSpeedMultiplier(1.f);
-}
 
 bool ASoldier::Walk()
 {
@@ -573,6 +562,107 @@ void ASoldier::Landed(const FHitResult& _Hit)
 		EffectTagsToRemove.AddTag(FGameplayTag::RequestGameplayTag(FName("State.Jumping")));
 		AbilitySystemComponent->RemoveActiveEffectsWithGrantedTags(EffectTagsToRemove);
 	}
+}
+
+bool ASoldier::StartRunning()
+{
+	AttributeSet->SetMoveSpeedMultiplier(1.8f);
+
+	bIsRunning = true;
+	UpdateFOV();
+
+	return true;
+}
+
+void ASoldier::StopRunning()
+{
+	AttributeSet->SetMoveSpeedMultiplier(1.f);
+
+	bIsRunning = false;
+	UpdateFOV();
+}
+
+bool ASoldier::IsRunning() const noexcept
+{
+	return bIsRunning && GetCharacterMovement()->Velocity.Size() > 0.0f;
+}
+
+void ASoldier::StartAiming()
+{
+	if (!CurrentWeapon)
+		return;
+
+	bIsAiming = true;
+	UpdateFOV();
+}
+
+void ASoldier::StopAiming()
+{
+	bIsAiming = false;
+	UpdateFOV();
+}
+
+bool ASoldier::IsAiming() const noexcept
+{
+	return bIsAiming;
+}
+
+void ASoldier::UpdateFOV()
+{
+	// Update current FOV
+	if (bIsAiming)
+		CurrentFOV = CurrentWeapon->GetFieldOfViewAim();
+	else if (bIsRunning)
+		CurrentFOV = BaseFOVRunning;
+	else
+		CurrentFOV = BaseFOVNormal;
+
+	ZoomFOVAdd = (CurrentFOV - ThirdPersonCameraComponent->FieldOfView) / TimeFOVAnimation * TimeBetweenFOVChange;
+
+	// Start camera FOV animation
+	if (ZoomFOVAdd < 0.f) // Zoom in
+	{
+		GetWorldTimerManager().SetTimer(TimerFOVAnimation, this, &ASoldier::ZoomInFOV, TimeBetweenFOVChange, true);
+		ZoomInFOV();
+	}
+	else // Zoom out
+	{
+		GetWorldTimerManager().SetTimer(TimerFOVAnimation, this, &ASoldier::ZoomOutFOV, TimeBetweenFOVChange, true);
+		ZoomOutFOV();
+	}
+}
+
+void ASoldier::ZoomInFOV()
+{
+	const float NewCameraFOV = ThirdPersonCameraComponent->FieldOfView + ZoomFOVAdd;
+
+	if (NewCameraFOV > CurrentFOV)
+	{
+		FirstPersonCameraComponent->SetFieldOfView(NewCameraFOV);
+		ThirdPersonCameraComponent->SetFieldOfView(NewCameraFOV);
+	}
+	else
+		FinishFOVAnimation();
+}
+
+void ASoldier::ZoomOutFOV()
+{
+	const float NewCameraFOV = ThirdPersonCameraComponent->FieldOfView + ZoomFOVAdd;
+
+	if (NewCameraFOV < CurrentFOV)
+	{
+		FirstPersonCameraComponent->SetFieldOfView(NewCameraFOV);
+		ThirdPersonCameraComponent->SetFieldOfView(NewCameraFOV);
+	}
+	else
+		FinishFOVAnimation();
+}
+
+void ASoldier::FinishFOVAnimation()
+{
+	GetWorld()->GetTimerManager().ClearTimer(TimerFOVAnimation);
+	FirstPersonCameraComponent->SetFieldOfView(CurrentFOV);
+	ThirdPersonCameraComponent->SetFieldOfView(CurrentFOV);
 }
 
 void ASoldier::SpawnDefaultInventory()
@@ -609,19 +699,57 @@ void ASoldier::OnRep_Inventory()
 	}
 }
 
+void ASoldier::OnStartFiring()
+{
+	bIsFiring = true;
+}
+
+void ASoldier::OnStopFiring()
+{
+	bIsFiring = false;
+}
+
+bool ASoldier::IsFiring() const noexcept
+{
+	return bIsFiring;
+}
+
 ASL_Weapon* ASoldier::GetCurrentWeapon() const
 {
 	return CurrentWeapon;
 }
 
+TArray<ASL_Weapon*> ASoldier::GetAllWeapons() const
+{
+	return Inventory.Weapons;
+}
+
 void ASoldier::UseCurrentWeaponWithRightHand()
 {
-	CurrentWeapon->GetWeaponMesh()->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, WeaponAttachPointRightHand);
+	if (!CurrentWeapon->GetWeaponMesh())
+	{
+		return;
+		UE_LOG(LogTemp, Error, TEXT("%s() No mesh on the weapon"), *FString(__FUNCTION__));
+	}
+
+	// Get attach point name provided by the weapon. If the name is empty we use the default point from soldier
+	const FName AttachPoint = CurrentWeapon->GetRightHandAttachPoint() != NAME_None ? CurrentWeapon->GetRightHandAttachPoint() : WeaponAttachPointRightHand;
+
+	CurrentWeapon->GetWeaponMesh()->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, AttachPoint);
 }
 
 void ASoldier::UseCurrentWeaponWithLeftHand()
 {
-	CurrentWeapon->GetWeaponMesh()->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, WeaponAttachPointLeftHand);
+	if (!CurrentWeapon->GetWeaponMesh())
+	{
+		return;
+		UE_LOG(LogTemp, Error, TEXT("%s() No mesh on the weapon"), *FString(__FUNCTION__));
+	}
+
+	// Get attach point name provided by the weapon. If the name is empty we use the default point from soldier
+	const FName AttachPoint = CurrentWeapon->GetLeftHandAttachPoint() != NAME_None ? CurrentWeapon->GetLeftHandAttachPoint() : WeaponAttachPointLeftHand;
+
+	CurrentWeapon->GetWeaponMesh()->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, AttachPoint);
 }
 
 bool ASoldier::AddWeaponToInventory(ASL_Weapon* _NewWeapon, const bool _bEquipWeapon)
@@ -629,15 +757,27 @@ bool ASoldier::AddWeaponToInventory(ASL_Weapon* _NewWeapon, const bool _bEquipWe
 	if (!_NewWeapon || GetLocalRole() < ROLE_Authority)
 		return false;
 
-	if (DoesWeaponExistInInventory(_NewWeapon))
+	if (_bEquipWeapon)
 	{
-		_NewWeapon->Destroy(); // TODO: Do I really need to destroy the weapon ?
+		// We check if a similar weapon exist to equip it
+		if (ASL_Weapon* ExistingWeapon = GetWeaponWithSameClassInInventory(_NewWeapon); ExistingWeapon)
+		{
+			_NewWeapon->Destroy();
+			EquipWeapon(ExistingWeapon);
+			ClientSyncCurrentWeapon(CurrentWeapon);
+			return true;
+		}
+		// else we add the new weapon to the inventory - this is done below
+
+	}
+	else if (DoesWeaponExistInInventory(_NewWeapon))
+	{
+		_NewWeapon->Destroy();
 		return false;
 	}
 
 	Inventory.Weapons.Add(_NewWeapon);
 	_NewWeapon->SetOwningSoldier(this);
-	_NewWeapon->AddAbilities();
 
 	if (_bEquipWeapon)
 	{
@@ -659,6 +799,18 @@ void ASoldier::EquipWeapon(ASL_Weapon* _NewWeapon)
 		SetCurrentWeapon(_NewWeapon, CurrentWeapon);
 }
 
+void ASoldier::EquipWeapon(UClass* _WeaponClass)
+{
+	for (ASL_Weapon* ExistingWeapon : Inventory.Weapons)
+	{
+		if (ExistingWeapon && ExistingWeapon->GetClass() == _WeaponClass)
+		{
+			EquipWeapon(ExistingWeapon);
+			ClientSyncCurrentWeapon(CurrentWeapon);
+		}
+	}
+}
+
 void ASoldier::ServerEquipWeapon_Implementation(ASL_Weapon* _NewWeapon)
 {
 	EquipWeapon(_NewWeapon);
@@ -671,15 +823,20 @@ bool ASoldier::ServerEquipWeapon_Validate(ASL_Weapon* _NewWeapon)
 
 bool ASoldier::DoesWeaponExistInInventory(ASL_Weapon* _Weapon)
 {
-	if (!_Weapon)
-		return false;
+	return !!GetWeaponWithSameClassInInventory(_Weapon);
+}
 
-	for (ASL_Weapon* Weapon : Inventory.Weapons)
+ASL_Weapon* ASoldier::GetWeaponWithSameClassInInventory(ASL_Weapon* _Weapon)
+{
+	if (!_Weapon)
+		return nullptr;
+
+	for (ASL_Weapon* ExistingWeapon : Inventory.Weapons)
 	{
-		if (Weapon && Weapon->GetClass() == _Weapon->GetClass())
-			return true;
+		if (ExistingWeapon && ExistingWeapon->GetClass() == _Weapon->GetClass())
+			return ExistingWeapon;
 	}
-	return false;
+	return nullptr;
 }
 
 void ASoldier::SetCurrentWeapon(ASL_Weapon* _NewWeapon, ASL_Weapon* _LastWeapon)
@@ -695,37 +852,42 @@ void ASoldier::SetCurrentWeapon(ASL_Weapon* _NewWeapon, ASL_Weapon* _LastWeapon)
 	}
 
 	UnEquipWeapon(_LastWeapon);
+	if (_LastWeapon)
+		_LastWeapon->RemoveAbilities();
 
 	if (_NewWeapon)
 	{
+		// Clear out potential NoWeaponTag
 		if (AbilitySystemComponent)
-		{
-			// Clear out potential NoWeaponTag
 			AbilitySystemComponent->RemoveLooseGameplayTag(CurrentWeaponTag);
-		}
 
 		// Weapons coming from OnRep_CurrentWeapon won't have the owner set
 		CurrentWeapon = _NewWeapon;
 		CurrentWeapon->SetOwningSoldier(this);
+		CurrentWeapon->AddAbilities();
 		CurrentWeaponTag = CurrentWeapon->WeaponTag;
 
 		if (AbilitySystemComponent)
 			AbilitySystemComponent->AddLooseGameplayTag(CurrentWeaponTag);
 
+		// Visual part
 		UseCurrentWeaponWithRightHand();
-		CurrentWeapon->GetWeaponMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		CurrentWeapon->SetActorHiddenInGame(false);
+		CurrentWeapon->ForceUpdateAmmo();
 
-		// TODO: Do update for HUD through player controller here
+		if (CurrentWeapon->GetWeaponMesh())
+			CurrentWeapon->GetWeaponMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-		// TODO: Play montage/ sound cue on the needs
+		// Reload if the new weapon is empty
+		if (!CurrentWeapon->HasAmmo())
+			ActivateAbility(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.ReloadWeapon")));
 	}
 }
 
 void ASoldier::UnEquipWeapon(ASL_Weapon* _WeaponToUnEquip)
 {
-	// TODO: See if we need this function
-	//if (_WeaponToUnEquip)
-	//	_WeaponToUnEquip->UnEquip();
+	if (_WeaponToUnEquip)
+		_WeaponToUnEquip->SetActorHiddenInGame(true);
 }
 
 void ASoldier::OnRep_CurrentWeapon(ASL_Weapon* _LastWeapon)
@@ -863,19 +1025,9 @@ void ASoldier::OnReceiveDamage(const FVector& _ImpactPoint, const FVector& _Sour
 {
 }
 
-void ASoldier::StartAiming()
+TSubclassOf<UMatineeCameraShake> ASoldier::GetCameraShakeFireClass() const
 {
-	if (!CurrentWeapon)
-		return;
-
-	FirstPersonCameraComponent->SetFieldOfView(CurrentWeapon->GetFieldOfViewAim());
-	ThirdPersonCameraComponent->SetFieldOfView(CurrentWeapon->GetFieldOfViewAim());
-}
-
-void ASoldier::StopAiming()
-{
-	FirstPersonCameraComponent->SetFieldOfView(FieldOfViewNormal);
-	ThirdPersonCameraComponent->SetFieldOfView(FieldOfViewNormal);
+	return CameraShakeFireClass;
 }
 
 FRotator ASoldier::GetSyncControlRotation() const noexcept
@@ -913,6 +1065,20 @@ void ASoldier::MulticastSyncControlRotation_Implementation(const FRotator& _Rota
 bool ASoldier::MulticastSyncControlRotation_Validate(const FRotator& _Rotation)
 {
 	return true;
+}
+
+void ASoldier::StartRagdoll()
+{
+	GetMesh()->SetSimulatePhysics(true);
+}
+
+void ASoldier::StopRagdoll()
+{
+	GetMesh()->SetSimulatePhysics(false);
+
+	// Re-attach the mesh to the capsule 
+	GetMesh()->AttachToComponent(GetCapsuleComponent(), FAttachmentTransformRules::KeepRelativeTransform);
+	GetMesh()->SetRelativeTransform(CacheRelativeTransformMeshInCapsule);
 }
 
 // network for debug team change
@@ -1004,10 +1170,7 @@ void ASoldier::OnStartGameMontageCompleted(UAnimMontage* _Montage, bool _bInterr
 void ASoldier::OnRespawnMontageCompleted(UAnimMontage* _Montage, bool _bInterrupted)
 {
 	UnLockControls();
-
-	GetCharacterMovement()->GravityScale = 1.f;
-	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Player, ECollisionResponse::ECR_Overlap);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 }
 
 // TODO: Show particle from the hit location - not center of the soldier

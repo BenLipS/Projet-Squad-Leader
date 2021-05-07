@@ -9,20 +9,7 @@
 #include "../Soldiers/Players/SoldierPlayerController.h"
 #include "../UI/SL_HUD.h"
 
-ASL_Weapon::ASL_Weapon() :
-	MuzzleAttachPoint{ FName("Muzzle") },
-	Damage{ FScalableFloat{1.f} },
-	MaxRange{ 999'999.f },
-	FieldOfViewAim {50.f},
-	TimeBetweenShots { 0.1f },
-	CurrentAmmo{ 50 },
-	MaxAmmo{ 50 },
-	bInfiniteAmmo{ false },
-	BaseSpread{ 0.f },
-	AimingSpreadMod{ 1.f },
-	TargetingSpreadIncrement{ 0.f },
-	TargetingSpreadMax{ 0.f },
-	CollisionProfileName{ FName{"InstantWeaponFire"} }
+ASL_Weapon::ASL_Weapon()
 {
 	PrimaryActorTick.bCanEverTick = false;
 	bReplicates = true;
@@ -30,7 +17,8 @@ ASL_Weapon::ASL_Weapon() :
 	NetUpdateFrequency = 100.0f; // TODO: Tweak it
 
 	// Mesh
-	WeaponMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WeaponMesh"));
+	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
+	WeaponMesh->SetupAttachment(RootComponent);
 
 	// Tags
 	WeaponAbilityTag = FGameplayTag::RequestGameplayTag("Ability.Skill.FireWeapon");
@@ -40,8 +28,9 @@ ASL_Weapon::ASL_Weapon() :
 
 void ASL_Weapon::BeginPlay()
 {
-	ResetWeapon();
 	Super::BeginPlay();
+
+	ForceUpdateAmmo();
 }
 
 void ASL_Weapon::EndPlay(EEndPlayReason::Type _EndPlayReason)
@@ -53,6 +42,12 @@ void ASL_Weapon::EndPlay(EEndPlayReason::Type _EndPlayReason)
 		SphereTraceTargetActor->Destroy();
 
 	Super::EndPlay(_EndPlayReason);
+}
+
+void ASL_Weapon::Destroyed()
+{
+	RemoveAbilities();
+	Super::Destroyed();
 }
 
 void ASL_Weapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -80,7 +75,7 @@ void ASL_Weapon::SetOwningSoldier(ASoldier* _InOwningCharacter)
 	SetInstigator(OwningSoldier);
 }
 
-UStaticMeshComponent* ASL_Weapon::GetWeaponMesh() const
+USkeletalMeshComponent* ASL_Weapon::GetWeaponMesh() const
 {
 	return WeaponMesh;
 }
@@ -90,11 +85,27 @@ FName ASL_Weapon::GetMuzzleAttachPoint() const
 	return MuzzleAttachPoint;
 }
 
+FName ASL_Weapon::GetRightHandAttachPoint() const
+{
+	return RightHandAttachPoint;
+}
+
+FName ASL_Weapon::GetLeftHandAttachPoint() const
+{
+	return LeftHandAttachPoint;
+}
+
 void ASL_Weapon::ResetWeapon()
 {
 	// Force HUD Update
 	SetMaxAmmo(MaxAmmo);
 	SetCurrentAmmo(MaxAmmo);
+}
+
+void ASL_Weapon::ForceUpdateAmmo()
+{
+	SetMaxAmmo(MaxAmmo);
+	SetCurrentAmmo(CurrentAmmo);
 }
 
 UAbilitySystemComponent* ASL_Weapon::GetAbilitySystemComponent() const
@@ -138,11 +149,6 @@ void ASL_Weapon::RemoveAbilities()
 		ASC->ClearAbility(SpecHandle);
 }
 
-float ASL_Weapon::GetMaxRange() const noexcept
-{
-	return MaxRange;
-}
-
 float ASL_Weapon::GetWeaponDamage() const noexcept
 {
 	return IsValid(OwningSoldier) ? Damage.GetValueAtLevel(OwningSoldier->GetCharacterLevel()) : 1.f;
@@ -151,6 +157,16 @@ float ASL_Weapon::GetWeaponDamage() const noexcept
 void ASL_Weapon::SetWeaponDamage(const float _Damage) noexcept
 {
 	Damage = _Damage;
+}
+
+float ASL_Weapon::GetHeadShotMultiplier() const noexcept
+{
+	return HeadShotMultiplier;
+}
+
+float ASL_Weapon::GetMaxRange() const noexcept
+{
+	return MaxRange;
 }
 
 float ASL_Weapon::GetFieldOfViewAim() const noexcept
@@ -167,6 +183,16 @@ int32 ASL_Weapon::GetAbilityLevel(ESoldierAbilityInputID _AbilityID)
 FGameplayTag ASL_Weapon::GetFireMode() const noexcept
 {
 	return FireMode;
+}
+
+float ASL_Weapon::GetMoveSpeedMultiplier() const noexcept
+{
+	return MoveSpeedMultiplier;
+}
+
+bool ASL_Weapon::IsHeavyWeapon() const noexcept
+{
+	return IsHeavy;
 }
 
 float ASL_Weapon::GetTimeBetweenShots() const noexcept
@@ -194,6 +220,11 @@ bool ASL_Weapon::IsFullAmmo() const noexcept
 	return CurrentAmmo == MaxAmmo;
 }
 
+bool ASL_Weapon::HasAmmo() const noexcept
+{
+	return CurrentAmmo > 0;
+}
+
 void ASL_Weapon::SetCurrentAmmo(const int32 _NewAmmo)
 {
 	CurrentAmmo = _NewAmmo;
@@ -212,8 +243,13 @@ void ASL_Weapon::SetCurrentAmmo(const int32 _NewAmmo)
 
 void ASL_Weapon::DecrementAmmo()
 {
-	if (!bInfiniteAmmo)
-		SetCurrentAmmo(CurrentAmmo - 1);
+	if (bInfiniteAmmo)
+		return;
+
+	SetCurrentAmmo(CurrentAmmo - 1);
+
+	if (!HasAmmo())
+		OnOutOfAmmo();
 }
 
 void ASL_Weapon::SetMaxAmmo(const int32 _NewMaxAmmo)
@@ -228,11 +264,6 @@ void ASL_Weapon::SetMaxAmmo(const int32 _NewMaxAmmo)
 				HUD->OnMaxAmmoChanged(MaxAmmo);
 		}
 	}
-}
-
-bool ASL_Weapon::HasAmmo() const noexcept
-{
-	return CurrentAmmo > 0;
 }
 
 void ASL_Weapon::ReloadWeapon()

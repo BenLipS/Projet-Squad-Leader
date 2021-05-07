@@ -13,6 +13,8 @@
 #define PN_Shield2 "Shield2"
 #define PN_Projectile1 "Projectile1"
 #define PN_Projectile2 "Projectile2"
+#define PN_AreaEffect1 "AreaEffect1"
+#define PN_AreaEffect2 "AreaEffect2"
 
 UENUM(BlueprintType)
 enum class ESoldierAbilityInputID : uint8

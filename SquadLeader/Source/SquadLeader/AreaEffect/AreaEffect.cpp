@@ -1,5 +1,6 @@
 #include "AreaEffect.h"
 #include "../Soldiers/Soldier.h"
+#include "../Soldiers/Players/SoldierPlayerController.h"
 #include "SquadLeader/Weapons/Shield.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -32,6 +33,10 @@ void AAreaEffect::BeginPlay()
 	Super::BeginPlay();
 	SourceSoldier = Cast<ASoldier>(GetInstigator());
 
+	ProfileAreaEffectCollisionName = FName{ PN_AreaEffect2 };
+	if (SourceSoldier && SourceSoldier->GetTeam() && SourceSoldier->GetTeam()->Id == 1)
+		ProfileAreaEffectCollisionName = FName{ PN_AreaEffect1 };
+
 	// Apply effect at least once
 	OnReadyToApplyEffects();
 
@@ -62,7 +67,7 @@ void AAreaEffect::OnReadyToApplyEffects()
 	FCollisionQueryParams QueryParams{};
 	QueryParams.AddIgnoredActor(this);
 
-	if (GetWorld()->SweepMultiByChannel(HitActors, StartTrace, EndTrace, FQuat::FQuat(), ECC_WorldStatic, CollisionShape, QueryParams))
+	if (GetWorld()->SweepMultiByProfile(HitActors, StartTrace, EndTrace, FQuat::FQuat(), ProfileAreaEffectCollisionName, CollisionShape, QueryParams))
 	{
 		for (int32 i = 0; i < HitActors.Num(); ++i)
 		{
@@ -110,7 +115,7 @@ bool AAreaEffect::ValidateEffectOnSoldier(const FHitResult& _HitSoldier, const T
 
 	FilterTraceWithShield(HitResults);
 
-	return (HitResults.Last().Actor == _HitSoldier.Actor);
+	return HitResults.Num() > 0 && HitResults.Last().Actor == _HitSoldier.Actor;
 }
 
 void AAreaEffect::DestroyAreaEffect()
@@ -151,8 +156,13 @@ void AAreaEffect::ApplyDamages(UAbilitySystemComponent* _TargetASC, const float 
 		FGameplayEffectContextHandle EffectContext = SourceASC->MakeEffectContext();
 		FGameplayEffectSpecHandle DamageEffectSpecHandle = SourceASC->MakeOutgoingSpec(GE_DamageClass, SourceSoldier->GetCharacterLevel(), EffectContext);
 
-		DamageEffectSpecHandle.Data->SetSetByCallerMagnitude(FGameplayTag::RequestGameplayTag(FName("Data.Damage")), DetermineDamage(_DistActorArea));
+		const float Damage = DetermineDamage(_DistActorArea);
+		DamageEffectSpecHandle.Data->SetSetByCallerMagnitude(FGameplayTag::RequestGameplayTag(FName("Data.Damage")), Damage);
 		SourceASC->ApplyGameplayEffectSpecToTarget(*DamageEffectSpecHandle.Data.Get(), _TargetASC);
+
+		// Notify HUD for hit marker
+		if (ASoldierPlayerController* PC = SourceSoldier->GetController<ASoldierPlayerController>(); PC)
+			PC->NotifySoldierHit(Damage, false);
 	}
 }
 
@@ -161,7 +171,12 @@ void AAreaEffect::ApplyImpulse(AActor* _Actor, const float _DistActorArea)
 	if (ASoldier* Soldier = Cast<ASoldier>(_Actor); Soldier)
 	{
 		Soldier->GetCharacterMovement()->AddImpulse(DetermineImpulse(_Actor, _DistActorArea));
-		Soldier->ShakeCamera();
+		//
+		// TODO uncomment camerashake - Each area effect shall have one
+		//
+		//
+		//
+		//Soldier->ShakeCamera();
 	}
 
 	//else if (UStaticMeshComponent * SM = Cast<UStaticMeshComponent>(_Actor->GetRootComponent()); SM && SM->Mobility == EComponentMobility::Movable)

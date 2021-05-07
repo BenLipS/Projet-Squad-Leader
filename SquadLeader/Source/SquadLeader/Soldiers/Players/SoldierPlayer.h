@@ -23,6 +23,12 @@ public:
 	void OnRep_PlayerState() override;
 	virtual void DeadTagChanged(const FGameplayTag CallbackTag, int32 NewCount) override;
 
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player class")
+	SoldierClass PlayerClass = SoldierClass::NONE;
+
+	virtual SoldierClass GetClass() override { return PlayerClass; }
+
 //////////////// Controllers
 protected:
 	virtual void LockControls() override;
@@ -36,6 +42,12 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "SquadManager")
 	class AAISquadManager* SquadManager;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Ping")
+		TSubclassOf<class AActor> PingClass;
+
+	UPROPERTY()
+	AActor* PingMesh;
+
 	// Number of AIs to add for the next level up
 	UPROPERTY(EditDefaultsOnly, Category = "SquadManager")
 	FScalableFloat NbAIsForNextLevelUp = 0.f;
@@ -43,6 +55,22 @@ protected:
 public:
 	UFUNCTION()
 	AAISquadManager* GetSquadManager();
+
+	UFUNCTION(Client, Reliable)
+	void SpawnClientPing(FVector2D PingLocation);
+	void SpawnClientPing_Implementation(FVector2D PingLocation);
+
+	UFUNCTION()
+	void SpawnPing(FVector PingLocation);
+
+
+
+	UFUNCTION()
+	void DestroyPing();
+
+	UFUNCTION(Client, Reliable)
+	void DestroyClientPing();
+	void DestroyClientPing_Implementation();
 
 //////////////// Camera
 public:
@@ -75,7 +103,7 @@ protected:
 	float TimeBetweenReductionGlitch = 0.1f;
 
 	// Multiplier to reduce weight of the glitch effect - Should be lower than 1
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Camera|PostEffects|GlitchEffect", meta = (ClampMin = "0.001", UIMin = "0.999"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Camera|PostEffects|GlitchEffect", meta = (ClampMin = "0.001", UIMin = "0.001"))
 	float ReductionMultiplierGlitch = 0.9f;
 
 	// Minimum weight for smooth glitch reduction before ending the glitch 
@@ -117,23 +145,55 @@ protected:
 	void ClientOnReceiveDamage(const FVector& _ImpactPoint, const FVector& _SourcePoint);
 	void ClientOnReceiveDamage_Implementation(const FVector& _ImpactPoint, const FVector& _SourcePoint);
 
+//////////////// Hit reactions
+	//Blood effect
+	void HealthChanged(const FOnAttributeChangeData& _Data) override;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Camera|PostEffects|Blood")
+	UMaterialInstanceDynamic* MaterialBloodInstance = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Camera|PostEffects|Blood")
+	UMaterialInterface* MaterialBloodInterface = nullptr;
 public:
 	UFUNCTION()
-	float NbOfHitToPPIntensity(int NbHit);
+	float NbOfHitToPPIntensity(int NbHit) const;
 	UFUNCTION()
-	void AddHitLeft();
+	void AddBrokenGlassOnLeft();
 	UFUNCTION()
-	void AddHitRight();
+	void AddBrokenGlassOnRight();
 	UFUNCTION()
-	void RemoveHitLeft();
+	void RemoveBrokenGlassOnLeft();
 	UFUNCTION()
-	void RemoveHitRight();
+	void RemoveBrokenGlassOnRight();
 	UFUNCTION()
 	void UpdateBrokenGlassEffect();
+
+protected:
 	UPROPERTY()
 	int HitLeft = 0;
 	UPROPERTY()
 	int HitRight = 0;
+
+	UPROPERTY()
+	bool bHitMontageActivated = false;
+
+	UFUNCTION()
+	void ActivateHitMontage();
+
+	UFUNCTION()
+	void DisableHitMontage();
+
+	UFUNCTION()
+	void StartHitReactMontage(UAnimMontage* _HitReactMontage);//WallVion
+protected:
+	UPROPERTY(BlueprintReadWrite, Category = "Camera|PostEffects|WallVision")
+	UMaterialInstanceDynamic* MaterialWallVisionViewInstance = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Camera|PostEffects|WallVision")
+	UMaterialInterface* MaterialWallVisionViewInterface = nullptr;
+public:
+
+	void UpdateWallVisionPostEffect(float PostEffectValue);
 
 //////////////// Ability System Component
 protected:

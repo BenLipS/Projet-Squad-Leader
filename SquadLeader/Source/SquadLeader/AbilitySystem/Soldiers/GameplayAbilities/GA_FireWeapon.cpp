@@ -2,6 +2,7 @@
 #include "../../../Soldiers/Soldier.h"
 #include "../AbilitySystemSoldier.h"
 #include "GA_FireWeaponInstant.h"
+#include "SquadLeader/Soldiers/Soldier.h"
 #include "Abilities/Tasks/AbilityTask_WaitDelay.h"
 
 UGA_FireWeapon::UGA_FireWeapon()
@@ -18,16 +19,19 @@ UGA_FireWeapon::UGA_FireWeapon()
 
 void UGA_FireWeapon::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
+
 	if (!CommitAbility(Handle, ActorInfo, ActivationInfo))
 	{
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
 		return;
 	}
 
-	ASoldier* SourceSoldier = Cast<ASoldier>(ActorInfo->AvatarActor);
+	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+
+	SourceSoldier = Cast<ASoldier>(ActorInfo->AvatarActor);
 	SourceWeapon = Cast<ASL_Weapon>(SourceSoldier->GetCurrentWeapon());
 
-	UAbilitySystemSoldier* ASC = Cast<UAbilitySystemSoldier>(SourceSoldier->GetAbilitySystemComponent());
+	UAbilitySystemSoldier* ASC = Cast<UAbilitySystemSoldier>(GetAbilitySystemComponentFromActorInfo());
 
 	if (!ASC)
 	{
@@ -35,27 +39,20 @@ void UGA_FireWeapon::ActivateAbility(const FGameplayAbilitySpecHandle Handle, co
 		return;
 	}
 
-	InstantAbilityHandle = ASC->FindAbilitySpecHandleForClass(GA_FireWeaponInstantClass, SourceWeapon);
-	GA_FireWeaponInstantInstance = Cast<UGA_FireWeaponInstant>(ASC->GetPrimaryAbilityInstanceFromHandle(InstantAbilityHandle));
-
-	if (!GA_FireWeaponInstantInstance)
-	{
-		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
-		return;
-	}
-
 	if (SourceWeapon->HasAmmo() || SourceWeapon->HasInfiniteAmmo())
+	{
+		InstantAbilityHandle = ASC->FindAbilitySpecHandleForClass(GA_FireWeaponInstantClass, SourceWeapon);
 		HandleFire();
+		SourceSoldier->OnStartFiring();
+	}
 	else
 		ReloadWeapon();
-
-	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 }
 
 bool UGA_FireWeapon::CanActivateAbility(const FGameplayAbilitySpecHandle _Handle, const FGameplayAbilityActorInfo* _ActorInfo, const FGameplayTagContainer* _SourceTags, const FGameplayTagContainer* _TargetTags, OUT FGameplayTagContainer* _OptionalRelevantTags) const
 {
-	ASoldier* SourceSoldier = Cast<ASoldier>(_ActorInfo->AvatarActor);
-	return SourceSoldier && Cast<ASL_Weapon>(SourceSoldier->GetCurrentWeapon()) && Super::CanActivateAbility(_Handle, _ActorInfo, _SourceTags, _TargetTags, _OptionalRelevantTags);
+	ASoldier* Soldier = Cast<ASoldier>(_ActorInfo->AvatarActor);
+	return Soldier && Cast<ASL_Weapon>(Soldier->GetCurrentWeapon()) && Super::CanActivateAbility(_Handle, _ActorInfo, _SourceTags, _TargetTags, _OptionalRelevantTags);
 }
 
 void UGA_FireWeapon::InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo)
@@ -68,6 +65,9 @@ void UGA_FireWeapon::EndAbility(const FGameplayAbilitySpecHandle Handle, const F
 {
 	if (GA_FireWeaponInstantInstance)
 		GA_FireWeaponInstantInstance->CancelAbility(InstantAbilityHandle, ActorInfo, ActivationInfo, true);
+
+	SourceSoldier->OnStopFiring();
+
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
@@ -80,7 +80,10 @@ void UGA_FireWeapon::HandleFire()
 	}
 	else // if (SourceWeapon->GetFireMode() == FGameplayTag::RequestGameplayTag(FName("Weapon.FireMode.Automatic")))
 	{
-		if (!BatchRPCTryActivateAbility(InstantAbilityHandle, false))
+		UAbilitySystemSoldier* ASC = Cast<UAbilitySystemSoldier>(GetAbilitySystemComponentFromActorInfo());
+		GA_FireWeaponInstantInstance = Cast<UGA_FireWeaponInstant>(ASC->GetPrimaryAbilityInstanceFromHandle(InstantAbilityHandle));
+
+		if (!GA_FireWeaponInstantInstance || !BatchRPCTryActivateAbility(InstantAbilityHandle, false))
 		{
 			EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
 			return;
@@ -94,7 +97,6 @@ void UGA_FireWeapon::HandleFire()
 
 void UGA_FireWeapon::ReloadWeapon()
 {
-	ASoldier* SourceSoldier = Cast<ASoldier>(CurrentActorInfo->AvatarActor);
 	SourceSoldier->ActivateAbility(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.ReloadWeapon")));
 
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);

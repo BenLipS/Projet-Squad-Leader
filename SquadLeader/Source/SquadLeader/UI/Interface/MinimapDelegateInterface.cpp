@@ -10,6 +10,14 @@ void IMinimapDelegateInterface::OnSoldierAddedToTeam(ASoldier* _Soldier)
 	}
 }
 
+void IMinimapDelegateInterface::OnPingAdded(FVector2D PosPingActor)
+{
+	for (auto MinimapInterface : MinimapDelegates)
+	{
+		MinimapInterface->OnPingAdded(PosPingActor);
+	}
+}
+
 void IMinimapDelegateInterface::OnSoldierRemovedFromTeam(ASoldier* _Soldier)
 {
 	for (auto MinimapInterface : MinimapDelegates)
@@ -31,6 +39,30 @@ void IMinimapDelegateInterface::OnUpdatePOIs()
 	for (auto MinimapInterface : MinimapDelegates)
 	{
 		MinimapInterface->OnUpdatePOIs();
+	}
+}
+
+void IMinimapDelegateInterface::OnFullMapDisplayBegin()
+{
+	for (auto MinimapInterface : MinimapDelegates)
+	{
+		MinimapInterface->OnFullMapDisplayBegin();
+	}
+}
+
+void IMinimapDelegateInterface::OnFullMapDisplayEnd()
+{
+	for (auto MinimapInterface : MinimapDelegates)
+	{
+		MinimapInterface->OnFullMapDisplayEnd();
+	}
+}
+
+void IMinimapDelegateInterface::OnPingDestroyed()
+{
+	for (auto MinimapInterface : MinimapDelegates)
+	{
+		MinimapInterface->OnPingDestroyed();
 	}
 }
 

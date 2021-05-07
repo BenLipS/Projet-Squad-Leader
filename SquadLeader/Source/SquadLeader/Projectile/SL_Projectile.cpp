@@ -28,7 +28,7 @@ ASL_Projectile::ASL_Projectile() : CollisionProfileNameMesh{ FName{"BlockAllDyna
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileComp"));
 	ProjectileMovement->UpdatedComponent = CollisionComp;
 
-	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
+	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
 	Mesh->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
 }
 
@@ -62,7 +62,7 @@ void ASL_Projectile::BeginPlay()
 	//	temp->IgnoreActorWhenMoving(GetOwner(), true);
 
 	if (ExplosionDelay > 0.0f)
-		GetWorldTimerManager().SetTimer(TimerExplosion, this, &ASL_Projectile::OnExplode, ExplosionDelay, true);
+		GetWorldTimerManager().SetTimer(TimerExplosion, this, &ASL_Projectile::OnEndOfDelay, ExplosionDelay, true);
 }
 
 void ASL_Projectile::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -72,7 +72,7 @@ void ASL_Projectile::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME(ASL_Projectile, CollisionProfileNameMesh);
 }
 
-UStaticMeshComponent* ASL_Projectile::GetMesh() const
+USkeletalMeshComponent* ASL_Projectile::GetMesh() const
 {
 	return Mesh;
 }
@@ -80,13 +80,19 @@ UStaticMeshComponent* ASL_Projectile::GetMesh() const
 void ASL_Projectile::SetCollisionProfile(const FName& _Name)
 {
 	CollisionProfileNameMesh = _Name;
-	Mesh->SetCollisionProfileName(CollisionProfileNameMesh);
 	CollisionComp->SetCollisionProfileName(CollisionProfileNameMesh);
+	if (Mesh)
+		Mesh->SetCollisionProfileName(CollisionProfileNameMesh);
 }
 
 FName ASL_Projectile::GetCollisionProfile() const
 {
 	return CollisionProfileNameMesh;
+}
+
+void ASL_Projectile::OnEndOfDelay()
+{
+	OnExplode();
 }
 
 void ASL_Projectile::OnExplode()
@@ -105,16 +111,11 @@ void ASL_Projectile::OnExplode()
 		}
 
 	}
-	DeleteProjectile();
+	Destroy();
 }
 
 void ASL_Projectile::OnStick()
 {
-}
-
-void ASL_Projectile::DeleteProjectile()
-{
-	Destroy();
 }
 
 void ASL_Projectile::InitVelocity()

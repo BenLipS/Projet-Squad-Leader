@@ -1,4 +1,5 @@
 #include "GA_Jump.h"
+#include "SquadLeader/Weapons/SL_Weapon.h"
 #include "../../../Soldiers/Soldier.h"
 
 UGA_Jump::UGA_Jump()
@@ -17,12 +18,12 @@ void UGA_Jump::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FG
 		if (!CommitAbility(Handle, ActorInfo, ActivationInfo))
 			EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
 
-		if (ASoldier* soldier = Cast<ASoldier>(ActorInfo->AvatarActor.Get()); soldier)
+		if (ASoldier* Soldier = Cast<ASoldier>(ActorInfo->AvatarActor.Get()); Soldier)
 		{
-			soldier->Jump();
+			Soldier->Jump();
 
 			FGameplayEffectSpecHandle JumpingEffectSpecHandle = MakeOutgoingGameplayEffectSpec(JumpingGameplayEffect, GetAbilityLevel());
-			soldier->GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*JumpingEffectSpecHandle.Data.Get());
+			Soldier->GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*JumpingEffectSpecHandle.Data.Get());
 		}
 	}
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
@@ -33,8 +34,13 @@ bool UGA_Jump::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const
 	if (!Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags))
 		return false;
 
-	const ASoldier* soldier = CastChecked<ASoldier>(ActorInfo->AvatarActor.Get(), ECastCheckedType::NullAllowed);
-	return soldier && soldier->CanJump();
+	const ASoldier* Soldier = Cast<ASoldier>(ActorInfo->AvatarActor.Get());
+
+	if (!Soldier || !Soldier->CanJump())
+		return false;
+	
+	const ASL_Weapon* Weapon = Soldier->GetCurrentWeapon();
+	return !Weapon || !Weapon->IsHeavyWeapon();
 }
 
 void UGA_Jump::InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo)

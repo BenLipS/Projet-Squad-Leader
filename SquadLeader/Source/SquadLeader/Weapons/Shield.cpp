@@ -2,7 +2,7 @@
 #include "SquadLeader/SquadLeader.h"
 #include "SquadLeader/Soldiers/Soldier.h"
 
-AShield::AShield() : Health{ 100.f }, CollisionProfileNameMesh{ FName{"BlockAllDynamic"} }
+AShield::AShield()
 {
 	PrimaryActorTick.bCanEverTick = false;
 	bReplicates = true;

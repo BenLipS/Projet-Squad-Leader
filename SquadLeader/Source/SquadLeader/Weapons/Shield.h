@@ -29,7 +29,7 @@ public:
 protected:
 	// CollisionProfileName of the mesh
 	UPROPERTY(EditDefaultsOnly, Replicated, Category = "Mesh")
-	FName CollisionProfileNameMesh;
+	FName CollisionProfileNameMesh = FName{ "BlockAllDynamic" };
 
 public:
 	void SetCollisionProfile(const FName& _Name);
@@ -38,7 +38,7 @@ public:
 protected:
 	// How much damage the shield can absorb
 	UPROPERTY(EditDefaultsOnly, Replicated, Category = "Stats")
-	float Health;
+	float Health = 100.f;
 
 	void DestroyShield();
 

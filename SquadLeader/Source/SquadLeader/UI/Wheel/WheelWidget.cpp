@@ -77,9 +77,9 @@ const TArray<class UWheelWidgetElement*>& UWheelWidget::GetItems()
 	return ListItems;
 }
 
-void UWheelWidget::AddToViewport(int32 ZOrder)
+void UWheelWidget::AddToViewport()
 {
-	Super::AddToViewport(ZOrder);
+	Super::AddToViewport();
 
 	FVector2D CenterScreen = (UWidgetLayoutLibrary::GetViewportSize(GetWorld()) / 2.0f) * (1.0f / UWidgetLayoutLibrary::GetViewportScale(GetWorld()));
 

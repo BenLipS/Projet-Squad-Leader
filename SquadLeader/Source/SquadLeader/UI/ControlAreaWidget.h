@@ -9,6 +9,7 @@
 
 #include "Components/HorizontalBox.h"
 #include "Components/TextBlock.h"
+#include "Animation/WidgetAnimation.h"
 
 #include "ControlAreaWidget.generated.h"
 
@@ -33,6 +34,12 @@ protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UTextBlock* RightTicketText;
 
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetAnim), Transient)
+	UWidgetAnimation* LeftGlow;
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetAnim), Transient)
+	UWidgetAnimation* RightGlow;
+
 protected:
 	TArray<class UControlAreaInfoWidget*> ControlAreaList;
 
@@ -48,10 +55,14 @@ public:
 	virtual void OnAllyTicketChanged(int newTicket) override;
 	virtual void OnEnnemyTicketChanged(int newTicket) override;
 
-//-----IControlAreaInterface-----
+//-----IMinimapInterface-----
 public:
 	virtual void OnControlAreaAdded(AControlArea* _ControlArea) override;
 	virtual void OnSoldierAddedToTeam(ASoldier* _Soldier) override {}
 	virtual void OnSoldierRemovedFromTeam(ASoldier* _Soldier) override {}
+	virtual void OnPingAdded(FVector2D _Ping) override {}
 	virtual void OnUpdatePOIs() override {}
+	virtual void OnFullMapDisplayBegin() override {}
+	virtual void OnFullMapDisplayEnd() override {}
+	virtual void OnPingDestroyed() override {}
 };

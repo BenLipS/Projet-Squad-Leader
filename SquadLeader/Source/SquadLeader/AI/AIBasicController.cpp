@@ -32,8 +32,7 @@ void AAIBasicController::BeginPlay() {
 void AAIBasicController::Init() {
 	Super::Init();
 
-	m_state = AIBasicState::Patroling;
-	m_old_state = m_state;
+	SetState(AIBasicState::Patroling);
 	blackboard->SetValueAsBool("is_patroling", true);
 	blackboard->SetValueAsVector("VectorLocation", GetPawn()->GetActorLocation());
 }

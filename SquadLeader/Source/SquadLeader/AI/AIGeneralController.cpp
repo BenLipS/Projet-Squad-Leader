@@ -273,6 +273,11 @@ void AAIGeneralController::SetState(AIBasicState _state) noexcept {
 	m_old_state = m_state;
 }
 
+AIBasicState AAIGeneralController::GetState()
+{
+	return m_state;
+}
+
 void AAIGeneralController::AttackingState() {
 	//Attack Comportment
 	blackboard->SetValueAsBool("is_moving", false);

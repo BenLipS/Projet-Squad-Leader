@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "Core.h"
@@ -21,9 +19,6 @@ public:
 	ASoldierPrimarySpawn();
 
 public:
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
 	// for replication purpose
 	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 

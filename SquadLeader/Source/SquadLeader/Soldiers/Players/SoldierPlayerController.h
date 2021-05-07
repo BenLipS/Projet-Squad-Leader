@@ -61,6 +61,7 @@ public:
 
 	void BindMainAbilities();
 	void NotifyMainAbilityCooldown(const float _Cooldown, const ESoldierAbilityInputID _ID);
+	void NotifySoldierHit(const float _Damage, const bool _bIsHeadShot);
 
 //////////////// Movements
 protected:
@@ -112,6 +113,14 @@ public:
 	UFUNCTION(Client, Reliable)
 	void OnSquadMemberMaxShieldChanged(int index, float newMaxShield);
 	void OnSquadMemberMaxShieldChanged_Implementation(int index, float newMaxShield);
+
+	UFUNCTION(Client, Reliable)
+	void OnSquadMemberMissionChanged(int index, AIBasicState newMission);
+	void OnSquadMemberMissionChanged_Implementation(int index, AIBasicState newMission);
+
+	UFUNCTION(Client, Reliable)
+	void OnSquadMemberClassChanged(int index, SoldierClass newMission);
+	void OnSquadMemberClassChanged_Implementation(int index, SoldierClass newClass);
 
 	UFUNCTION(Client, Reliable)
 	void OnTextNotification_Received(const FString& notificationString);
