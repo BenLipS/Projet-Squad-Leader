@@ -24,7 +24,14 @@ enum Type {
 	Soldier UMETA(DisplayName = "Soldier"),
 	ControlArea UMETA(DisplayName = "ControlArea"),
 	Projectile UMETA(DisplayName = "Projectile"),
+	Obstacle UMETA(DisplayName = "Obstacle"),
 	None UMETA(DisplayName = "None"),
+};
+
+UENUM()
+enum TileState {
+	Free UMETA(DisplayName = "Free"),
+	Block UMETA(DisplayName = "Block"),
 };
 
 USTRUCT()
@@ -36,11 +43,30 @@ struct SQUADLEADER_API FGridPackage {
 	int team_value = 0;
 	FVector m_location_on_map;
 	TEnumAsByte<Type> m_type;
+	uint32 ActorID;
+};
+
+USTRUCT()
+struct SQUADLEADER_API FGridPackageObstacle : public FGridPackage {
+	GENERATED_USTRUCT_BODY()
+		FGridPackageObstacle() {}
+};
+
+USTRUCT()
+struct SQUADLEADER_API FInfluenceTeamData {
+	GENERATED_USTRUCT_BODY()
+
+		FInfluenceTeamData() {}
+
+	float InfluenceValue = 0.0f;
+
+	//The list of the different type on the tile(Soldier, COntrolArea, Projectile, etc.)
+	TArray<TEnumAsByte<Type>> Types;
 };
 
 /*
 * This struct represent a Tile-Base for the grid
-* it contains a value, a location and the information of witch team they are of the influence
+* 
 */
 USTRUCT()
 struct SQUADLEADER_API FTileBase {
@@ -50,19 +76,29 @@ struct SQUADLEADER_API FTileBase {
 	FTileBase() {
 	}
 
-	//value of the tile
-	float m_value = 0.f;
 	//the position of the tile in the world
-	FVector m_location;
-	//wich team possess this tile
-	int m_team = -1;
-	//the type of the tile (Soldier, COntrolArea, Projectile, etc.)
-	TEnumAsByte<Type> m_type;
+	FVector Location;
 
-	bool in_update = false;
+	FNeighboor Neighboors;
+
+	TileState State;
+	
+	TMap<uint8, FInfluenceTeamData> InfluenceTeam;
+
+	TArray<uint32> ActorsID; 
 };
 
-
+USTRUCT()
+struct SQUADLEADER_API FActorData {
+	GENERATED_USTRUCT_BODY()
+public:
+	FActorData(){}
+public:
+	uint32 ActorID;
+	TArray<uint32> IndexInfluence;
+public:
+	void AddIndexs(const uint32 index) noexcept { IndexInfluence.Add(index); }
+};
 
 /**
  * This class will create a Grid for the influence Map
@@ -110,7 +146,7 @@ private:
 	/*
 	* Return the Index in the grid of a certain _location
 	*/
-	int FindTileIndex(FVector _location) const noexcept;
+	bool FindTileIndex(const FVector _location, uint32& Index) const noexcept;
 
 	bool FindIndexModifyinTeam1(const FVector2D Location, uint32& Index);
 	bool FindIndexModifyinTeam2(const FVector2D Location, uint32& Index);
@@ -141,21 +177,21 @@ private:
 	* Algorithm recursif
 	* calculate the influence of player on the grid
 	*/
-	void InfluenceSoldier(int index, int start_index, int source_index, int distance) noexcept;
+	void CalculateSoldierInfluence(int index, int start_index, int source_index, int distance, uint32 actorID, uint32 Team, uint16& ActorDataIndex) noexcept;
 
 	/*
 	* Calculate the influence of a control area
 	*/
-	void InfluenceControlArea(int index, int start_index, int source_index, int distance, int value) noexcept;
+	void CalculateControlAreaInfluence(int index, int start_index, int source_index, int distance, uint32 actorID, uint32 Team, uint16& ActorDataIndex) noexcept;
 
-	void InfluenceProjectile(int index, int start_index, int source_index, int distance, int value) noexcept;
+	void CalculateProjectileInfluence(int index, int start_index, int source_index, int distance, uint32 actorID, uint32 Team, uint16& ActorDataIndex) noexcept;
 
 	/*
 	* Calculate the time of execution of a function
 	*/
 	void TimeFunction();
 
-	void UpdateTile(int index, float value, int team, Type type) noexcept;
+	void UpdateTile(int index, float value, int team, Type type, uint32 actorID, uint16& ActorDataIndex) noexcept;
 
 	void AddUpdateTileTeam1(const uint32 index);
 	void AddUpdateTileTeam2(const uint32 index);
@@ -197,16 +233,10 @@ private:
 	* Array of the tile-base for the influence map
 	*/
 	UPROPERTY()
-		TArray<FTileBase> m_influencemap;
+		TArray<FTileBase> Grid;
 
 	//The number of tile in the end
 	int nbr_tile = 0;
-	
-	/*
-	* List the neighboors of a tile
-	*/
-	UPROPERTY()
-		TArray<FNeighboor> m_neighboors;
 
 	/*
 	* Will contains the index of the tile that need
@@ -222,7 +252,50 @@ private:
 	UPROPERTY()
 		TArray<uint32> m_index_team2;
 
-	int value_tick = 0;
-	/*class UMyThreadManager* m_ThreadManager;*/
+public:
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Influence Value")
+		float ProjectileInfluenceValue = 0.9f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Influence Value")
+		int ProjectileAreaInfluence = 3;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Influence Value")
+		float ControlAreaInfluenceValue = 0.5f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Influence Value")
+		int ControlAreaAreaInfluence = 10;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Influence Value")
+		float CharacterInfluenceValue = 0.3f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Influence Value")
+		int CharacterAreaInfluence = 8;
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Update Tick")
+		int TickUpdate = 5;
+
+	UPROPERTY()
+		int CurrentTick = 5;
+
+protected:
+
+	UPROPERTY()
+		TArray<FActorData> ActorsData;
+
+	bool ActorAlreadyExist(const uint32 ActorID, uint16 &Index) const;
+
+	void DeleteInfluence(const uint16 IndexActor, const uint8 Team) noexcept;
+
+	void UpdateControlArea(const uint16 IndexControlArea, const uint8 Team) noexcept;
+	void UpdateSoldier(const uint16 IndexSoldier, const uint8 Team, const uint32 SoldierID) noexcept;
+
+	void SoldierInfluence(FGridPackage Message, uint32 IndexTile, uint16 IndexActor);
+	void ControlAreaInfluence(FGridPackage Message, uint32 IndexTile, uint16 IndexActor);
+	void ProjectileInfluence(FGridPackage Message, uint32 IndexTile, uint16 IndexActor);
+	void ObstacleInfluence(FGridPackage Message, uint32 IndexTile, uint16 IndexActor);
+
+public:
+	void EraseObstacleInfluence(FGridPackage Message);
 };

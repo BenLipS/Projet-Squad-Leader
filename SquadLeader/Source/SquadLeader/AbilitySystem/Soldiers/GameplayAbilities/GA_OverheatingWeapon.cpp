@@ -1,6 +1,8 @@
 #include "GA_OverheatingWeapon.h"
 #include "../../../Soldiers/Soldier.h"
 #include "Abilities/Tasks/AbilityTask_WaitDelay.h"
+#include "Kismet/GameplayStatics.h"
+#include "Particles/ParticleSystemComponent.h"
 
 UGA_OverheatingWeapon::UGA_OverheatingWeapon() : TimeOverHeat { 10.f }, TimeBetweenShootMultiplier { 0.333f }
 {
@@ -30,6 +32,12 @@ void UGA_OverheatingWeapon::ActivateAbility(const FGameplayAbilitySpecHandle _Ha
 	SourceWeapon->SetHasInfiniteAmmo(true);
 	SourceWeapon->SetTimeBetweenShots(SourceWeapon->GetTimeBetweenShots() * TimeBetweenShootMultiplier);
 
+	//Spawn Effect
+	FActorSpawnParameters SpawnInfo;
+	SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	OverHeatFX = GetWorld()->SpawnActor<AActor>(OverHeatFXClass, SourceSoldier->GetLocation(), { 0,0,0 }, SpawnInfo);
+	OverHeatFX->AttachToActor(SourceSoldier, FAttachmentTransformRules::KeepWorldTransform);
+
 	UAbilityTask_WaitDelay* TaskWaitDelay = UAbilityTask_WaitDelay::WaitDelay(this, TimeOverHeat);
 	TaskWaitDelay->OnFinish.AddDynamic(this, &UGA_OverheatingWeapon::EndOverHeat);
 	TaskWaitDelay->ReadyForActivation();
@@ -40,7 +48,8 @@ void UGA_OverheatingWeapon::ActivateAbility(const FGameplayAbilitySpecHandle _Ha
 
 void UGA_OverheatingWeapon::EndOverHeat()
 {
-	CancelAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true);
+	OverHeatFX->Destroy();
+	CancelAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, false);
 }
 
 void UGA_OverheatingWeapon::CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateCancelAbility)

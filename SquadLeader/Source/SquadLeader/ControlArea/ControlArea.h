@@ -105,8 +105,9 @@ protected:
 protected:
 	UPROPERTY(EditInstanceOnly, Category = "InfluenceMap")
 		int InfluenceRadius = 10;
+
 public:
 
-	UFUNCTION(Category = "InfluenceMap")
+	UFUNCTION()
 		int GetInfluenceRadius() const noexcept { return InfluenceRadius; }
 };

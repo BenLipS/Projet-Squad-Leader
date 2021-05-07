@@ -24,6 +24,12 @@ void UGA_AreaEffectFromSelf::ActivateAbility(const FGameplayAbilitySpecHandle Ha
 			AreaEffect->bDebugTrace = bDebugTraceAreaEffect;
 #endif
 			AreaEffect->FinishSpawning(FTransform{ AreaEffectOwner->GetActorRotation(), AreaEffectOwner->GetActorLocation() });
+
+			//Spawn Effect
+			FActorSpawnParameters SpawnInfo;
+			SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+			AreaFX = GetWorld()->SpawnActor<AActor>(AreaFXClass, Cast<ASoldier>(ActorInfo->AvatarActor)->GetLocation(), { 0,0,0 }, SpawnInfo);
+			if (DoesEffectFollowActor)AreaFX->AttachToActor(Cast<ASoldier>(ActorInfo->AvatarActor), FAttachmentTransformRules::KeepWorldTransform);
 		}
 		CancelAbility(Handle, ActorInfo, ActivationInfo, true);
 	}
