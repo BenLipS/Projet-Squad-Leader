@@ -24,6 +24,7 @@ enum Type {
 	Soldier UMETA(DisplayName = "Soldier"),
 	ControlArea UMETA(DisplayName = "ControlArea"),
 	Projectile UMETA(DisplayName = "Projectile"),
+	Obstacle UMETA(DisplayName = "Obstacle"),
 	None UMETA(DisplayName = "None"),
 };
 

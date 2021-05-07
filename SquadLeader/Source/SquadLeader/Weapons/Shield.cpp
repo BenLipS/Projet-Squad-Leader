@@ -19,6 +19,8 @@ void AShield::BeginPlay()
 	SetTeam(SourceSoldier ? SourceSoldier->GetTeam() : nullptr);
 
 	SetCollisionProfile(CollisionProfileNameMesh);
+
+	CreateInfluence();
 }
 
 void AShield::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -46,9 +48,10 @@ FName AShield::GetCollisionProfile() const
 	return CollisionProfileNameMesh;
 }
 
-void AShield::DestroyShield()
+void AShield::Destroyed()
 {
-	Destroy();
+	EraseInfluence();
+	Super::Destroyed();
 }
 
 void AShield::SetHealth(const float _Health)
@@ -62,8 +65,8 @@ void AShield::ApplyDamages(const float _Damage)
 		ServerApplyDamages(_Damage);
 
 	Health -= _Damage;
-	if (Health < 0.f)
-		DestroyShield();
+	if (Health <= 0.f)
+		Destroy();
 }
 
 void AShield::ServerApplyDamages_Implementation(const float _Damage)
@@ -88,4 +91,12 @@ bool AShield::SetTeam(ASoldierTeam* _Team)
 
 	Team = _Team;
 	return true;
+}
+
+void AShield::CreateInfluence() {
+	GEngine->AddOnScreenDebugMessage(10, 1.0f, FColor::Purple, TEXT("Send Influence"));
+}
+
+void AShield::EraseInfluence() {
+	GEngine->AddOnScreenDebugMessage(20, 1.0f, FColor::Purple, TEXT("Erase Influence"));
 }
