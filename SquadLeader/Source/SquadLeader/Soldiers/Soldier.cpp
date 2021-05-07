@@ -1000,8 +1000,8 @@ void ASoldier::LevelUp()
 {
 	AttributeSet->LevelUp();
 
-	if (LevelUpFX && (GetLocalRole() == ROLE_Authority))
-		ClientSpawnLevelUpParticle();
+	//if (LevelUpFX && (GetLocalRole() == ROLE_Authority))
+	//	ClientSpawnLevelUpParticle();
 }
 
 void ASoldier::Die()

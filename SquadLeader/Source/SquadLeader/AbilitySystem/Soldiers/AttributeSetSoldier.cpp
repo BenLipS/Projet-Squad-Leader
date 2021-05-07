@@ -145,6 +145,8 @@ void UAttributeSetSoldier::LevelUp()
 		// Grant new attribute values
 		FGameplayEffectSpecHandle Handle = ASC->MakeOutgoingSpec(Soldier->GetStatAttributeEffects(), GetCharacterLevel(), ASC->MakeEffectContext());
 		ASC->ApplyGameplayEffectSpecToSelf(*Handle.Data.Get());
+
+		Soldier->LevelUpAnimation();
 	}
 }
 
