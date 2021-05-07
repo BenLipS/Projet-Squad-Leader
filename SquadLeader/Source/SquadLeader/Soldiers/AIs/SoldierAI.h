@@ -134,6 +134,8 @@ public:
 
 	void OnBlurredVisionFromJammer(const bool _IsBlurred) override;
 
+	int StunCount = 0;
+
 	virtual SoldierClass GetClass() override;
 
 	//-----Delegate-----	
@@ -154,4 +156,11 @@ public:
 	virtual void Respawn() override;
 	virtual void OnReceiveDamage(const FVector& _ImpactPoint, const FVector& _SourcePoint) override;
 	virtual FVector GetRespawnPoint() override;
+	//Effect
+public:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Animation|Particles")
+		TSubclassOf<AActor> StunFXClass;
+
+	UPROPERTY()
+		AActor* StunFX;
 };

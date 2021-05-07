@@ -87,6 +87,9 @@ void ASoldier::BeginPlay()
 		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 		AnimInstance->Montage_SetEndDelegate(StartGame_SoldierMontageEndedDelegate, StartGameMontage);
 	}
+
+	LastPosition = this->GetActorLocation();
+	CurrentPosition = this->GetActorLocation();
 }
 
 void ASoldier::PostInitializeComponents()
@@ -112,29 +115,26 @@ void ASoldier::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifeti
 void ASoldier::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	/*ASquadLeaderGameModeBase* GM = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
+	CurrentPosition = this->GetActorLocation();
 
-	if (GetTeam() && GM && GM->InfluenceMap) {
-		FGridPackage m_package;
-		m_package.m_location_on_map = GetActorLocation();
+	if (FVector::Dist(LastPosition, CurrentPosition) >= 500.f) {
+		LastPosition = CurrentPosition;
+		ASquadLeaderGameModeBase* GM = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
 
-		ASoldierTeam* team_ = GetTeam();
-		if (team_) {
-			switch (team_->Id) {
-			case 1:
-				m_package.team_value = 1;
-				break;
-			case 2:
-				m_package.team_value = 2;
-				break;
-			default:
-				break;
-			}
+		//Envoi des informations à la carte d'influence
+		if (GetTeam() && GM && GM->InfluenceMap) {
+			FGridPackage m_package;
+			m_package.m_location_on_map = CurrentPosition;
+
+			ASoldierTeam* team_ = GetTeam();
+			if (team_)
+				m_package.team_value = team_->Id;
+
+			m_package.m_type = Type::Soldier;
+			m_package.ActorID = this->GetUniqueID();
+			GM->InfluenceMap->ReceivedMessage(m_package);
 		}
-
-		m_package.m_type = Type::Soldier;
-		GM->InfluenceMap->ReceivedMessage(m_package);
-	}*/
+	}
 }
 
 void ASoldier::InitCameras()
@@ -1000,8 +1000,8 @@ void ASoldier::LevelUp()
 {
 	AttributeSet->LevelUp();
 
-	if (LevelUpFX && (GetLocalRole() == ROLE_Authority))
-		ClientSpawnLevelUpParticle();
+	//if (LevelUpFX && (GetLocalRole() == ROLE_Authority))
+	//	ClientSpawnLevelUpParticle();
 }
 
 void ASoldier::Die()

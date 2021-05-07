@@ -164,9 +164,28 @@ void ASoldierAI::OnBlurredVisionFromJammer(const bool _IsBlurred)
 {
 	if (auto AIController = Cast<AAIGeneralController>(GetController()); AIController) {
 		AIController->StopCurrentBehavior = true;
-		AIController->get_blackboard()->SetValueAsBool("IsStun", _IsBlurred);
-		if (_IsBlurred)LockControls();
-		else UnLockControls();
+		if (_IsBlurred) {
+			StunCount++;
+		}
+		else { 
+			StunCount--;
+		}
+
+		if (StunCount != 0) {
+			LockControls();
+			AIController->get_blackboard()->SetValueAsBool("IsStun", true);
+			if (!StunFX) {
+				FActorSpawnParameters SpawnInfo;
+				SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+				StunFX = GetWorld()->SpawnActor<AActor>(StunFXClass, GetLocation(), { 0,0,0 }, SpawnInfo);
+				StunFX->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
+			}
+		}
+		else {
+			UnLockControls();
+			AIController->get_blackboard()->SetValueAsBool("IsStun", false);
+			if (StunFX)StunFX->Destroy();
+		}
 	}
 }
 

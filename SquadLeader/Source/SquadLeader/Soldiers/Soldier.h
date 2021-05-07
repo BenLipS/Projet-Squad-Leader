@@ -269,6 +269,11 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void ShakeCamera(TSubclassOf<UMatineeCameraShake> _CameraShakeClass);
 
+
+	//LevelUp Animation
+	UFUNCTION(BlueprintImplementableEvent)
+	void LevelUpAnimation();
+
 protected:
 	UPROPERTY(BlueprintReadOnly, Replicated)
 	FRotator SyncControlRotation;
@@ -613,4 +618,11 @@ public:
 	// Projectile forwardVector to launch from
 	UFUNCTION()
 	virtual FVector GetLookingDirection();
+
+protected:
+	UPROPERTY()
+		FVector LastPosition; 
+
+	UPROPERTY()
+		FVector CurrentPosition;
 };

@@ -29,4 +29,16 @@ protected:
 public:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Collision")
 	bool bDebugTraceAreaEffect = false;
+
+//Effect
+public:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Animation|Particles")
+	TSubclassOf<AActor> AreaFXClass;
+
+	UPROPERTY()
+	AActor* AreaFX;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Animation|Particles")
+	bool DoesEffectFollowActor = false;
+		
 };
