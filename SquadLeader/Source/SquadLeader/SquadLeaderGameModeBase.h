@@ -21,7 +21,7 @@ public:
 	virtual void StartPlay() override;
 	ASquadLeaderGameModeBase();
 
-	virtual void PreLogin(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage) override;
+	// virtual void PreLogin(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage) override;
 	virtual void Logout(AController* Exiting) override;
 
 protected:
@@ -29,8 +29,6 @@ protected:
 	void FetchGameParam();
 
 protected:
-	UPROPERTY(BlueprintReadOnly, Category = "GameData")
-	int NbMaxPlayer = 6;
 	UPROPERTY(BlueprintReadOnly, Category = "GameData")
 	float Weather = 0;
 	UPROPERTY(BlueprintReadOnly, Category = "GameData")
