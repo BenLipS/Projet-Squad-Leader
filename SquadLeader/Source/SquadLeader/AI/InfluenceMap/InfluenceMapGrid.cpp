@@ -552,15 +552,14 @@ void AInfluenceMapGrid::ObstacleInfluence(FGridPackageObstacle Message, uint32 I
 	uint32 LeftIndex = -1;
 	uint32 RightIndex = -1;
 
+	for (FVector Location : Message.Locations) {
+		if (FindTileIndex(Location, LeftIndex)) {
+			Grid[LeftIndex].State = TileState::Block;
+			ActorsData[IndexActor].AddIndexs(LeftIndex);
+		}
+	}
 
-	if (FindTileIndex(Message.LeftLocation, LeftIndex)) {
-		Grid[LeftIndex].State = TileState::Block;
-		ActorsData[IndexActor].AddIndexs(LeftIndex);
-	}
-	if (FindTileIndex(Message.RightLocation, RightIndex)) {
-		Grid[RightIndex].State = TileState::Block;
-		ActorsData[IndexActor].AddIndexs(RightIndex);
-	}
+	
 }
 
 void AInfluenceMapGrid::EraseObstacleInfluence(FGridPackageObstacle Message) {

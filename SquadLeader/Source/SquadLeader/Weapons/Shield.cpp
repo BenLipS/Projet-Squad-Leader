@@ -100,11 +100,27 @@ void AShield::CreateInfluence() {
 	const float Y = this->GetActorTransform().GetScale3D().Y * 50.f;
 	const FQuat Rot = this->GetActorTransform().GetRotation();
 	const FVector CenterLocation = this->GetActorLocation();
-	FVector LeftLocation = FVector(CenterLocation.X, CenterLocation.Y + Y, CenterLocation.Z);
-	FVector RightLocation = FVector(CenterLocation.X, CenterLocation.Y - Y, CenterLocation.Z);
 
-	const FVector LeftLocationRotation = CenterLocation + Rot.RotateVector(CenterLocation - LeftLocation);
-	const FVector RightLocationRotation = CenterLocation + Rot.RotateVector(CenterLocation - RightLocation);
+	TArray<FVector> Locations; 
+	TArray<FVector> LocationsRotation;
+	//Right Side
+	float Ybis = CenterLocation.Y + 200.f;
+	while (Ybis <= CenterLocation.Y + Y) {
+		Locations.Add(FVector{ CenterLocation.X, Ybis, CenterLocation.Z });
+		Ybis += 200.f;
+	}
+
+	//Left Side
+	Ybis = CenterLocation.Y - 200.f;
+	while (Ybis >= CenterLocation.Y - Y) {
+		Locations.Add(FVector{ CenterLocation.X, Ybis, CenterLocation.Z });
+		Ybis -= 200.f;
+	}
+
+	for (size_t i = 0; i != Locations.Num(); ++i) {
+		LocationsRotation.Add(CenterLocation + Rot.RotateVector(CenterLocation - Locations[i]));
+	}
+
 
 	ASquadLeaderGameModeBase* GameMode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
 	if (GetTeam() && GameMode && GameMode->InfluenceMap) {
@@ -113,11 +129,9 @@ void AShield::CreateInfluence() {
 		Package.team_value = GetTeam()->Id;
 		Package.m_type = Type::Obstacle;
 		Package.ActorID = this->GetUniqueID();
-		Package.LeftLocation = LeftLocationRotation;
-		Package.RightLocation = RightLocationRotation;
+		Package.Locations = LocationsRotation;
 		GameMode->InfluenceMap->ReceivedMessage(Package);
 	}
-
 }
 
 void AShield::EraseInfluence() {

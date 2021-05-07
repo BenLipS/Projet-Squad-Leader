@@ -51,8 +51,7 @@ struct SQUADLEADER_API FGridPackageObstacle : public FGridPackage {
 	GENERATED_USTRUCT_BODY()
 		FGridPackageObstacle() {}
 
-	FVector LeftLocation;
-	FVector RightLocation;
+	TArray<FVector> Locations;
 };
 
 USTRUCT()
