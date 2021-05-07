@@ -21,6 +21,11 @@ ASoldierPlayerController::ASoldierPlayerController()
 	SquadManagerData = FAISquadManagerData();
 }
 
+UClass* ASoldierPlayerController::GetPlayerPawnClass()
+{
+	return GetPlayerState<ASoldierPlayerState>()->PlayerParam.GetDefaultObject()->GetPlayerClass();
+}
+
 void ASoldierPlayerController::BeginPlay()
 {
 	Super::BeginPlay();

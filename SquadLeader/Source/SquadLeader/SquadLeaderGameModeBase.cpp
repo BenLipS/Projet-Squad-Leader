@@ -80,6 +80,18 @@ void ASquadLeaderGameModeBase::Logout(AController* Exiting)
 }
 
 
+UClass* ASquadLeaderGameModeBase::GetDefaultPawnClassForController(AController* InController)
+{
+	/* Override Functionality to get Pawn from PlayerController */
+	if (ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(InController); PC)
+	{
+		return PC->GetPlayerPawnClass();
+	}
+
+	/* If we don't get the right Controller, use the Default Pawn */
+	return DefaultPawnClass;
+}
+
 void ASquadLeaderGameModeBase::ChangeGameState() {
 	// set parameters for GameState's spawn
 	FActorSpawnParameters SpawnInfo;

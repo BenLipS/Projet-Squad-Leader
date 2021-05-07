@@ -8,6 +8,7 @@
 #include "../../AbilitySystem/Soldiers/AttributeSetSoldier.h"
 #include "../../AbilitySystem/Soldiers/AbilitySystemSoldier.h"
 #include "../Interface/Teamable.h"
+#include "../../MainMenu/PlayerParam/PlayerParam.h"
 #include "SoldierPlayerState.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FFloatAttributeChanged, float, newValue);
@@ -90,4 +91,7 @@ public:
 public:
 	UPROPERTY(Replicated)
 	AKillStats* PersonalRecord;
+
+	UPROPERTY(Replicated)
+	TSubclassOf<APlayerParam> PlayerParam;
 };

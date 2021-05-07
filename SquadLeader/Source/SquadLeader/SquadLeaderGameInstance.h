@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
 #include "MainMenu/PlayerData/PlayerData.h"
+#include "MainMenu/PlayerParam/PlayerParam.h"
 #include "MainMenu/GameParam/GameParam.h"
 #include "Runtime/Online/HTTP/Public/Http.h"
 #include "Soldiers/Players/KillStats.h"
@@ -87,6 +88,10 @@ private:
 public:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf <UGameParam> GameParam;
+
+	UPROPERTY(EditDefaultsOnly)
+		TSubclassOf <APlayerParam> PlayerParam;
+
 private:
 	FString GameID = "";  // only define if a game is create
 };

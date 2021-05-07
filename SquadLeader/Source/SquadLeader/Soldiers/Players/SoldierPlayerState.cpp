@@ -38,6 +38,7 @@ void ASoldierPlayerState::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ASoldierPlayerState, PersonalRecord);
+	DOREPLIFETIME(ASoldierPlayerState, PlayerParam);
 }
 
 ASoldierTeam* ASoldierPlayerState::GetTeam()
