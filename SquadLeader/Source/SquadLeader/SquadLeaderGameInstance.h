@@ -49,7 +49,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void JoinGame(FString IPAdress);
 	UFUNCTION(BlueprintCallable)
-		void ProfileInfo(class ASL_HUD* HUD);
+		void ProfileInfo(TScriptInterface<class IStatInfoInterface> HUD);
 
 	UFUNCTION(BlueprintCallable)
 		bool const GetNetworkStatus() { return OnlineStatus; }

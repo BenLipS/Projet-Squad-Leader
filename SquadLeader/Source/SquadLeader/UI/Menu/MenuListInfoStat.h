@@ -10,20 +10,17 @@
 #include "MenuListInfoStat.generated.h"
 
 UCLASS()
-class SQUADLEADER_API UMenuListInfoStat : public UMenuListInfo
+class SQUADLEADER_API UMenuListInfoStat : public UMenuListInfo, public IStatInfoInterface
 {
 	GENERATED_BODY()
-//
-//protected:
-//	UPROPERTY(EditAnywhere)
-//	TSubclassOf<class UMenuListInfoItemWidget> ClassItem;
-//
-////-----UMenuItemWidget-----
-//protected:
-//	virtual void OnItemAddedToLayout_Implementation() override;
-//	
-////-----IStatInfoInterface-----
-//public:
-//	virtual void OnStatInfoReceived(FString Key, FString Value) override;
-//	virtual void OnStatsInfoReceived(TMap<FString, FString> statsIn) override;
+
+//-----UMenuItemWidget-----
+protected:
+	virtual void OnItemAddedToLayout_Implementation() override;
+
+//-----IStatInfoInterface-----
+public:
+	virtual void OnStatInfoReceived(FString Key, FString Value) override;
+	virtual void OnStatsInfoReceived(TMap<FString, FString> statsIn) override;
+	virtual void OnStatsInfoCleanOrder() override;
 };

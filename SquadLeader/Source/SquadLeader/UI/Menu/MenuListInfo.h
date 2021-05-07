@@ -9,30 +9,35 @@
 
 #include "MenuListInfo.generated.h"
 
+class UMenuListInfoItemWidget;
+
 UCLASS()
-class SQUADLEADER_API UMenuListInfo : public UMenuItemWidget, public IStatInfoInterface
+class SQUADLEADER_API UMenuListInfo : public UMenuItemWidget
 {
+	friend class UMenuListInfoItemWidget;
 	GENERATED_BODY()
 
 protected:
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<class UMenuListInfoItemWidget> ItemClass;
+	bool bAreItemsClickable = false;
 
-	/*UPROPERTY(BlueprintReadOnly)
-	TArray<class UMenuListInfoItemWidget*> Items;*/
+	UPROPERTY()
+	UMenuListInfoItemWidget* ItemSelected = nullptr;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UMenuListInfoItemWidget> ItemClass;
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UScrollBox* ListEntry;
 
-	void AddEntryToList(class UMenuListInfoItemWidget* Entry);
+
+	UFUNCTION(BlueprintCallable)
+	void AddEntryToList(UMenuListInfoItemWidget* Entry);
+
+	UFUNCTION(BlueprintCallable)
+	UMenuListInfoItemWidget* GetSelectedItem();
 
 	//-----UMenuItemWidget-----
 protected:
-	virtual void OnItemAddedToLayout_Implementation() override;
-
-	//-----IStatInfoInterface-----
-public:
-	virtual void OnStatInfoReceived(FString Key, FString Value) override;
-	virtual void OnStatsInfoReceived(TMap<FString, FString> statsIn) override;
-	virtual void OnStatsInfoCleanOrder() override;
+//	virtual void OnItemAddedToLayout_Implementation() override;
 };

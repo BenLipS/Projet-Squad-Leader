@@ -3,6 +3,8 @@
 
 #include "MenuListInfoItemWidget.h"
 
+#include "MenuListInfo.h"
+
 void UMenuListInfoItemWidget::SetDatas(FString left, FString right)
 {
 	if (LeftData && RightData)
@@ -61,5 +63,21 @@ FString UMenuListInfoItemWidget::GetRightData()
 	else
 	{
 		return FString();
+	}
+}
+
+void UMenuListInfoItemWidget::OnItemSelect()
+{
+	if (IsValid(OwnerList) && OwnerList->ItemSelected != this)
+	{
+		OwnerList->ItemSelected = this;
+	}
+}
+
+void UMenuListInfoItemWidget::OnItemDeselect()
+{
+	if (IsValid(OwnerList) && OwnerList->ItemSelected == this)
+	{
+		OwnerList->ItemSelected = nullptr;
 	}
 }

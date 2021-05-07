@@ -3,15 +3,29 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UI/SL_HUD.h"
+
+#include "SL_HUD.h"
+#include "Interface/StatInfoDelegateInterface.h"
+
 #include "MainMenuHUD.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class SQUADLEADER_API AMainMenuHUD : public ASL_HUD
+class SQUADLEADER_API AMainMenuHUD : public ASL_HUD,
+	public IStatInfoDelegateInterface
 {
 	GENERATED_BODY()
+
+protected:
+	virtual void BeginPlay() override;
 	
+public:
+	void GetProfileData();
+
+//-----IStatInfoDelegateInterface-----
+public:
+	//void OnStatInfoReceived(FString Key, FString Value) override;
+	//void OnStatsInfoReceived(TMap<FString, FString> statsIn) override;
 };

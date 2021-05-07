@@ -3,7 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UI/SL_HUD.h"
+
+#include "SL_HUD.h"
+
+
+
 #include "HUBHUD.generated.h"
 
 /**

@@ -11,12 +11,12 @@
 #include "MenuWidget.generated.h"
 
 UCLASS()
-class SQUADLEADER_API UMenuWidget : public USL_UserWidget, public IStatInfoDelegateInterface
+class SQUADLEADER_API UMenuWidget : public USL_UserWidget
 {
 	GENERATED_BODY()
 
 public:
-	virtual void SetupDelegateToObject_Implementation(UObject* ObjectIn);
+	//virtual void SetupDelegateToObject_Implementation(UObject* ObjectIn);
 
 protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
@@ -37,9 +37,4 @@ protected:
 public:
 	UFUNCTION(BlueprintCallable)
 	void SetCurrentLayout(FString layoutID);
-
-//-----IStatInfoInterface-----
-public:
-//	virtual void OnStatInfoReceived(FString Key, FString Value) override;
-//	virtual void OnStatsInfoReceived(TMap<FString, FString> statsIn) override;
 };

@@ -8,46 +8,15 @@
 #include "../Interface/StatInfoDelegateInterface.h"
 #include "MenuLayoutWidget.h"
 #include "MenuWidget.h"
+#include "MenuListInfoItemWidget.h"
 
 void UMenuListInfo::AddEntryToList(UMenuListInfoItemWidget* Entry)
 {
 	ListEntry->AddChild(Entry);
+	Entry->OwnerList = this;
 }
 
-void UMenuListInfo::OnItemAddedToLayout_Implementation()
+UMenuListInfoItemWidget* UMenuListInfo::GetSelectedItem()
 {
-	if (MenuLayout)
-	{
-		if (UMenuWidget* Menu = MenuLayout->GetMenu(); Menu)
-		{
-			if (IStatInfoDelegateInterface* MenuStat = Cast<IStatInfoDelegateInterface>(Menu); MenuStat)
-			{
-				MenuStat->AddStatInfoDelegate(this);
-			}
-		}
-	}
-}
-
-void UMenuListInfo::OnStatInfoReceived(FString Key, FString Value)
-{
-	if (ItemClass)
-	{
-		UMenuListInfoItemWidget* newItem = WidgetTree->ConstructWidget<UMenuListInfoItemWidget>(ItemClass);
-		newItem->SetLeftData(Key);
-		newItem->SetRightData(Value);
-		AddEntryToList(newItem);
-	}
-}
-
-void UMenuListInfo::OnStatsInfoReceived(TMap<FString, FString> statsIn)
-{
-	for (auto StatIn : statsIn)
-	{
-		OnStatInfoReceived(StatIn.Key, StatIn.Value);
-	}
-}
-
-void UMenuListInfo::OnStatsInfoCleanOrder()
-{
-	while (ListEntry->RemoveChildAt(0));
+	return ItemSelected;
 }
