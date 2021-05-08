@@ -137,8 +137,8 @@ public:
 	void OnEnnemyTicket_Received_Implementation(int newTicket);
 
 	UFUNCTION(Client, Reliable)
-	void OnGameEnd(const int MatchResult, float GameDuration);  // -1 for a loss and 1 for a victory
-	void OnGameEnd_Implementation(const int MatchResult, float GameDuration);
+	void OnGameEnd(const int MatchResult, float GameDuration, int NbKillAI, int NbKillPlayer, int NbDeathByAI, int NbDeathByPlayer);  // -1 for a loss and 1 for a victory
+	void OnGameEnd_Implementation(const int MatchResult, float GameDuration, int NbKillAI, int NbKillPlayer, int NbDeathByAI, int NbDeathByPlayer);
 
 	UFUNCTION(Server, Reliable)
 	void OnOrderGiven(MissionType Order, FVector Pos);

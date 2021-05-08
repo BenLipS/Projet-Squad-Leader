@@ -333,7 +333,7 @@ void ASoldierPlayerController::OnEnnemyTicket_Received_Implementation(int newTic
 	}
 }
 
-void ASoldierPlayerController::OnGameEnd_Implementation(const int MatchResult, float GameDuration)
+void ASoldierPlayerController::OnGameEnd_Implementation(const int MatchResult, float GameDuration, int NbKillAI, int NbKillPlayer, int NbDeathByAI, int NbDeathByPlayer)
 {
 	if (auto HUD = GetHUD<IGameEndInterface>(); HUD)
 	{
@@ -342,7 +342,9 @@ void ASoldierPlayerController::OnGameEnd_Implementation(const int MatchResult, f
 	}
 
 	auto XP = GetPawn<ASoldier>()->GetEXP();
-	GetGameInstance<USquadLeaderGameInstance>()->UpdateNetworkStatus(MatchResult, GameDuration, XP, GetPlayerState<ASoldierPlayerState>()->PersonalRecord);  // notify the server
+	
+	GetGameInstance<USquadLeaderGameInstance>()->UpdateNetworkStatus(MatchResult, GameDuration, XP,
+		NbKillAI, NbKillPlayer, NbDeathByAI, NbDeathByPlayer);  // notify the server
 }
 
 void ASoldierPlayerController::OnOrderGiven_Implementation(MissionType Order, FVector Pos)

@@ -89,7 +89,6 @@ public:
 	void BroadCastAllDatas();
 
 public:
-	UPROPERTY(Replicated)
 	AKillStats* PersonalRecord;
 
 	UPROPERTY(Replicated)

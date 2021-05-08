@@ -199,11 +199,17 @@ void ASquadLeaderGameModeBase::EndGame(ASoldierTeam* WinningTeam)
 	{
 		if (auto PC = Cast<ASoldierPlayerController>(PCIterator->Get()); PC)
 		{
-			if (PC->GetTeam() == WinningTeam) {
-				PC->OnGameEnd(1, GetGameTimeSinceCreation());
-			}
-			else {
-				PC->OnGameEnd(-1, GetGameTimeSinceCreation());
+			if (AKillStats* killRecord = PC->GetPlayerState<ASoldierPlayerState>()->PersonalRecord; killRecord) {
+				if (PC->GetTeam() == WinningTeam) {
+					PC->OnGameEnd(1, GetGameTimeSinceCreation(),
+						killRecord->NbKillAI, killRecord->NbKillPlayer,
+						killRecord->NbDeathByAI, killRecord->NbDeathByPlayer);
+				}
+				else {
+					PC->OnGameEnd(-1, GetGameTimeSinceCreation(),
+						killRecord->NbKillAI, killRecord->NbKillPlayer,
+						killRecord->NbDeathByAI, killRecord->NbDeathByPlayer);
+				}
 			}
 		}
 	}
