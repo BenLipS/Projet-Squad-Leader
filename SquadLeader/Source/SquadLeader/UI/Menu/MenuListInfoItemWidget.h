@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "../SL_UserWidget.h"
 #include "Components/TextBlock.h"
+#include "Components/Image.h"
 #include "Containers/Map.h"
 
 #include "MenuListInfoItemWidget.generated.h"
@@ -26,6 +27,9 @@ protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UTextBlock* RightData;
 
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UImage* Background;
+
 	UMenuListInfo* OwnerList;
 	
 public:
@@ -43,8 +47,8 @@ public:
 
 protected:
 	UFUNCTION(BlueprintCallable)
-	void OnItemSelect();
+	virtual void OnItemSelect();
 
 	UFUNCTION(BlueprintCallable)
-	void OnItemDeselect();
+	virtual void OnItemDeselect();
 };

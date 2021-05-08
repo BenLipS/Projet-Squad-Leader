@@ -13,13 +13,13 @@ void UMenuListInfoStat::OnItemAddedToLayout_Implementation()
 {
 	if (MenuLayout)
 	{
-		/*if (UMenuWidget* Menu = MenuLayout->GetMenu(); Menu)
+		if (UMenuWidget* Menu = MenuLayout->GetMenu(); Menu)
 		{
 			if (IStatInfoDelegateInterface* MenuStat = Cast<IStatInfoDelegateInterface>(Menu); MenuStat)
 			{
 				MenuStat->AddStatInfoDelegate(this);
 			}
-		}*/
+		}
 	}
 }
 

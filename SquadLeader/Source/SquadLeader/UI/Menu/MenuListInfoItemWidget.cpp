@@ -70,6 +70,10 @@ void UMenuListInfoItemWidget::OnItemSelect()
 {
 	if (IsValid(OwnerList) && OwnerList->ItemSelected != this)
 	{
+		if (IsValid(OwnerList->ItemSelected))
+		{
+			OwnerList->ItemSelected->OnItemDeselect();
+		}
 		OwnerList->ItemSelected = this;
 	}
 }

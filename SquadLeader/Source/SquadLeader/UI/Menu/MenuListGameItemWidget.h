@@ -18,5 +18,11 @@ protected:
 
 public:
 	void SetIPAdress(FString AdressIn);
+
+	UFUNCTION(BlueprintCallable)
 	FString GetIPAdress();
+
+protected:
+	virtual void OnItemSelect() override;
+	virtual void OnItemDeselect() override;
 };

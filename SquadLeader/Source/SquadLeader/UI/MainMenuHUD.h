@@ -6,6 +6,7 @@
 
 #include "SL_HUD.h"
 #include "Interface/StatInfoDelegateInterface.h"
+#include "Interface/MenuGameInfoDelegateInterface.h"
 
 #include "MainMenuHUD.generated.h"
 
@@ -14,7 +15,8 @@
  */
 UCLASS()
 class SQUADLEADER_API AMainMenuHUD : public ASL_HUD,
-	public IStatInfoDelegateInterface
+	public IStatInfoDelegateInterface,
+	public IMenuGameInfoDelegateInterface
 {
 	GENERATED_BODY()
 

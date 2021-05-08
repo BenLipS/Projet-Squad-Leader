@@ -25,6 +25,7 @@ public:
 	//	virtual void OnStatsInfoReceived(TMap<FString, FString> statsIn) override;
 
 	//-----MenuGameInfoDelegateInterface-----
+public:
 	//virtual void OnGameInfoReceived(FString Key, FString Value, FString IP) override;
 	//virtual void OnGamesInfoCleanOrder() override;
 };

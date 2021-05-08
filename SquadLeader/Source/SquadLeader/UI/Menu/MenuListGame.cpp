@@ -7,19 +7,20 @@
 #include "MenuListGameItemWidget.h"
 #include "MenuListInfoItemWidget.h"
 
+#include "MenuWidget.h"
 #include "MenuLayoutWidget.h"
 
 void UMenuListGame::OnItemAddedToLayout_Implementation()
 {
 	if (MenuLayout)
 	{
-		/*if (auto Menu = MenuLayout->GetMenu(); Menu)
+		if (auto Menu = MenuLayout->GetMenu(); Menu)
 		{
 			if (auto MenuStat = Cast<IMenuGameInfoDelegateInterface>(Menu); MenuStat)
 			{
 				MenuStat->AddMenuGameInfoDelegate(this);
 			}
-		}*/
+		}
 	}
 }
 
