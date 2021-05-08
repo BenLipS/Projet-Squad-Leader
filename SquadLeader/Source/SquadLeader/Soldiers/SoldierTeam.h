@@ -118,12 +118,11 @@ protected:  // Tickets
 	UPROPERTY(Replicated)
 	int Tickets = 100;  // default value, will be changed base on the gameMode base param
 
-	UFUNCTION(Server, Reliable)
-	void InformAllPlayerController();
-
 public:
 	UFUNCTION(BlueprintCallable, Category = "Tickets")
-		void RemoveOneTicket();
+	void RemoveOneTicket();
 	UFUNCTION(BlueprintCallable, Category = "Tickets")
-		int GetTicket() const { return Tickets; }
+	void RemoveTickets(const float _NbTickets);
+	UFUNCTION(BlueprintCallable, Category = "Tickets")
+	int GetTickets() const { return Tickets; }
 };

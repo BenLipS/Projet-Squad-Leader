@@ -365,16 +365,8 @@ void ASoldier::DeadTagChanged(const FGameplayTag _CallbackTag, int32 _NewCount)
 	{
 		LockControls();
 
-		// remove ticket from team (only on server)
-		if (GetTeam() && GetLocalRole() == ROLE_Authority)
-			GetTeam()->RemoveOneTicket();
-
 		// Cancel abilities
 		AbilitySystemComponent->CancelAllAbilities();
-
-		// Notify the death to GameMode - Server only
-		if (ASquadLeaderGameModeBase* GameMode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode()); GameMode)
-			GameMode->SoldierDied(GetController());
 
 		// Start ragdoll to the next frame so we can catch all impulses from the capsule before the death - This is useful for the explosion
 		//HandleDeathMontage();
