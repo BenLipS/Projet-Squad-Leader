@@ -275,6 +275,11 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void ShakeCamera(TSubclassOf<UMatineeCameraShake> _CameraShakeClass);
 
+
+	//LevelUp Animation
+	UFUNCTION(BlueprintImplementableEvent)
+	void LevelUpAnimation();
+
 protected:
 	UPROPERTY(BlueprintReadOnly, Replicated)
 	FRotator SyncControlRotation;
