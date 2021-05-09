@@ -256,19 +256,13 @@ public:
 	USpringArmComponent* SpringArmComponent;
 
 // Camera Shake
-protected:
-	// TODO: Should we have one camera shake per weapon then put this variable in the weapon ?
-	// We may have one generic camerashake here
-	UPROPERTY(EditDefaultsOnly, Category = "Camera|Camera Shake")
-	TSubclassOf<UMatineeCameraShake> CameraShakeFireClass;
-
 public:
+	// Return camera shake fire class of the current weapon if exists
 	TSubclassOf<UMatineeCameraShake> GetCameraShakeFireClass() const;
 
-	// This need to use the new camera shake sequence. Matinee is deprecated 
+	// Matinee is deprecated - Should use the new camera shake sequence
 	UFUNCTION(BlueprintImplementableEvent)
 	void ShakeCamera(TSubclassOf<UMatineeCameraShake> _CameraShakeClass);
-
 
 	//LevelUp Animation
 	UFUNCTION(BlueprintImplementableEvent)
