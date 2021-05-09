@@ -11,9 +11,9 @@
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "SquadLeader/Soldiers/Players/SoldierPlayerController.h"
-#include "SquadLeader/UI/SL_HUD.h"
+#include "SquadLeader/UI/HUD/SL_HUD.h"
 #include "Input/Reply.h"
-#include "../ControlAreaInfoWidget.h"
+#include "../ControlArea/ControlAreaInfoWidget.h"
 
 #include "Blueprint/WidgetTree.h"
 

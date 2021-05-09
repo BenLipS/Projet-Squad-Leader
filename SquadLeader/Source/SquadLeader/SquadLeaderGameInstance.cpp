@@ -2,7 +2,7 @@
 #include "MainMenu/SLMainMenuGameModeBase.h"
 #include "UI/Interface/StatInfoInterface.h"
 #include "UI/Interface/StatInfoInterface.h"
-#include "UI/Menu/MenuListInfo.h"
+#include "UI/Menu/MenuItem/MenuList/MenuListInfo.h"
 #include <iostream>
 
 #include "winsock.h"

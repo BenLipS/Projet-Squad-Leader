@@ -3,7 +3,7 @@
 #include "../SquadLeaderGameModeBase.h"
 #include "../Soldiers/Soldier.h"
 #include "../Soldiers/Players/SoldierPlayerController.h"
-#include "../UI/SL_HUD.h"
+#include "../UI/HUD/SL_HUD.h"
 #include "ControlAreaManager.h"
 
 

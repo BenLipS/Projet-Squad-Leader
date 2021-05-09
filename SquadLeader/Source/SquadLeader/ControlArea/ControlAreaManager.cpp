@@ -1,7 +1,7 @@
 #include "ControlAreaManager.h"
 #include "../GameState/SquadLeaderGameState.h"
 #include "../SquadLeaderGameModeBase.h"
-#include "../UI/SL_HUD.h"
+#include "SquadLeader/UI/HUD/SL_HUD.h"
 #include "../Soldiers/Players/SoldierPlayerController.h"
 
 AControlAreaManager::AControlAreaManager()

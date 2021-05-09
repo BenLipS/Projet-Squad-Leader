@@ -7,7 +7,7 @@
 #include "../SoldierTeam.h"
 #include "../../AI/AISquadManager.h"
 
-#include "SquadLeader/UI/PlayerHUD.h"
+#include "SquadLeader/UI/HUD/PlayerHUD.h"
 
 #include "SquadLeader/UI/Interface/PlayerHealthInterface.h"
 #include "SquadLeader/UI/Interface/PlayerShieldInterface.h"
