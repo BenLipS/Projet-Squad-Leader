@@ -836,10 +836,14 @@ void ASoldier::SetCurrentWeapon(ASL_Weapon* _NewWeapon, ASL_Weapon* _LastWeapon)
 	if (_NewWeapon == _LastWeapon)
 		return;
 
-	// Cancel active weapon abilities
+	// Cancel active weapon abilities and run ability for heavy weapon
 	if (AbilitySystemComponent)
 	{
 		FGameplayTagContainer AbilityTagsToCancel = FGameplayTagContainer(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.FireWeapon")));
+
+		if (_NewWeapon && _NewWeapon->IsHeavyWeapon())
+			AbilityTagsToCancel.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Run")));
+
 		AbilitySystemComponent->CancelAbilities(&AbilityTagsToCancel);
 	}
 
@@ -874,6 +878,8 @@ void ASoldier::SetCurrentWeapon(ASL_Weapon* _NewWeapon, ASL_Weapon* _LastWeapon)
 		if (!CurrentWeapon->HasAmmo())
 			ActivateAbility(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.ReloadWeapon")));
 	}
+
+	UpdateFOV(); // Because every weapon has its own FOV
 }
 
 void ASoldier::UnEquipWeapon(ASL_Weapon* _WeaponToUnEquip)
