@@ -6,6 +6,7 @@
 #include "../ControlArea/ControlArea.h"
 #include "../AI/Mission/CaptureMission.h"
 #include "../AI/Mission/PatrolMission.h"
+#include "../AI/Mission/PatrolControlAreaMission.h"
 #include "../SquadLeaderGameModeBase.h"
 #include "../GameState/SquadLeaderGameState.h"
 
@@ -74,7 +75,7 @@ void AAIBasicManager::Init(ASoldierTeam* _Team)
 
 			//Add the mission Patroling by default
 			UPatrolMission* _patrolMisssion = Cast<UPatrolMission>(NewObject<UPatrolMission>(this, UPatrolMission::StaticClass()));
-			_patrolMisssion->InitPatrolMission(1, MissionPriority::eBASIC);
+			_patrolMisssion->InitPatrolMission(1, MissionPriority::eNULL);
 			AC->SetMission<UPatrolMission*>(_patrolMisssion);
 		}
 	}
@@ -104,9 +105,14 @@ void AAIBasicManager::ChooseControlArea() {
 		if (_index_control_area >= nbr_controlArea)
 			_index_control_area = 0;
 		for (int i = 0; i != nbr_unit_per_controlArea && _index_player < nbr_unite; ++i) {
+			UPatrolControlAreaMission* MissionPatrol = Cast<UPatrolControlAreaMission>(NewObject<UPatrolControlAreaMission>(this, UPatrolControlAreaMission::StaticClass()));
+			MissionPatrol->InitPatrolControlAreaMission(-1, MissionPriority::eBASIC, m_controlAreaManager->GetControlArea()[_index_control_area]);
+			AIBasicList[_index_player]->SetMission<UPatrolControlAreaMission*>(MissionPatrol);
+
 			UCaptureMission* _mission = Cast<UCaptureMission>(NewObject<UCaptureMission>(this, UCaptureMission::StaticClass()));
 			_mission->InitCaptureMission(-1, MissionPriority::eMIDDLE, m_controlAreaManager->GetControlArea()[_index_control_area]);
 			AIBasicList[_index_player]->SetMission<UCaptureMission*>(_mission);
+
 			_index_player++;
 		}
 		_index_control_area++;

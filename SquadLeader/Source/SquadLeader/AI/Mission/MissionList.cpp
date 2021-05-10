@@ -10,6 +10,7 @@ auto FMissionAction::operator()(UCaptureMission* _mission)const
 	//GEngine->AddOnScreenDebugMessage(40, 10.f, FColor::Yellow, TEXT("Hello ! Mission de type UCaptureMission"));
 	_mission->SetState(MissionState::eRUNNING);
 	m_ai_controller->SetControlAreaBB(_mission->GetControlArea());
+
 	m_ai_controller->BecomeUnavailable();
 }
 auto FMissionAction::operator()(UDefendMission* _mission)const
@@ -30,6 +31,11 @@ auto FMissionAction::operator()(UFormationMission* _mission)const
 	_mission->SetState(MissionState::eRUNNING);
 	m_ai_controller->BecomeUnavailable();
 }
+auto FMissionAction::operator()(UPatrolControlAreaMission* _mission) const {
+	GEngine->AddOnScreenDebugMessage(10, 1.f, FColor::Black, TEXT("Mission PatrolControlArea en cours...."));
+	_mission->SetState(MissionState::eRUNNING);
+	m_ai_controller->BecomeAvailable();
+}
 
 auto FAIState::operator()(UCaptureMission* _mission) const {
 	m_ai_controller->SetState(AIBasicState::Capturing);
@@ -42,6 +48,10 @@ auto FAIState::operator()(UDefendMission* _mission) const {
 }
 auto FAIState::operator()(UFormationMission* _mission) const {
 	m_ai_controller->SetState(AIBasicState::Formation);
+}
+auto FAIState::operator()(UPatrolControlAreaMission* _mission) const {
+	GEngine->AddOnScreenDebugMessage(10, 1.f, FColor::Black, TEXT("Changement d'état pour partir en patrouille !"));
+	m_ai_controller->SetState(AIBasicState::Patroling);
 }
 
 
