@@ -21,7 +21,7 @@ public:
 	virtual void StartPlay() override;
 	ASquadLeaderGameModeBase();
 
-	virtual void PreLogin(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage) override;
+	// virtual void PreLogin(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage) override;
 	virtual void Logout(AController* Exiting) override;
 
 protected:
@@ -29,8 +29,6 @@ protected:
 	void FetchGameParam();
 
 protected:
-	UPROPERTY(BlueprintReadOnly, Category = "GameData")
-	int NbMaxPlayer = 6;
 	UPROPERTY(BlueprintReadOnly, Category = "GameData")
 	float Weather = 0;
 	UPROPERTY(BlueprintReadOnly, Category = "GameData")
@@ -51,8 +49,7 @@ public:
 	int const GetBaseSquadAINumber() { return StartingAISquadNumber; }
 	
 public:
-	void SoldierDied(AController* _Controller);
-	void RespawnSoldier(AController* _Controller);
+	void RespawnSoldier(ASoldier* _Soldier);
 	void CheckControlAreaVictoryCondition();
 	void CheckTeamTicketsVictoryCondition();
 	void EndGame(ASoldierTeam* WinningTeam);
@@ -88,13 +85,31 @@ public:
 	UFUNCTION()
 	TArray<AAISquadManager*> GetSquadManagers() { return ListAISquadManagers; }
 
-//////////////// EXP Rules
+//////////////// Notifications
 public:
-	void GrantOverTimeEXPToSoldier();
-	void NotifySoldierKilled(ASoldier* _DeadSoldier, ASoldier* _Killer);
+	void NotifySoldierKilled(ASoldier* _DeadSoldier, ASoldier* _KillerSoldier);
 	void NotifyControlAreaCaptured(AControlArea* _ControlArea);
 
 protected:
+	void UpdateTicketsFromSoldierDeath(ASoldier* _DeadSoldier);
+	void StartRespawnTimerForDeadSoldier(ASoldier* _DeadSoldier);
+	void NotifySoldierDeathToAllPlayers(ASoldier* _DeadSoldier, ASoldier* _KillerSoldier);
+
+//////////////// Ticket Rules
+	UPROPERTY(EditDefaultsOnly, Category = "Tickets")
+	int TicketToRemove_Player = 3;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Tickets")
+	int TicketToRemove_AISquad = 2;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Tickets")
+	int TicketToRemove_AIBasic = 1;
+
+//////////////// EXP Rules
+protected:
+	void GrantOverTimeEXPToSoldier();
+	void GrantEXPFromSoldierDeath(ASoldier* _DeadSoldier, ASoldier* _KillerSoldier);
+
 	UPROPERTY(EditDefaultsOnly, Category = "EXP Soldiers|Time")
 	float TimeBetweenGrantedEXP = 10.f;
 

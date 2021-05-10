@@ -69,7 +69,10 @@ FString PlayerData::ReadFile(FString FileName) {
     else {
         UE_LOG(LogTemp, Warning, TEXT("FileManipulation: ERROR: Can not read the file because it was not found."));
         UE_LOG(LogTemp, Warning, TEXT("FileManipulation: Expected file location: %s"), *file);
-        return {};
+        UE_LOG(LogTemp, Warning, TEXT("FileManipulation: Creating file."));
+        // create file
+        FFileHelper::SaveStringToFile(FString(""),*file);
+        return "0";
     }
 }
 
