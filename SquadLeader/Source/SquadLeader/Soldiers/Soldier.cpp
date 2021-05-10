@@ -15,6 +15,7 @@
 #include "Particles/ParticleSystemComponent.h"
 #include "SquadLeader/SquadLeader.h"
 #include "SquadLeader/Weapons/SL_Weapon.h"
+#include "Camera/CameraShake.h"
 //#include "DrawDebugHelpers.h"
 
 ASoldier::ASoldier(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer.SetDefaultSubobjectClass<USoldierMovementComponent>(ACharacter::CharacterMovementComponentName)),

@@ -4,7 +4,6 @@
 #include "GameFramework/Character.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "camera/cameracomponent.h"
-#include "Camera/CameraShake.h"
 #include "AbilitySystemInterface.h"
 #include "../AbilitySystem/Soldiers/AttributeSetSoldier.h"
 #include "../AbilitySystem/Soldiers/AbilitySystemSoldier.h"
@@ -20,6 +19,7 @@ class ASL_Weapon;
 class UGameplayAbilitySoldier;
 class UGameplayEffect;
 class UGE_UpdateStats;
+class UMatineeCameraShake;
 
 UENUM()
 enum class SoldierClass : uint8 {
