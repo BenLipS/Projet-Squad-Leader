@@ -147,34 +147,12 @@ TArray<ASoldier*> ASoldierTeam::GetSoldierList() const
 	return SoldierList;
 }
 
-void ASoldierTeam::InformAllPlayerController_Implementation()
-{
-	for (auto PCIterator = GetWorld()->GetPlayerControllerIterator(); PCIterator; PCIterator++)
-	{
-		if (auto PC = Cast<ASoldierPlayerController>(PCIterator->Get()); PC)
-		{
-			if (PC->GetTeam() == this)
-			{
-				PC->OnAllyTicket_Received(Tickets);
-			}
-			else
-			{
-				PC->OnEnnemyTicket_Received(Tickets);
-			}
-		}
-	}
-}
-
 void ASoldierTeam::RemoveOneTicket()
 {
 	Tickets--;
+}
 
-	InformAllPlayerController();
-
-	//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TeamName + TEXT(" : Loses a ticket."));
-
-	// TODO : End game here if no tickets left and team is primordial
-	if (ASquadLeaderGameModeBase* GameMode = GetWorld()->GetAuthGameMode<ASquadLeaderGameModeBase>(); GameMode) {  // only for the server
-		GameMode->CheckTeamTicketsVictoryCondition();
-	}
+void ASoldierTeam::RemoveTickets(const float _NbTickets)
+{
+	Tickets -= _NbTickets;
 }

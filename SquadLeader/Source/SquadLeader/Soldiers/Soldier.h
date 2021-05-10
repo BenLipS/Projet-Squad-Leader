@@ -238,8 +238,8 @@ public:
 
 //////////////// Cameras
 public:
-	void setToFirstCameraPerson();
-	void setToThirdCameraPerson();
+	void SetToFirstCameraPerson();
+	void SetToThirdCameraPerson();
 
 // TODO: Change to protected and use getters/setters
 public:
@@ -268,6 +268,11 @@ public:
 	// This need to use the new camera shake sequence. Matinee is deprecated 
 	UFUNCTION(BlueprintImplementableEvent)
 	void ShakeCamera(TSubclassOf<UMatineeCameraShake> _CameraShakeClass);
+
+
+	//LevelUp Animation
+	UFUNCTION(BlueprintImplementableEvent)
+	void LevelUpAnimation();
 
 protected:
 	UPROPERTY(BlueprintReadOnly, Replicated)

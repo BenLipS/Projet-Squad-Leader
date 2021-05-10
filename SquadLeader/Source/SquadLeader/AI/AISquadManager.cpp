@@ -34,7 +34,7 @@ void AAISquadManager::Init(ASoldierTeam* _Team, ASoldierPlayer* _Player)
 	if (GetLocalRole() == ROLE_Authority) {
 		if (OverrideStartNumberOfSoldiers < 0) {
 			// get game mode params directly from the source because "StartPlay" is not guaranteed to have been already called
-			UGameParam* ImportedGameParam = GetGameInstance<USquadLeaderGameInstance>()->GameParam.GetDefaultObject();
+			AGameParam* ImportedGameParam = GetGameInstance<USquadLeaderGameInstance>()->GameParam.GetDefaultObject();
 			StartNumberOfSoldiers = ImportedGameParam->StartingNbAISquad;
 		}
 		else {
