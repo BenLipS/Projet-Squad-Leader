@@ -8,6 +8,7 @@
 #include "AI/AISquadManager.h"
 #include "AI/AIBasicController.h"
 #include "AI/InfluenceMap/InfluenceMapGrid.h"
+#include "MainMenu/PlayerParam/PlayerParam.h"
 #include "SquadLeaderGameModeBase.generated.h"
 
 class ASoldier;
@@ -26,7 +27,8 @@ public:
 
 
 	/* Override To Read In Pawn From Custom Controller */
-	UClass* GetDefaultPawnClassForController(AController* InController); //override;  // help
+	UClass* GetDefaultPawnClassForController_Implementation(AController* InController) override;
+	APawn* SpawnSoldier(TSubclassOf<APlayerParam> PlayerParam, AController* OwningController);
 
 protected:
 	void ChangeGameState();

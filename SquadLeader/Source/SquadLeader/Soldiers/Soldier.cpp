@@ -72,11 +72,9 @@ void ASoldier::BeginPlay()
 	// from the server only, have a test to determine wheter we can change the team, then use a ClientSetTeam to replicate the change
 	//if (GetLocalRole() == ROLE_Authority)
 	{
-		// Add this to the team data or use the default team
+		// Add this to the team data
 		if (GetTeam())
 			GetTeam()->AddSoldierList(this);
-		else if (InitialTeam)
-			SetTeam(InitialTeam);
 	}
 
 	if (StartGameMontage)
@@ -1112,7 +1110,7 @@ void ASoldier::cycleBetweenTeam()
 					message = GetTeam()->TeamName;  // Log
 				}
 			}
-			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, message);
+			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, "Team changed to " + message);
 		}
 	}
 	else ServerCycleBetweenTeam();

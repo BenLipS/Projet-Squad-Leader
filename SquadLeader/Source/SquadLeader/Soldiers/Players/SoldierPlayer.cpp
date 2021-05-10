@@ -28,6 +28,10 @@ ASoldierPlayer::ASoldierPlayer(const FObjectInitializer& _ObjectInitializer) : S
 void ASoldierPlayer::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	if (GetTeam() && SquadManager) {
+		SquadManager->UpdateSquadTeam(GetTeam());
+	}
 
 	if (!IsLocallyControlled())
 		return;

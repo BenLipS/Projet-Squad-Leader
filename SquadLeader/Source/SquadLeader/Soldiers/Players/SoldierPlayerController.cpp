@@ -10,9 +10,8 @@
 #include "SquadLeader/UI/Interface/AbilityCooldownDelegateInterface.h"
 #include "SquadLeader/SquadLeader.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
+#include "GameFramework/GameModeBase.h"
 
-//TODO: rmove next include -> only use for the team init -> only use on temporary debug
-#include "../../GameState/SquadLeaderGameState.h"
 
 ASoldierPlayerController::ASoldierPlayerController()
 {
@@ -23,13 +22,19 @@ ASoldierPlayerController::ASoldierPlayerController()
 
 UClass* ASoldierPlayerController::GetPlayerPawnClass()
 {
-	return GetPlayerState<ASoldierPlayerState>()->PlayerParam.GetDefaultObject()->GetPlayerClass();
+	if (auto PS = GetPlayerState<ASoldierPlayerState>(); PS)
+		if (auto PP = PS->GetPlayerParam(); PP)
+			return PP.GetDefaultObject()->GetPlayerClass();
+	
+	ensure(GetWorld()->GetAuthGameMode());
+	return GetWorld()->GetAuthGameMode()->DefaultPawnClass;
 }
 
 void ASoldierPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 	CreateHUD();
+	DeterminePlayerParams();
 }
 
 void ASoldierPlayerController::CreateHUD_Implementation()
@@ -90,25 +95,6 @@ void ASoldierPlayerController::OnPossess(APawn* InPawn)
 	if (ASoldierPlayerState* PS = GetPlayerState<ASoldierPlayerState>(); PS)
 		PS->GetAbilitySystemComponent()->InitAbilityActorInfo(PS, InPawn);
 
-	//TODO: remove the team init -> only use on temporary debug
-	if (auto GS = GetWorld()->GetGameState<ASquadLeaderGameState>(); GS) {
-
-		if (GS->GetSoldierTeamCollection().Num() == 0) {  // no team obtainable for now, we need to find one (used when playing as server or if no teams in the map)
-			ASoldierTeam* LastTeamObtainable = nullptr;
-			for (auto SceneActors : GetWorld()->PersistentLevel->Actors) {
-				if (auto SoldierTeam = Cast<ASoldierTeam>(SceneActors); SoldierTeam) {
-					LastTeamObtainable = SoldierTeam;
-				}
-			}
-			ensure(LastTeamObtainable);  // if trigger, please place a team in the map
-			SetTeam(LastTeamObtainable);
-		}
-		else SetTeam(GS->GetSoldierTeamCollection()[0]);
-		
-		if (auto soldier = Cast<ASoldierPlayer>(InPawn); soldier->GetSquadManager()) {
-			soldier->GetSquadManager()->UpdateSquadTeam(GetTeam());
-		}
-	}
 	Cast<ASoldierPlayer>(InPawn)->GetSquadManager()->OnSquadChanged.AddDynamic(this, &ASoldierPlayerController::OnSquadChanged);
 	Cast<ASoldierPlayer>(InPawn)->GetSquadManager()->OnMemberHealthChanged.AddDynamic(this, &ASoldierPlayerController::OnSquadMemberHealthChanged);
 	Cast<ASoldierPlayer>(InPawn)->GetSquadManager()->OnMemberMaxHealthChanged.AddDynamic(this, &ASoldierPlayerController::OnSquadMemberMaxHealthChanged);
@@ -411,6 +397,27 @@ void ASoldierPlayerController::OnWallVisionDeactivate_Implementation()
 //{
 //
 //}
+
+
+// Pawn Class
+void ASoldierPlayerController::DeterminePlayerParams_Implementation()
+{
+	if (IsLocalController()) //Only Do This Locally (NOT Client-Only, since Server wants this too!)
+	{
+		ServerSetPawn(GetGameInstance<USquadLeaderGameInstance>()->PlayerParam);
+	}
+}
+
+bool ASoldierPlayerController::ServerSetPawn_Validate(TSubclassOf<APlayerParam> PlayerParam)
+{
+	return true;
+}
+
+void ASoldierPlayerController::ServerSetPawn_Implementation(TSubclassOf<APlayerParam> PlayerParam)
+{
+	GetPlayerState<ASoldierPlayerState>()->SetPlayerParam(PlayerParam, this);
+}
+
 
 void ASoldierPlayerController::Cheat_AddAISquad()
 {

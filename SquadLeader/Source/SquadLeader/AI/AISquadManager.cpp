@@ -70,6 +70,7 @@ void AAISquadManager::Init(ASoldierTeam* _Team, ASoldierPlayer* _Player)
 		}
 	}
 
+	UpdateSquadTeam(Team);
 	m_inFormation = true;
 	TypeOfFormation = FormationType::Circle;
 	BroadCastSquadData();

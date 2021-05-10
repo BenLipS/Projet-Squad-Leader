@@ -512,9 +512,6 @@ protected:
 
 //////////////// Soldier team
 public:
-	UPROPERTY(BlueprintReadOnly, Category = "PlayerTeam")
-	ASoldierTeam* InitialTeam;  // for debug use
-
 	UFUNCTION(Reliable, Server, WithValidation)
 	void ServerCycleBetweenTeam();
 
