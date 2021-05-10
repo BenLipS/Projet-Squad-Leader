@@ -18,8 +18,6 @@ class SQUADLEADER_API ASoldierPlayerController : public APlayerController, publi
 public:
 	ASoldierPlayerController();
 
-	UClass* GetPlayerPawnClass();
-
 protected:
 	virtual void BeginPlay() override;
 	virtual void OnPossess(APawn* InPawn) override;

@@ -34,16 +34,6 @@ ASoldierPlayerController::ASoldierPlayerController()
 	SquadManagerData = FAISquadManagerData();
 }
 
-UClass* ASoldierPlayerController::GetPlayerPawnClass()
-{
-	if (auto PS = GetPlayerState<ASoldierPlayerState>(); PS)
-		if (auto PP = PS->GetPlayerParam(); PP)
-			return PP.GetDefaultObject()->GetPlayerClass();
-	
-	ensure(GetWorld()->GetAuthGameMode());
-	return GetWorld()->GetAuthGameMode()->DefaultPawnClass;
-}
-
 void ASoldierPlayerController::BeginPlay()
 {
 	Super::BeginPlay();

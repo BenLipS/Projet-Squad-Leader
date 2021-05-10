@@ -135,11 +135,6 @@ void ASoldierPlayerState::SetPlayerParam(TSubclassOf<APlayerParam> _PlayerParam,
 
 	// recreate a new pawn and possess it
 	OwningController->Possess(OwningController->GetWorld()->GetAuthGameMode<ASquadLeaderGameModeBase>()->SpawnSoldier(PlayerParam, OwningController));
-
-	/* Just in case we didn't get the PawnClass on the Server in time... */
-	/*OwningController->StartSpot = nullptr;// re-init StartSpot
-	OwningController->SetPawn(nullptr);
-	OwningController->GetWorld()->GetAuthGameMode()->RestartPlayer(OwningController);*/
 }
 
 TSubclassOf<APlayerParam> ASoldierPlayerState::GetPlayerParam()

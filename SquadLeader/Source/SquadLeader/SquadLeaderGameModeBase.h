@@ -25,9 +25,6 @@ public:
 	// virtual void PreLogin(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage) override;
 	virtual void Logout(AController* Exiting) override;
 
-
-	/* Override To Read In Pawn From Custom Controller */
-	UClass* GetDefaultPawnClassForController_Implementation(AController* InController) override;
 	APawn* SpawnSoldier(TSubclassOf<APlayerParam> PlayerParam, AController* OwningController);
 
 protected:
