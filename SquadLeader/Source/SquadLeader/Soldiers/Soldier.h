@@ -238,8 +238,8 @@ public:
 
 //////////////// Cameras
 public:
-	void setToFirstCameraPerson();
-	void setToThirdCameraPerson();
+	void SetToFirstCameraPerson();
+	void SetToThirdCameraPerson();
 
 // TODO: Change to protected and use getters/setters
 public:
