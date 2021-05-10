@@ -9,6 +9,13 @@
 #include "NavFilters/NavigationQueryFilter.h"
 #include "AIBasicManager.generated.h"
 
+
+UENUM()
+enum class AIAvaibility : uint8 {
+	available, unavailable
+};
+
+
 /**
  * 
  */
@@ -30,6 +37,12 @@ public:
 
 	UPROPERTY()
 	TArray<AAIBasicController*> AIBasicList;
+
+	UPROPERTY()
+		TArray<AAIBasicController*> AIBasicAvailable;
+
+	UPROPERTY()
+		TArray<AAIBasicController*> AIBasicUnavailable;
 
 	UPROPERTY()
 	ASoldierTeam* Team;
@@ -77,5 +90,14 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Navigation")
 		TSubclassOf<UNavigationQueryFilter> m_queryFilter_team2;
+
+
+public:
+	UFUNCTION()
+		void ChangeAIStatus(const AIAvaibility status, const AAIGeneralController* AI);
+
+protected:
+	void AIAvailable(const AAIGeneralController* AI);
+	void AIUnavailable(const AAIGeneralController* AI);
 
 };

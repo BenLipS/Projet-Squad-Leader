@@ -110,3 +110,25 @@ void AAIBasicManager::ChooseControlArea() {
 
 	}
 }
+
+void AAIBasicManager::ChangeAIStatus(const AIAvaibility status, const AAIGeneralController* AI) {
+	switch (status) {
+	case AIAvaibility::available:
+		AIAvailable(AI);
+		break;
+	case AIAvaibility::unavailable:
+		AIUnavailable(AI);
+		break;
+	default:
+		break;
+	}
+}
+
+void AAIBasicManager::AIAvailable(const AAIGeneralController* AI) {
+	GEngine->AddOnScreenDebugMessage(10, 1.f, FColor::Purple, TEXT("Une IA est disponible !"));
+}
+
+void AAIBasicManager::AIUnavailable(const AAIGeneralController* AI) {
+	GEngine->AddOnScreenDebugMessage(20, 1.f, FColor::Purple, TEXT("Une IA n'est plus disponible !"));
+
+}

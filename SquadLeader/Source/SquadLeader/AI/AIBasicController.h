@@ -48,4 +48,9 @@ public:
 
 	void SetManager(AAIBasicManager* _manager) noexcept;
 
+	AAIBasicManager* GetManager() const noexcept { return m_manager; }
+
+	virtual void BecomeAvailable() override;
+
+	virtual void BecomeUnavailable() override;
 };

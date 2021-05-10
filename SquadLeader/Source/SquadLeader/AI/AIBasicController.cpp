@@ -87,3 +87,11 @@ void AAIBasicController::ResetBlackBoard() {
 void AAIBasicController::SetManager(AAIBasicManager* _manager) noexcept {
 	m_manager = _manager;
 }
+
+void AAIBasicController::BecomeAvailable() {
+	m_manager->ChangeAIStatus(AIAvaibility::available, this);
+}
+
+void AAIBasicController::BecomeUnavailable() {
+	m_manager->ChangeAIStatus(AIAvaibility::unavailable, this);
+}

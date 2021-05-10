@@ -36,10 +36,15 @@ USTRUCT()
 struct SQUADLEADER_API FAIState{
 	GENERATED_USTRUCT_BODY()
 
-		class AAIGeneralController* m_ai_controller;
+	class AAIGeneralController* m_ai_controller;
 
 	FAIState() = default;
 	FAIState(AAIGeneralController* _ai_controller) { m_ai_controller = _ai_controller; }
+
+	auto operator()(UCaptureMission* _mission) const; 
+	auto operator()(UPatrolMission* _mission) const; 
+	auto operator()(UDefendMission* _mission) const;
+	auto operator()(UFormationMission* _mission) const; 
 
 };
 
