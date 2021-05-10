@@ -2,6 +2,10 @@
 #include "SquadLeader/SquadLeader.h"
 #include "SquadLeader/Soldiers/Soldier.h"
 #include "../SquadLeaderGameModeBase.h"
+#include "Materials/MaterialInterface.h"
+#include "Materials/MaterialInstanceDynamic.h"
+#include "Kismet/KismetMaterialLibrary.h"
+#include "Kismet/GameplayStatics.h"
 
 AShield::AShield()
 {
@@ -20,6 +24,8 @@ void AShield::BeginPlay()
 	SetTeam(SourceSoldier ? SourceSoldier->GetTeam() : nullptr);
 
 	SetCollisionProfile(CollisionProfileNameMesh);
+
+	UpdateMaterialColor();
 
 	CreateInfluence();
 }
@@ -94,6 +100,26 @@ bool AShield::SetTeam(ASoldierTeam* _Team)
 	return true;
 }
 
+void AShield::UpdateMaterialColor()
+{
+	if (!Mesh)
+		return;
+
+	UMaterialInstanceDynamic* ShieldMaterialInstance = UKismetMaterialLibrary::CreateDynamicMaterialInstance(GetWorld(), Mesh->GetMaterial(0));
+
+	// Soldier that will see the shield in his world
+	ASoldier* Soldier = UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetPawn<ASoldier>();
+	// Soldier who casted the shield
+	ASoldier* SoldierShieldOwner = Cast<ASoldier>(GetInstigator());
+
+	if (!Soldier || !SoldierShieldOwner || Soldier->GetTeam() != SoldierShieldOwner->GetTeam())
+		ShieldMaterialInstance->SetVectorParameterValue(ColorParameterName, ColorMeshEnnemy);
+	else
+		ShieldMaterialInstance->SetVectorParameterValue(ColorParameterName, ColorMeshAllie);
+
+	Mesh->SetMaterial(0, ShieldMaterialInstance);
+}
+
 void AShield::CreateInfluence() {
 	//GEngine->AddOnScreenDebugMessage(10, 1.0f, FColor::Purple, TEXT("Send Influence"));
 	ASquadLeaderGameModeBase* GameMode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
@@ -105,7 +131,6 @@ void AShield::CreateInfluence() {
 		Package.ActorID = this->GetUniqueID();
 		GameMode->InfluenceMap->ReceivedMessage(Package);
 	}
-	
 }
 
 void AShield::EraseInfluence() {
