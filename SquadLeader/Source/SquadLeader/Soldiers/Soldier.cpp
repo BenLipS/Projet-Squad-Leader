@@ -1028,6 +1028,15 @@ TSubclassOf<UMatineeCameraShake> ASoldier::GetCameraShakeFireClass() const
 	return CurrentWeapon ? CurrentWeapon->GetCameraShakeFireClass() : nullptr;
 }
 
+void ASoldier::ShakeCamera(TSubclassOf<UMatineeCameraShake> _CameraShakeClass)
+{
+	if (!IsLocallyControlled())
+		return;
+
+	if (APlayerController* PC = Cast<APlayerController>(Controller); PC)
+		PC->ClientStartCameraShake(_CameraShakeClass);
+}
+
 FRotator ASoldier::GetSyncControlRotation() const noexcept
 {
 	return SyncControlRotation;

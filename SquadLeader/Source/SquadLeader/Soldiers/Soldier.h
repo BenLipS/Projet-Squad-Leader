@@ -261,7 +261,7 @@ public:
 	TSubclassOf<UMatineeCameraShake> GetCameraShakeFireClass() const;
 
 	// Matinee is deprecated - Should use the new camera shake sequence
-	UFUNCTION(BlueprintImplementableEvent)
+	UFUNCTION()
 	void ShakeCamera(TSubclassOf<UMatineeCameraShake> _CameraShakeClass);
 
 	//LevelUp Animation
