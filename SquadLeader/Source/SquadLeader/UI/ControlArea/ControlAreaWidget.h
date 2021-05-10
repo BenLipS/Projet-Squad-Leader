@@ -42,7 +42,7 @@ protected:
 	UWidgetAnimation* RightGlow;
 
 protected:
-	TArray<class UControlAreaInfoWidget*> ControlAreaList;
+	TArray<AControlArea*> ControlAreaList;
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class UControlAreaInfoWidget> ControlAreaInfoClass;

@@ -56,10 +56,6 @@ void ASoldierPlayerController::CreateHUD_Implementation()
 	if (auto HUD = GetHUD<APlayerHUD>())
 	{
 		HUD->InitHUD();
-		/*HUD->SetPlayerStateLink();
-		HUD->SetAIStateLink();
-		HUD->BindSoldierTeamChanges();
-		HUD->BindControlAreas();*/
 
 		if (InputComponent)
 		{
