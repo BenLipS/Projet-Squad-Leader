@@ -1,5 +1,7 @@
 #include "SquadLeaderGameState.h"
 #include "SquadLeader/ControlArea/ControlAreaManager.h"
+#include "SquadLeader/UI/Interface/MinimapInterface.h"
+#include "SquadLeader/UI/HUD/SL_HUD.h"
 
 ASquadLeaderGameState::ASquadLeaderGameState()
 {
