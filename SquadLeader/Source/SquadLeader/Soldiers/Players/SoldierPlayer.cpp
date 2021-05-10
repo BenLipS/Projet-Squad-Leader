@@ -11,13 +11,18 @@
 #include "DrawDebugHelpers.h"
 #include "TimerManager.h"
 #include "SquadLeader/Weapons/SL_Weapon.h"
+#include "Kismet/KismetMathLibrary.h"
 
 ASoldierPlayer::ASoldierPlayer(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer)
 {
+	PrimaryActorTick.bCanEverTick = true;
+
 	PostProcessVolume = CreateDefaultSubobject<UPostProcessComponent>(TEXT("PostProcessVolume"));
 	PostProcessVolume->bUnbound = false;
 	PostProcessVolume->bEnabled = true;
 	PostProcessVolume->AttachToComponent(ThirdPersonCameraComponent, FAttachmentTransformRules::KeepRelativeTransform);
+
+	InitCameraKiller();
 }
 
 /*
@@ -69,6 +74,21 @@ void ASoldierPlayer::BeginPlay()
 	bHitMontageActivated = false;
 }
 
+void ASoldierPlayer::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if (!IsLocallyControlled())
+		return;
+
+	if (SoldierKiller)
+	{
+		const FRotator LookAtRotation = UKismetMathLibrary::FindLookAtRotation(DeathLocation, SoldierKiller->GetActorLocation());
+		FollowKillerCamera->SetWorldRotation(LookAtRotation.Quaternion());
+		FollowKillerCamera->SetWorldLocation(DeathLocation); // Force the camera to be to the same position regardless the soldier
+	}
+}
+
 // Server only 
 void ASoldierPlayer::PossessedBy(AController* _newController)
 {
@@ -114,7 +134,25 @@ void ASoldierPlayer::DeadTagChanged(const FGameplayTag CallbackTag, int32 NewCou
 		HitLeft = 0;
 		UpdateBrokenGlassEffect();
 		SetWeightGlitchEffect(0.f);
+
+		DeactivateFollowKillerCamera();
+		SoldierKiller = nullptr;
 	}
+	else
+	{
+		DeathLocation = CurrentCameraComponent->GetComponentLocation();
+		FTimerHandle Timer{};
+		GetWorldTimerManager().SetTimer(Timer, this, &ASoldierPlayer::ActivateFollowKillerCamera, 2.f, false);
+	}
+}
+
+void ASoldierPlayer::InitCameraKiller()
+{
+	FollowKillerCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowKillerCamera"));
+	FollowKillerCamera->SetupAttachment(GetMesh());
+	FollowKillerCamera->SetAbsolute(true, true, true);
+	FollowKillerCamera->SetFieldOfView(BaseFOVNormal);
+	FollowKillerCamera->Deactivate();
 }
 
 void ASoldierPlayer::OnBlurredVisionFromJammer(const bool _IsBlurred)
@@ -148,6 +186,46 @@ void ASoldierPlayer::EndGlitch()
 {
 	GetWorld()->GetTimerManager().ClearTimer(TimerGlitchReduction);
 	SetWeightGlitchEffect(0.f);
+}
+
+UCameraComponent* ASoldierPlayer::GetFollowKillerCamera() const
+{
+	return FollowKillerCamera;
+}
+
+void ASoldierPlayer::ActivateFollowKillerCamera()
+{
+	if (!SoldierKiller)
+		return;
+
+	// Allow to see the killer through walls
+	SoldierKiller->GetMesh()->SetRenderCustomDepth(true);
+	
+	FollowKillerCamera->SetWorldLocation(DeathLocation);
+	CurrentCameraComponent->Deactivate();
+	FollowKillerCamera->Activate();
+}
+
+void ASoldierPlayer::DeactivateFollowKillerCamera()
+{
+	if (SoldierKiller)
+		SoldierKiller->GetMesh()->SetRenderCustomDepth(false);
+
+	FollowKillerCamera->Deactivate();
+	CurrentCameraComponent->Activate();
+}
+
+void ASoldierPlayer::SetSoldierKiller(ASoldier* _SoldierKiller)
+{
+	if (GetLocalRole() == ENetRole::ROLE_Authority && !IsLocallyControlled())
+		ClientSetSoldierKiller(_SoldierKiller);
+
+	SoldierKiller = _SoldierKiller;
+}
+
+void ASoldierPlayer::ClientSetSoldierKiller_Implementation(ASoldier* _SoldierKiller)
+{
+	SetSoldierKiller(_SoldierKiller);
 }
 
 void ASoldierPlayer::LockControls()

@@ -32,15 +32,15 @@ public:
 
 	// Character level
 	UPROPERTY(BlueprintReadOnly, Category = "Attributes|Character Level", ReplicatedUsing = OnRep_CharacterLevel)
-	FGameplayAttributeData CharacterLevel;
+	FGameplayAttributeData CharacterLevel = 1.f;
 	ATTRIBUTE_ACCESSORS(UAttributeSetSoldier, CharacterLevel)
 
 	UPROPERTY(BlueprintReadOnly)
-	float MaxLevel;
+	float MaxLevel = 10.f;
 
 	// EXP
 	UPROPERTY(BlueprintReadOnly, Category = "Attributes|EXP", ReplicatedUsing = OnRep_EXP)
-	FGameplayAttributeData EXP;
+	FGameplayAttributeData EXP = 0.f;
 	ATTRIBUTE_ACCESSORS(UAttributeSetSoldier, EXP)
 
 	// EXPLevelUp
@@ -110,7 +110,7 @@ public: // TODO: Should the attributes be public ?
 
 	// Move Speed - Multiplier (for buffs and debuffs)
 	UPROPERTY(BlueprintReadOnly, Category = "Attributes|MoveSpeedMultiplier", ReplicatedUsing = OnRep_MoveSpeedMultiplier)
-	FGameplayAttributeData MoveSpeedMultiplier;
+	FGameplayAttributeData MoveSpeedMultiplier = 1.f;
 	ATTRIBUTE_ACCESSORS(UAttributeSetSoldier, MoveSpeedMultiplier)
 
 protected:

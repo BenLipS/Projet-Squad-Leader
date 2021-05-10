@@ -1,7 +1,7 @@
 #include "ControlAreaManager.h"
 #include "../GameState/SquadLeaderGameState.h"
 #include "../SquadLeaderGameModeBase.h"
-#include "../UI/SL_HUD.h"
+#include "SquadLeader/UI/HUD/SL_HUD.h"
 #include "../Soldiers/Players/SoldierPlayerController.h"
 
 AControlAreaManager::AControlAreaManager()
@@ -42,7 +42,7 @@ TArray<AControlArea*> AControlAreaManager::GetAreaControlledByTeam(ASoldierTeam*
 {
 	TArray<AControlArea*> selection;
 	for (auto element : ControlAreaList) {
-		if (element->IsTakenBy == _Team) {
+		if (element->GetIsTakenBy() == _Team) {
 			selection.Add(element);
 		}
 	}
@@ -69,11 +69,11 @@ ASoldierTeam* AControlAreaManager::GetTeamWithAllControl()
 {
 	if (ControlAreaList.Num() > 0) {
 		for (auto element : ControlAreaList) {
-			if (element->IsTakenBy != ControlAreaList[0]->IsTakenBy) {
+			if (element->GetIsTakenBy() != ControlAreaList[0]->GetIsTakenBy()) {
 				return nullptr;
 			}
 		}
-		return ControlAreaList[0]->IsTakenBy;
+		return ControlAreaList[0]->GetIsTakenBy();
 	}
 	return nullptr;
 }

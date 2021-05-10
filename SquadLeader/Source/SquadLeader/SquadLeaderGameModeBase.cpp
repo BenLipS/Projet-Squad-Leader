@@ -210,7 +210,7 @@ void ASquadLeaderGameModeBase::NotifySoldierKilled(ASoldier* _DeadSoldier, ASold
 
 void ASquadLeaderGameModeBase::NotifyControlAreaCaptured(AControlArea* _ControlArea)
 {
-	if (ASoldierTeam* Team = _ControlArea->IsTakenBy; Team)
+	if (ASoldierTeam* Team = _ControlArea->GetIsTakenBy(); Team)
 	{
 		for (ASoldier* Soldier : Team->GetSoldierList())
 		{

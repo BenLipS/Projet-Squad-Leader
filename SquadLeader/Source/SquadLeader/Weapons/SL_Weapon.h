@@ -109,6 +109,7 @@ protected:
 
 public:
 	FGameplayTag GetFireMode() const noexcept;
+	void Unequip();
 
 protected:
 	// Cache tags
@@ -184,6 +185,9 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Stats|Ammo")
 	bool bReloadIfOutOfAmmo = true;
 
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Stats|Ammo")
+	bool bUnequipIfOutOfAmmo = false;
+
 public:
 	UFUNCTION(BlueprintCallable, Category = "Stats|Ammo")
 	float GetTimeBetweenShots() const noexcept;
@@ -206,7 +210,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Stats|Ammo")
 	void DecrementAmmo();
 
-	UFUNCTION(BlueprintImplementableEvent)
+	UFUNCTION()
 	void OnOutOfAmmo();
 
 	UFUNCTION(BlueprintCallable, Category = "Stats|Ammo")

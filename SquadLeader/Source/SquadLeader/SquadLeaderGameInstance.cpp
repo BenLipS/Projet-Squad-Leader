@@ -1,8 +1,9 @@
 #include "SquadLeaderGameInstance.h"
 #include "MainMenu/SLMainMenuGameModeBase.h"
-#include "UI/SL_HUD.h"
 #include "UI/Interface/StatInfoInterface.h"
-#include "UI/Menu/MenuListInfo.h"
+#include "UI/Interface/StatInfoInterface.h"
+#include "UI/Menu/MenuItem/MenuList/MenuListInfo.h"
+#include "SquadLeader/UI/HUD/SL_HUD.h"
 #include <iostream>
 
 #include "winsock.h"
