@@ -96,8 +96,17 @@ void ASoldierPlayerController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 
-	if (ASoldierPlayerState* PS = GetPlayerState<ASoldierPlayerState>(); PS)
+	if (ASoldierPlayerState* PS = GetPlayerState<ASoldierPlayerState>(); PS) {
 		PS->GetAbilitySystemComponent()->InitAbilityActorInfo(PS, InPawn);
+
+		// re-bind HUD on possess
+		CreateHUD();
+		if (auto CurrentHUD = GetHUD<APlayerHUD>())
+		{
+			CurrentHUD->SetPlayerStateLink();
+			CurrentHUD->SetAIStateLink();
+		}
+	}
 
 	Cast<ASoldierPlayer>(InPawn)->GetSquadManager()->OnSquadChanged.AddDynamic(this, &ASoldierPlayerController::OnSquadChanged);
 	Cast<ASoldierPlayer>(InPawn)->GetSquadManager()->OnMemberHealthChanged.AddDynamic(this, &ASoldierPlayerController::OnSquadMemberHealthChanged);
