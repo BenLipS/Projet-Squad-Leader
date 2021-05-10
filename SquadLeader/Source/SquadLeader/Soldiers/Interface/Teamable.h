@@ -9,7 +9,7 @@ class ASoldierTeam;
 #include "Teamable.generated.h"
 
 // This class does not need to be modified.
-UINTERFACE(MinimalAPI, Blueprintable)
+UINTERFACE(MinimalAPI, Blueprintable, meta = (CannotImplementInterfaceInBlueprint))
 class UTeamable : public UInterface
 {
 	GENERATED_BODY()
@@ -23,7 +23,7 @@ class SQUADLEADER_API ITeamable
 	GENERATED_BODY()
 
 public:
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable, Category = "Team")
 	virtual ASoldierTeam* GetTeam() = 0;
 
 	UFUNCTION()

@@ -6,11 +6,7 @@
 #include "GameplayEffects/GE_UpdateStats.h"
 #include "SquadLeader/SquadLeaderGameModeBase.h"
 
-UAttributeSetSoldier::UAttributeSetSoldier(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer),
-CharacterLevel{ 1.f },
-MaxLevel{ 10.f },
-EXP{ 0.f },
-MoveSpeedMultiplier{ 1.f }
+UAttributeSetSoldier::UAttributeSetSoldier(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer)
 {
 }
 
@@ -91,6 +87,9 @@ void UAttributeSetSoldier::PostGameplayEffectExecute(const FGameplayEffectModCal
 			{
 				if (ASquadLeaderGameModeBase* GameMode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode()); GameMode)
 					GameMode->NotifySoldierKilled(TargetSoldier, SourceSoldier);
+
+				if (ASoldierPlayer* TargetSoldierPlayer = Cast<ASoldierPlayer>(TargetSoldier); TargetSoldierPlayer)
+					TargetSoldierPlayer->SetSoldierKiller(SourceSoldier);
 			}
 			else if (SourceASC)
 			{

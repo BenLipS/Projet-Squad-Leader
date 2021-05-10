@@ -6,8 +6,22 @@
 #include "SquadLeader/Weapons/SL_Weapon.h"
 #include "../SoldierTeam.h"
 #include "../../AI/AISquadManager.h"
-#include "../../UI/SL_HUD.h"
-#include "SquadLeader/UI/Interface/AbilityCooldownDelegateInterface.h"
+
+#include "SquadLeader/UI/HUD/PlayerHUD.h"
+
+#include "SquadLeader/UI/Interface/PlayerHealthInterface.h"
+#include "SquadLeader/UI/Interface/PlayerShieldInterface.h"
+#include "SquadLeader/UI/Interface/PlayerPrestigeInterface.h"
+#include "SquadLeader/UI/Interface/SquadInterface.h"
+#include "SquadLeader/UI/Interface/WeaponInterface.h"
+#include "SquadLeader/UI/Interface/OrderInterface.h"
+#include "SquadLeader/UI/Interface/NotificationInterface.h"
+#include "SquadLeader/UI/Interface/MinimapInterface.h"
+#include "SquadLeader/UI/Interface/TicketInterface.h"
+#include "SquadLeader/UI/Interface/GameEndInterface.h"
+#include "SquadLeader/UI/Interface/AbilityCooldownInterface.h"
+#include "SquadLeader/UI/Interface/HitMarkerInterface.h"
+
 #include "SquadLeader/SquadLeader.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "GameFramework/GameModeBase.h"
@@ -44,29 +58,33 @@ void ASoldierPlayerController::CreateHUD_Implementation()
 		UE_LOG(LogTemp, Error, TEXT("%s() Missing HUDWidgetClass. Please fill in on the Blueprint of the PlayerController."), *FString(__FUNCTION__));
 		return;
 	}
-	ASL_HUD* CurrentHUD = GetHUD<ASL_HUD>();
+	auto CurrentHUD = GetHUD<APlayerHUD>();
 	if (CurrentHUD)
 		return;
 	ClientSetHUD(HUDClass);
-	if (InputComponent)
-	{
-		if (auto HUD = GetHUD<ASL_HUD>(); HUD)
-		{
-			InputComponent->BindAction("GiveOrder", IE_Pressed, HUD, &ASL_HUD::OnOrderInputPressed);
-			InputComponent->BindAction("GiveOrder", IE_Released, HUD, &ASL_HUD::OnOrderInputReleased);
-		}
 
-		if (auto HUD = GetHUD<ASL_HUD>(); HUD)
+	if (auto HUD = GetHUD<APlayerHUD>())
+	{
+		HUD->InitHUD();
+		/*HUD->SetPlayerStateLink();
+		HUD->SetAIStateLink();
+		HUD->BindSoldierTeamChanges();
+		HUD->BindControlAreas();*/
+
+		if (InputComponent)
 		{
-			InputComponent->BindAction("DisplayMap", IE_Pressed, HUD, &ASL_HUD::OnFullMapDisplayBegin);
-			InputComponent->BindAction("DisplayMap", IE_Released, HUD, &ASL_HUD::OnFullMapDisplayEnd);
+			InputComponent->BindAction("GiveOrder", IE_Pressed, HUD, &APlayerHUD::OnOrderInputPressed);
+			InputComponent->BindAction("GiveOrder", IE_Released, HUD, &APlayerHUD::OnOrderInputReleased);
+
+			InputComponent->BindAction("DisplayMap", IE_Pressed, HUD, &APlayerHUD::OnFullMapDisplayBegin);
+			InputComponent->BindAction("DisplayMap", IE_Released, HUD, &APlayerHUD::OnFullMapDisplayEnd);
 		}
 	}
 }
 
 void ASoldierPlayerController::BindMainAbilities()
 {
-	if (IAbilityCooldownDelegateInterface* HUD = GetHUD<IAbilityCooldownDelegateInterface>(); HUD)
+	if (auto HUD = GetHUD<IAbilityCooldownInterface>(); HUD)
 	{
 		HUD->AddAbilityID(ESoldierAbilityInputID::Ability1, "Q");
 		HUD->AddAbilityID(ESoldierAbilityInputID::Ability2, "E");
@@ -76,13 +94,13 @@ void ASoldierPlayerController::BindMainAbilities()
 
 void ASoldierPlayerController::NotifyMainAbilityCooldown(const float _Cooldown, const ESoldierAbilityInputID _ID)
 {
-	if (IAbilityCooldownDelegateInterface* HUD = GetHUD<IAbilityCooldownDelegateInterface>(); HUD)
+	if (auto HUD = GetHUD<IAbilityCooldownInterface>(); HUD)
 		HUD->OnAbilityCooldownTriggered(_Cooldown, _ID);
 }
 
 void ASoldierPlayerController::NotifySoldierHit(const float _Damage, const bool _bIsHeadShot)
 {
-	if (IHitMarkerInterfaceDelegate* HUD = GetHUD<IHitMarkerInterfaceDelegate>(); HUD)
+	if (auto HUD = GetHUD<IHitMarkerInterface>(); HUD)
 		HUD->OnDamageReceived(_Damage, _bIsHeadShot);
 
 }
@@ -110,7 +128,7 @@ void ASoldierPlayerController::OnRep_PlayerState()
 
 	// For edge cases where the PlayerState is repped before the Soldier is possessed.
 	CreateHUD();
-	if (ASL_HUD* CurrentHUD = GetHUD<ASL_HUD>())
+	if (auto CurrentHUD = GetHUD<APlayerHUD>())
 	{
 		CurrentHUD->SetPlayerStateLink();
 		CurrentHUD->SetAIStateLink();
@@ -121,7 +139,7 @@ void ASoldierPlayerController::Tick(float _deltaTime)
 {
 	Super::Tick(_deltaTime);
 
-	if (ASL_HUD* CurrentHUD = GetHUD<ASL_HUD>(); CurrentHUD && GetTeam())
+	if (auto CurrentHUD = GetHUD<IMinimapInterface>(); CurrentHUD && GetTeam())
 		CurrentHUD->OnUpdatePOIs();
 }
 
@@ -206,7 +224,7 @@ void ASoldierPlayerController::ClientSendCommand_Implementation(const FString& C
 void ASoldierPlayerController::OnSquadChanged_Implementation(const TArray<FSoldierAIData>& newValue)
 {
 	SquadManagerData.OnSquadDataChanged(newValue);
-	if (ASL_HUD* CurrentHUD = GetHUD<ASL_HUD>(); CurrentHUD)
+	if (auto CurrentHUD = GetHUD<ISquadInterface>(); CurrentHUD)
 	{
 		CurrentHUD->OnSquadChanged(newValue);
 	}
@@ -218,7 +236,7 @@ void ASoldierPlayerController::OnSquadMemberHealthChanged_Implementation(int ind
 	{
 		SquadManagerData.SquadData[index].Health = newHealth;
 		//Appel au HUD
-		if (ASL_HUD* CurrentHUD = GetHUD<ASL_HUD>(); CurrentHUD)
+		if (auto CurrentHUD = GetHUD<ISquadInterface>(); CurrentHUD)
 		{
 			CurrentHUD->OnSquadHealthChanged(index, newHealth);
 		}
@@ -232,7 +250,7 @@ void ASoldierPlayerController::OnSquadMemberMaxHealthChanged_Implementation(int 
 	{
 		SquadManagerData.SquadData[index].MaxHealth = newMaxHealth;
 		//Appel au HUD
-		if (ASL_HUD* CurrentHUD = GetHUD<ASL_HUD>(); CurrentHUD)
+		if (auto CurrentHUD = GetHUD<ISquadInterface>(); CurrentHUD)
 		{
 			CurrentHUD->OnSquadMaxHealthChanged(index, newMaxHealth);
 		}
@@ -246,7 +264,7 @@ void ASoldierPlayerController::OnSquadMemberShieldChanged_Implementation(int ind
 	{
 		SquadManagerData.SquadData[index].Shield = newShield;
 		//Appel au HUD
-		if (ASL_HUD* CurrentHUD = GetHUD<ASL_HUD>(); CurrentHUD)
+		if (auto CurrentHUD = GetHUD<ISquadInterface>(); CurrentHUD)
 		{
 			CurrentHUD->OnSquadShieldChanged(index, newShield);
 		}
@@ -260,7 +278,7 @@ void ASoldierPlayerController::OnSquadMemberMaxShieldChanged_Implementation(int 
 	{
 		SquadManagerData.SquadData[index].MaxShield = newMaxShield;
 		//Appel au HUD
-		if (ASL_HUD* CurrentHUD = GetHUD<ASL_HUD>(); CurrentHUD)
+		if (auto CurrentHUD = GetHUD<ISquadInterface>(); CurrentHUD)
 		{
 			CurrentHUD->OnSquadMaxShieldChanged(index, newMaxShield);
 		}
@@ -274,7 +292,7 @@ void ASoldierPlayerController::OnSquadMemberMissionChanged_Implementation(int in
 	{
 		SquadManagerData.SquadData[index].MissionState = newMission;
 		//Appel au HUD
-		if (auto CurrentHUD = GetHUD<ASL_HUD>(); CurrentHUD)
+		if (auto CurrentHUD = GetHUD<ISquadInterface>(); CurrentHUD)
 		{
 			CurrentHUD->OnSquadMemberMissionChanged(index, newMission);
 		}
@@ -288,7 +306,7 @@ void ASoldierPlayerController::OnSquadMemberClassChanged_Implementation(int inde
 	{
 		SquadManagerData.SquadData[index].ClassSoldier = newClass;
 		//Appel au HUD
-		if (auto CurrentHUD = GetHUD<ASL_HUD>(); CurrentHUD)
+		if (auto CurrentHUD = GetHUD<ISquadInterface>(); CurrentHUD)
 		{
 			CurrentHUD->OnSquadMemberClassChanged(index, newClass);
 		}
@@ -297,7 +315,7 @@ void ASoldierPlayerController::OnSquadMemberClassChanged_Implementation(int inde
 
 void ASoldierPlayerController::OnTextNotification_Received_Implementation(const FString& notificationString)
 {
-	if (ASL_HUD* CurrentHUD = GetHUD<ASL_HUD>(); CurrentHUD)
+	if (auto CurrentHUD = GetHUD<INotificationInterface>(); CurrentHUD)
 	{
 		CurrentHUD->OnTextNotification_Received(notificationString);
 	}
@@ -360,7 +378,7 @@ void ASoldierPlayerController::ServerAddAnAIToIndexSquad_Implementation()
 
 void ASoldierPlayerController::BroadCastManagerData()
 {
-	if (ASL_HUD* CurrentHUD = GetHUD<ASL_HUD>(); CurrentHUD)
+	if (auto CurrentHUD = GetHUD<ISquadInterface>(); CurrentHUD)
 		CurrentHUD->OnSquadChanged(SquadManagerData.SquadData);
 }
 

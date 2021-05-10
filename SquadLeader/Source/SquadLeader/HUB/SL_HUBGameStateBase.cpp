@@ -1,6 +1,6 @@
 #include "SL_HUBGameStateBase.h"
 #include "../UI/Interface/StatInfoInterface.h"
-#include "../UI/SL_HUD.h"
+#include "../UI/HUD/SL_HUD.h"
 
 ASL_HUBGameStateBase::ASL_HUBGameStateBase()
 {

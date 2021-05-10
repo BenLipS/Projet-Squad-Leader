@@ -178,25 +178,12 @@ void ASquadLeaderGameModeBase::InitInfluenceMap() {
 	}
 }
 
-
-void ASquadLeaderGameModeBase::SoldierDied(AController* _Controller)
+void ASquadLeaderGameModeBase::RespawnSoldier(ASoldier* _Soldier)
 {
-	FTimerHandle RespawnTimerHandle;
-	FTimerDelegate RespawnDelegate;
-
-	RespawnDelegate = FTimerDelegate::CreateUObject(this, &ASquadLeaderGameModeBase::RespawnSoldier, _Controller);
-	GetWorldTimerManager().SetTimer(RespawnTimerHandle, RespawnDelegate, RespawnDelay, false);
-
-	/*if (ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(_Controller); PC)
-		PC->SetRespawnCountdown(RespawnDelay);*/
-}
-
-void ASquadLeaderGameModeBase::RespawnSoldier(AController* _Controller)
-{
-	if (ASoldier* soldier = Cast<ASoldier>(_Controller->GetPawn()); soldier)
+	if (_Soldier)
 	{
-		soldier->SetActorLocation(soldier->GetRespawnPoint());
-		soldier->Respawn();
+		_Soldier->SetActorLocation(_Soldier->GetRespawnPoint());
+		_Soldier->Respawn();
 	}
 }
 
@@ -211,7 +198,7 @@ void ASquadLeaderGameModeBase::CheckControlAreaVictoryCondition()
 void ASquadLeaderGameModeBase::CheckTeamTicketsVictoryCondition()
 {
 	for (auto team : Cast<ASquadLeaderGameState>(GameState)->GetSoldierTeamCollection()) {
-		if (team->GetTicket() == 0) {
+		if (team->GetTickets() == 0) {
 			//GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Red, TEXT("END GAME: Tickets depleted\n") + teams->TeamName + TEXT(" lose !"), false, FVector2D(7, 7));
 			for (auto potentialwinningteam : Cast<ASquadLeaderGameState>(GameState)->GetSoldierTeamCollection())
 			if (potentialwinningteam != team && (potentialwinningteam->Id == 1 || potentialwinningteam->Id == 2))
@@ -258,6 +245,107 @@ void ASquadLeaderGameModeBase::CloseGame()
 	//FGenericPlatformMisc::RequestExit(false);
 }
 
+void ASquadLeaderGameModeBase::NotifySoldierKilled(ASoldier* _DeadSoldier, ASoldier* _Killer)
+{
+	UpdateTicketsFromSoldierDeath(_DeadSoldier);
+	GrantEXPFromSoldierDeath(_DeadSoldier, _Killer);
+	StartRespawnTimerForDeadSoldier(_DeadSoldier);
+	NotifySoldierDeathToAllPlayers(_DeadSoldier, _Killer);
+}
+
+void ASquadLeaderGameModeBase::NotifyControlAreaCaptured(AControlArea* _ControlArea)
+{
+	if (ASoldierTeam* Team = _ControlArea->GetIsTakenBy(); Team)
+	{
+		for (ASoldier* Soldier : Team->GetSoldierList())
+		{
+			if (Soldier->IsA<ASoldierPlayer>())
+				Soldier->GrantEXP(EXP_ControlAreaCaptured);
+		}
+		CheckControlAreaVictoryCondition();
+	}
+}
+
+void ASquadLeaderGameModeBase::UpdateTicketsFromSoldierDeath(ASoldier* _DeadSoldier)
+{
+	ASoldierTeam* SoldierTeam = _DeadSoldier->GetTeam();
+	if (SoldierTeam)
+	{
+		if (_DeadSoldier->IsA<ASoldierPlayer>())
+			SoldierTeam->RemoveTickets(TicketToRemove_Player); // Soldier is a player
+		else if (ASoldierAI* SoldierAI = Cast<ASoldierAI>(_DeadSoldier); SoldierAI)
+		{
+			if (SoldierAI->GetController()->IsA<AAISquadController>()) 
+				SoldierTeam->RemoveTickets(TicketToRemove_AISquad); // Soldier is a squad AI
+			else
+				SoldierTeam->RemoveTickets(TicketToRemove_AIBasic); // Soldier is a basic AI
+		}
+		CheckTeamTicketsVictoryCondition();
+	}
+}
+
+void ASquadLeaderGameModeBase::StartRespawnTimerForDeadSoldier(ASoldier* _DeadSoldier)
+{
+	FTimerHandle RespawnTimerHandle;
+	FTimerDelegate RespawnDelegate;
+
+	RespawnDelegate = FTimerDelegate::CreateUObject(this, &ASquadLeaderGameModeBase::RespawnSoldier, _DeadSoldier);
+	GetWorldTimerManager().SetTimer(RespawnTimerHandle, RespawnDelegate, RespawnDelay, false);
+
+	/*if (ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(_Controller); PC)
+		PC->SetRespawnCountdown(RespawnDelay);*/
+}
+
+void ASquadLeaderGameModeBase::NotifySoldierDeathToAllPlayers(ASoldier* _DeadSoldier, ASoldier* _KillerSoldier)
+{
+	const ASoldierTeam* DeadSoldierTeam = _DeadSoldier->GetTeam();
+	const ASoldierTeam* KillerSoldierTeam = _KillerSoldier->GetTeam();
+
+	const ASoldierPlayer* DeadSoldierPlayer = Cast<ASoldierPlayer>(_DeadSoldier);
+	const ASoldierPlayer* KillerSoldierPlayer = Cast<ASoldierPlayer>(_KillerSoldier);
+
+	const bool bDeadIsPlayer = !!DeadSoldierPlayer;
+	const bool bKillerIsPlayer = !!KillerSoldierPlayer;
+	const bool bPlayerInvolved = bDeadIsPlayer || bKillerIsPlayer;
+	const bool bIsSuicide = bKillerIsPlayer && (_DeadSoldier == _KillerSoldier);
+	const bool bKillerIsSquadAI = _KillerSoldier->GetController()->IsA<AAISquadController>();
+
+	// Leader of the killer - for AIs
+	const ASoldier* SoldierLeader = nullptr;
+
+	if (bKillerIsSquadAI)
+	{
+		const AAISquadManager* SquadManager = Cast<AAISquadController>(_KillerSoldier->GetController())->SquadManager;
+		if (SquadManager)
+			SoldierLeader = SquadManager->Leader;
+	}
+
+	for (auto PCIterator = GetWorld()->GetPlayerControllerIterator(); PCIterator; PCIterator++)
+	{
+		if (ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(PCIterator->Get()); PC)
+		{
+			// Ticket notification
+			if (PC->GetTeam() == DeadSoldierTeam)
+				PC->OnAllyTicket_Received(DeadSoldierTeam->GetTickets());
+			else
+				PC->OnEnnemyTicket_Received(DeadSoldierTeam->GetTickets());
+
+			// Text notification
+			if (bIsSuicide)
+			{
+				PC->OnTextNotification_Received(FString::Printf(TEXT("%s is dead..."), *_DeadSoldier->GetName()));
+			}
+			else if (bPlayerInvolved)
+			{
+				if (bKillerIsSquadAI && SoldierLeader)
+					PC->OnTextNotification_Received(FString::Printf(TEXT(/*"%s from */"Squad of %s killed %s"), *_DeadSoldier->GetName(), *SoldierLeader->GetName()));
+				else
+					PC->OnTextNotification_Received(FString::Printf(TEXT("%s killed %s"), *_KillerSoldier->GetName(), *_DeadSoldier->GetName()));
+			}
+		}
+	}
+}
+
 void ASquadLeaderGameModeBase::GrantOverTimeEXPToSoldier()
 {
 	for (ASoldierTeam* Team : Cast<ASquadLeaderGameState>(GameState)->GetSoldierTeamCollection())
@@ -270,14 +358,14 @@ void ASquadLeaderGameModeBase::GrantOverTimeEXPToSoldier()
 	}
 }
 
-void ASquadLeaderGameModeBase::NotifySoldierKilled(ASoldier* _DeadSoldier, ASoldier* _Killer)
+void ASquadLeaderGameModeBase::GrantEXPFromSoldierDeath(ASoldier* _DeadSoldier, ASoldier* _KillerSoldier)
 {
 	// Grant EXP to the killed player
 	if (ASoldierPlayer* _DeadSoldierPlayer = Cast<ASoldierPlayer>(_DeadSoldier); _DeadSoldierPlayer) {
 		_DeadSoldierPlayer->GrantEXP(EXP_Death);
 
 		// Find if the killer is a soldier or an AI
-		if (_Killer->IsA<ASoldierPlayer>()) {
+		if (_KillerSoldier->IsA<ASoldierPlayer>()) {
 			if (auto PS = _DeadSoldierPlayer->GetPlayerState<ASoldierPlayerState>(); PS) PS->PersonalRecord->NbDeathByPlayer++;
 		}
 		else {  // the killer is an AI
@@ -286,11 +374,11 @@ void ASquadLeaderGameModeBase::NotifySoldierKilled(ASoldier* _DeadSoldier, ASold
 	}
 
 	// Only Grant EXP to enemies
-	if (_DeadSoldier->GetTeam() == _Killer->GetTeam())
+	if (_DeadSoldier->GetTeam() == _KillerSoldier->GetTeam())
 		return;
 
 	// Grant EXP to the killer player
-	if (ASoldierPlayer* _KillerPlayer = Cast<ASoldierPlayer>(_Killer); _KillerPlayer)
+	if (ASoldierPlayer* _KillerPlayer = Cast<ASoldierPlayer>(_KillerSoldier); _KillerPlayer)
 	{
 		_KillerPlayer->GrantEXP(EXP_Kill);
 
@@ -303,8 +391,8 @@ void ASquadLeaderGameModeBase::NotifySoldierKilled(ASoldier* _DeadSoldier, ASold
 		}
 	}
 	// Grant EXP to the leader if the killer is a squad AI
-	else if (AAISquadController* SquadController = Cast<AAISquadController>(_Killer->GetController()); SquadController && SquadController->SquadManager)
-	{	
+	else if (AAISquadController* SquadController = Cast<AAISquadController>(_KillerSoldier->GetController()); SquadController && SquadController->SquadManager)
+	{
 		if (ASoldierPlayer* Leader = SquadController->SquadManager->Leader; Leader) {
 			Leader->GrantEXP(EXP_KillSquad);
 			if (_DeadSoldier->IsA<ASoldierPlayer>()) {
@@ -314,18 +402,5 @@ void ASquadLeaderGameModeBase::NotifySoldierKilled(ASoldier* _DeadSoldier, ASold
 				if (auto PS = Leader->GetPlayerState<ASoldierPlayerState>(); PS) PS->PersonalRecord->NbKillAI++;
 			}
 		}
-	}
-}
-
-void ASquadLeaderGameModeBase::NotifyControlAreaCaptured(AControlArea* _ControlArea)
-{
-	if (ASoldierTeam* Team = _ControlArea->IsTakenBy; Team)
-	{
-		for (ASoldier* Soldier : Team->GetSoldierList())
-		{
-			if (Soldier->IsA<ASoldierPlayer>())
-				Soldier->GrantEXP(EXP_ControlAreaCaptured);
-		}
-		CheckControlAreaVictoryCondition();
 	}
 }

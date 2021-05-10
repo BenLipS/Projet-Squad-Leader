@@ -7,7 +7,8 @@
 #include "../Soldiers/Soldier.h"
 #include "../Soldiers/Players/SoldierPlayer.h"
 #include "../Soldiers/Players/SoldierPlayerController.h"
-#include "../UI/SL_HUD.h"
+#include "SquadLeader/UI/Interface/WeaponInterface.h"
+#include "GameFramework/HUD.h"
 
 ASL_Weapon::ASL_Weapon()
 {
@@ -185,6 +186,12 @@ FGameplayTag ASL_Weapon::GetFireMode() const noexcept
 	return FireMode;
 }
 
+void ASL_Weapon::Unequip()
+{
+	if (OwningSoldier)
+		OwningSoldier->EquipWeapon(OwningSoldier->GetAllWeapons()[0]);
+}
+
 float ASL_Weapon::GetMoveSpeedMultiplier() const noexcept
 {
 	return MoveSpeedMultiplier;
@@ -233,7 +240,7 @@ void ASL_Weapon::SetCurrentAmmo(const int32 _NewAmmo)
 	{
 		if (ASoldierPlayerController* PC = SP->GetController<ASoldierPlayerController>(); PC)
 		{
-			if (ASL_HUD* HUD = PC->GetHUD<ASL_HUD>(); HUD)
+			if (auto HUD = PC->GetHUD<IWeaponInterface>(); HUD)
 			{
 				HUD->OnAmmoChanged(CurrentAmmo);
 			}
@@ -252,6 +259,16 @@ void ASL_Weapon::DecrementAmmo()
 		OnOutOfAmmo();
 }
 
+void ASL_Weapon::OnOutOfAmmo()
+{
+	// TODO: For now we get the first weapon of soldier. This is just use for heavy with bazooka. This should be improved if we improve the game...
+	if (bUnequipIfOutOfAmmo)
+	{
+		FTimerHandle Timer{};
+		GetWorldTimerManager().SetTimer(Timer, this, &ASL_Weapon::Unequip, 0.4f, false);
+	}
+}
+
 void ASL_Weapon::SetMaxAmmo(const int32 _NewMaxAmmo)
 {
 	MaxAmmo = _NewMaxAmmo;
@@ -260,7 +277,7 @@ void ASL_Weapon::SetMaxAmmo(const int32 _NewMaxAmmo)
 	{
 		if (ASoldierPlayerController* PC = SP->GetController<ASoldierPlayerController>(); PC)
 		{
-			if (ASL_HUD* HUD = PC->GetHUD<ASL_HUD>(); HUD)
+			if (auto HUD = PC->GetHUD<IWeaponInterface>(); HUD)
 				HUD->OnMaxAmmoChanged(MaxAmmo);
 		}
 	}
