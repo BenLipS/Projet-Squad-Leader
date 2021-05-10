@@ -89,7 +89,7 @@ void UGA_FireWeaponInstant::FireBullet()
 
 	// Update line tracing
 	FGameplayAbilityTargetingLocationInfo TraceStartLocation;
-	TraceStartLocation.LiteralTransform = SourceWeapon->GetOwner()->GetActorTransform();
+	TraceStartLocation.LiteralTransform = FTransform{ SourceWeapon->GetWeaponMesh()->GetSocketLocation(SourceWeapon->GetMuzzleAttachPoint()) };
 
 	LineTrace->SetStartLocation(TraceStartLocation);
 
