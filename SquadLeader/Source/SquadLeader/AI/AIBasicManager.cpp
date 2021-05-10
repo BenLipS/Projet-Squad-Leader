@@ -101,6 +101,10 @@ void AAIBasicManager::Tick(float DeltaSeconds) {
 	Super::Tick(DeltaSeconds);
 	/*if (GEngine)
 		GEngine->AddOnScreenDebugMessage(80, 2.f, FColor::Black, TEXT("I'm the AIBasicManager"));*/
+	if (ControlAreasBeenUpdate && AIBasicAvailable.Num() > 1) {
+		GEngine->AddOnScreenDebugMessage(10, 5.f, FColor::Black, FString::Printf(TEXT("Nouvelle Stratégie")));
+		ControlAreasBeenUpdate = false;
+	}
 }
 
 void AAIBasicManager::InitValue() {
@@ -169,7 +173,7 @@ void AAIBasicManager::AIUnavailable(const uint32 IndexSoldier) {
 }
 
 void AAIBasicManager::UpdateControlArea(const uint8 TeamID, const uint8 IndexControlArea){
-	GEngine->AddOnScreenDebugMessage(10, 5.f, FColor::Black, TEXT("Les managers sont au courant qu'un point de controle est prit !"));
+	//GEngine->AddOnScreenDebugMessage(10, 5.f, FColor::Black, TEXT("Les managers sont au courant qu'un point de controle est prit !"));
 	if (TeamID != Team->Id) {
 		if (ControlAreaAllies.Num() > 0 && ControlAreaAllies.Contains(IndexControlArea))
 			ControlAreaAllies.Remove(IndexControlArea);
@@ -185,7 +189,7 @@ void AAIBasicManager::UpdateControlArea(const uint8 TeamID, const uint8 IndexCon
 			ControlAreaNeutral.Remove(IndexControlArea);
 		ControlAreaAllies.Add(IndexControlArea);
 	}
-
+	ControlAreasBeenUpdate = true;
 	/*float time = 15.f;
 	if (Team->Id == 1) {
 		GEngine->AddOnScreenDebugMessage(20, time, FColor::Blue, FString::Printf(TEXT("il reste encore %i zone de controle neutre."), ControlAreaNeutral.Num()));

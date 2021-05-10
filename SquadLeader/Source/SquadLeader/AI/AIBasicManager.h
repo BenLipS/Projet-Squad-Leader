@@ -134,4 +134,7 @@ public:
 	UFUNCTION()
 		void UpdateControlArea(const uint8 TeamID, const uint8 IndexControlArea);
 
+protected:
+	UPROPERTY()
+		bool ControlAreasBeenUpdate = false;
 };
