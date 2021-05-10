@@ -13,11 +13,15 @@
 void APlayerHUD::BeginPlay()
 {
 	Super::BeginPlay();
+	//TODO : Init Tickets
+}
+
+void APlayerHUD::OnInitHUD()
+{
 	SetPlayerStateLink();
 	SetAIStateLink();
 	BindSoldierTeamChanges();
 	BindControlAreas();
-	//TODO : Init Tickets
 }
 
 void APlayerHUD::SetPlayerStateLink()

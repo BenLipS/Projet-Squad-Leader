@@ -48,20 +48,24 @@ void ASoldierPlayerController::CreateHUD_Implementation()
 		UE_LOG(LogTemp, Error, TEXT("%s() Missing HUDWidgetClass. Please fill in on the Blueprint of the PlayerController."), *FString(__FUNCTION__));
 		return;
 	}
-	ASL_HUD* CurrentHUD = GetHUD<ASL_HUD>();
+	auto CurrentHUD = GetHUD<APlayerHUD>();
 	if (CurrentHUD)
 		return;
 	ClientSetHUD(HUDClass);
-	if (InputComponent)
+
+	if (auto HUD = GetHUD<APlayerHUD>())
 	{
-		if (auto HUD = GetHUD<APlayerHUD>(); HUD)
+		HUD->InitHUD();
+		/*HUD->SetPlayerStateLink();
+		HUD->SetAIStateLink();
+		HUD->BindSoldierTeamChanges();
+		HUD->BindControlAreas();*/
+
+		if (InputComponent)
 		{
 			InputComponent->BindAction("GiveOrder", IE_Pressed, HUD, &APlayerHUD::OnOrderInputPressed);
 			InputComponent->BindAction("GiveOrder", IE_Released, HUD, &APlayerHUD::OnOrderInputReleased);
-		}
 
-		if (auto HUD = GetHUD<APlayerHUD>(); HUD)
-		{
 			InputComponent->BindAction("DisplayMap", IE_Pressed, HUD, &APlayerHUD::OnFullMapDisplayBegin);
 			InputComponent->BindAction("DisplayMap", IE_Released, HUD, &APlayerHUD::OnFullMapDisplayEnd);
 		}

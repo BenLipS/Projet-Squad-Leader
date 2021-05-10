@@ -367,7 +367,7 @@ void UMinimapWidget::OnFullMapDisplayBegin()
 	bMapKeyPressed = true;
 	if (IsValid(MinimapToMap))
 	{
-		PlayAnimationForward(MinimapToMap);
+		PlayAnimationForward(MinimapToMap, 2.f);
 		bIsPlayerCentered = false;
 	}
 }
@@ -378,7 +378,7 @@ void UMinimapWidget::OnFullMapDisplayEnd()
 	SetInteractivity(false);
 	if (IsValid(MinimapToMap))
 	{
-		PlayAnimationReverse(MinimapToMap);
+		PlayAnimationReverse(MinimapToMap, 2.f);
 		bIsPlayerCentered = true;
 		PlayerIconImage->SetRenderTranslation(FVector2D::ZeroVector);
 	}

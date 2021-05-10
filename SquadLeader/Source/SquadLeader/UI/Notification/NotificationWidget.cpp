@@ -47,13 +47,12 @@ void UNotificationWidget::UpdateNotificationsPosition()
 		WidgetTree->RemoveWidget(remove.Widget);
 	}
 
-	int nbElement = 0;
 	float YPosition = 0.f;
 
 	for (auto pair : Items)
 	{
 		pair.Slot->SetPosition(FVector2D(0.f, YPosition));
-		YPosition -= pair.Slot->GetSize().Y;
+		YPosition += pair.Slot->GetSize().Y;
 	}
 }
 

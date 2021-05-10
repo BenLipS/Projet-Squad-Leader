@@ -42,6 +42,9 @@ class SQUADLEADER_API APlayerHUD : public ASL_HUD,
 
 protected:
 	virtual void BeginPlay() override;
+
+protected:
+	virtual void OnInitHUD() override;
 	
 public:
 	/*Initialize all data from Owner controller PlayerState,

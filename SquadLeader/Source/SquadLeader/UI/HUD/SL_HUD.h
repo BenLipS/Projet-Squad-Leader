@@ -21,6 +21,12 @@ protected:
 public:
 	ASL_HUD() = default;
 
+	//Must be called after it is created
+	void InitHUD();
+
+protected:
+	virtual void OnInitHUD();
+
 protected:
 	virtual void BeginPlay() override;
 };

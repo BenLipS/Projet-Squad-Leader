@@ -2,9 +2,10 @@
 #include "../SL_UserWidget.h"
 
 
-void ASL_HUD::BeginPlay()
+void ASL_HUD::InitHUD()
 {
-	Super::BeginPlay();
+	WidgetList.Empty();
+
 	for (TSubclassOf<USL_UserWidget> WidgetClass : WidgetClassList)
 	{
 		if (WidgetClass)
@@ -18,4 +19,15 @@ void ASL_HUD::BeginPlay()
 			}
 		}
 	}
+
+	OnInitHUD();
+}
+
+void ASL_HUD::OnInitHUD()
+{
+}
+
+void ASL_HUD::BeginPlay()
+{
+	Super::BeginPlay();
 }
