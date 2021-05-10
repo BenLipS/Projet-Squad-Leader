@@ -4,6 +4,7 @@
 #include "../Soldiers/Soldier.h"
 #include "../Soldiers/Players/SoldierPlayerController.h"
 #include "../UI/SL_HUD.h"
+#include "../AI/AIBasicManager.h"
 #include "ControlAreaManager.h"
 
 
@@ -188,7 +189,9 @@ void AControlArea::calculateControlValue()
 						m_package.m_type = Type::ControlArea;
 						m_package.ActorID = this->GetUniqueID();
 						GM->InfluenceMap->ReceivedMessage(m_package);
-
+						
+						for (auto& Manager : GM->AIBasicManagerCollection)
+							Manager.Value->UpdateControlArea(presentTeam->Id, IndexControlArea);
 
 					}
 					if (IsCapturedBy != presentTeam)

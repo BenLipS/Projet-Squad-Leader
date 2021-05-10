@@ -15,6 +15,15 @@ enum class AIAvaibility : uint8 {
 	available, unavailable
 };
 
+USTRUCT()
+struct SQUADLEADER_API FIndexSoldier {
+	GENERATED_USTRUCT_BODY()
+		FIndexSoldier() = default;
+
+	TArray<uint32> SoldierIndex;
+
+};
+
 
 /**
  * 
@@ -102,5 +111,27 @@ public:
 protected:
 	void AIAvailable(const uint32 IndexSoldier);
 	void AIUnavailable(const uint32 IndexSoldier);
+
+protected:
+	//Map d'index, pour des index
+	//La cle sera l'index de la control area, cette index permet de retrouver la controle area dans la Liste de controle area du ControlAreaManager
+	//La valeur est une liste d'index pour les soldat pour les retrouver dans la liste de AIBasic.
+	UPROPERTY()
+		TMap<uint32, FIndexSoldier> ListSoldierOnControlArea;
+
+	void InitListSoldierOnControlArea();
+
+
+protected:
+	UPROPERTY()
+		TArray<uint32> ControlAreaAllies;
+	UPROPERTY()
+		TArray<uint32> ControlAreaEnnemies;
+	UPROPERTY()
+		TArray<uint32> ControlAreaNeutral;
+
+public:
+	UFUNCTION()
+		void UpdateControlArea(const uint8 TeamID, const uint8 IndexControlArea);
 
 };
