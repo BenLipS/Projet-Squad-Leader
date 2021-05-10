@@ -217,7 +217,7 @@ void ASoldierPlayer::DeactivateFollowKillerCamera()
 
 void ASoldierPlayer::SetSoldierKiller(ASoldier* _SoldierKiller)
 {
-	if (GetLocalRole() == ENetRole::ROLE_Authority)
+	if (GetLocalRole() == ENetRole::ROLE_Authority && !IsLocallyControlled())
 		ClientSetSoldierKiller(_SoldierKiller);
 
 	SoldierKiller = _SoldierKiller;

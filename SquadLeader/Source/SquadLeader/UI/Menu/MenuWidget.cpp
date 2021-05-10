@@ -10,14 +10,6 @@
 
 #include "Components/CanvasPanel.h"
 
-void UMenuWidget::SetupDelegateToObject_Implementation(UObject* ObjectIn)
-{
-	if (auto HUDStatInfo = Cast<IStatInfoDelegateInterface>(ObjectIn); HUDStatInfo)
-	{
-		HUDStatInfo->AddStatInfoDelegate(this);
-	}
-}
-
 void UMenuWidget::SynchronizeProperties()
 {
 	Super::SynchronizeProperties();
