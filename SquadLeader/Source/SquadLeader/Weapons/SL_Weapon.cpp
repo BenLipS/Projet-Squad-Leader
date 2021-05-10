@@ -185,6 +185,12 @@ FGameplayTag ASL_Weapon::GetFireMode() const noexcept
 	return FireMode;
 }
 
+void ASL_Weapon::Unequip()
+{
+	if (OwningSoldier)
+		OwningSoldier->EquipWeapon(OwningSoldier->GetAllWeapons()[0]);
+}
+
 float ASL_Weapon::GetMoveSpeedMultiplier() const noexcept
 {
 	return MoveSpeedMultiplier;
@@ -250,6 +256,16 @@ void ASL_Weapon::DecrementAmmo()
 
 	if (!HasAmmo())
 		OnOutOfAmmo();
+}
+
+void ASL_Weapon::OnOutOfAmmo()
+{
+	// TODO: For now we get the first weapon of soldier. This is just use for heavy with bazooka. This should be improved if we improve the game...
+	if (bUnequipIfOutOfAmmo)
+	{
+		FTimerHandle Timer{};
+		GetWorldTimerManager().SetTimer(Timer, this, &ASL_Weapon::Unequip, 0.4f, false);
+	}
 }
 
 void ASL_Weapon::SetMaxAmmo(const int32 _NewMaxAmmo)
