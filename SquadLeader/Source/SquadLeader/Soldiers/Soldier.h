@@ -256,12 +256,20 @@ public:
 	USpringArmComponent* SpringArmComponent;
 
 // Camera Shake
+protected:
+	// Camera shake when receiving damage from a fire weapon
+	UPROPERTY(EditDefaultsOnly, Category = "Camera|Camera Shake")
+	TSubclassOf<UMatineeCameraShake> CameraShakeReceiveDamageClass;
+
 public:
+	UFUNCTION(BlueprintCallable, Category = "Camera|Camera Shake")
+	TSubclassOf<UMatineeCameraShake> GetCameraShakeReceiveDamageClass() const;
+
 	// Return camera shake fire class of the current weapon if exists
+	UFUNCTION(BlueprintCallable, Category = "Camera|Camera Shake")
 	TSubclassOf<UMatineeCameraShake> GetCameraShakeFireClass() const;
 
-	// Matinee is deprecated - Should use the new camera shake sequence
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void ShakeCamera(TSubclassOf<UMatineeCameraShake> _CameraShakeClass);
 
 	//LevelUp Animation

@@ -1023,6 +1023,11 @@ void ASoldier::OnReceiveDamage(const FVector& _ImpactPoint, const FVector& _Sour
 {
 }
 
+TSubclassOf<UMatineeCameraShake> ASoldier::GetCameraShakeReceiveDamageClass() const
+{
+	return CameraShakeReceiveDamageClass;
+}
+
 TSubclassOf<UMatineeCameraShake> ASoldier::GetCameraShakeFireClass() const
 {
 	return CurrentWeapon ? CurrentWeapon->GetCameraShakeFireClass() : nullptr;
