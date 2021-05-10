@@ -67,6 +67,9 @@ void AAIBasicManager::Init(ASoldierTeam* _Team)
 				AC->SetQueryFilter(m_queryFilter_team1);
 			else
 				AC->SetQueryFilter(m_queryFilter_team2);
+
+			AC->SetManager(this);
+			AC->SetIndexValue(AIBasicList.Num());
 			AIBasicList.Add(AC);
 
 			//Add the mission Patroling by default
@@ -111,24 +114,33 @@ void AAIBasicManager::ChooseControlArea() {
 	}
 }
 
-void AAIBasicManager::ChangeAIStatus(const AIAvaibility status, const AAIGeneralController* AI) {
+void AAIBasicManager::ChangeAIStatus(const AIAvaibility status, const uint32 IndexSoldier) {
 	switch (status) {
 	case AIAvaibility::available:
-		AIAvailable(AI);
+		AIAvailable(IndexSoldier);
 		break;
 	case AIAvaibility::unavailable:
-		AIUnavailable(AI);
+		AIUnavailable(IndexSoldier);
 		break;
 	default:
 		break;
 	}
 }
 
-void AAIBasicManager::AIAvailable(const AAIGeneralController* AI) {
-	GEngine->AddOnScreenDebugMessage(10, 1.f, FColor::Purple, TEXT("Une IA est disponible !"));
+void AAIBasicManager::AIAvailable(const uint32 IndexSoldier) {
+	//GEngine->AddOnScreenDebugMessage(10, 1.f, FColor::Purple, TEXT("Une IA est disponible !"));
+	AIBasicAvailable.Add(IndexSoldier);
+	if(AIBasicUnavailable.Num() > 0)
+		AIBasicUnavailable.Remove(IndexSoldier);
+	//GEngine->AddOnScreenDebugMessage(20, 5.f, FColor::Black, FString::Printf(TEXT("Nombre d'IA disponible : %i "), AIBasicAvailable.Num()));
+	//GEngine->AddOnScreenDebugMessage(25, 5.f, FColor::Black, FString::Printf(TEXT("Nombre d'IA non disponible : %i "), AIBasicUnavailable.Num()));
 }
 
-void AAIBasicManager::AIUnavailable(const AAIGeneralController* AI) {
-	GEngine->AddOnScreenDebugMessage(20, 1.f, FColor::Purple, TEXT("Une IA n'est plus disponible !"));
-
+void AAIBasicManager::AIUnavailable(const uint32 IndexSoldier) {
+	//GEngine->AddOnScreenDebugMessage(30, 1.f, FColor::Yellow, TEXT("Une IA n'est plus disponible !"));
+	if (AIBasicAvailable.Num() > 0)
+		AIBasicAvailable.Remove(IndexSoldier);
+	AIBasicUnavailable.Add(IndexSoldier);
+	//GEngine->AddOnScreenDebugMessage(40, 5.f, FColor::Black, FString::Printf(TEXT("Nombre d'IA disponible : %i "), AIBasicAvailable.Num()));
+	//GEngine->AddOnScreenDebugMessage(45, 5.f, FColor::Black, FString::Printf(TEXT("Nombre d'IA non disponible : %i "), AIBasicUnavailable.Num()));
 }

@@ -53,4 +53,10 @@ public:
 	virtual void BecomeAvailable() override;
 
 	virtual void BecomeUnavailable() override;
+private:
+	uint32 IndexSoldier;
+
+public:
+	void SetIndexValue(const uint32 IndexValue) noexcept { IndexSoldier = IndexValue; }
+
 };

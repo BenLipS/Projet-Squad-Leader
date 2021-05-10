@@ -25,6 +25,9 @@ class SQUADLEADER_API AAIBasicManager : public AInfo
 	GENERATED_BODY()
 
 public:
+
+	using ai_type = TSharedPtr<AAIBasicController>;
+
 	AAIBasicManager();
 
 	UFUNCTION()
@@ -36,13 +39,13 @@ public:
 
 
 	UPROPERTY()
-	TArray<AAIBasicController*> AIBasicList;
+		TArray<AAIBasicController*> AIBasicList;
 
 	UPROPERTY()
-		TArray<AAIBasicController*> AIBasicAvailable;
+		TArray<uint32> AIBasicAvailable;
 
 	UPROPERTY()
-		TArray<AAIBasicController*> AIBasicUnavailable;
+		TArray<uint32> AIBasicUnavailable;
 
 	UPROPERTY()
 	ASoldierTeam* Team;
@@ -94,10 +97,10 @@ public:
 
 public:
 	UFUNCTION()
-		void ChangeAIStatus(const AIAvaibility status, const AAIGeneralController* AI);
+		void ChangeAIStatus(const AIAvaibility status, const uint32 IndexSoldier);
 
 protected:
-	void AIAvailable(const AAIGeneralController* AI);
-	void AIUnavailable(const AAIGeneralController* AI);
+	void AIAvailable(const uint32 IndexSoldier);
+	void AIUnavailable(const uint32 IndexSoldier);
 
 };

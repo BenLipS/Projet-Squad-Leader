@@ -89,9 +89,9 @@ void AAIBasicController::SetManager(AAIBasicManager* _manager) noexcept {
 }
 
 void AAIBasicController::BecomeAvailable() {
-	m_manager->ChangeAIStatus(AIAvaibility::available, this);
+	m_manager->ChangeAIStatus(AIAvaibility::available, IndexSoldier);
 }
 
 void AAIBasicController::BecomeUnavailable() {
-	m_manager->ChangeAIStatus(AIAvaibility::unavailable, this);
+	m_manager->ChangeAIStatus(AIAvaibility::unavailable, IndexSoldier);
 }
