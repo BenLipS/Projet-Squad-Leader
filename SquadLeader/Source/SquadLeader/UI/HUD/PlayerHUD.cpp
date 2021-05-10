@@ -13,6 +13,7 @@
 void APlayerHUD::BeginPlay()
 {
 	Super::BeginPlay();
+	BindControlAreas();
 	//TODO : Init Tickets
 }
 
