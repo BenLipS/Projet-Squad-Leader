@@ -77,6 +77,9 @@ void ASquadLeaderGameModeBase::StartPlay() {
 	FTimerHandle Handle{};
 	GetWorldTimerManager().SetTimer(Handle, this, &ASquadLeaderGameModeBase::GrantOverTimeEXPToSoldier, TimeBetweenGrantedEXP, true);
 
+	FTimerHandle ControlAreaTimer{};
+	GetWorldTimerManager().SetTimer(ControlAreaTimer, this, &ASquadLeaderGameModeBase::CheckControlAreaAdvantage, FrequenceForControlAreaInfluence, true);
+
 	Super::StartPlay();
 }
 
@@ -136,6 +139,18 @@ void ASquadLeaderGameModeBase::InitInfluenceMap() {
 	if (_InfluenceMap) {
 		_InfluenceMap->FinishSpawning(LocationTemp);
 		InfluenceMap = _InfluenceMap;
+	}
+}
+
+void ASquadLeaderGameModeBase::CheckControlAreaAdvantage()
+{
+	if (AControlAreaManager* ControlAreaManager = Cast<ASquadLeaderInitGameState>(GameState)->GetControlAreaManager(); ControlAreaManager) {
+		if (auto TeamWithAdvantage = ControlAreaManager->GetTeamWithControlAdvantage(); TeamWithAdvantage && (TeamWithAdvantage->Id == 1 || TeamWithAdvantage->Id == 2)) {
+			// we need to find the other team
+			if (auto TeamWithoutAdvantage = Cast<ASquadLeaderInitGameState>(GameState)->GetSoldierTeamByID((TeamWithAdvantage->Id % 2) + 1); TeamWithoutAdvantage) {
+				TeamWithoutAdvantage->RemoveTickets(ControlAreaTicketsReduction);
+			}
+		}
 	}
 }
 

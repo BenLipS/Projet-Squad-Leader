@@ -105,6 +105,13 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Tickets")
 	int TicketToRemove_AIBasic = 1;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Tickets")
+		int FrequenceForControlAreaInfluence = 5;
+	UPROPERTY(EditDefaultsOnly, Category = "Tickets")
+		int ControlAreaTicketsReduction = 1;
+
+	void CheckControlAreaAdvantage();
+
 //////////////// Killing Streak management
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "KillingStreak")
