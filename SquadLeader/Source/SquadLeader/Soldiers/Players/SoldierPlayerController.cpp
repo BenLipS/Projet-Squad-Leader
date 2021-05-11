@@ -64,6 +64,8 @@ void ASoldierPlayerController::CreateHUD_Implementation()
 
 			InputComponent->BindAction("DisplayMap", IE_Pressed, HUD, &APlayerHUD::OnFullMapDisplayBegin);
 			InputComponent->BindAction("DisplayMap", IE_Released, HUD, &APlayerHUD::OnFullMapDisplayEnd);
+
+			InputComponent->BindAction("OpenChat", IE_Pressed, HUD, &APlayerHUD::OnChatInputPressed);
 		}
 	}
 }
@@ -344,6 +346,25 @@ void ASoldierPlayerController::OnGameEnd_Implementation(const int MatchResult, f
 	
 	GetGameInstance<USquadLeaderGameInstance>()->UpdateNetworkStatus(MatchResult, GameDuration, XP,
 		NbKillAI, NbKillPlayer, NbDeathByAI, NbDeathByPlayer);  // notify the server
+}
+
+void ASoldierPlayerController::OnChatMessageReceived_Implementation(const FString& message)
+{
+	if (auto HUD = GetHUD<IChatInterface>())
+	{
+		HUD->OnChatMessageReceived(message);
+	}
+}
+
+void ASoldierPlayerController::OnChatMessageSent_Implementation(const FString& message)
+{
+	for (auto iterator = GetWorld()->GetPlayerControllerIterator(); iterator; iterator++)
+	{
+		if (auto PC = Cast<ASoldierPlayerController>(iterator->Get()))
+		{
+			PC->OnChatMessageReceived(message);
+		}
+	}
 }
 
 void ASoldierPlayerController::OnOrderGiven_Implementation(MissionType Order, FVector Pos)

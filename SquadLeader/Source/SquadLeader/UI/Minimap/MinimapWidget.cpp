@@ -168,7 +168,7 @@ void UMinimapWidget::SetupDelegateToObject_Implementation(UObject* _ObjectIn)
 void UMinimapWidget::OnSoldierAddedToTeam(ASoldier* _Soldier)
 {
 	ASoldierPlayer* Player = Cast<ASoldierPlayer>(GetOwningPlayerPawn());
-	if (!Player || Cast<ASoldier>(Player) == _Soldier)
+	if (!Player || Cast<ASoldier>(Player) == _Soldier || !Player->IsLocallyControlled())
 		return;
 
 	UPointOfInterestWidget* POI;
