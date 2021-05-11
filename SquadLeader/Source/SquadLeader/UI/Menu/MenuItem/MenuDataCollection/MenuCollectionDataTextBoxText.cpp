@@ -6,7 +6,7 @@
 void UMenuCollectionDataTextBoxText::SynchronizeProperties()
 {
 	UMenuCollectionDataText::SynchronizeProperties();
-
+	SetDataValue("");
 }
 
 bool UMenuCollectionDataTextBoxText::SetDataValue(const FString& newValue, bool fireEvent)

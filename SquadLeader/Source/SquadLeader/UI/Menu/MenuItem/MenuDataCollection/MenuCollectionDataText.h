@@ -15,7 +15,7 @@ class SQUADLEADER_API UMenuCollectionDataText : public UMenuCollectionDataItem
 	
 protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-	FString DataValue = "";
+	FString DataValue = "Default Text";
 
 public:
 	UPROPERTY(BlueprintAssignable, Category = "Appearance|Event")
