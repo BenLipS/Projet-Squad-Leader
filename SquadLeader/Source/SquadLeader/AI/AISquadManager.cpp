@@ -19,7 +19,11 @@
 // temp include, need to be replace by more robust code
 #include "../Soldiers/Soldier.h"
 
-AAISquadManager::AAISquadManager() {
+AAISquadManager::AAISquadManager()
+{
+	bReplicates = true;
+	bAlwaysRelevant = true;
+
 	PrimaryActorTick.bStartWithTickEnabled = true;
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.TickGroup = TG_PrePhysics;
@@ -37,9 +41,8 @@ void AAISquadManager::Init(ASoldierTeam* _Team, ASoldierPlayer* _Player)
 			AGameParam* ImportedGameParam = GetGameInstance<USquadLeaderGameInstance>()->GameParam.GetDefaultObject();
 			StartNumberOfSoldiers = ImportedGameParam->StartingNbAISquad;
 		}
-		else {
+		else
 			StartNumberOfSoldiers = OverrideStartNumberOfSoldiers;
-		}
 	}
 
 	const FTransform PlayerTransform = Leader->GetTransform();
@@ -65,14 +68,33 @@ void AAISquadManager::Init(ASoldierTeam* _Team, ASoldierPlayer* _Player)
 			SquadAI->OnMaxShieldChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberMaxShieldChange);
 			SquadAI->FinishSpawning(TransformAI);
 			SquadAI->BroadCastDatas();
-			AISquadList.Add(Cast<AAISquadController>(SquadAI->Controller));
-			Cast<AAISquadController>(SquadAI->Controller)->SquadManager = this;
+
+			if (AAISquadController* AC = Cast<AAISquadController>(SquadAI->Controller))
+			{
+				AISquadControllerList.Add(AC);
+				AISoldierList.Add(SquadAI);
+				AC->SquadManager = this;
+			}
 		}
 	}
 
 	m_inFormation = true;
 	TypeOfFormation = FormationType::Circle;
 	BroadCastSquadData();
+}
+
+void AAISquadManager::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (GetLocalRole() == ENetRole::ROLE_Authority)
+	{
+		ASoldierPlayer* SoldierPlayer = Cast<ASoldierPlayer>(GetOwner());
+		ASoldierTeam* SoldierTeam = SoldierPlayer ? SoldierPlayer->GetTeam() : nullptr;
+
+		if (SoldierTeam)
+			Init(SoldierTeam, SoldierPlayer);
+	}
 }
 
 void AAISquadManager::Tick(float DeltaTime)
@@ -86,11 +108,22 @@ void AAISquadManager::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+void AAISquadManager::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AAISquadManager, AISoldierList);
+	DOREPLIFETIME(AAISquadManager, Leader);
+}
+
 void AAISquadManager::AddAnAIToSquad_Implementation()
 {
+	if (GetLocalRole() < ENetRole::ROLE_Authority)
+		return;
+
 	//if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("AAAAAAAAAAAAAAAAAAAAAAAAA"));
 	TSubclassOf<ASoldierAI> ClassAI;
-	switch (AISquadList.Num()) {
+	switch (AISquadControllerList.Num()) {
 	case 0:
 		ClassAI = ClassAI1;
 		break;
@@ -131,7 +164,7 @@ void AAISquadManager::AddAnAIToSquad_Implementation()
 		SquadAI->FinishSpawning(LocationAI);
 		SquadAI->BroadCastDatas();
 		SquadAI->SetTeam(Team);
-		AISquadList.Add(Cast<AAISquadController>(SquadAI->Controller));
+		AISquadControllerList.Add(Cast<AAISquadController>(SquadAI->Controller));
 		Cast<AAISquadController>(SquadAI->Controller)->SquadManager = this;
 
 		BroadCastSquadData();
@@ -141,12 +174,15 @@ void AAISquadManager::AddAnAIToSquad_Implementation()
 bool AAISquadManager::HasSoldier(const ASoldier* _Soldier) const
 {
 	if (AAISquadController* SC = Cast<AAISquadController>(_Soldier->GetController()))
-		return AISquadList.Find(SC) != INDEX_NONE;
+		return AISquadControllerList.Find(SC) != INDEX_NONE;
 	return false;
 }
 
 void AAISquadManager::UpdateFormation()
 {
+	if (GetLocalRole() < ENetRole::ROLE_Authority)
+		return;
+
 	switch (TypeOfFormation) {
 	case FormationType::Circle:
 		UpdateCircleFormation();
@@ -158,10 +194,10 @@ void AAISquadManager::UpdateFormation()
 		if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Wrong Formation Type"));
 	}
 
-	for (int i = 0; i < AISquadList.Num(); i++) {
+	for (int i = 0; i < AISquadControllerList.Num(); i++) {
 		FVector FormationPosAI = FormationPos[i];
 		FormationPosAI = UNavigationSystemV1::ProjectPointToNavigation(GetWorld(), FormationPosAI);
-		AISquadList[i]->UpdateFormation(FormationPosAI);
+		AISquadControllerList[i]->UpdateFormation(FormationPosAI);
 	}
 }
 
@@ -172,13 +208,13 @@ void AAISquadManager::UpdateCircleFormation()
 	FVector LocPlayer = Leader->GetActorLocation();
 	float angle = FMath::RadiansToDegrees(FGenericPlatformMath::Acos(FVector::DotProduct({ 1,0,0 }, DirPlayer) / (1 * DirPlayer.Size())));
 	if (DirPlayer.Y < 0) angle = -angle;
-	float AnglePerAI = 360.f / AISquadList.Num();
+	float AnglePerAI = 360.f / AISquadControllerList.Num();
 	FormationPos.Empty();
-	std::for_each(AISquadList.begin(), AISquadList.end(), [&](AAISquadController* BoidController) {
+	std::for_each(AISquadControllerList.begin(), AISquadControllerList.end(), [&](AAISquadController* BoidController) {
 		FVector Pos{};
 		FVector Offset{ 500.f, 0.f, 0.f };
 		Offset = Offset.RotateAngleAxis(angle, { 0, 0, 1 });
-		Offset = Offset.RotateAngleAxis(AnglePerAI * AISquadList.IndexOfByKey(BoidController), { 0, 0, 1 });
+		Offset = Offset.RotateAngleAxis(AnglePerAI * AISquadControllerList.IndexOfByKey(BoidController), { 0, 0, 1 });
 		Pos = LocPlayer + Offset;
 		FormationPos.Add(Pos);
 		});
@@ -186,20 +222,20 @@ void AAISquadManager::UpdateCircleFormation()
 
 void AAISquadManager::UpdateArrowFormation()
 {
-	if (AISquadList.Num() > 1) {
+	if (AISquadControllerList.Num() > 1) {
 		FVector DirPlayer = Leader->GetActorForwardVector();
 		//DirPlayer = -DirPlayer;
 		FVector LocPlayer = Leader->GetActorLocation();
 		float angle = FMath::RadiansToDegrees(FGenericPlatformMath::Acos(FVector::DotProduct({ 1,0,0 }, DirPlayer) / (1 * DirPlayer.Size())));
 		if (DirPlayer.Y < 0) angle = -angle;
-		float AnglePerAI = 180 / (AISquadList.Num() - 1);
+		float AnglePerAI = 180 / (AISquadControllerList.Num() - 1);
 		FormationPos.Empty();
-		std::for_each(AISquadList.begin(), AISquadList.end(), [&](AAISquadController* BoidController) {
+		std::for_each(AISquadControllerList.begin(), AISquadControllerList.end(), [&](AAISquadController* BoidController) {
 			FVector Pos{};
 			FVector Offset{ 0.f, -1.f, 0.f };
 			Offset = Offset.RotateAngleAxis(angle, { 0, 0, 1 });
-			Offset = Offset.RotateAngleAxis(AnglePerAI * AISquadList.IndexOfByKey(BoidController), { 0, 0, 1 });
-			float CoefToGetCloser = FMath::Abs(90 - AnglePerAI * AISquadList.IndexOfByKey(BoidController)) / 90;
+			Offset = Offset.RotateAngleAxis(AnglePerAI * AISquadControllerList.IndexOfByKey(BoidController), { 0, 0, 1 });
+			float CoefToGetCloser = FMath::Abs(90 - AnglePerAI * AISquadControllerList.IndexOfByKey(BoidController)) / 90;
 			Pos = LocPlayer + Offset * 200 * (1 - CoefToGetCloser + 1.5f);
 			//DrawDebugPoint(Leader->GetWorld(), Pos, 20, FColor::Yellow);
 			FormationPos.Add(Pos);
@@ -209,9 +245,12 @@ void AAISquadManager::UpdateArrowFormation()
 
 void AAISquadManager::UpdateMission(const MissionType _MissionType, const FVector& _Location)
 {
+	if (GetLocalRole() < ENetRole::ROLE_Authority)
+		return;
+
 	FVector ValidMissionLocation = GetValidMissionLocation(_Location);
 	auto for_each_sqaud = [&](bool hasOrder, bool isInFormation) {
-		for (AAISquadController* AISquad : AISquadList) {
+		for (AAISquadController* AISquad : AISquadControllerList) {
 
 			UPatrolMission* _patrolMisssion = Cast<UPatrolMission>(NewObject<UPatrolMission>(this, UPatrolMission::StaticClass()));
 			_patrolMisssion->InitPatrolMission(1, MissionPriority::eMIDDLE);
@@ -226,7 +265,7 @@ void AAISquadManager::UpdateMission(const MissionType _MissionType, const FVecto
 	{
 	case MissionType::FormationCircle:
 		Leader->DestroyPing();
-		for (AAISquadController* AISquad : AISquadList) {
+		for (AAISquadController* AISquad : AISquadControllerList) {
 			AISquad->EmptyMissionList();
 			UFormationMission* _formationMission = Cast<UFormationMission>(NewObject<UFormationMission>(this, UFormationMission::StaticClass()));
 			_formationMission->InitFormation(1, MissionPriority::eBASIC, ValidMissionLocation);
@@ -239,7 +278,7 @@ void AAISquadManager::UpdateMission(const MissionType _MissionType, const FVecto
 		break;
 	case MissionType::FormationArrow:
 		Leader->DestroyPing();
-		for (AAISquadController* AISquad : AISquadList) {
+		for (AAISquadController* AISquad : AISquadControllerList) {
 			AISquad->EmptyMissionList();
 			UFormationMission* _formationMission = Cast<UFormationMission>(NewObject<UFormationMission>(this, UFormationMission::StaticClass()));
 			_formationMission->InitFormation(1, MissionPriority::eBASIC, ValidMissionLocation);
@@ -283,7 +322,7 @@ FVector AAISquadManager::GetValidMissionLocation(const FVector& _Location)
 void AAISquadManager::UpdateSquadTeam(ASoldierTeam* _NewTeam)
 {
 	Team = _NewTeam;
-	for (auto SquadIA : AISquadList) {
+	for (auto SquadIA : AISquadControllerList) {
 		if (ASoldier* soldier = Cast<ASoldier>(SquadIA->GetPawn()); soldier) {
 			soldier->SetTeam(_NewTeam);
 		}
@@ -293,7 +332,7 @@ void AAISquadManager::UpdateSquadTeam(ASoldierTeam* _NewTeam)
 void AAISquadManager::BroadCastSquadData()
 {
 	TArray<FSoldierAIData> SoldierData;
-	for (auto AIC : AISquadList)
+	for (auto AIC : AISquadControllerList)
 	{
 		FSoldierAIData data;
 		if (ASoldierAI* SoldierAI = AIC->GetPawn<ASoldierAI>(); SoldierAI)
@@ -313,7 +352,7 @@ void AAISquadManager::BroadCastSquadData()
 void AAISquadManager::OnSquadMemberHealthChange(float newHealth, AAISquadController* SoldierController)
 {
 	int index;
-	index = AISquadList.Find(SoldierController);
+	index = AISquadControllerList.Find(SoldierController);
 	if (index != INDEX_NONE)
 	{
 		OnMemberHealthChanged.Broadcast(index, newHealth);
@@ -323,7 +362,7 @@ void AAISquadManager::OnSquadMemberHealthChange(float newHealth, AAISquadControl
 void AAISquadManager::OnSquadMemberMaxHealthChange(float newMaxHealth, AAISquadController* SoldierController)
 {
 	int index;
-	index = AISquadList.Find(SoldierController);
+	index = AISquadControllerList.Find(SoldierController);
 	if (index != INDEX_NONE)
 	{
 		OnMemberMaxHealthChanged.Broadcast(index, newMaxHealth);
@@ -333,7 +372,7 @@ void AAISquadManager::OnSquadMemberMaxHealthChange(float newMaxHealth, AAISquadC
 void AAISquadManager::OnSquadMemberShieldChange(float newShield, AAISquadController* SoldierController)
 {
 	int index;
-	index = AISquadList.Find(SoldierController);
+	index = AISquadControllerList.Find(SoldierController);
 	if (index != INDEX_NONE)
 	{
 		OnMemberShieldChanged.Broadcast(index, newShield);
@@ -343,7 +382,7 @@ void AAISquadManager::OnSquadMemberShieldChange(float newShield, AAISquadControl
 void AAISquadManager::OnSquadMemberMaxShieldChange(float newMaxShield, AAISquadController* SoldierController)
 {
 	int index;
-	index = AISquadList.Find(SoldierController);
+	index = AISquadControllerList.Find(SoldierController);
 	if (index != INDEX_NONE)
 	{
 		OnMemberMaxShieldChanged.Broadcast(index, newMaxShield);
@@ -353,7 +392,7 @@ void AAISquadManager::OnSquadMemberMaxShieldChange(float newMaxShield, AAISquadC
 void AAISquadManager::OnSquadMemberMissionChange(AIBasicState newValue, AAISquadController* SoldierController)
 {
 	int index;
-	index = AISquadList.Find(SoldierController);
+	index = AISquadControllerList.Find(SoldierController);
 	if (index != INDEX_NONE)
 	{
 		OnMemberStateChanged.Broadcast(index, newValue);
@@ -363,7 +402,7 @@ void AAISquadManager::OnSquadMemberMissionChange(AIBasicState newValue, AAISquad
 void AAISquadManager::OnSquadMemberClassChange(SoldierClass newValue, AAISquadController* SoldierController)
 {
 	int index;
-	index = AISquadList.Find(SoldierController);
+	index = AISquadControllerList.Find(SoldierController);
 	if (index != INDEX_NONE)
 	{
 		OnMemberClassChanged.Broadcast(index, newValue);

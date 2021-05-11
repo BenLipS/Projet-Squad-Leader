@@ -104,7 +104,6 @@ void UMinimapWidget::SetInteractivity(bool InInteractivity)
 			}
 		}
 	}
-	
 }
 
 void UMinimapWidget::NativeConstruct()

@@ -6,7 +6,9 @@
 #include "Materials/MaterialInterface.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Components/PostProcessComponent.h"
+#include "Net/UnrealNetwork.h"
 #include "SoldierPlayer.generated.h"
+
 class AAISquadManager;
 
 UCLASS()
@@ -20,6 +22,7 @@ public:
 public:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
+	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 	void PossessedBy(AController* _newController) override;
 	void OnRep_PlayerState() override;
 	virtual void DeadTagChanged(const FGameplayTag CallbackTag, int32 NewCount) override;
@@ -27,6 +30,7 @@ public:
 //////////////// Inits
 protected:
 	void InitCameraKiller();
+	void InitSquadManager();
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player class")
@@ -71,10 +75,10 @@ protected:
 //////////////// Squad
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "SquadManager")
-	TSubclassOf<class AAISquadManager> AISquadManagerClass;
+	TSubclassOf<AAISquadManager> AISquadManagerClass;
 
-	UPROPERTY(BlueprintReadOnly, Category = "SquadManager")
-	class AAISquadManager* SquadManager;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = "SquadManager")
+	AAISquadManager* SquadManager;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Ping")
 	TSubclassOf<class AActor> PingClass;

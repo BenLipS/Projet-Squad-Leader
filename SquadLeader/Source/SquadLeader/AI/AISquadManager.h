@@ -53,40 +53,49 @@ public:
 
 public:
 	AAISquadManager();
+
+protected:
+	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 
 public:
+	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
+
+public:
 	UPROPERTY(BlueprintReadOnly)
-	TArray<AAISquadController*> AISquadList;
+	TArray<AAISquadController*> AISquadControllerList;
+
+	UPROPERTY(BlueprintReadOnly, Replicated)
+	TArray<ASoldierAI*> AISoldierList;
 
 protected:
 	UPROPERTY(EditDefaultsOnly)
-		int OverrideStartNumberOfSoldiers = -1;
+	int OverrideStartNumberOfSoldiers = -1;
 	UPROPERTY(BlueprintReadOnly)
-		uint8 StartNumberOfSoldiers = 3;
+	uint8 StartNumberOfSoldiers = 3;
 
 public:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-		TSubclassOf<ASoldierAI> ClassAI1;
+	TSubclassOf<ASoldierAI> ClassAI1;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-		TSubclassOf<ASoldierAI> ClassAI2;
+	TSubclassOf<ASoldierAI> ClassAI2;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-		TSubclassOf<ASoldierAI> ClassAI3;
+	TSubclassOf<ASoldierAI> ClassAI3;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-		TSubclassOf<ASoldierAI> ClassAI4;
+	TSubclassOf<ASoldierAI> ClassAI4;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-		TSubclassOf<ASoldierAI> ClassAI5;
+	TSubclassOf<ASoldierAI> ClassAI5;
 
 	// TODO: Are there necessary?
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-		int MaxAIInSquad = 3;
+	int MaxAIInSquad = 3;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-		int MinAIInSquad = 5;
+	int MinAIInSquad = 5;
 
 	UFUNCTION()
 	void Init(ASoldierTeam* _Team, ASoldierPlayer* _Player);
@@ -94,7 +103,7 @@ public:
 	UPROPERTY()
 	ASoldierTeam* Team;
 
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	ASoldierPlayer* Leader;
 
 	UFUNCTION(Server, Reliable)
