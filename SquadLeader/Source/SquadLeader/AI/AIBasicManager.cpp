@@ -287,7 +287,7 @@ void AAIBasicManager::Strategy() {
 	if (AIBasicAvailable.Num() > 0) {
 		for (uint32 IndexControlAreaEnnemi : ControlAreaEnnemies) {
 			auto Elem = ListSoldierOnControlArea.Find(IndexControlAreaEnnemi);
-			while (Elem->SoldierIndex.Num() <= 9 && AIBasicAvailable.Num() > 0) {
+			while (Elem->SoldierIndex.Num() <= 6 && AIBasicAvailable.Num() > 0) {
 				const uint32 IndexSoldier = AIBasicAvailable[0];
 				uint32 IndexCA = 0;
 				if (AIBasicList[IndexSoldier]->GetIndexControlArea(IndexCA)) {
