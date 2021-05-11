@@ -3,7 +3,7 @@
 #include "UI/Interface/StatInfoInterface.h"
 #include "UI/Interface/StatInfoInterface.h"
 #include "UI/Menu/MenuItem/MenuList/MenuListInfo.h"
-#include <iostream>
+#include "UI/HUD/MainMenuHUD.h"
 
 #include "winsock.h"
 
@@ -31,6 +31,9 @@ void USquadLeaderGameInstance::Shutdown()
     // when closing
     if (OnlineStatus) {
         HttpCallChangeConnectedStatus(0);  // notify server of the deconnexion
+        if (GameID != "") {
+            HttpCallDeleteGame();
+        }
     }
     UserData.Save(UserDataFilename);  // save data
 }
@@ -49,6 +52,9 @@ void USquadLeaderGameInstance::OnStart()
 void USquadLeaderGameInstance::LaunchGame()
 {
     if (OnlineStatus) {
+        if (GameID != "") {
+            HttpCallDeleteGame();
+        }
         HttpCallCreateNewGame();
         HttpCallChangeConnectedStatus(2); // notify that the client is joining a new game
     }
@@ -126,7 +132,7 @@ void USquadLeaderGameInstance::ProfileInfo()
     statsIn.Add("Number of deaths per players", FString::FromInt(UserData.NbDeathPlayer));
     statsIn.Add("Number of wins", FString::FromInt(UserData.NbVictory));
     statsIn.Add("Number of defeats", FString::FromInt(UserData.NbLoss));
-    
+
     float WinRate;
     if (UserData.NbLoss == 0) {
         WinRate = UserData.NbVictory;
@@ -137,7 +143,7 @@ void USquadLeaderGameInstance::ProfileInfo()
     statsIn.Add("Win rate", FString::SanitizeFloat(WinRate));
     statsIn.Add("Score", FString::FromInt(UserData.Score));
     statsIn.Add("Playtime", FString::FromInt(UserData.PlayTime));
-    
+
 
     if (auto PC = GetPrimaryPlayerController(); PC)
     {
@@ -148,7 +154,7 @@ void USquadLeaderGameInstance::ProfileInfo()
         }
     }
 
-    
+
 }
 
 
@@ -304,7 +310,7 @@ void USquadLeaderGameInstance::HttpCallUpdatePlayerAfterGame()
         "&nbVictory=" + FString::FromInt(UserData.NbVictory) +
         "&nbLoss=" + FString::FromInt(UserData.NbLoss) +
         "&score=" + FString::FromInt(UserData.Score) +
-        "&playTime=" + FString::FromInt(UserData.PlayTime) + 
+        "&playTime=" + FString::FromInt(UserData.PlayTime) +
         "&isInGame=" + FString::FromInt(1));
     Request->SetVerb("PATCH");
     Request->ProcessRequest();
