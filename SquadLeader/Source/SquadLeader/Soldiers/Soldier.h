@@ -224,8 +224,14 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
 	uint8 GetInfluenceRadius() const noexcept;
 
+
+	// Class Name:
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
 	virtual SoldierClass GetClass() { return SoldierClass::NONE; }
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Player class")
+	FString ClassName = "Soldier";
+
 
 	// Attribute changed callbacks
 	FDelegateHandle HealthChangedDelegateHandle;
@@ -506,7 +512,7 @@ protected:
 
 //////////////// Soldier team
 public:
-	UPROPERTY(EditAnywhere, Category = "PlayerTeam")
+	UPROPERTY(BlueprintReadOnly, Category = "PlayerTeam")
 	ASoldierTeam* InitialTeam;  // for debug use
 
 	UFUNCTION(Reliable, Server, WithValidation)
