@@ -148,8 +148,5 @@ protected:
 		bool FindControlAreaOn(const uint8 IndexSoldier, uint32& IndexControlArea);
 
 	UFUNCTION()
-		bool SendOnNeutalControlArea(const uint8 IndexSoldier, const uint32 IndexControlArea);
-
-	UFUNCTION()
-		bool SendOnEnnemieControlArea(const uint8 IndexSoldier, const uint32 IndexControlArea);
+		bool FindAvailableSoldier(uint32& IndexSoldier);
 };
