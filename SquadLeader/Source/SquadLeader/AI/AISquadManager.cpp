@@ -14,10 +14,11 @@
 
 #include "../SquadLeaderGameInstance.h"
 #include "../MainMenu/GameParam/GameParam.h"
+#include "../Soldiers/Soldier.h"
+#include "../Soldiers/Players/SoldierPlayerState.h"
+#include "../MainMenu/PlayerParam/PlayerParam.h"
 
 #include<algorithm>
-// temp include, need to be replace by more robust code
-#include "../Soldiers/Soldier.h"
 
 AAISquadManager::AAISquadManager() {
 	PrimaryActorTick.bStartWithTickEnabled = true;
@@ -54,8 +55,8 @@ void AAISquadManager::Init(ASoldierTeam* _Team, ASoldierPlayer* _Player)
 
 		TransformAI.SetScale3D(FVector::OneVector);
 
-		// TODO: Spawn all the classAIs. Perhaps use a TArray
-		ASoldierAI* SquadAI = GetWorld()->SpawnActorDeferred<ASoldierAI>(ClassAI1, TransformAI, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+		ASoldierAI* SquadAI = GetWorld()->SpawnActorDeferred<ASoldierAI>(Leader->GetPlayerState<ASoldierPlayerState>()->GetPlayerParam()->GetDefaultObject<APlayerParam>()->GetAIClass(i),
+			TransformAI, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 		if (SquadAI)
 		{
 			SquadAI->SpawnDefaultController();
@@ -91,25 +92,8 @@ void AAISquadManager::AddAnAIToSquad_Implementation()
 {
 	//if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("AAAAAAAAAAAAAAAAAAAAAAAAA"));
 	TSubclassOf<ASoldierAI> ClassAI;
-	switch (AISquadList.Num()) {
-	case 0:
-		ClassAI = ClassAI1;
-		break;
-	case 1:
-		ClassAI = ClassAI2;
-		break;
-	case 2:
-		ClassAI = ClassAI3;
-		break;
-	case 3:
-		ClassAI = ClassAI4;
-		break;
-	case 4:
-		ClassAI = ClassAI5;
-		break;
-	default:
-		ClassAI = ClassAI1;
-	}
+	ClassAI = Leader->GetPlayerState<ASoldierPlayerState>()->GetPlayerParam()->GetDefaultObject<APlayerParam>()->GetAIClass(AISquadList.Num());
+
 	FTransform PlayerTransform = Leader->GetTransform();
 	FTransform LocationAI;
 	LocationAI.SetLocation(PlayerTransform.GetLocation() - Leader->GetActorForwardVector() * 500);
