@@ -12,7 +12,7 @@ struct SQUADLEADER_API FNeighboor {
 
 	GENERATED_USTRUCT_BODY()
 
-	FNeighboor() {
+		FNeighboor() {
 	}
 
 	TArray<int> m_neighboor;
@@ -50,6 +50,8 @@ USTRUCT()
 struct SQUADLEADER_API FGridPackageObstacle : public FGridPackage {
 	GENERATED_USTRUCT_BODY()
 		FGridPackageObstacle() {}
+
+	TArray<FVector> Locations;
 };
 
 USTRUCT()
@@ -66,14 +68,14 @@ struct SQUADLEADER_API FInfluenceTeamData {
 
 /*
 * This struct represent a Tile-Base for the grid
-* 
+*
 */
 USTRUCT()
 struct SQUADLEADER_API FTileBase {
 
 	GENERATED_USTRUCT_BODY()
 
-	FTileBase() {
+		FTileBase() {
 	}
 
 	//the position of the tile in the world
@@ -82,17 +84,17 @@ struct SQUADLEADER_API FTileBase {
 	FNeighboor Neighboors;
 
 	TileState State;
-	
+
 	TMap<uint8, FInfluenceTeamData> InfluenceTeam;
 
-	TArray<uint32> ActorsID; 
+	TArray<uint32> ActorsID;
 };
 
 USTRUCT()
 struct SQUADLEADER_API FActorData {
 	GENERATED_USTRUCT_BODY()
 public:
-	FActorData(){}
+	FActorData() {}
 public:
 	uint32 ActorID;
 	TArray<uint32> IndexInfluence;
@@ -117,6 +119,7 @@ public:
 	virtual void Tick(float DeltaSeconds) override;
 
 	void ReceivedMessage(FGridPackage _message);
+	void ReceivedMessage(FGridPackageObstacle Message);
 
 public:
 	float GetValue(const FVector2D Location, const uint8 Team);
@@ -284,7 +287,7 @@ protected:
 	UPROPERTY()
 		TArray<FActorData> ActorsData;
 
-	bool ActorAlreadyExist(const uint32 ActorID, uint16 &Index) const;
+	bool ActorAlreadyExist(const uint32 ActorID, uint16& Index) const;
 
 	void DeleteInfluence(const uint16 IndexActor, const uint8 Team) noexcept;
 
@@ -294,8 +297,8 @@ protected:
 	void SoldierInfluence(FGridPackage Message, uint32 IndexTile, uint16 IndexActor);
 	void ControlAreaInfluence(FGridPackage Message, uint32 IndexTile, uint16 IndexActor);
 	void ProjectileInfluence(FGridPackage Message, uint32 IndexTile, uint16 IndexActor);
-	void ObstacleInfluence(FGridPackage Message, uint32 IndexTile, uint16 IndexActor);
+	void ObstacleInfluence(FGridPackageObstacle Message, uint32 IndexTile, uint16 IndexActor);
 
 public:
-	void EraseObstacleInfluence(FGridPackage Message);
+	void EraseObstacleInfluence(FGridPackageObstacle Message);
 };

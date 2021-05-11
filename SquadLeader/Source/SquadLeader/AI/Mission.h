@@ -30,6 +30,7 @@ enum class MissionType : uint8 {
 
 UENUM()
 enum class MissionPriority : uint8{ 
+	eNULL,
 	eBASIC,
 	eMIDDLE,
 	eURGENT

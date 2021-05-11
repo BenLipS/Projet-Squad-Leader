@@ -152,3 +152,10 @@ void AAISquadController::ChooseState() {
 		MovingState();
 	}
 }
+
+void AAISquadController::BecomeAvailable() {
+	return;
+}
+void AAISquadController::BecomeUnavailable() {
+	return;
+}
