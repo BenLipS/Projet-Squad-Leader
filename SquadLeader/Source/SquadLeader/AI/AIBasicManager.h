@@ -138,6 +138,9 @@ protected:
 	UPROPERTY()
 		bool ControlAreasBeenUpdate = false;
 
+	UPROPERTY()
+		bool NewSoldierAvailable = false;
+
 	UFUNCTION()
 		void Strategy();
 

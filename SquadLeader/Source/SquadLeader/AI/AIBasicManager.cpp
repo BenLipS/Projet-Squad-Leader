@@ -101,8 +101,9 @@ void AAIBasicManager::Tick(float DeltaSeconds) {
 	Super::Tick(DeltaSeconds);
 	/*if (GEngine)
 		GEngine->AddOnScreenDebugMessage(80, 2.f, FColor::Black, TEXT("I'm the AIBasicManager"));*/
-	if (ControlAreasBeenUpdate && AIBasicAvailable.Num() > 1) {
+	if ((ControlAreasBeenUpdate || NewSoldierAvailable)&& AIBasicAvailable.Num() >= 2) {
 		ControlAreasBeenUpdate = false;
+		NewSoldierAvailable = false;
 		Strategy();
 	}
 }
@@ -160,6 +161,8 @@ void AAIBasicManager::AIAvailable(const uint32 IndexSoldier) {
 		AIBasicAvailable.Add(IndexSoldier);
 	if(AIBasicUnavailable.Num() > 0 )
 		AIBasicUnavailable.Remove(IndexSoldier);
+
+	NewSoldierAvailable = true;
 	//GEngine->AddOnScreenDebugMessage(20, 5.f, FColor::Black, FString::Printf(TEXT("Nombre d'IA disponible : %i "), AIBasicAvailable.Num()));
 	//GEngine->AddOnScreenDebugMessage(25, 5.f, FColor::Black, FString::Printf(TEXT("Nombre d'IA non disponible : %i "), AIBasicUnavailable.Num()));
 }
@@ -193,7 +196,7 @@ void AAIBasicManager::UpdateControlArea(const uint8 TeamID, const uint8 IndexCon
 	}
 	ControlAreasBeenUpdate = true;
 	float time = 15.f;
-	if (Team->Id == 1) {
+	/*if (Team->Id == 1) {
 		GEngine->AddOnScreenDebugMessage(20, time, FColor::Blue, FString::Printf(TEXT("il reste encore %i zone de controle neutre."), ControlAreaNeutral.Num()));
 		GEngine->AddOnScreenDebugMessage(30, time, FColor::Blue, FString::Printf(TEXT("il reste encore %i zone de controle alliee."), ControlAreaAllies.Num()));
 		GEngine->AddOnScreenDebugMessage(40, time, FColor::Blue, FString::Printf(TEXT("il reste encore %i zone de controle ennemis."), ControlAreaEnnemies.Num()));
@@ -202,7 +205,7 @@ void AAIBasicManager::UpdateControlArea(const uint8 TeamID, const uint8 IndexCon
 		GEngine->AddOnScreenDebugMessage(50, time, FColor::Red, FString::Printf(TEXT("il reste encore %i zone de controle neutre."), ControlAreaNeutral.Num()));
 		GEngine->AddOnScreenDebugMessage(60, time, FColor::Red, FString::Printf(TEXT("il reste encore %i zone de controle alliee."), ControlAreaAllies.Num()));
 		GEngine->AddOnScreenDebugMessage(70, time, FColor::Red, FString::Printf(TEXT("il reste encore %i zone de controle ennemis."), ControlAreaEnnemies.Num()));
-	}
+	}*/
 
 }
 
@@ -210,33 +213,47 @@ void AAIBasicManager::Strategy() {
 	//GEngine->AddOnScreenDebugMessage(10, 5.f, FColor::Black, FString::Printf(TEXT("Nouvelle Stratégie")));
 	bool FindNewControlArea = false;
 	//On cherche dans les ControlAreaNeutre
-	if (ControlAreaNeutral.Num() > 0) {
-		for (uint8 IndexSoldier: AIBasicAvailable) {
-			uint32 IndexControlArea = 0;
-			if (FindControlAreaOn(IndexSoldier, IndexControlArea)) {
-				if (ListSoldierOnControlArea.Find(IndexControlArea)->SoldierIndex.Num() > 1) {
-					if (SendOnNeutalControlArea(IndexSoldier, IndexControlArea)) {
-						AIUnavailable(IndexSoldier);
-						FindNewControlArea = true;
-					}
-				}
+	//if (ControlAreaNeutral.Num() > 0) {
+	//	for (uint8 IndexSoldier: AIBasicAvailable) {
+	//		uint32 IndexControlArea = 0;
+	//		if (FindControlAreaOn(IndexSoldier, IndexControlArea)) {
+	//			if (ListSoldierOnControlArea.Find(IndexControlArea)->SoldierIndex.Num() > 1) {
+	//				if (SendOnNeutalControlArea(IndexSoldier, IndexControlArea)) {
+	//					AIUnavailable(IndexSoldier);
+	//					FindNewControlArea = true;
+	//				}
+	//			}
+	//		}
+	//	}
+	//}
+	////On cherhce dans les ControlArea des Ennemies
+	//if (!FindNewControlArea && ControlAreaEnnemies.Num() > 0) {
+	//	for (uint8 IndexSoldier : AIBasicAvailable) {
+	//		uint32 IndexControlArea = 0;
+	//		if (FindControlAreaOn(IndexSoldier, IndexControlArea)) {
+	//			if (ListSoldierOnControlArea.Find(IndexControlArea)->SoldierIndex.Num() > 1) {
+	//				if (SendOnEnnemieControlArea(IndexSoldier, IndexControlArea)) {
+	//					AIUnavailable(IndexSoldier);
+	//					FindNewControlArea = true;
+	//				}
+	//			}
+	//		}
+	//	}
+	//}
+	for (size_t i = 0; i != AIBasicAvailable.Num(); ++i) {
+		const uint32 IndexSoldier = AIBasicAvailable[i];
+		uint32 IndexCA = 0;
+		if (AIBasicList[IndexSoldier]->GetIndexControlArea(IndexCA)) {
+			if (ListSoldierOnControlArea[IndexCA].SoldierIndex.Num() > 1) {
+				const float Timer = 10.f;
+				if(Team->Id == 1)
+					GEngine->AddOnScreenDebugMessage(i, Timer, FColor::Purple, FString::Printf(TEXT("L'IA num %i, est sur la zone de controle num %i"), IndexSoldier, IndexCA));
+				if(Team->Id == 2)
+					GEngine->AddOnScreenDebugMessage(10 + i, Timer, FColor::Turquoise, FString::Printf(TEXT("L'IA num %i, est sur la zone de controle num %i"), IndexSoldier, IndexCA));
 			}
 		}
 	}
-	//On cherhce dans les ControlArea des Ennemies
-	if (!FindNewControlArea && ControlAreaEnnemies.Num() > 0) {
-		for (uint8 IndexSoldier : AIBasicAvailable) {
-			uint32 IndexControlArea = 0;
-			if (FindControlAreaOn(IndexSoldier, IndexControlArea)) {
-				if (ListSoldierOnControlArea.Find(IndexControlArea)->SoldierIndex.Num() > 1) {
-					if (SendOnEnnemieControlArea(IndexSoldier, IndexControlArea)) {
-						AIUnavailable(IndexSoldier);
-						FindNewControlArea = true;
-					}
-				}
-			}
-		}
-	}
+
 }
 
 bool AAIBasicManager::FindControlAreaOn(const uint8 IndexSoldier, uint32& IndexControlArea) {
@@ -285,6 +302,6 @@ bool AAIBasicManager::SendOnEnnemieControlArea(const uint8 IndexSoldier, const u
 			}
 		}
 	}
-	GEngine->AddOnScreenDebugMessage(100, 5.f, FColor::Yellow, TEXT("Pas trouvé de point de contrôle Ennemie.... Bugg!"));
+	//GEngine->AddOnScreenDebugMessage(100, 5.f, FColor::Yellow, TEXT("Pas trouvé de point de contrôle Ennemie.... Bugg!"));
 	return false;
 }

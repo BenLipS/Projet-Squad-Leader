@@ -95,3 +95,15 @@ void AAIBasicController::BecomeAvailable() {
 void AAIBasicController::BecomeUnavailable() {
 	m_manager->ChangeAIStatus(AIAvaibility::unavailable, IndexSoldier);
 }
+
+bool AAIBasicController::HasControlArea() const noexcept {
+	return (Cast<AControlArea>(blackboard->GetValueAsObject("ControlArea")) != nullptr);
+}
+
+bool AAIBasicController::GetIndexControlArea(uint32& IndexControlArea) const noexcept {
+	if (HasControlArea()) {
+		IndexControlArea = Cast<AControlArea>(blackboard->GetValueAsObject("ControlArea"))->GetIndexControlArea();
+		return true;
+	}
+	return false;
+}

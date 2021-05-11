@@ -57,6 +57,13 @@ private:
 	uint32 IndexSoldier;
 
 public:
+	UFUNCTION()
 	void SetIndexValue(const uint32 IndexValue) noexcept { IndexSoldier = IndexValue; }
+
+	UFUNCTION()
+		bool HasControlArea() const noexcept;
+
+	UFUNCTION()
+		bool GetIndexControlArea(uint32& ndexControlArea) const noexcept;
 
 };
