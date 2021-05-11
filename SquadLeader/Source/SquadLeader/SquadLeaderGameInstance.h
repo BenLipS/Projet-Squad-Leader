@@ -3,9 +3,9 @@
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
 #include "MainMenu/PlayerData/PlayerData.h"
+#include "MainMenu/PlayerParam/PlayerParam.h"
 #include "MainMenu/GameParam/GameParam.h"
 #include "Runtime/Online/HTTP/Public/Http.h"
-#include "Soldiers/Players/KillStats.h"
 #include "SquadLeaderGameInstance.generated.h"
 
 
@@ -54,8 +54,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 		bool const GetNetworkStatus() { return OnlineStatus; }
 
-	UFUNCTION(BlueprintCallable)
-		bool UpdateNetworkStatus(const int MatchResult, float GameDuration, int XP, AKillStats* KillData);
+	bool UpdateNetworkStatus(const int MatchResult, float GameDuration, int XP, int NbKillAI, int NbKillPlayer, int NbDeathByAI, int NbDeathByPlayer);
 
 private:
 	void NoConnexionComportment();
@@ -87,6 +86,10 @@ private:
 public:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf <AGameParam> GameParam;
+
+	UPROPERTY(EditDefaultsOnly)
+		TSubclassOf <APlayerParam> PlayerParam;
+
 private:
 	FString GameID = "";  // only define if a game is create
 };

@@ -80,7 +80,7 @@ void USquadLeaderGameInstance::JoinGame(FString IPAdress)
     GetFirstGamePlayer()->ConsoleCommand("open " + IPAdress, true);
 }
 
-bool USquadLeaderGameInstance::UpdateNetworkStatus(const int MatchResult, float GameDuration, int XP, AKillStats* KillData)
+bool USquadLeaderGameInstance::UpdateNetworkStatus(const int MatchResult, float GameDuration, int XP, int NbKillAI, int NbKillPlayer, int NbDeathByAI, int NbDeathByPlayer)
 {
     if (OnlineStatus) {
         // first do some process and save it in UserData
@@ -93,13 +93,13 @@ bool USquadLeaderGameInstance::UpdateNetworkStatus(const int MatchResult, float 
         else return false;  // error in the entry data
 
         // add kill data
-        UserData.NbKillIA += KillData->NbKillAI;
-        UserData.NbKillPlayer += KillData->NbKillPlayer;
-        UserData.NbDeathIA += KillData->NbDeathByAI;
-        UserData.NbDeathPlayer += KillData->NbDeathByPlayer;
+        UserData.NbKillIA += NbKillAI;
+        UserData.NbKillPlayer += NbKillPlayer;
+        UserData.NbDeathIA += NbDeathByAI;
+        UserData.NbDeathPlayer += NbDeathByPlayer;
 
         // update GameDuration
-        UserData.PlayTime += GameDuration;
+        UserData.PlayTime += GameDuration/60;  // time in minute
 
         // update score
         UserData.Score = (UserData.Score * (UserData.NbVictory + UserData.NbLoss - 1) + (XP / 100)) / (UserData.NbVictory + UserData.NbLoss);
@@ -134,11 +134,11 @@ void USquadLeaderGameInstance::ProfileInfo()
     statsIn.Add("Number of defeats", FString::FromInt(UserData.NbLoss));
 
     float WinRate;
-    if (UserData.NbLoss == 0) {
-        WinRate = UserData.NbVictory;
+    if ((UserData.NbLoss + UserData.NbVictory) == 0) {
+        WinRate = 0;
     }
     else {
-        WinRate = static_cast<float>(UserData.NbVictory) / UserData.NbLoss;
+        WinRate = static_cast<float>(UserData.NbVictory) / (UserData.NbLoss + UserData.NbVictory);
     }
     statsIn.Add("Win rate", FString::SanitizeFloat(WinRate));
     statsIn.Add("Score", FString::FromInt(UserData.Score));
