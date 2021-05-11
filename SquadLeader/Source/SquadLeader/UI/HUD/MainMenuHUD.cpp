@@ -9,6 +9,7 @@
 void AMainMenuHUD::BeginPlay()
 {
 	Super::BeginPlay();
+	InitHUD();
 	GetProfileData();
 	OnGameInfoReceived("Salut mon pote !", "Oscar", "");
 	OnGameInfoReceived("C'est pas si mal.", "Simon", "");

@@ -56,10 +56,6 @@ void ASoldierPlayerController::CreateHUD_Implementation()
 	if (auto HUD = GetHUD<APlayerHUD>())
 	{
 		HUD->InitHUD();
-		/*HUD->SetPlayerStateLink();
-		HUD->SetAIStateLink();
-		HUD->BindSoldierTeamChanges();
-		HUD->BindControlAreas();*/
 
 		if (InputComponent)
 		{
@@ -68,6 +64,8 @@ void ASoldierPlayerController::CreateHUD_Implementation()
 
 			InputComponent->BindAction("DisplayMap", IE_Pressed, HUD, &APlayerHUD::OnFullMapDisplayBegin);
 			InputComponent->BindAction("DisplayMap", IE_Released, HUD, &APlayerHUD::OnFullMapDisplayEnd);
+
+			InputComponent->BindAction("OpenChat", IE_Pressed, HUD, &APlayerHUD::OnChatInputPressed);
 		}
 	}
 }
@@ -356,6 +354,25 @@ void ASoldierPlayerController::OnGameEnd_Implementation(const int MatchResult, f
 
 	auto XP = GetPawn<ASoldier>()->GetEXP();
 	GetGameInstance<USquadLeaderGameInstance>()->UpdateNetworkStatus(MatchResult, GameDuration, XP, GetPlayerState<ASoldierPlayerState>()->PersonalRecord);  // notify the server
+}
+
+void ASoldierPlayerController::OnChatMessageReceived_Implementation(const FString& message)
+{
+	if (auto HUD = GetHUD<IChatInterface>())
+	{
+		HUD->OnChatMessageReceived(message);
+	}
+}
+
+void ASoldierPlayerController::OnChatMessageSent_Implementation(const FString& message)
+{
+	for (auto iterator = GetWorld()->GetPlayerControllerIterator(); iterator; iterator++)
+	{
+		if (auto PC = Cast<ASoldierPlayerController>(iterator->Get()))
+		{
+			PC->OnChatMessageReceived(message);
+		}
+	}
 }
 
 void ASoldierPlayerController::OnOrderGiven_Implementation(MissionType Order, FVector Pos)

@@ -79,4 +79,8 @@ public:
 protected:
 	
 	virtual void ChooseState() override;
+
+public:
+	virtual void BecomeAvailable() override;
+	virtual void BecomeUnavailable() override;
 };

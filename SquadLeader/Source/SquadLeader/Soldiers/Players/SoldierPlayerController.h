@@ -138,6 +138,14 @@ public:
 	void OnGameEnd(const int MatchResult, float GameDuration);  // -1 for a loss and 1 for a victory
 	void OnGameEnd_Implementation(const int MatchResult, float GameDuration);
 
+	UFUNCTION(Client, Unreliable)
+	void OnChatMessageReceived(const FString& message);
+	void OnChatMessageReceived_Implementation(const FString& message);
+
+	UFUNCTION(Server, Unreliable)
+	void OnChatMessageSent(const FString& message);
+	void OnChatMessageSent_Implementation(const FString& message);
+
 	UFUNCTION(Server, Reliable)
 	void OnOrderGiven(MissionType Order, FVector Pos);
 	void OnOrderGiven_Implementation(MissionType Order, FVector Pos);
