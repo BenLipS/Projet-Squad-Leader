@@ -65,8 +65,12 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	TArray<AAISquadController*> AISquadControllerList;
 
+protected:
 	UPROPERTY(BlueprintReadOnly, Replicated)
 	TArray<ASoldierAI*> AISoldierList;
+
+public:
+	TArray<ASoldierAI*> GetAISoldierList() const;
 
 protected:
 	UPROPERTY(EditDefaultsOnly)
@@ -111,7 +115,7 @@ public:
 	void AddAnAIToSquad_Implementation();
 
 	// Check whether this manager controls the given soldier
-	bool HasSoldier(const ASoldier* _Soldier) const;
+	bool HasSoldier(ASoldier* _Soldier) const;
 
 	auto GetMission() { return Mission; };
 

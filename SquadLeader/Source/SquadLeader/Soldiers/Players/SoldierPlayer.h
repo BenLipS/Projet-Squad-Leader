@@ -77,15 +77,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "SquadManager")
 	TSubclassOf<AAISquadManager> AISquadManagerClass;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = "SquadManager")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, ReplicatedUsing = OnRep_SquadManager, Category = "SquadManager")
 	AAISquadManager* SquadManager;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Ping")
-	TSubclassOf<class AActor> PingClass;
-
-	UPROPERTY()
-	AActor* PingMesh;
-
 	// Number of AIs to add for the next level up
 	UPROPERTY(EditDefaultsOnly, Category = "SquadManager")
 	FScalableFloat NbAIsForNextLevelUp = 0.f;
@@ -94,6 +87,18 @@ public:
 	UFUNCTION()
 	AAISquadManager* GetSquadManager();
 
+	UFUNCTION()
+	void OnRep_SquadManager();
+
+//////////////// Ping
+protected:
+	UPROPERTY(EditDefaultsOnly, Category = "Ping")
+	TSubclassOf<class AActor> PingClass;
+
+	UPROPERTY()
+	AActor* PingMesh;
+
+public:
 	UFUNCTION(Client, Reliable)
 	void SpawnClientPing(FVector2D PingLocation);
 	void SpawnClientPing_Implementation(FVector2D PingLocation);

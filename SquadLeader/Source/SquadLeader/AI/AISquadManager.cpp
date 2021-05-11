@@ -61,6 +61,7 @@ void AAISquadManager::Init(ASoldierTeam* _Team, ASoldierPlayer* _Player)
 		ASoldierAI* SquadAI = GetWorld()->SpawnActorDeferred<ASoldierAI>(ClassAI1, TransformAI, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 		if (SquadAI)
 		{
+			SquadAI->bUpdateTeamOnSpawn = false; // Wait for squadManager replication before updating the team
 			SquadAI->SpawnDefaultController();
 			SquadAI->OnHealthChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberHealthChange);
 			SquadAI->OnMaxHealthChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberMaxHealthChange);
@@ -116,6 +117,11 @@ void AAISquadManager::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& Ou
 	DOREPLIFETIME(AAISquadManager, Leader);
 }
 
+TArray<ASoldierAI*> AAISquadManager::GetAISoldierList() const
+{
+	return AISoldierList;
+}
+
 void AAISquadManager::AddAnAIToSquad_Implementation()
 {
 	if (GetLocalRole() < ENetRole::ROLE_Authority)
@@ -156,6 +162,7 @@ void AAISquadManager::AddAnAIToSquad_Implementation()
 
 	ASoldierAI* SquadAI = GetWorld()->SpawnActorDeferred<ASoldierAI>(ClassAI, LocationAI, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 	if (SquadAI) {
+		SquadAI->bUpdateTeamOnSpawn = false; // Wait for squadManager replication before updating the team
 		SquadAI->SpawnDefaultController();
 		SquadAI->OnHealthChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberHealthChange);
 		SquadAI->OnMaxHealthChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberMaxHealthChange);
@@ -171,11 +178,10 @@ void AAISquadManager::AddAnAIToSquad_Implementation()
 	}
 }
 
-bool AAISquadManager::HasSoldier(const ASoldier* _Soldier) const
+bool AAISquadManager::HasSoldier(ASoldier* _Soldier) const
 {
-	if (AAISquadController* SC = Cast<AAISquadController>(_Soldier->GetController()))
-		return AISquadControllerList.Find(SC) != INDEX_NONE;
-	return false;
+	ASoldierAI* SoldierAI = Cast<ASoldierAI>(_Soldier);
+	return AISoldierList.Find(SoldierAI) != INDEX_NONE;
 }
 
 void AAISquadManager::UpdateFormation()

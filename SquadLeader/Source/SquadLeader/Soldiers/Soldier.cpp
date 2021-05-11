@@ -67,17 +67,6 @@ void ASoldier::BeginPlay()
 
 	CacheRelativeTransformMeshInCapsule = GetMesh()->GetRelativeTransform();
 
-	// Teams
-	// TODO: Clients must be aware of their team. If we really want a security with the server, we should call this function
-	// from the server only, have a test to determine wheter we can change the team, then use a ClientSetTeam to replicate the change
-	//if (GetLocalRole() == ROLE_Authority)
-	{
-		// Add this to the team data or use the default team
-		if (GetTeam())
-			GetTeam()->AddSoldierList(this);
-		else if (InitialTeam)
-			SetTeam(InitialTeam);
-	}
 
 	if (StartGameMontage)
 	{
@@ -1071,6 +1060,14 @@ void ASoldier::StopRagdoll()
 	// Re-attach the mesh to the capsule 
 	GetMesh()->AttachToComponent(GetCapsuleComponent(), FAttachmentTransformRules::KeepRelativeTransform);
 	GetMesh()->SetRelativeTransform(CacheRelativeTransformMeshInCapsule);
+}
+
+void ASoldier::UpdateTeam()
+{
+	if (GetTeam())
+		GetTeam()->AddSoldierList(this);
+	else if (InitialTeam)
+		SetTeam(InitialTeam);
 }
 
 // network for debug team change

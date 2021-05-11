@@ -165,7 +165,7 @@ void UMinimapWidget::SetupDelegateToObject_Implementation(UObject* _ObjectIn)
 void UMinimapWidget::OnSoldierAddedToTeam(ASoldier* _Soldier)
 {
 	ASoldierPlayer* Player = Cast<ASoldierPlayer>(GetOwningPlayerPawn());
-	if (!Player || Cast<ASoldier>(Player) == _Soldier || !Player->IsLocallyControlled())
+	if (!Player || Cast<ASoldier>(Player) == _Soldier)
 		return;
 
 	UPointOfInterestWidget* POI;
@@ -174,11 +174,11 @@ void UMinimapWidget::OnSoldierAddedToTeam(ASoldier* _Soldier)
 	{
 		POI = CreateWidget<UPointOfInterestWidget>(MinimapSoldierOverlay, EnnemyIconWidgetClass);
 	}
-	else if (!!Cast<ASoldierPlayer>(_Soldier))// Soldier is a allie player
+	else if (!!Cast<ASoldierPlayer>(_Soldier)) // Soldier is a allie player
 	{
 		POI = CreateWidget<UPointOfInterestWidget>(MinimapSoldierOverlay, PlayerAllieIconWidgetClass);
 	}
-	else if (Player->GetSquadManager()->HasSoldier(_Soldier)) // Soldier is part of the player's squad - // TODO: Review the test
+	else if (Player->GetSquadManager() && Player->GetSquadManager()->HasSoldier(_Soldier)) // Soldier is part of the player's squad
 	{
 		POI = CreateWidget<UPointOfInterestWidget>(MinimapSoldierOverlay, SquadIconWidgetClass);
 	}

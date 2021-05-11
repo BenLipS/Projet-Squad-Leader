@@ -34,8 +34,11 @@ void ASoldierPlayer::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (GetLocalRole() == ENetRole::ROLE_Authority)
-		InitSquadManager();
+	// TODO: Remove this timer and use some broadcasts...
+	FTimerHandle TimerTeam{};
+	GetWorldTimerManager().SetTimer(TimerTeam, this, &ASoldierPlayer::UpdateTeam, 2.f, false);
+
+	InitSquadManager();
 
 	if (!IsLocallyControlled())
 		return;
@@ -153,6 +156,9 @@ void ASoldierPlayer::InitCameraKiller()
 
 void ASoldierPlayer::InitSquadManager()
 {
+	if (GetLocalRole() < ENetRole::ROLE_Authority)
+		return;
+
 	FActorSpawnParameters SpawnInfo;
 	SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 	SquadManager = GetWorld()->SpawnActorDeferred<AAISquadManager>(AISquadManagerClass, FTransform{}, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
@@ -255,6 +261,23 @@ void ASoldierPlayer::UnLockControls()
 AAISquadManager* ASoldierPlayer::GetSquadManager()
 {
 	return SquadManager;
+}
+
+void ASoldierPlayer::OnRep_SquadManager()
+{
+	if (SquadManager)
+	{
+		for (ASoldierAI* Soldier : SquadManager->GetAISoldierList())
+		{
+			if (Soldier)
+				Soldier->UpdateTeam();
+		}
+	}
+	else
+	{
+		int i = 0;
+		++i;
+	}
 }
 
 void ASoldierPlayer::LookUp(const float _Val)

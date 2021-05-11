@@ -509,6 +509,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = "PlayerTeam")
 	ASoldierTeam* InitialTeam;  // for debug use
 
+	UFUNCTION()
+	void UpdateTeam();
+
 	UFUNCTION(Reliable, Server, WithValidation)
 	void ServerCycleBetweenTeam();
 
@@ -517,7 +520,7 @@ public:
 
 //////////////// Teamable
 protected:
-	UPROPERTY(replicated)
+	UPROPERTY(Replicated)
 	ASoldierTeam* Team;
 
 public:
