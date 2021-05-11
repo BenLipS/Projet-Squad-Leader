@@ -254,6 +254,7 @@ void AAIBasicManager::Strategy() {
 		}
 	}*/
 
+	//Voir si on peut envoyer des IAs capturer un point de contrôle neutre
 	for (uint32 IndexNeutralControlArea : ControlAreaNeutral) {
 		auto Elem = ListSoldierOnControlArea.Find(IndexNeutralControlArea);
 		while (Elem->SoldierIndex.Num() <= 3 && AIBasicAvailable.Num() > 0) {
@@ -268,7 +269,7 @@ void AAIBasicManager::Strategy() {
 				ListSoldierOnControlArea.Find(IndexNeutralControlArea)->SoldierIndex.Remove(IndexSoldier);
 				AIUnavailable(IndexSoldier);
 
-				const float Timer = 10.f;
+				/*const float Timer = 10.f;
 				if (Team->Id == 1) {
 					GEngine->AddOnScreenDebugMessage(0, Timer, FColor::Purple, FString::Printf(TEXT("L'IA num %i, etait sur la zone de controle num %i"), IndexSoldier, IndexCA));
 					GEngine->AddOnScreenDebugMessage(1, Timer, FColor::Purple, FString::Printf(TEXT("L'IA num %i, va sur la zone de controle num %i"), IndexSoldier, IndexNeutralControlArea));
@@ -276,9 +277,39 @@ void AAIBasicManager::Strategy() {
 				if (Team->Id == 2) {
 					GEngine->AddOnScreenDebugMessage(10, Timer, FColor::Turquoise, FString::Printf(TEXT("L'IA num %i, etait sur la zone de controle num %i"), IndexSoldier, IndexCA));
 					GEngine->AddOnScreenDebugMessage(11, Timer, FColor::Turquoise, FString::Printf(TEXT("L'IA num %i, va sur la zone de controle num %i"), IndexSoldier, IndexNeutralControlArea));
-				}
+				}*/
 			}
 
+		}
+	}
+
+	//Si possible envoyer les IAs sur des Zone de contrôle Ennemie
+	if (AIBasicAvailable.Num() > 0) {
+		for (uint32 IndexControlAreaEnnemi : ControlAreaEnnemies) {
+			auto Elem = ListSoldierOnControlArea.Find(IndexControlAreaEnnemi);
+			while (Elem->SoldierIndex.Num() <= 9 && AIBasicAvailable.Num() > 0) {
+				const uint32 IndexSoldier = AIBasicAvailable[0];
+				uint32 IndexCA = 0;
+				if (AIBasicList[IndexSoldier]->GetIndexControlArea(IndexCA)) {
+					UCaptureMission* CaptureMission = Cast<UCaptureMission>(NewObject<UCaptureMission>(this, UCaptureMission::StaticClass()));
+					CaptureMission->InitCaptureMission(-1, MissionPriority::eMIDDLE, m_controlAreaManager->GetControlArea()[IndexControlAreaEnnemi]);
+					AIBasicList[IndexSoldier]->SetMission<UCaptureMission*>(CaptureMission);
+
+					Elem->SoldierIndex.Add(IndexSoldier);
+					ListSoldierOnControlArea.Find(IndexControlAreaEnnemi)->SoldierIndex.Remove(IndexSoldier);
+					AIUnavailable(IndexSoldier);
+
+					/*const float Timer = 10.f;
+					if (Team->Id == 1) {
+						GEngine->AddOnScreenDebugMessage(0, Timer, FColor::Purple, FString::Printf(TEXT("L'IA num %i, etait sur la zone de controle num %i"), IndexSoldier, IndexCA));
+						GEngine->AddOnScreenDebugMessage(1, Timer, FColor::Purple, FString::Printf(TEXT("L'IA num %i, va sur la zone de controle ennemie num %i"), IndexSoldier, IndexControlAreaEnnemi));
+					}
+					if (Team->Id == 2) {
+						GEngine->AddOnScreenDebugMessage(10, Timer, FColor::Turquoise, FString::Printf(TEXT("L'IA num %i, etait sur la zone de controle num %i"), IndexSoldier, IndexCA));
+						GEngine->AddOnScreenDebugMessage(11, Timer, FColor::Turquoise, FString::Printf(TEXT("L'IA num %i, va sur la zone de controle ennemie num %i"), IndexSoldier, IndexControlAreaEnnemi));
+					}*/
+				}
+			}
 		}
 	}
 
