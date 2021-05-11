@@ -17,6 +17,7 @@
 #include "../Interface/GameEndDelegateInterface.h"
 #include "../Interface/AbilityCooldownDelegateInterface.h"
 #include "../Interface/HitMarkerInterfaceDelegate.h"
+#include "../Interface/ChatDelegateInterface.h"
 
 #include "PlayerHUD.generated.h"
 
@@ -36,7 +37,8 @@ class SQUADLEADER_API APlayerHUD : public ASL_HUD,
 	public ITicketDelegateInterface,
 	public IGameEndDelegateInterface,
 	public IAbilityCooldownDelegateInterface,
-	public IHitMarkerInterfaceDelegate
+	public IHitMarkerInterfaceDelegate,
+	public IChatDelegateInterface
 {
 	GENERATED_BODY()
 
@@ -121,5 +123,9 @@ public:
 	//virtual void AddAbilityID(ESoldierAbilityInputID Key) override;
 
 public:
-	//IHitMarkerInterfaceDelegate
+	//-----IHitMarkerInterfaceDelegate-----
+
+//-----IChatDelegateItnerface-----
+public:
+	//void OnChatMessageReceived(const FString& message) override;
 };
