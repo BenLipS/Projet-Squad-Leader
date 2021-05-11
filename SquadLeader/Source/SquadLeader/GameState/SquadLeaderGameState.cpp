@@ -1,5 +1,7 @@
 #include "SquadLeaderGameState.h"
 #include "SquadLeader/ControlArea/ControlAreaManager.h"
+#include "SquadLeader/UI/Interface/MinimapInterface.h"
+#include "SquadLeader/UI/HUD/SL_HUD.h"
 
 ASquadLeaderGameState::ASquadLeaderGameState()
 {
@@ -22,6 +24,15 @@ void ASquadLeaderGameState::AddSoldierTeam(ASoldierTeam* _SoldierTeam)
 TArray<ASoldierTeam*> ASquadLeaderGameState::GetSoldierTeamCollection()
 {
 	return SoldierTeamCollection;
+}
+
+ASoldierTeam* ASquadLeaderGameState::GetSoldierTeamByID(int TeamId)
+{
+	for (ASoldierTeam* team : SoldierTeamCollection) {
+		if (team->Id == TeamId)
+			return team;
+	}
+	return nullptr;
 }
 
 void ASquadLeaderGameState::SetControlAreaManager(AControlAreaManager* _ControlAreaManager)

@@ -36,11 +36,6 @@ void UGA_AreaEffectFromSelf::ActivateAbility(const FGameplayAbilitySpecHandle Ha
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 }
 
-bool UGA_AreaEffectFromSelf::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, OUT FGameplayTagContainer* OptionalRelevantTags) const
-{
-	return Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags);
-}
-
 void UGA_AreaEffectFromSelf::InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo)
 {
 	if (ActorInfo != NULL && ActorInfo->AvatarActor != NULL)

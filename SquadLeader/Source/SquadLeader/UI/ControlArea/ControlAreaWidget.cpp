@@ -65,25 +65,31 @@ void UControlAreaWidget::SynchronizeProperties()
 			newWidget->OnControlAreaOwnerChange(1);
 			newWidget->OnControlAreaCapturerChange(1);
 			newWidget->OnControlAreaPercentageChange(1.f);
-			ControlAreaList.Add(newWidget);
 			AreaContainer->AddChildToHorizontalBox(newWidget);
 		}
 	}
 }
 
-void UControlAreaWidget::OnControlAreaAdded(AControlArea* ControlArea)
+void UControlAreaWidget::OnControlAreaAdded(AControlArea* newControlArea)
 {
+	for (auto ControlArea : ControlAreaList)
+	{
+		if (ControlArea == newControlArea)
+		{
+			return;
+		}
+	}
 	if (ControlAreaInfoClass)
 	{
 		UControlAreaInfoWidget* newWidget = WidgetTree->ConstructWidget<UControlAreaInfoWidget>(ControlAreaInfoClass);
 		newWidget->OnControlAreaOwnerChange(0);
 		newWidget->OnControlAreaCapturerChange(0);
 		newWidget->OnControlAreaPercentageChange(0.f);
-		newWidget->OnControlAreaNameChange(ControlArea->ControlAreaName);
-		ControlAreaList.Add(newWidget);
+		newWidget->OnControlAreaNameChange(newControlArea->ControlAreaName);
+		ControlAreaList.Add(newControlArea);
 		AreaContainer->AddChildToHorizontalBox(newWidget);
-		ControlArea->OnOwnerChanged.AddDynamic(newWidget, &UControlAreaInfoWidget::OnControlAreaOwnerChange);
-		ControlArea->OnCapturerChanged.AddDynamic(newWidget, &UControlAreaInfoWidget::OnControlAreaCapturerChange);
-		ControlArea->OnPercentageChanged.AddDynamic(newWidget, &UControlAreaInfoWidget::OnControlAreaPercentageChange);
+		newControlArea->OnOwnerChanged.AddDynamic(newWidget, &UControlAreaInfoWidget::OnControlAreaOwnerChange);
+		newControlArea->OnCapturerChanged.AddDynamic(newWidget, &UControlAreaInfoWidget::OnControlAreaCapturerChange);
+		newControlArea->OnPercentageChanged.AddDynamic(newWidget, &UControlAreaInfoWidget::OnControlAreaPercentageChange);
 	}
 }
