@@ -50,11 +50,11 @@ TArray<AControlArea*> AControlAreaManager::GetAreaControlledByTeam(ASoldierTeam*
 }
 
 
-ASoldierTeam* AControlAreaManager::GetTeamWithMostControl()  // to try with UI
+ASoldierTeam* AControlAreaManager::GetTeamWithControlAdvantage()  // to try with UI
 {
 	if (GetLocalRole() == ROLE_Authority) {  // only for the server
 		if (auto GS = GetWorld()->GetGameState<ASquadLeaderGameState>(); GS) {
-			int nbControleAreaToObtain = ControlAreaList.Num() - (ControlAreaList.Num() / 2); /*TODO: use teams politic here*/
+			int nbControleAreaToObtain = ControlAreaList.Num() - (ControlAreaList.Num() / 2);
 			for (ASoldierTeam* team : GS->GetSoldierTeamCollection()) {
 				if (GetAreaControlledByTeam(team).Num() >= nbControleAreaToObtain) {
 					return team;

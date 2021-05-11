@@ -105,6 +105,26 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Tickets")
 	int TicketToRemove_AIBasic = 1;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Tickets")
+		int FrequenceForControlAreaInfluence = 5;
+	UPROPERTY(EditDefaultsOnly, Category = "Tickets")
+		int ControlAreaTicketsReduction = 1;
+
+	void CheckControlAreaAdvantage();
+
+//////////////// Killing Streak management
+protected:
+	UPROPERTY(EditDefaultsOnly, Category = "KillingStreak")
+		int NbKillsForBounty = 10;
+	UPROPERTY(EditDefaultsOnly, Category = "KillingStreak")
+		int BountyValueInTickets = 2;
+
+	void ManageKillingStreak(ASoldier* _DeadSoldier, ASoldier* _Killer);
+	void ResetKillingStreak(ASoldierPlayer* _Soldier);
+	void IncreaseKillingStreak(ASoldierPlayer* _Soldier);
+	void NotifyKillingStreak(ASoldierPlayer* _Soldier);
+	void NotifyBounty(ASoldierPlayer* _Soldier);
+
 //////////////// EXP Rules
 protected:
 	void GrantOverTimeEXPToSoldier();
