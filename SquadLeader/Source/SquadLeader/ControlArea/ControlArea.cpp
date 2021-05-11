@@ -243,6 +243,9 @@ void AControlArea::calculateControlValue()
 
 						for (auto& Manager : GM->AIBasicManagerCollection)
 							Manager.Value->UpdateControlArea(presentTeam->Id, IndexControlArea);
+
+						//double Value = GetInfluenceAverage();
+						//GEngine->AddOnScreenDebugMessage(10,10.f, FColor::Black, FString::Printf(TEXT("L'influence de l'equipe est de : %f."), Value));
 					}
 					if (IsCapturedBy != presentTeam)
 					{
@@ -299,4 +302,10 @@ void AControlArea::UpdateTeamData()
 			}
 		}
 	}
+}
+
+double AControlArea::GetInfluenceAverage() {
+	auto GM = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
+	double Value = GM->InfluenceMap->GetInfluenceAverage(this->GetUniqueID(), GetIsCapturedBy()->Id);
+	return Value;
 }

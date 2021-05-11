@@ -211,48 +211,6 @@ void AAIBasicManager::UpdateControlArea(const uint8 TeamID, const uint8 IndexCon
 
 void AAIBasicManager::Strategy() {
 	//GEngine->AddOnScreenDebugMessage(10, 5.f, FColor::Black, FString::Printf(TEXT("Nouvelle Stratégie")));
-	bool FindNewControlArea = false;
-	//On cherche dans les ControlAreaNeutre
-	//if (ControlAreaNeutral.Num() > 0) {
-	//	for (uint8 IndexSoldier: AIBasicAvailable) {
-	//		uint32 IndexControlArea = 0;
-	//		if (FindControlAreaOn(IndexSoldier, IndexControlArea)) {
-	//			if (ListSoldierOnControlArea.Find(IndexControlArea)->SoldierIndex.Num() > 1) {
-	//				if (SendOnNeutalControlArea(IndexSoldier, IndexControlArea)) {
-	//					AIUnavailable(IndexSoldier);
-	//					FindNewControlArea = true;
-	//				}
-	//			}
-	//		}
-	//	}
-	//}
-	////On cherhce dans les ControlArea des Ennemies
-	//if (!FindNewControlArea && ControlAreaEnnemies.Num() > 0) {
-	//	for (uint8 IndexSoldier : AIBasicAvailable) {
-	//		uint32 IndexControlArea = 0;
-	//		if (FindControlAreaOn(IndexSoldier, IndexControlArea)) {
-	//			if (ListSoldierOnControlArea.Find(IndexControlArea)->SoldierIndex.Num() > 1) {
-	//				if (SendOnEnnemieControlArea(IndexSoldier, IndexControlArea)) {
-	//					AIUnavailable(IndexSoldier);
-	//					FindNewControlArea = true;
-	//				}
-	//			}
-	//		}
-	//	}
-	//}
-	/*for (size_t i = 0; i != AIBasicAvailable.Num(); ++i) {
-		const uint32 IndexSoldier = AIBasicAvailable[i];
-		uint32 IndexCA = 0;
-		if (AIBasicList[IndexSoldier]->GetIndexControlArea(IndexCA)) {
-			if (ListSoldierOnControlArea[IndexCA].SoldierIndex.Num() > 1) {
-				const float Timer = 10.f;
-				if(Team->Id == 1)
-					GEngine->AddOnScreenDebugMessage(i, Timer, FColor::Purple, FString::Printf(TEXT("L'IA num %i, est sur la zone de controle num %i"), IndexSoldier, IndexCA));
-				if(Team->Id == 2)
-					GEngine->AddOnScreenDebugMessage(10 + i, Timer, FColor::Turquoise, FString::Printf(TEXT("L'IA num %i, est sur la zone de controle num %i"), IndexSoldier, IndexCA));
-			}
-		}
-	}*/
 
 	//Voir si on peut envoyer des IAs capturer un point de contrôle neutre
 	for (uint32 IndexNeutralControlArea : ControlAreaNeutral) {
@@ -286,6 +244,8 @@ void AAIBasicManager::Strategy() {
 	//Si possible envoyer les IAs sur des Zone de contrôle Ennemie
 	if (AIBasicAvailable.Num() > 0) {
 		for (uint32 IndexControlAreaEnnemi : ControlAreaEnnemies) {
+			double Danger = m_controlAreaManager->GetControlArea()[IndexControlAreaEnnemi]->GetInfluenceAverage();
+			GEngine->AddOnScreenDebugMessage(10, 5.f, FColor::Black, FString::Printf(TEXT("Danger ennemie : %f."), Danger));
 			auto Elem = ListSoldierOnControlArea.Find(IndexControlAreaEnnemi);
 			uint32 IndexSoldier = 0;
 			while (Elem->SoldierIndex.Num() <= 6 && FindAvailableSoldier(IndexSoldier)) {

@@ -133,4 +133,7 @@ public:
 		void SetIndexControlArea(const uint8 Index) noexcept { IndexControlArea = Index; }
 	UFUNCTION()
 		uint8 GetIndexControlArea() const noexcept { return IndexControlArea; }
+
+	UFUNCTION()
+		double GetInfluenceAverage();
 };
