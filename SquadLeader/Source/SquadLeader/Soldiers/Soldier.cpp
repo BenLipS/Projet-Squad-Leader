@@ -57,11 +57,11 @@ void ASoldier::BeginPlay()
 	// Cameras
 	if (bIsFirstPerson)
 	{
-		setToFirstCameraPerson();
+		SetToFirstCameraPerson();
 		onSwitchCamera(); // Force the third person camera. TODO: Make a cleaner organization
 	}
 	else
-		setToThirdCameraPerson();
+		SetToThirdCameraPerson();
 
 	CurrentFOV = BaseFOVNormal;
 
@@ -146,7 +146,7 @@ void ASoldier::InitCameras()
 	FirstPersonCameraComponent->SetupAttachment(GetMesh());
 	FirstPersonCameraComponent->SetRelativeLocation(FVector(2.f, 0.f, BaseEyeHeight));
 	FirstPersonCameraComponent->bUsePawnControlRotation = true;
-	FirstPersonCameraComponent->SetFieldOfView(90.f);
+	FirstPersonCameraComponent->SetFieldOfView(BaseFOVNormal);
 
 	// 3rd person camera
 	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
@@ -159,7 +159,7 @@ void ASoldier::InitCameras()
 
 	ThirdPersonCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("ThirdPersonCamera"));
 	ThirdPersonCameraComponent->SetupAttachment(SpringArmComponent);
-	ThirdPersonCameraComponent->SetFieldOfView(90.f);
+	ThirdPersonCameraComponent->SetFieldOfView(BaseFOVNormal);
 
 	bIsFirstPerson = true;
 	CurrentCameraComponent = FirstPersonCameraComponent;
@@ -365,16 +365,8 @@ void ASoldier::DeadTagChanged(const FGameplayTag _CallbackTag, int32 _NewCount)
 	{
 		LockControls();
 
-		// remove ticket from team (only on server)
-		if (GetTeam() && GetLocalRole() == ROLE_Authority)
-			GetTeam()->RemoveOneTicket();
-
 		// Cancel abilities
 		AbilitySystemComponent->CancelAllAbilities();
-
-		// Notify the death to GameMode - Server only
-		if (ASquadLeaderGameModeBase* GameMode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode()); GameMode)
-			GameMode->SoldierDied(GetController());
 
 		// Start ragdoll to the next frame so we can catch all impulses from the capsule before the death - This is useful for the explosion
 		//HandleDeathMontage();
@@ -451,12 +443,12 @@ void ASoldier::CancelAbility(const FGameplayTag& _Tag)
 void ASoldier::onSwitchCamera()
 {
 	if (bIsFirstPerson)
-		setToThirdCameraPerson();
+		SetToThirdCameraPerson();
 	else
-		setToFirstCameraPerson();
+		SetToFirstCameraPerson();
 }
 
-void ASoldier::setToFirstCameraPerson()
+void ASoldier::SetToFirstCameraPerson()
 {
 	ThirdPersonCameraComponent->Deactivate();
 	GetMesh()->SetOwnerNoSee(true);
@@ -467,7 +459,7 @@ void ASoldier::setToFirstCameraPerson()
 	bIsFirstPerson = true;
 }
 
-void ASoldier::setToThirdCameraPerson()
+void ASoldier::SetToThirdCameraPerson()
 {
 	FirstPersonCameraComponent->Deactivate();
 	FirstPersonMesh->SetOwnerNoSee(true);

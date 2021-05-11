@@ -53,8 +53,7 @@ public:
 	int const GetBaseSquadAINumber() { return StartingAISquadNumber; }
 	
 public:
-	void SoldierDied(AController* _Controller);
-	void RespawnSoldier(AController* _Controller);
+	void RespawnSoldier(ASoldier* _Soldier);
 	void CheckControlAreaVictoryCondition();
 	void CheckTeamTicketsVictoryCondition();
 	void EndGame(ASoldierTeam* WinningTeam);
@@ -90,13 +89,51 @@ public:
 	UFUNCTION()
 	TArray<AAISquadManager*> GetSquadManagers() { return ListAISquadManagers; }
 
-//////////////// EXP Rules
+//////////////// Notifications
 public:
-	void GrantOverTimeEXPToSoldier();
-	void NotifySoldierKilled(ASoldier* _DeadSoldier, ASoldier* _Killer);
+	void NotifySoldierKilled(ASoldier* _DeadSoldier, ASoldier* _KillerSoldier);
 	void NotifyControlAreaCaptured(AControlArea* _ControlArea);
 
 protected:
+	void UpdateTicketsFromSoldierDeath(ASoldier* _DeadSoldier);
+	void StartRespawnTimerForDeadSoldier(ASoldier* _DeadSoldier);
+	void NotifySoldierDeathToAllPlayers(ASoldier* _DeadSoldier, ASoldier* _KillerSoldier);
+
+//////////////// Ticket Rules
+	UPROPERTY(EditDefaultsOnly, Category = "Tickets")
+	int TicketToRemove_Player = 3;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Tickets")
+	int TicketToRemove_AISquad = 2;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Tickets")
+	int TicketToRemove_AIBasic = 1;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Tickets")
+		int FrequenceForControlAreaInfluence = 5;
+	UPROPERTY(EditDefaultsOnly, Category = "Tickets")
+		int ControlAreaTicketsReduction = 1;
+
+	void CheckControlAreaAdvantage();
+
+//////////////// Killing Streak management
+protected:
+	UPROPERTY(EditDefaultsOnly, Category = "KillingStreak")
+		int NbKillsForBounty = 10;
+	UPROPERTY(EditDefaultsOnly, Category = "KillingStreak")
+		int BountyValueInTickets = 2;
+
+	void ManageKillingStreak(ASoldier* _DeadSoldier, ASoldier* _Killer);
+	void ResetKillingStreak(ASoldierPlayer* _Soldier);
+	void IncreaseKillingStreak(ASoldierPlayer* _Soldier);
+	void NotifyKillingStreak(ASoldierPlayer* _Soldier);
+	void NotifyBounty(ASoldierPlayer* _Soldier);
+
+//////////////// EXP Rules
+protected:
+	void GrantOverTimeEXPToSoldier();
+	void GrantEXPFromSoldierDeath(ASoldier* _DeadSoldier, ASoldier* _KillerSoldier);
+
 	UPROPERTY(EditDefaultsOnly, Category = "EXP Soldiers|Time")
 	float TimeBetweenGrantedEXP = 10.f;
 

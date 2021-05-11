@@ -71,6 +71,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
 	float GetEXPLevelUp() const;
 
+public:
+	int KillingStreak = 0;
+	bool IsinKillingStreak = false;
+
 protected:
 	FDelegateHandle HealthChangedDelegateHandle;
 	FDelegateHandle MaxHealthChangedDelegateHandle;

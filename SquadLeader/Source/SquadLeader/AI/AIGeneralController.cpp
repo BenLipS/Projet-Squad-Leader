@@ -610,7 +610,6 @@ void AAIGeneralController::SetPatrolPoint()
 ResultState AAIGeneralController::ArriveAtDestination() {
 	if ( GetPawn() && FVector::Dist(GetPawn()->GetActorLocation(), GetObjectifLocation()) < 300.f) {
 		m_missionList->StateChange();
-		SetState(AIBasicState::Patroling);
 		return ResultState::Success;
 	}
 	if (m_state == AIBasicState::Attacking)
@@ -634,8 +633,8 @@ ResultState AAIGeneralController::Capturing() {
 		if (auto value = control_area->TeamData.Find(GetTeam())) {
 			if ((*value)->controlValue >= control_area->MaxControlValue) {
 				m_missionList->EndMission();
+				//GEngine->AddOnScreenDebugMessage(10, 1.f, FColor::Black, TEXT("Fin de la capture"));
 				m_mission_changed = true;
-				SetState(AIBasicState::Patroling);
 				return ResultState::Success;
 			}
 			else

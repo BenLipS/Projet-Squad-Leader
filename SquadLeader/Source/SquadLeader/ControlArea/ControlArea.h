@@ -52,12 +52,25 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ControlValue")
 		int ControlValueToTake = 20;
 
-public:
+protected:
 	UPROPERTY(VisibleAnywhere, ReplicatedUsing = OnRepOwner, Category = "IsTaken")
 	ASoldierTeam* IsTakenBy;
 
 	UPROPERTY(VisibleAnywhere, ReplicatedUsing = OnRepCapturer, Category = "IsTaken")
 	ASoldierTeam* IsCapturedBy;
+
+public:
+	UFUNCTION(BlueprintCallable)
+	ASoldierTeam* GetIsTakenBy();
+
+	UFUNCTION(BlueprintCallable)
+	void SetIsTakenBy(ASoldierTeam* newTeam);
+
+	UFUNCTION(BlueprintCallable)
+	ASoldierTeam* GetIsCapturedBy();
+
+	UFUNCTION(BlueprintCallable)
+	void SetIsCapturedBy(ASoldierTeam* newTeam);
 
 protected:
 	UPROPERTY(ReplicatedUsing = OnRepPercentage)
@@ -110,4 +123,14 @@ public:
 
 	UFUNCTION()
 		int GetInfluenceRadius() const noexcept { return InfluenceRadius; }
+
+private:
+	UPROPERTY()
+		uint8 IndexControlArea;
+
+public:
+	UFUNCTION()
+		void SetIndexControlArea(const uint8 Index) noexcept { IndexControlArea = Index; }
+	UFUNCTION()
+		uint8 GetIndexControlArea() const noexcept { return IndexControlArea; }
 };

@@ -3,7 +3,8 @@
 #include "../SquadLeaderGameModeBase.h"
 #include "../Soldiers/Soldier.h"
 #include "../Soldiers/Players/SoldierPlayerController.h"
-#include "../UI/SL_HUD.h"
+#include "../UI/HUD/SL_HUD.h"
+#include "../AI/AIBasicManager.h"
 #include "ControlAreaManager.h"
 
 
@@ -44,6 +45,56 @@ void AControlArea::PreInitialisation()
 int AControlArea::GetPriority() const
 {
 	return 2;
+}
+
+ASoldierTeam* AControlArea::GetIsTakenBy()
+{
+	return IsTakenBy;
+}
+
+void AControlArea::SetIsTakenBy(ASoldierTeam* newTeam)
+{
+	if (newTeam != IsTakenBy)
+	{
+		IsTakenBy = newTeam;
+
+		if (ASoldierPlayerController* playerController = GetWorld()->GetFirstPlayerController<ASoldierPlayerController>(); playerController)
+		{
+			int AreaOwner = 0;
+			if (IsTakenBy) {
+				if (IsTakenBy == playerController->GetTeam()) {
+					AreaOwner = 1;
+				}
+				else AreaOwner = -1;
+			}
+			OnOwnerChanged.Broadcast(AreaOwner);
+		}
+	}
+}
+
+ASoldierTeam* AControlArea::GetIsCapturedBy()
+{
+	return IsCapturedBy;
+}
+
+void AControlArea::SetIsCapturedBy(ASoldierTeam* newTeam)
+{
+	if (newTeam != IsCapturedBy)
+	{
+		IsCapturedBy = newTeam;
+
+		if (ASoldierPlayerController* playerController = GetWorld()->GetFirstPlayerController<ASoldierPlayerController>(); playerController)
+		{
+			int AreaCapturer = 0;
+			if (IsCapturedBy) {
+				if (IsCapturedBy == playerController->GetTeam()) {
+					AreaCapturer = 1;
+				}
+				else AreaCapturer = -1;
+			}
+			OnCapturerChanged.Broadcast(AreaCapturer);
+		}
+	}
 }
 
 void AControlArea::OnRepOwner()
@@ -148,16 +199,17 @@ void AControlArea::calculateControlValue()
 							needToDecreaseOtherPresenceFirst = true;
 							if (IsCapturedBy != otherTeam.Key)
 							{
-								IsCapturedBy = otherTeam.Key;
+								SetIsCapturedBy(otherTeam.Key);
 							}
 							PercentageCapture = static_cast<float>(otherTeam.Value->controlValue) / MaxControlValue;
+							OnPercentageChanged.Broadcast(PercentageCapture);
 						}
 						else {
 							otherTeam.Value->controlValue = 0;
 						}
 						if (IsTakenBy == otherTeam.Key && otherTeam.Value->controlValue <= MinControlValueToControl) {  // remove IsTakenBy if needed
 							// notify here the changement if needed
-							IsTakenBy = nullptr;
+							SetIsTakenBy(nullptr);
 							otherTeam.Value->ChangeSpawnState(false);
 							//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("ControlArea : Team control = None"));
 						}
@@ -171,7 +223,7 @@ void AControlArea::calculateControlValue()
 						TeamData[presentTeam]->controlValue = MaxControlValue;
 
 					if (IsTakenBy != presentTeam && TeamData[presentTeam]->controlValue >= ControlValueToTake) {  // take control of the point
-						IsTakenBy = presentTeam;
+						SetIsTakenBy(presentTeam);
 						TeamData[presentTeam]->ChangeSpawnState(true);
 						// notify here the changement if needed
 						//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("ControlArea : Team control =" + presentTeam->TeamName));
@@ -189,14 +241,16 @@ void AControlArea::calculateControlValue()
 						m_package.ActorID = this->GetUniqueID();
 						GM->InfluenceMap->ReceivedMessage(m_package);
 
-
+						for (auto& Manager : GM->AIBasicManagerCollection)
+							Manager.Value->UpdateControlArea(presentTeam->Id, IndexControlArea);
 					}
 					if (IsCapturedBy != presentTeam)
 					{
-						IsCapturedBy = presentTeam;
+						SetIsCapturedBy(presentTeam);
 					}
 					//ClientNotifyValueChange(TeamData[presentTeam]->controlValue, IsTakenBy, presentTeam);  // call client function to notify the modification
 					PercentageCapture = static_cast<float>(TeamData[presentTeam]->controlValue) / MaxControlValue;
+					OnPercentageChanged.Broadcast(PercentageCapture);
 				}
 			}
 			else { // stop the timer

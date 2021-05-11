@@ -48,4 +48,22 @@ public:
 
 	void SetManager(AAIBasicManager* _manager) noexcept;
 
+	AAIBasicManager* GetManager() const noexcept { return m_manager; }
+
+	virtual void BecomeAvailable() override;
+
+	virtual void BecomeUnavailable() override;
+private:
+	uint32 IndexSoldier;
+
+public:
+	UFUNCTION()
+	void SetIndexValue(const uint32 IndexValue) noexcept { IndexSoldier = IndexValue; }
+
+	UFUNCTION()
+		bool HasControlArea() const noexcept;
+
+	UFUNCTION()
+		bool GetIndexControlArea(uint32& ndexControlArea) const noexcept;
+
 };

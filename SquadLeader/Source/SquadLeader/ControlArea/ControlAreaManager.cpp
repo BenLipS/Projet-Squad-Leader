@@ -1,7 +1,7 @@
 #include "ControlAreaManager.h"
 #include "../GameState/SquadLeaderGameState.h"
 #include "../SquadLeaderGameModeBase.h"
-#include "../UI/SL_HUD.h"
+#include "SquadLeader/UI/HUD/SL_HUD.h"
 #include "../Soldiers/Players/SoldierPlayerController.h"
 
 AControlAreaManager::AControlAreaManager()
@@ -42,7 +42,7 @@ TArray<AControlArea*> AControlAreaManager::GetAreaControlledByTeam(ASoldierTeam*
 {
 	TArray<AControlArea*> selection;
 	for (auto element : ControlAreaList) {
-		if (element->IsTakenBy == _Team) {
+		if (element->GetIsTakenBy() == _Team) {
 			selection.Add(element);
 		}
 	}
@@ -50,11 +50,11 @@ TArray<AControlArea*> AControlAreaManager::GetAreaControlledByTeam(ASoldierTeam*
 }
 
 
-ASoldierTeam* AControlAreaManager::GetTeamWithMostControl()  // to try with UI
+ASoldierTeam* AControlAreaManager::GetTeamWithControlAdvantage()  // to try with UI
 {
 	if (GetLocalRole() == ROLE_Authority) {  // only for the server
 		if (auto GS = GetWorld()->GetGameState<ASquadLeaderGameState>(); GS) {
-			int nbControleAreaToObtain = ControlAreaList.Num() - (ControlAreaList.Num() / 2); /*TODO: use teams politic here*/
+			int nbControleAreaToObtain = ControlAreaList.Num() - (ControlAreaList.Num() / 2);
 			for (ASoldierTeam* team : GS->GetSoldierTeamCollection()) {
 				if (GetAreaControlledByTeam(team).Num() >= nbControleAreaToObtain) {
 					return team;
@@ -69,11 +69,11 @@ ASoldierTeam* AControlAreaManager::GetTeamWithAllControl()
 {
 	if (ControlAreaList.Num() > 0) {
 		for (auto element : ControlAreaList) {
-			if (element->IsTakenBy != ControlAreaList[0]->IsTakenBy) {
+			if (element->GetIsTakenBy() != ControlAreaList[0]->GetIsTakenBy()) {
 				return nullptr;
 			}
 		}
-		return ControlAreaList[0]->IsTakenBy;
+		return ControlAreaList[0]->GetIsTakenBy();
 	}
 	return nullptr;
 }
