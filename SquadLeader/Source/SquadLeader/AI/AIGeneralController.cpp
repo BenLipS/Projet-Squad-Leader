@@ -633,6 +633,7 @@ ResultState AAIGeneralController::Capturing() {
 		if (auto value = control_area->TeamData.Find(GetTeam())) {
 			if ((*value)->controlValue >= control_area->MaxControlValue) {
 				m_missionList->EndMission();
+				GEngine->AddOnScreenDebugMessage(10, 1.f, FColor::Black, TEXT("Fin de la capture"));
 				m_mission_changed = true;
 				return ResultState::Success;
 			}
