@@ -122,25 +122,50 @@ void AShield::UpdateMaterialColor()
 
 void AShield::CreateInfluence() {
 	//GEngine->AddOnScreenDebugMessage(10, 1.0f, FColor::Purple, TEXT("Send Influence"));
+
+	const float Y = this->GetActorTransform().GetScale3D().Y * 50.f;
+	const FQuat Rot = this->GetActorTransform().GetRotation();
+	const FVector CenterLocation = this->GetActorLocation();
+
+	TArray<FVector> Locations; 
+	TArray<FVector> LocationsRotation;
+	//Right Side
+	float Ybis = CenterLocation.Y + 200.f;
+	while (Ybis <= CenterLocation.Y + Y) {
+		Locations.Add(FVector{ CenterLocation.X, Ybis, CenterLocation.Z });
+		Ybis += 200.f;
+	}
+
+	//Left Side
+	Ybis = CenterLocation.Y - 200.f;
+	while (Ybis >= CenterLocation.Y - Y) {
+		Locations.Add(FVector{ CenterLocation.X, Ybis, CenterLocation.Z });
+		Ybis -= 200.f;
+	}
+
+	for (size_t i = 0; i != Locations.Num(); ++i) {
+		LocationsRotation.Add(CenterLocation + Rot.RotateVector(CenterLocation - Locations[i]));
+	}
+
+
 	ASquadLeaderGameModeBase* GameMode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
 	if (GetTeam() && GameMode && GameMode->InfluenceMap) {
 		FGridPackageObstacle Package;
-		Package.m_location_on_map = this->GetActorLocation();
+		Package.m_location_on_map = CenterLocation;
 		Package.team_value = GetTeam()->Id;
 		Package.m_type = Type::Obstacle;
 		Package.ActorID = this->GetUniqueID();
+		Package.Locations = LocationsRotation;
 		GameMode->InfluenceMap->ReceivedMessage(Package);
 	}
 }
 
 void AShield::EraseInfluence() {
 	//GEngine->AddOnScreenDebugMessage(20, 1.0f, FColor::Purple, TEXT("Erase Influence"));
+
 	ASquadLeaderGameModeBase* GameMode = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
 	if (GetTeam() && GameMode && GameMode->InfluenceMap) {
 		FGridPackageObstacle Package;
-		Package.m_location_on_map = this->GetActorLocation();
-		Package.team_value = GetTeam()->Id;
-		Package.m_type = Type::Obstacle;
 		Package.ActorID = this->GetUniqueID();
 		GameMode->InfluenceMap->EraseObstacleInfluence(Package);
 	}

@@ -9,6 +9,22 @@
 #include "NavFilters/NavigationQueryFilter.h"
 #include "AIBasicManager.generated.h"
 
+
+UENUM()
+enum class AIAvaibility : uint8 {
+	available, unavailable
+};
+
+USTRUCT()
+struct SQUADLEADER_API FIndexSoldier {
+	GENERATED_USTRUCT_BODY()
+		FIndexSoldier() = default;
+
+	TArray<uint32> SoldierIndex;
+
+};
+
+
 /**
  * 
  */
@@ -18,6 +34,9 @@ class SQUADLEADER_API AAIBasicManager : public AInfo
 	GENERATED_BODY()
 
 public:
+
+	using ai_type = TSharedPtr<AAIBasicController>;
+
 	AAIBasicManager();
 
 	UFUNCTION()
@@ -29,7 +48,13 @@ public:
 
 
 	UPROPERTY()
-	TArray<AAIBasicController*> AIBasicList;
+		TArray<AAIBasicController*> AIBasicList;
+
+	UPROPERTY()
+		TArray<uint32> AIBasicAvailable;
+
+	UPROPERTY()
+		TArray<uint32> AIBasicUnavailable;
 
 	UPROPERTY()
 	ASoldierTeam* Team;
@@ -78,4 +103,53 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Navigation")
 		TSubclassOf<UNavigationQueryFilter> m_queryFilter_team2;
 
+
+public:
+	UFUNCTION()
+		void ChangeAIStatus(const AIAvaibility status, const uint32 IndexSoldier);
+
+protected:
+	void AIAvailable(const uint32 IndexSoldier);
+	void AIUnavailable(const uint32 IndexSoldier);
+
+protected:
+	//Map d'index, pour des index
+	//La cle sera l'index de la control area, cette index permet de retrouver la controle area dans la Liste de controle area du ControlAreaManager
+	//La valeur est une liste d'index pour les soldat pour les retrouver dans la liste de AIBasic.
+	UPROPERTY()
+		TMap<uint32, FIndexSoldier> ListSoldierOnControlArea;
+
+	void InitListSoldierOnControlArea();
+
+
+protected:
+	UPROPERTY()
+		TArray<uint32> ControlAreaAllies;
+	UPROPERTY()
+		TArray<uint32> ControlAreaEnnemies;
+	UPROPERTY()
+		TArray<uint32> ControlAreaNeutral;
+
+public:
+	UFUNCTION()
+		void UpdateControlArea(const uint8 TeamID, const uint8 IndexControlArea);
+
+protected:
+	UPROPERTY()
+		bool ControlAreasBeenUpdate = false;
+
+	UPROPERTY()
+		bool NewSoldierAvailable = false;
+
+	UFUNCTION()
+		void Strategy();
+
+	UFUNCTION()
+		bool FindControlAreaOn(const uint8 IndexSoldier, uint32& IndexControlArea);
+
+	UFUNCTION()
+		bool SendOnNeutalControlArea(const uint8 IndexSoldier, const uint32 IndexControlArea);
+
+	UFUNCTION()
+		bool SendOnEnnemieControlArea(const uint8 IndexSoldier, const uint32 IndexControlArea);
 };
