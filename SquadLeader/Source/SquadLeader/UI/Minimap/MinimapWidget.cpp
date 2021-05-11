@@ -11,9 +11,9 @@
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "SquadLeader/Soldiers/Players/SoldierPlayerController.h"
-#include "SquadLeader/UI/SL_HUD.h"
+#include "SquadLeader/UI/HUD/SL_HUD.h"
 #include "Input/Reply.h"
-#include "../ControlAreaInfoWidget.h"
+#include "../ControlArea/ControlAreaInfoWidget.h"
 
 #include "Blueprint/WidgetTree.h"
 
@@ -166,7 +166,7 @@ void UMinimapWidget::SetupDelegateToObject_Implementation(UObject* _ObjectIn)
 void UMinimapWidget::OnSoldierAddedToTeam(ASoldier* _Soldier)
 {
 	ASoldierPlayer* Player = Cast<ASoldierPlayer>(GetOwningPlayerPawn());
-	if (!Player || Cast<ASoldier>(Player) == _Soldier)
+	if (!Player || Cast<ASoldier>(Player) == _Soldier || !Player->IsLocallyControlled())
 		return;
 
 	UPointOfInterestWidget* POI;
@@ -367,7 +367,7 @@ void UMinimapWidget::OnFullMapDisplayBegin()
 	bMapKeyPressed = true;
 	if (IsValid(MinimapToMap))
 	{
-		PlayAnimationForward(MinimapToMap);
+		PlayAnimationForward(MinimapToMap, 2.f);
 		bIsPlayerCentered = false;
 	}
 }
@@ -378,7 +378,7 @@ void UMinimapWidget::OnFullMapDisplayEnd()
 	SetInteractivity(false);
 	if (IsValid(MinimapToMap))
 	{
-		PlayAnimationReverse(MinimapToMap);
+		PlayAnimationReverse(MinimapToMap, 2.f);
 		bIsPlayerCentered = true;
 		PlayerIconImage->SetRenderTranslation(FVector2D::ZeroVector);
 	}

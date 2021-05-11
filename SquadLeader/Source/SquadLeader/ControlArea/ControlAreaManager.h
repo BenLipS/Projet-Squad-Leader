@@ -48,7 +48,7 @@ public:
 	TArray <AControlArea*> GetAreaControlledByTeam(ASoldierTeam* _Team);
 
 	UFUNCTION()
-	ASoldierTeam* GetTeamWithMostControl();
+	ASoldierTeam* GetTeamWithControlAdvantage();
 	
 	UFUNCTION()
 	ASoldierTeam* GetTeamWithAllControl();

@@ -134,10 +134,10 @@ float dtQueryFilter_SL_TeamOne::getVirtualCost(const float* pa, const float* pb,
 float dtQueryFilter_SL_TeamOne::GetCostInfluenceMap(const FVector2D StartPosition, const FVector2D EndPosition) const {
 	float Cost = 1.f;
 	//On commente pour voir si c'est bien ça qui fait drop des FPS
-	if (InfluenceMap) {
-		//GEngine->AddOnScreenDebugMessage(10, 1.f, FColor::Blue, TEXT("Search Cost in influence Map"));
-		Cost = InfluenceMap->GetValue(StartPosition, 1);
-	}
+	//if (InfluenceMap) {
+	//	//GEngine->AddOnScreenDebugMessage(10, 1.f, FColor::Blue, TEXT("Search Cost in influence Map"));
+	//	Cost = InfluenceMap->GetValue(StartPosition, 1);
+	//}
 	return (Cost >= 1.f ? Cost : 1.f);
 }
 void dtQueryFilter_SL_TeamOne::SetInfluenceMap(AInfluenceMapGrid* influenceMap) {
@@ -249,10 +249,10 @@ float dtQueryFilter_SL_TeamTwo::getVirtualCost(const float* pa, const float* pb,
 }
 float dtQueryFilter_SL_TeamTwo::GetCostInfluenceMap(const FVector2D StartPosition, const FVector2D EndPosition) const {
 	float Cost = 1.f;
-	if (InfluenceMap) {
-		//GEngine->AddOnScreenDebugMessage(20, 1.f, FColor::Red, TEXT("Search Cost in influence Map"));
-		Cost = InfluenceMap->GetValue(StartPosition, 2);
-	}
+	//if (InfluenceMap) {
+	//	//GEngine->AddOnScreenDebugMessage(20, 1.f, FColor::Red, TEXT("Search Cost in influence Map"));
+	//	Cost = InfluenceMap->GetValue(StartPosition, 2);
+	//}
 	return (Cost >= 1.f ? Cost : 1.f);
 }
 void dtQueryFilter_SL_TeamTwo::SetInfluenceMap(AInfluenceMapGrid* influenceMap) {
