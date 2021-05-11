@@ -8,6 +8,12 @@
 #include "Components/PanelWidget.h"
 #include "Components/NamedSlot.h"
 
+#include "SquadLeader/MainMenu/GameParam/GameParam.h"
+
+#include "MenuCollectionDataInt.h"
+#include "MenuCollectionDataBool.h"
+#include "MenuCollectionDataText.h"
+
 #include "MenuDataCollectionWidget.generated.h"
 
 /**
@@ -26,16 +32,36 @@ protected:
 
 	UPanelWidget* DataContainer;
 
-	TMap<FString, UMenuCollectionDataItem*> DataItems;
+	TMap<FString, UMenuCollectionDataInt*> DataInts;
+
+	TMap<FString, UMenuCollectionDataText*> DataStrings;
+
+	TMap<FString, UMenuCollectionDataBool*> DataBools;
 
 	virtual void SynchronizeProperties() override;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TSubclassOf<AGameParam> DefaultValues;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TSubclassOf<AGameParam> MinValues;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TSubclassOf<AGameParam> MaxValues;
 
 //-----UMenuItemWidget-----
 protected:
 	virtual void OnItemAddedToLayout_Implementation();
 //-----UMenuItemWidget-----
 
+protected:
+	UFUNCTION(BlueprintCallable)
+	void InitIntValues();
+
+	UFUNCTION(BlueprintCallable)
+	void RandomizeIntValues();
+
 /*public:
 	UFUNCTION(BlueprintCallable)
-	int GetData(FString Key);*/
+	int GetIntData(FString Key);*/
 };

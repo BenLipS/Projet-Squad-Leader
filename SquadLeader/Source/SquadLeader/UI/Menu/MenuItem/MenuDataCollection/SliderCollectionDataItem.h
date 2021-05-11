@@ -25,9 +25,9 @@ protected:
 	virtual void SynchronizeProperties() override;
 
 public:
-	virtual void SetDataValue(int newValue) override;
-	virtual void SetMinValue(int newValue) override;
-	virtual void SetMaxValue(int newValue) override;
+	virtual bool SetDataValue(int newValue, bool fireEvent = true) override;
+	virtual bool SetMinValue(int newValue) override;
+	virtual bool SetMaxValue(int newValue) override;
 
 protected:
 	UFUNCTION()

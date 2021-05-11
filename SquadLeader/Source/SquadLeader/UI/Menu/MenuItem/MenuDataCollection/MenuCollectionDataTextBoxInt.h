@@ -9,10 +9,10 @@
 
 #include "Types/SlateEnums.h"
 
-#include "TextCollectionDataItem.generated.h"
+#include "MenuCollectionDataTextBoxInt.generated.h"
 
 UCLASS()
-class SQUADLEADER_API UTextCollectionDataItem : public UMenuCollectionDataInt
+class SQUADLEADER_API UMenuCollectionDataTextBoxInt : public UMenuCollectionDataInt
 {
 	GENERATED_BODY()
 
@@ -24,7 +24,7 @@ protected:
 	virtual void SynchronizeProperties() override;
 
 public:
-	virtual void SetDataValue(int newValue) override;
-	virtual void SetMinValue(int newValue) override;
-	virtual void SetMaxValue(int newValue) override;
+	virtual bool SetDataValue(int newValue, bool fireEvent = true) override;
+	virtual bool SetMinValue(int newValue) override;
+	virtual bool SetMaxValue(int newValue) override;
 };

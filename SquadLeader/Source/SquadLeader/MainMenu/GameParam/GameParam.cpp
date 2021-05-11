@@ -33,3 +33,30 @@ void AGameParam::RandomiseParam(AGameParam* MinConfig, AGameParam* MaxConfig)
 	Weather = UKismetMathLibrary::RandomIntegerInRange(MinConfig->Weather, MaxConfig->Weather);
 	RespawnDuration = UKismetMathLibrary::RandomIntegerInRange(MinConfig->RespawnDuration, MaxConfig->RespawnDuration);
 }
+
+TMap<FString, int> AGameParam::GetIntParams()
+{
+	TMap<FString, int> ret;
+
+	ret.Add("LevelTarget", LevelTarget);
+	ret.Add("LevelRange", LevelRange);
+	ret.Add("NbAIBasicAssault", NbAIBasicAssault);
+	ret.Add("NbAIBasicHeavy", NbAIBasicHeavy);
+	ret.Add("LevelAIBasic", LevelAIBasic);
+	ret.Add("StartingNbAISquad", StartingNbAISquad);
+	ret.Add("LevelAISquad", LevelAISquad);
+	ret.Add("NbTickets", NbTickets);
+	ret.Add("Weather", Weather);
+	ret.Add("RespawnDuration", RespawnDuration);
+
+	return ret;
+}
+
+TMap<FString, FString> AGameParam::GetStringParams()
+{
+	TMap<FString, FString> ret;
+
+	ret.Add(Name);
+
+	return ret;
+}

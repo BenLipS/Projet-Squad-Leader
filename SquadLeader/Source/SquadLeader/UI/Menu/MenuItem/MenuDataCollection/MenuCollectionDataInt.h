@@ -6,9 +6,8 @@
 #include "MenuCollectionDataItem.h"
 #include "MenuCollectionDataInt.generated.h"
 
-/**
- * 
- */
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnValueIntChangedEvent, int, newValue);
+
 UCLASS()
 class SQUADLEADER_API UMenuCollectionDataInt : public UMenuCollectionDataItem
 {
@@ -26,25 +25,25 @@ protected:
 
 public:
 	UPROPERTY(BlueprintAssignable, Category = "Appearance|Event")
-		FOnValueChangedEvent OnValueChangedEvent;
-	DECLARE_EVENT(UMenuCollectionDataItem, FNativeOnValueChangedEvent);
-	FNativeOnValueChangedEvent OnNativeValueChangedEvent;
+	FOnValueIntChangedEvent OnValueChangedEvent;
+	DECLARE_EVENT(UMenuCollectionDataInt, FNativeOnValueIntChangedEvent);
+	FNativeOnValueIntChangedEvent OnNativeValueChangedEvent;
 
 public:
 	UFUNCTION(BlueprintCallable)
-		virtual void SetDataValue(int newValue);
+		virtual bool SetDataValue(int newValue, bool fireEvent = true);
 
 	UFUNCTION(BlueprintCallable)
 		int GetDataValue();
 
 	UFUNCTION(BlueprintCallable)
-		virtual void SetMinValue(int newValue);
+		virtual bool SetMinValue(int newValue);
 
 	UFUNCTION(BlueprintCallable)
 		int GetMinValue();
 
 	UFUNCTION(BlueprintCallable)
-		virtual void SetMaxValue(int newValue);
+		virtual bool SetMaxValue(int newValue);
 
 	UFUNCTION(BlueprintCallable)
 		int GetMaxValue();

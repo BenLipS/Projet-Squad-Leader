@@ -3,15 +3,20 @@
 
 #include "MenuCollectionDataInt.h"
 
-void UMenuCollectionDataInt::SetDataValue(int newValue)
+bool UMenuCollectionDataInt::SetDataValue(int newValue, bool fireEvent)
 {
     newValue = FMath::Clamp<int>(newValue, MinValue, MaxValue);
 
     if (newValue != DataValue)
     {
         DataValue = newValue;
-        OnValueChangedEvent.Broadcast(DataValue);
+        if (fireEvent)
+        {
+            OnValueChangedEvent.Broadcast(DataValue);
+        }
+        return true;
     }
+    return false;
 }
 
 int UMenuCollectionDataInt::GetDataValue()
@@ -19,18 +24,24 @@ int UMenuCollectionDataInt::GetDataValue()
     return DataValue;
 }
 
-void UMenuCollectionDataInt::SetMinValue(int newValue)
+bool UMenuCollectionDataInt::SetMinValue(int newValue)
 {
-    MinValue = newValue;
-    if (newValue > MaxValue)
+    if (newValue != MinValue)
     {
-        SetMaxValue(MinValue);
-    }
+        MinValue = newValue;
+        if (newValue > MaxValue)
+        {
+            SetMaxValue(MinValue);
+        }
 
-    if (newValue > DataValue)
-    {
-        SetDataValue(MinValue);
+        if (newValue > DataValue)
+        {
+            SetDataValue(MinValue);
+        }
+
+        return true;
     }
+    return false;
 }
 
 int UMenuCollectionDataInt::GetMinValue()
@@ -38,18 +49,23 @@ int UMenuCollectionDataInt::GetMinValue()
     return MinValue;
 }
 
-void UMenuCollectionDataInt::SetMaxValue(int newValue)
+bool UMenuCollectionDataInt::SetMaxValue(int newValue)
 {
-    MaxValue = newValue;
-    if (newValue < MaxValue)
+    if (newValue != MaxValue)
     {
-        SetMinValue(MaxValue);
-    }
+        MaxValue = newValue;
+        if (newValue < MaxValue)
+        {
+            SetMinValue(MaxValue);
+        }
 
-    if (newValue < DataValue)
-    {
-        SetDataValue(MaxValue);
+        if (newValue < DataValue)
+        {
+            SetDataValue(MaxValue);
+        }
+        return true;
     }
+    return false;
 }
 
 int UMenuCollectionDataInt::GetMaxValue()

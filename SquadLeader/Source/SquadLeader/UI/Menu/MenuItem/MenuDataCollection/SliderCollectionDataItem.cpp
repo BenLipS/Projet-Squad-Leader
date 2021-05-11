@@ -18,34 +18,43 @@ void USliderCollectionDataItem::SynchronizeProperties()
 	}
 }
 
-void USliderCollectionDataItem::SetDataValue(int newValue)
+bool USliderCollectionDataItem::SetDataValue(int newValue, bool fireEvent)
 {
-	UMenuCollectionDataInt::SetDataValue(newValue);
-
-	if (IsValid(SliderData))
+	if (UMenuCollectionDataInt::SetDataValue(newValue, fireEvent))
 	{
-		SliderData->SetValue(DataValue);
+		if (IsValid(SliderData))
+		{
+			SliderData->SetValue(DataValue);
+		}
+		return true;
 	}
+	return false;
 }
 
-void USliderCollectionDataItem::SetMinValue(int newValue)
+bool USliderCollectionDataItem::SetMinValue(int newValue)
 {
-	UMenuCollectionDataInt::SetMinValue(newValue);
-
-	if (IsValid(SliderData))
+	if (UMenuCollectionDataInt::SetMinValue(newValue))
 	{
-		SliderData->SetMinValue(MinValue);
+		if (IsValid(SliderData))
+		{
+			SliderData->SetMinValue(MinValue);
+		}
+		return true;
 	}
+	return false;
 }
 
-void USliderCollectionDataItem::SetMaxValue(int newValue)
+bool USliderCollectionDataItem::SetMaxValue(int newValue)
 {
-	UMenuCollectionDataInt::SetMaxValue(newValue);
-
-	if (IsValid(SliderData))
+	if (UMenuCollectionDataInt::SetMaxValue(newValue))
 	{
-		SliderData->SetMaxValue(MaxValue);
+		if (IsValid(SliderData))
+		{
+			SliderData->SetMaxValue(MaxValue);
+		}
+		return true;
 	}
+	return false;
 }
 
 void USliderCollectionDataItem::OnSliderValueChange(float newValue)

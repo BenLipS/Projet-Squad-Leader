@@ -48,4 +48,10 @@ public:
 		bool FriendOnly; //Not fixed by user
 
 	void RandomiseParam(AGameParam* MinConfig, AGameParam* MaxConfig);
+
+	UFUNCTION()
+	TMap<FString, int> GetIntParams();
+
+	UFUNCTION()
+	TMap<FString, FString> GetStringParams();
 };
