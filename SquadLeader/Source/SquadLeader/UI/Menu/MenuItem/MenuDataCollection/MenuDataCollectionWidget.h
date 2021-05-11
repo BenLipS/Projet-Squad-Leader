@@ -4,11 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "../../MenuItemWidget.h"
+
+#include "Components/PanelWidget.h"
+#include "Components/NamedSlot.h"
+
 #include "MenuDataCollectionWidget.generated.h"
 
 /**
  * 
  */
+
+class UMenuCollectionDataItem;
 UCLASS()
 class SQUADLEADER_API UMenuDataCollectionWidget : public UMenuItemWidget
 {
@@ -18,6 +24,10 @@ protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UNamedSlot* DataSlot;
 
+	UPanelWidget* DataContainer;
+
+	TMap<FString, UMenuCollectionDataItem*> DataItems;
+
 	virtual void SynchronizeProperties() override;
 
 //-----UMenuItemWidget-----
@@ -25,7 +35,7 @@ protected:
 	virtual void OnItemAddedToLayout_Implementation();
 //-----UMenuItemWidget-----
 
-public:
+/*public:
 	UFUNCTION(BlueprintCallable)
-	int GetData(FString Key);
+	int GetData(FString Key);*/
 };
