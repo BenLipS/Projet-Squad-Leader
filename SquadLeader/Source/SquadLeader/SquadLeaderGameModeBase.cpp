@@ -212,28 +212,32 @@ void ASquadLeaderGameModeBase::CheckTeamTicketsVictoryCondition()
 
 void ASquadLeaderGameModeBase::EndGame(ASoldierTeam* WinningTeam)
 {
-	for (auto PCIterator = GetWorld()->GetPlayerControllerIterator(); PCIterator; PCIterator++)
-	{
-		if (auto PC = Cast<ASoldierPlayerController>(PCIterator->Get()); PC)
+	if (!IsGameOver) {
+		for (auto PCIterator = GetWorld()->GetPlayerControllerIterator(); PCIterator; PCIterator++)
 		{
-			if (AKillStats* killRecord = PC->GetPlayerState<ASoldierPlayerState>()->PersonalRecord; killRecord) {
-				if (PC->GetTeam() == WinningTeam) {
-					PC->OnGameEnd(1, GetGameTimeSinceCreation(),
-						killRecord->NbKillAI, killRecord->NbKillPlayer,
-						killRecord->NbDeathByAI, killRecord->NbDeathByPlayer);
-				}
-				else {
-					PC->OnGameEnd(-1, GetGameTimeSinceCreation(),
-						killRecord->NbKillAI, killRecord->NbKillPlayer,
-						killRecord->NbDeathByAI, killRecord->NbDeathByPlayer);
+			if (auto PC = Cast<ASoldierPlayerController>(PCIterator->Get()); PC)
+			{
+				if (AKillStats* killRecord = PC->GetPlayerState<ASoldierPlayerState>()->PersonalRecord; killRecord) {
+					if (PC->GetTeam() == WinningTeam) {
+						PC->OnGameEnd(1, GetGameTimeSinceCreation(),
+							killRecord->NbKillAI, killRecord->NbKillPlayer,
+							killRecord->NbDeathByAI, killRecord->NbDeathByPlayer);
+					}
+					else {
+						PC->OnGameEnd(-1, GetGameTimeSinceCreation(),
+							killRecord->NbKillAI, killRecord->NbKillPlayer,
+							killRecord->NbDeathByAI, killRecord->NbDeathByPlayer);
+					}
 				}
 			}
 		}
-	}
 
-	FTimerHandle timerBeforeClosing;
-	GetWorld()->GetTimerManager().SetTimer(timerBeforeClosing, this,
-		&ASquadLeaderGameModeBase::CloseGame, 10.f);  // request to the server to end the game
+		FTimerHandle timerBeforeClosing;
+		GetWorld()->GetTimerManager().SetTimer(timerBeforeClosing, this,
+			&ASquadLeaderGameModeBase::CloseGame, 10.f);  // request to the server to end the game
+
+		IsGameOver = true;
+	}
 }
 
 void ASquadLeaderGameModeBase::CloseGame()

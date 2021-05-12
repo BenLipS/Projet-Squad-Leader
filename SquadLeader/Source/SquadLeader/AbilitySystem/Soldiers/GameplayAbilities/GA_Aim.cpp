@@ -18,8 +18,8 @@ void UGA_Aim::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGa
 		if (!CommitAbility(Handle, ActorInfo, ActivationInfo))
 			EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
 
-		ASoldier* soldier = CastChecked<ASoldier>(ActorInfo->AvatarActor.Get());
-		soldier->StartAiming();
+		ASoldier* Soldier = CastChecked<ASoldier>(ActorInfo->AvatarActor.Get());
+		Soldier->StartAiming();
 	}
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 }
@@ -34,19 +34,13 @@ bool UGA_Aim::CanActivateAbility(const FGameplayAbilitySpecHandle _Handle, const
 void UGA_Aim::InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo)
 {
 	if (ActorInfo != NULL && ActorInfo->AvatarActor != NULL)
-		CancelAbility(Handle, ActorInfo, ActivationInfo, true);
+		EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 }
 
-void UGA_Aim::CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateCancelAbility)
+void UGA_Aim::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
-	if (ScopeLockCount > 0)
-	{
-		WaitingToExecute.Add(FPostLockDelegate::CreateUObject(this, &UGA_Aim::CancelAbility, Handle, ActorInfo, ActivationInfo, bReplicateCancelAbility));
-		return;
-	}
+	ASoldier* Soldier = Cast<ASoldier>(ActorInfo->AvatarActor.Get());
+	Soldier->StopAiming();
 
-	Super::CancelAbility(Handle, ActorInfo, ActivationInfo, bReplicateCancelAbility);
-
-	ASoldier* soldier = CastChecked<ASoldier>(ActorInfo->AvatarActor.Get());
-	soldier->StopAiming();
+	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }

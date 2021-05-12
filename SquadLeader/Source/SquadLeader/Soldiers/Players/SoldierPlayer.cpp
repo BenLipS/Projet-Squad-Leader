@@ -534,6 +534,7 @@ void ASoldierPlayer::OnReceiveDamage(const FVector& _ImpactPoint, const FVector&
 			StartHitReactMontage(HitReactLeftMontage);
 	}
 
+	ShakeCamera(CameraShakeReceiveDamageClass);
 }
 
 void ASoldierPlayer::ClientOnReceiveDamage_Implementation(const FVector& _ImpactPoint, const FVector& _SourcePoint)
