@@ -66,8 +66,13 @@ public:
 	TArray<AAISquadController*> AISquadControllerList;
 
 protected:
-	UPROPERTY(BlueprintReadOnly, Replicated)
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_AISoldierList)
 	TArray<ASoldierAI*> AISoldierList;
+
+	// Utilsier les fonctions ici quand on ajoute une ia pur forcer le squadManage Onrep
+	// Faudra verifier qu on n a pas de duplicat
+	UFUNCTION()
+	void OnRep_AISoldierList();
 
 public:
 	TArray<ASoldierAI*> GetAISoldierList() const;

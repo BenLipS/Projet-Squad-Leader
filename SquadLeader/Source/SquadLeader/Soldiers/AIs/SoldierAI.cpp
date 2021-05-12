@@ -49,11 +49,7 @@ void ASoldierAI::BeginPlay()
 	check(AbilitySystemComponent);
 
 	if (bUpdateTeamOnSpawn)
-	{
-		// TODO: Remove this timer and use some broadcasts...
-		FTimerHandle TimerTeam{};
-		GetWorldTimerManager().SetTimer(TimerTeam, this, &ASoldierAI::UpdateTeam, 5.f, false);
-	}
+		UpdateTeam();
 
 	AbilitySystemComponent->InitAbilityActorInfo(this, this);
 

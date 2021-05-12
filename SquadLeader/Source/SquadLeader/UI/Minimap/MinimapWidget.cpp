@@ -197,6 +197,7 @@ void UMinimapWidget::OnSoldierAddedToTeam(ASoldier* _Soldier)
 		}
 		
 		POI->OwningActor = _Soldier;
+		POI->SetVisibility(ESlateVisibility::Collapsed);
 		POIList.Add(POI);
 	}
 }
@@ -260,9 +261,16 @@ void UMinimapWidget::OnPingDestroyed()
 void UMinimapWidget::OnSoldierRemovedFromTeam(ASoldier* _Soldier)
 {
 	// Remove any widget whose actor ref match _Soldier
-	POIList.RemoveAll([&_Soldier](UPointOfInterestWidget* POI) { return POI->OwningActor == _Soldier; });
-
-	// TODO do I have to remove from viewport ?
+	for (int i = 0; i < POIList.Num();)
+	{
+		if (POIList[i]->OwningActor == _Soldier)
+		{
+			POIList[i]->RemoveFromViewport();
+			POIList.RemoveAt(i);
+		}
+		else
+			++i;
+	}
 }
 
 void UMinimapWidget::OnUpdatePOIs()
@@ -331,7 +339,7 @@ void UMinimapWidget::OnUpdatePOIs()
 	{
 		const FVector2D ActorPosition = FVector2D{ POI->OwningActor->GetActorLocation().X, POI->OwningActor->GetActorLocation().Y };
 		// Diff position between soldier and player
-		
+
 		const float DiffX = (CenterScreen.X - ActorPosition.X) / Coeff;
 		const float DiffY = (ActorPosition.Y - CenterScreen.Y) / Coeff; // Implicit * -1
 		const FVector2D DiffVec = { DiffX, DiffY };

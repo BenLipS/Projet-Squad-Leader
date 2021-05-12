@@ -34,9 +34,7 @@ void ASoldierPlayer::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// TODO: Remove this timer and use some broadcasts...
-	FTimerHandle TimerTeam{};
-	GetWorldTimerManager().SetTimer(TimerTeam, this, &ASoldierPlayer::UpdateTeam, 2.f, false);
+	UpdateTeam();
 
 	InitSquadManager();
 
@@ -161,7 +159,7 @@ void ASoldierPlayer::InitSquadManager()
 
 	FActorSpawnParameters SpawnInfo;
 	SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	SquadManager = GetWorld()->SpawnActorDeferred<AAISquadManager>(AISquadManagerClass, FTransform{}, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+	SquadManager = GetWorld()->SpawnActorDeferred<AAISquadManager>(AISquadManagerClass, FTransform{}, this, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 
 	if (SquadManager)
 	{
@@ -267,16 +265,15 @@ void ASoldierPlayer::OnRep_SquadManager()
 {
 	if (SquadManager)
 	{
+		// Remove soldier from team then re-add them - This is not the cleanest nor the most optimize solution but it works
 		for (ASoldierAI* Soldier : SquadManager->GetAISoldierList())
 		{
-			if (Soldier)
+			if (Soldier && Soldier->GetTeam())
+			{
+				Soldier->GetTeam()->RemoveSoldierList(Soldier);
 				Soldier->UpdateTeam();
+			}
 		}
-	}
-	else
-	{
-		int i = 0;
-		++i;
 	}
 }
 

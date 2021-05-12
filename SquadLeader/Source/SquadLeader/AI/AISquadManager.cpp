@@ -67,8 +67,6 @@ void AAISquadManager::Init(ASoldierTeam* _Team, ASoldierPlayer* _Player)
 			SquadAI->OnMaxHealthChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberMaxHealthChange);
 			SquadAI->OnShieldChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberShieldChange);
 			SquadAI->OnMaxShieldChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberMaxShieldChange);
-			SquadAI->FinishSpawning(TransformAI);
-			SquadAI->BroadCastDatas();
 
 			if (AAISquadController* AC = Cast<AAISquadController>(SquadAI->Controller))
 			{
@@ -76,6 +74,8 @@ void AAISquadManager::Init(ASoldierTeam* _Team, ASoldierPlayer* _Player)
 				AISoldierList.Add(SquadAI);
 				AC->SquadManager = this;
 			}
+			SquadAI->FinishSpawning(TransformAI);
+			SquadAI->BroadCastDatas();
 		}
 	}
 
@@ -120,6 +120,12 @@ void AAISquadManager::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& Ou
 TArray<ASoldierAI*> AAISquadManager::GetAISoldierList() const
 {
 	return AISoldierList;
+}
+
+void AAISquadManager::OnRep_AISoldierList()
+{
+	if (Leader)
+		Leader->OnRep_SquadManager();
 }
 
 void AAISquadManager::AddAnAIToSquad_Implementation()
@@ -168,12 +174,16 @@ void AAISquadManager::AddAnAIToSquad_Implementation()
 		SquadAI->OnMaxHealthChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberMaxHealthChange);
 		SquadAI->OnShieldChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberShieldChange);
 		SquadAI->OnMaxShieldChanged.AddDynamic(this, &AAISquadManager::OnSquadMemberMaxShieldChange);
+		SquadAI->SetTeam(Team);
+
+		if (AAISquadController* AC = Cast<AAISquadController>(SquadAI->Controller))
+		{
+			AISquadControllerList.Add(AC);
+			AISoldierList.Add(SquadAI);
+			AC->SquadManager = this;
+		}
 		SquadAI->FinishSpawning(LocationAI);
 		SquadAI->BroadCastDatas();
-		SquadAI->SetTeam(Team);
-		AISquadControllerList.Add(Cast<AAISquadController>(SquadAI->Controller));
-		Cast<AAISquadController>(SquadAI->Controller)->SquadManager = this;
-
 		BroadCastSquadData();
 	}
 }
