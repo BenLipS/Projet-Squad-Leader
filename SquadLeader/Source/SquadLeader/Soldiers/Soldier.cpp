@@ -552,7 +552,7 @@ void ASoldier::Landed(const FHitResult& _Hit)
 	if (AbilitySystemComponent)
 	{
 		FGameplayTagContainer EffectTagsToRemove;
-		EffectTagsToRemove.AddTag(FGameplayTag::RequestGameplayTag(FName("State.Jumping")));
+		EffectTagsToRemove.AddTag(FGameplayTag::RequestGameplayTag(FName("State.Movement.Jumping")));
 		AbilitySystemComponent->RemoveActiveEffectsWithGrantedTags(EffectTagsToRemove);
 	}
 }
