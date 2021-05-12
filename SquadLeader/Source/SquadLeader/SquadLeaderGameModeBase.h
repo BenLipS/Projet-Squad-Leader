@@ -66,6 +66,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<AInfluenceMapGrid> InfluenceMapClass;
 
+	bool IsGameOver = false;
+
 public:
 	UPROPERTY()
 	TMap<class ASoldierTeam*, AAIBasicManager*> AIBasicManagerCollection;
