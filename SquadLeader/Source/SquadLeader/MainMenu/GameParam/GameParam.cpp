@@ -18,6 +18,7 @@ void AGameParam::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifeti
 	DOREPLIFETIME_CONDITION_NOTIFY(AGameParam, StartingNbAISquad, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(AGameParam, LevelAISquad, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(AGameParam, NbTickets, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(AGameParam, RespawnDuration, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(AGameParam, Weather, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(AGameParam, FriendOnly, COND_None, REPNOTIFY_Always);
 }
