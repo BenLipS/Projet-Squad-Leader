@@ -39,7 +39,7 @@ float ASL_Trace::GetCurrentSpread() const
 
 	UAbilitySystemComponent* ASC = OwningAbility->GetCurrentActorInfo()->AbilitySystemComponent.Get();
 
-	if (ASC && ASC->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("State.Aiming"))))
+	if (ASC && ASC->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("State.Weapon.Aiming"))))
 		return FinalSpread * AimingSpreadMod;
 	return FinalSpread;
 }
