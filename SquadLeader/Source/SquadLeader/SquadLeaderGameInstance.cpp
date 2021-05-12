@@ -3,7 +3,7 @@
 #include "UI/Interface/StatInfoInterface.h"
 #include "UI/Interface/StatInfoInterface.h"
 #include "UI/Menu/MenuItem/MenuList/MenuListInfo.h"
-#include "UI/HUD/SL_HUD.h"
+#include "UI/HUD/MainMenuHUD.h"
 
 #include "winsock.h"
 
