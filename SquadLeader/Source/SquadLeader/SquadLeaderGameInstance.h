@@ -50,6 +50,8 @@ public:
 		void JoinGame(FString IPAdress);
 	UFUNCTION(BlueprintCallable)
 		void ProfileInfo();
+	UFUNCTION(BlueprintCallable)
+		void GetGameAvailable();
 
 	UFUNCTION(BlueprintCallable)
 		bool const GetNetworkStatus() { return OnlineStatus; }
@@ -70,6 +72,8 @@ private:
 	void HttpCallAllowFriendForGame();
 	void HttpCallDeleteGame();
 
+	void HttpCallGetGame();
+
 	void HttpCallChangeConnectedStatus(int status);
 
 	void HttpCallUpdatePlayerAfterGame();
@@ -81,6 +85,7 @@ private:
 	void OnResponseReceivedReceiveSync(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 	void OnResponseCreateNewGame(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 	void OnResponseDeleteGame(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
+	void OnResponseGetGame(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 	void OnResponseDoNothing(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 
 public:

@@ -3,6 +3,7 @@
 #include "UI/Interface/StatInfoInterface.h"
 #include "UI/Interface/StatInfoInterface.h"
 #include "UI/Menu/MenuItem/MenuList/MenuListInfo.h"
+#include "UI/Menu/MenuItem/MenuList/MenuListGame.h"
 #include "UI/HUD/MainMenuHUD.h"
 
 #include "winsock.h"
@@ -144,7 +145,6 @@ void USquadLeaderGameInstance::ProfileInfo()
     statsIn.Add("Score", FString::FromInt(UserData.Score));
     statsIn.Add("Playtime", FString::FromInt(UserData.PlayTime));
 
-
     if (auto PC = GetPrimaryPlayerController(); PC)
     {
         if (auto HUD = PC->GetHUD<IStatInfoInterface>(); HUD)
@@ -153,8 +153,13 @@ void USquadLeaderGameInstance::ProfileInfo()
             HUD->OnStatsInfoReceived(statsIn);
         }
     }
+}
 
-
+void USquadLeaderGameInstance::GetGameAvailable()
+{
+    if (OnlineStatus) {
+        HttpCallGetGame();
+    }
 }
 
 
@@ -280,6 +285,18 @@ void USquadLeaderGameInstance::HttpCallDeleteGame()
     Request->SetHeader("Authorization", authHeader);
     Request->SetURL(BaseServerDataAdress + UserData.Id + "/Games/" + GameID);
     Request->SetVerb("DELETE");
+    Request->ProcessRequest();
+}
+
+void USquadLeaderGameInstance::HttpCallGetGame()
+{
+    TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = Http->CreateRequest();
+    Request->OnProcessRequestComplete().BindUObject(this, &USquadLeaderGameInstance::OnResponseGetGame);
+    Request->SetHeader("Content-Type", "application/x-www-form-urlencoded");
+    FString authHeader = FString("Bearer ") + AuthToken;
+    Request->SetHeader("Authorization", authHeader);
+    Request->SetURL(BaseServerDataAdress + UserData.Id + "/Games/getAvailable");
+    Request->SetVerb("GET");
     Request->ProcessRequest();
 }
 
@@ -427,6 +444,37 @@ void USquadLeaderGameInstance::OnResponseDeleteGame(FHttpRequestPtr Request, FHt
     }
     else {  // no connection to the data server or problems
         // TODO: retry later
+        NoConnexionComportment();
+    }
+}
+
+void USquadLeaderGameInstance::OnResponseGetGame(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
+{
+    if (bWasSuccessful) {
+        TArray<TSharedPtr<FJsonValue>> JsonArray;
+        //Create a reader pointer to read the json data
+        TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(Response->GetContentAsString());
+        //Deserialize the json data given Reader and the actual object to deserialize
+        if (FJsonSerializer::Deserialize(Reader, JsonArray)) {
+            // send data to the user interface
+            
+            if (auto PC = GetPrimaryPlayerController(); PC)
+            {
+                if (auto HUD = PC->GetHUD<AMainMenuHUD>(); HUD)
+                {
+                    HUD->OnGamesInfoCleanOrder();
+                    for (auto JsonObject : JsonArray)
+                    {
+                        FString Name = JsonObject->AsObject()->GetStringField("name");
+                        FString MoreInfo = "Level: " + JsonObject->AsObject()->GetStringField("levelTarget");
+                        FString IP = JsonObject->AsObject()->GetStringField("ipAdress");
+                        HUD->OnGameInfoReceived(Name, MoreInfo, IP);
+                    }
+                }
+            }
+        }
+    }
+    else {  // no connection to the data server or problems
         NoConnexionComportment();
     }
 }
