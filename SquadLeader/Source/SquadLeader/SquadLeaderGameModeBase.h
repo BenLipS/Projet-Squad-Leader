@@ -24,6 +24,10 @@ public:
 	// virtual void PreLogin(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage) override;
 	virtual void Logout(AController* Exiting) override;
 
+
+	/* Override To Read In Pawn From Custom Controller */
+	UClass* GetDefaultPawnClassForController(AController* InController); //override;  // help
+
 protected:
 	void ChangeGameState();
 	void FetchGameParam();
@@ -61,6 +65,8 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<AInfluenceMapGrid> InfluenceMapClass;
+
+	bool IsGameOver = false;
 
 public:
 	UPROPERTY()

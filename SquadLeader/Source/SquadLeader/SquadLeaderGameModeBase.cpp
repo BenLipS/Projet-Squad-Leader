@@ -40,6 +40,18 @@ void ASquadLeaderGameModeBase::Logout(AController* Exiting)
 }
 
 
+UClass* ASquadLeaderGameModeBase::GetDefaultPawnClassForController(AController* InController)
+{
+	/* Override Functionality to get Pawn from PlayerController */
+	if (ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(InController); PC)
+	{
+		return PC->GetPlayerPawnClass();
+	}
+
+	/* If we don't get the right Controller, use the Default Pawn */
+	return DefaultPawnClass;
+}
+
 void ASquadLeaderGameModeBase::ChangeGameState() {
 	// set parameters for GameState's spawn
 	FActorSpawnParameters SpawnInfo;
@@ -185,22 +197,32 @@ void ASquadLeaderGameModeBase::CheckTeamTicketsVictoryCondition()
 
 void ASquadLeaderGameModeBase::EndGame(ASoldierTeam* WinningTeam)
 {
-	for (auto PCIterator = GetWorld()->GetPlayerControllerIterator(); PCIterator; PCIterator++)
-	{
-		if (auto PC = Cast<ASoldierPlayerController>(PCIterator->Get()); PC)
+	if (!IsGameOver) {
+		for (auto PCIterator = GetWorld()->GetPlayerControllerIterator(); PCIterator; PCIterator++)
 		{
-			if (PC->GetTeam() == WinningTeam) {
-				PC->OnGameEnd(1, GetGameTimeSinceCreation());
-			}
-			else {
-				PC->OnGameEnd(-1, GetGameTimeSinceCreation());
+			if (auto PC = Cast<ASoldierPlayerController>(PCIterator->Get()); PC)
+			{
+				if (AKillStats* killRecord = PC->GetPlayerState<ASoldierPlayerState>()->PersonalRecord; killRecord) {
+					if (PC->GetTeam() == WinningTeam) {
+						PC->OnGameEnd(1, GetGameTimeSinceCreation(),
+							killRecord->NbKillAI, killRecord->NbKillPlayer,
+							killRecord->NbDeathByAI, killRecord->NbDeathByPlayer);
+					}
+					else {
+						PC->OnGameEnd(-1, GetGameTimeSinceCreation(),
+							killRecord->NbKillAI, killRecord->NbKillPlayer,
+							killRecord->NbDeathByAI, killRecord->NbDeathByPlayer);
+					}
+				}
 			}
 		}
-	}
 
-	FTimerHandle timerBeforeClosing;
-	GetWorld()->GetTimerManager().SetTimer(timerBeforeClosing, this,
-		&ASquadLeaderGameModeBase::CloseGame, 10.f);  // request to the server to end the game
+		FTimerHandle timerBeforeClosing;
+		GetWorld()->GetTimerManager().SetTimer(timerBeforeClosing, this,
+			&ASquadLeaderGameModeBase::CloseGame, 10.f);  // request to the server to end the game
+
+		IsGameOver = true;
+	}
 }
 
 void ASquadLeaderGameModeBase::CloseGame()

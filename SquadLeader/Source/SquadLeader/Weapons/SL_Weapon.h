@@ -6,6 +6,7 @@
 #include "AbilitySystemInterface.h"
 #include "GameplayAbilitySpec.h"
 #include "GameplayTagContainer.h"
+#include "Camera/CameraShake.h"
 #include "SL_Weapon.generated.h"
 
 class ASL_LineTrace;
@@ -272,6 +273,14 @@ public:
 	// Reload
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Animation|Montages")
 	UAnimMontage* ReloadMontage;
+
+//////////////// Camera shake
+protected:
+	UPROPERTY(EditDefaultsOnly, Category = "Camera|Camera Shake")
+	TSubclassOf<UMatineeCameraShake> CameraShakeFireClass;
+
+public:
+	TSubclassOf<UMatineeCameraShake> GetCameraShakeFireClass() const;
 
 //////////////// Collision
 public:

@@ -4,7 +4,6 @@
 #include "GameFramework/Character.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "camera/cameracomponent.h"
-#include "Camera/CameraShake.h"
 #include "AbilitySystemInterface.h"
 #include "../AbilitySystem/Soldiers/AttributeSetSoldier.h"
 #include "../AbilitySystem/Soldiers/AbilitySystemSoldier.h"
@@ -20,6 +19,7 @@ class ASL_Weapon;
 class UGameplayAbilitySoldier;
 class UGameplayEffect;
 class UGE_UpdateStats;
+class UMatineeCameraShake;
 
 UENUM()
 enum class SoldierClass : uint8 {
@@ -224,8 +224,14 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
 	uint8 GetInfluenceRadius() const noexcept;
 
+
+	// Class Name:
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
 	virtual SoldierClass GetClass() { return SoldierClass::NONE; }
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Player class")
+	FString ClassName = "Soldier";
+
 
 	// Attribute changed callbacks
 	FDelegateHandle HealthChangedDelegateHandle;
@@ -257,18 +263,20 @@ public:
 
 // Camera Shake
 protected:
-	// TODO: Should we have one camera shake per weapon then put this variable in the weapon ?
-	// We may have one generic camerashake here
+	// Camera shake when receiving damage from a fire weapon
 	UPROPERTY(EditDefaultsOnly, Category = "Camera|Camera Shake")
-	TSubclassOf<UMatineeCameraShake> CameraShakeFireClass;
+	TSubclassOf<UMatineeCameraShake> CameraShakeReceiveDamageClass;
 
 public:
+	UFUNCTION(BlueprintCallable, Category = "Camera|Camera Shake")
+	TSubclassOf<UMatineeCameraShake> GetCameraShakeReceiveDamageClass() const;
+
+	// Return camera shake fire class of the current weapon if exists
+	UFUNCTION(BlueprintCallable, Category = "Camera|Camera Shake")
 	TSubclassOf<UMatineeCameraShake> GetCameraShakeFireClass() const;
 
-	// This need to use the new camera shake sequence. Matinee is deprecated 
-	UFUNCTION(BlueprintImplementableEvent)
+	UFUNCTION(BlueprintCallable)
 	void ShakeCamera(TSubclassOf<UMatineeCameraShake> _CameraShakeClass);
-
 
 	//LevelUp Animation
 	UFUNCTION(BlueprintImplementableEvent)
@@ -506,7 +514,7 @@ protected:
 
 //////////////// Soldier team
 public:
-	UPROPERTY(EditAnywhere, Category = "PlayerTeam")
+	UPROPERTY(BlueprintReadOnly, Category = "PlayerTeam")
 	ASoldierTeam* InitialTeam;  // for debug use
 
 	UFUNCTION(Reliable, Server, WithValidation)

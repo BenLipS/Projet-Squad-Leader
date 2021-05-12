@@ -447,7 +447,9 @@ void AAIGeneralController::EmptyMissionList() {
 void AAIGeneralController::Die() {
 	//ResetBlackBoard();
 	SeenSoldier.Empty();
+	SeenEnemySoldier.Empty();
 	PerceptionComponent->ForgetAll();
+	PerceptionComponent->SetSenseEnabled(UAISense_Sight::StaticClass(), false);
 }
 
 void AAIGeneralController::Respawn() 
@@ -459,9 +461,11 @@ void AAIGeneralController::Respawn()
 	//ResetBlackBoard() shall not
 	SetState(AIBasicState::Moving);
 	SeenSoldier.Empty();
+	SeenEnemySoldier.Empty();
 	if(AAISquadController* AISquad = Cast<AAISquadController>(this); AISquad)
 		SetState(AIBasicState::Formation);
 	PerceptionComponent->ForgetAll();
+	PerceptionComponent->SetSenseEnabled(UAISense_Sight::StaticClass(), true);
 }
 
 void AAIGeneralController::ResetBlackBoard()
