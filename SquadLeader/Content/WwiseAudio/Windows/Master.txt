@@ -1,0 +1,79 @@
+Event	ID	Name			Wwise Object Path	Notes
+	737959300	Rifle_Fire			\Default Work Unit\Weapons\Rifle_Fire	
+	1011371181	Rifle_Break			\Default Work Unit\Weapons\Rifle_Break	
+	1598298728	Music_Menu			\Default Work Unit\Music\Music_Menu	
+	3104059416	Rifle_Fire_Laser			\Default Work Unit\Weapons\Rifle_Fire_Laser	
+
+Switch Group	ID	Name			Wwise Object Path	Notes
+	1229948536	Environment			\Default Work Unit\Environment	
+
+Switch	ID	Name	Switch Group			Notes
+	2730119150	Outdoors	Environment			
+	4103860031	Indoors	Environment			
+
+State Group	ID	Name			Wwise Object Path	Notes
+	1598298728	Music_Menu			\Default Work Unit\Music_Menu	
+
+State	ID	Name	State Group			Notes
+	748895195	None	Music_Menu			
+	3394241439	Smooth	Music_Menu			
+	4223512837	Intense	Music_Menu			
+
+Custom State	ID	Name	State Group	Owner		Notes
+	275386511	Intense	Music_Menu	\Interactive Music Hierarchy\Default Work Unit\Music\Menu\Menu_Music_Smooth\SL_Menu_Loop_Smooth_142bpm_4-4_67m_P0		
+	749944956	Intense	Music_Menu	\Interactive Music Hierarchy\Default Work Unit\Music\Menu\Menu_Music_Smooth		
+	837913889	Smooth	Music_Menu	\Interactive Music Hierarchy\Default Work Unit\Music\Menu\Menu_Music_Intense\SL_Menu_Intro_Intense_142bpm_4-4_67m_P0		
+	922240415	Smooth	Music_Menu	\Interactive Music Hierarchy\Default Work Unit\Music\Menu\Menu_Music_Intense\SL_Menu_Loop_Intense_142bpm_4-4_67m_P0		
+	950279593	Intense	Music_Menu	\Interactive Music Hierarchy\Default Work Unit\Music\Menu\Menu_Music_Smooth\SL_Menu_Intro_Smooth_142bpm_4-4_67m_P0		
+
+In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size
+	38262662	Rifle_Noise_Indoor_06	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Noise_Indoor_06_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Noise\Rifle_Noise_Indoor\Rifle_Noise_Indoor_06		17344
+	38953370	Rifle_Noise_Indoor_09	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Noise_Indoor_09_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Noise\Rifle_Noise_Indoor\Rifle_Noise_Indoor_09		17240
+	69188623	Rifle_Noise_Outdoor_06	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Noise_Outdoor_06_7262C52E.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Noise\Rifle_Noise_Outdoor\Rifle_Noise_Outdoor_06		17344
+	76129885	Rifle_Mech_03	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Mech_03_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Mech\Rifle_Mech_03		17268
+	122202214	Rifle_Noise_Indoor_07	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Noise_Indoor_07_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Noise\Rifle_Noise_Indoor\Rifle_Noise_Indoor_07		17600
+	128573212	Rifle_Break_Outdoor	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Break_Outdoor_05305CC7.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Break\Rifle_Break_Outdoor		830080
+	170623293	Rifle_Noise_Outdoor_05	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Noise_Outdoor_05_3C344241.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Noise\Rifle_Noise_Outdoor\Rifle_Noise_Outdoor_05		17764
+	196001769	Rifle_Noise_Outdoor_03	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Noise_Outdoor_03_00A291E2.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Noise\Rifle_Noise_Outdoor\Rifle_Noise_Outdoor_03		17268
+	204496951	Rifle_Kick_09	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Kick_09_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Kick\Rifle_Kick_09		17244
+	213076344	Rifle_Sub_06	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Sub_06_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Sub\Rifle_Sub_06		17344
+	223925318	Rifle_Kick_02	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Kick_02_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Kick\Rifle_Kick_02		17376
+	227183882	Rifle_Noise_Indoor_03	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Noise_Indoor_03_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Noise\Rifle_Noise_Indoor\Rifle_Noise_Indoor_03		17268
+	255233995	Rifle_Sub_04	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Sub_04_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Sub\Rifle_Sub_04		17844
+	257882592	Fusil d'assault Laser Tir long 3	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Fusil d'assault Laser Tir long 3_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Riflle_Laser\Tir\Fusil d'assault Laser Tir long 3		309044
+	275112532	Rifle_Mech_02	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Mech_02_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Mech\Rifle_Mech_02		17376
+	296015639	Rifle_Noise_Outdoor_04	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Noise_Outdoor_04_4077E293.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Noise\Rifle_Noise_Outdoor\Rifle_Noise_Outdoor_04		17844
+	317687095	Rifle_Sub_07	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Sub_07_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Sub\Rifle_Sub_07		17604
+	405945141	Rifle_Kick_05	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Kick_05_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Kick\Rifle_Kick_05		17764
+	433765704	Rifle_Mech_04	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Mech_04_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Mech\Rifle_Mech_04		17844
+	478025488	Fusil d'assault Laser Tir long 1 	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Fusil d'assault Laser Tir long 1 _10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Riflle_Laser\Tir\Fusil d'assault Laser Tir long 1 		155644
+	483328097	Rifle_Mech_08	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Mech_08_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Mech\Rifle_Mech_08		17148
+	488527879	Rifle_Sub_02	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Sub_02_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Sub\Rifle_Sub_02		17376
+	509478330	SL_Menu_Intense_142bpm_4-4_67m_P1 Sketch_16	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\SL_Menu_Intense_142bpm_4-4_67m_P1 Sketch_16_D79FB2B7.wem		\Interactive Music Hierarchy\Default Work Unit\Music\Menu\Menu_Music_Intense\SL_Menu_Loop_Intense_142bpm_4-4_67m_P0\SL_Menu_Intense_142bpm_4-4_67m_P1 Sketch_16		23283448
+	520814987	Rifle_Sub_03	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Sub_03_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Sub\Rifle_Sub_03		17268
+	524220479	Rifle_Noise_Outdoor_08	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Noise_Outdoor_08_FB654794.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Noise\Rifle_Noise_Outdoor\Rifle_Noise_Outdoor_08		17148
+	533883570	SL_Menu_Intro_Smooth_142bpm_4-4_67m_P1	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\SL_Menu_Intro_Smooth_142bpm_4-4_67m_P1_D79FB2B7.wem		\Interactive Music Hierarchy\Default Work Unit\Music\Menu\Menu_Music_Smooth\SL_Menu_Intro_Smooth_142bpm_4-4_67m_P0\SL_Menu_Intro_Smooth_142bpm_4-4_67m_P1		2514996
+	548212445	Rifle_Noise_Indoor_05	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Noise_Indoor_05_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Noise\Rifle_Noise_Indoor\Rifle_Noise_Indoor_05		17764
+	596923229	Rifle_Fire_Click	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Fire_Click_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Fire_Click		36040
+	634404485	Rifle_Mech_07	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Mech_07_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Mech\Rifle_Mech_07		17604
+	660540436	Rifle_Sub_09	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Sub_09_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Sub\Rifle_Sub_09		17244
+	702000156	Rifle_Noise_Outdoor_09	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Noise_Outdoor_09_61176CF4.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Noise\Rifle_Noise_Outdoor\Rifle_Noise_Outdoor_09		17240
+	737452584	Rifle_Kick_06	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Kick_06_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Kick\Rifle_Kick_06		17344
+	740374785	Rifle_Noise_Outdoor_07	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Noise_Outdoor_07_C2D26919.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Noise\Rifle_Noise_Outdoor\Rifle_Noise_Outdoor_07		17600
+	742403516	Rifle_Break_Indoors	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Break_Indoors_6ABA6BE0.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Break\Rifle_Break_Indoors		280840
+	747833201	Rifle_Mech_06	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Mech_06_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Mech\Rifle_Mech_06		17344
+	754211678	Rifle_Mech_05	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Mech_05_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Mech\Rifle_Mech_05		17764
+	798581257	Rifle_Kick_03	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Kick_03_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Kick\Rifle_Kick_03		17268
+	856534177	SL_Menu_Intro_Intense_142bpm_4-4_67m_P1 Sketch_16	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\SL_Menu_Intro_Intense_142bpm_4-4_67m_P1 Sketch_16_D79FB2B7.wem		\Interactive Music Hierarchy\Default Work Unit\Music\Menu\Menu_Music_Intense\SL_Menu_Intro_Intense_142bpm_4-4_67m_P0\SL_Menu_Intro_Intense_142bpm_4-4_67m_P1 Sketch_16		2028236
+	864600641	SL_Menu_Smooth_142bpm_4-4_67m_P1	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\SL_Menu_Smooth_142bpm_4-4_67m_P1_D79FB2B7.wem		\Interactive Music Hierarchy\Default Work Unit\Music\Menu\Menu_Music_Smooth\SL_Menu_Loop_Smooth_142bpm_4-4_67m_P0\SL_Menu_Smooth_142bpm_4-4_67m_P1		24743728
+	899760190	Rifle_Noise_Indoor_08	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Noise_Indoor_08_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Noise\Rifle_Noise_Indoor\Rifle_Noise_Indoor_08		17148
+	909078294	Rifle_Sub_08	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Sub_08_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Sub\Rifle_Sub_08		17148
+	912326113	Rifle_Kick_04	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Kick_04_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Kick\Rifle_Kick_04		17844
+	919581035	Rifle_Kick_08	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Kick_08_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Kick\Rifle_Kick_08		17148
+	919970010	Rifle_Noise_Indoor_04	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Noise_Indoor_04_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Noise\Rifle_Noise_Indoor\Rifle_Noise_Indoor_04		17844
+	943172253	Rifle_Sub_05	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Sub_05_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Sub\Rifle_Sub_05		17764
+	979556673	Rifle_Kick_07	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Kick_07_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Kick\Rifle_Kick_07		17604
+	1010860481	Rifle_Mech_09	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Mech_09_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Mech\Rifle_Mech_09		17244
+	1027473740	Fusil d'assault Laser Tir long 4	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Fusil d'assault Laser Tir long 4_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Riflle_Laser\Tir\Fusil d'assault Laser Tir long 4		411544
+	1031786759	Fusil d'assault Laser Tir long 2	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Fusil d'assault Laser Tir long 2_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Riflle_Laser\Tir\Fusil d'assault Laser Tir long 2		188844
+

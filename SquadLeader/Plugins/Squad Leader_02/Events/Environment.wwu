@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{7491FB6D-31F4-4D72-863B-7066B2148D21}" SchemaVersion="103" RootDocumentID="{8EC5AB04-AFDD-43C3-A41A-DACB5E5BA730}" ParentDocumentID="{8EC5AB04-AFDD-43C3-A41A-DACB5E5BA730}">
+	<Events>
+		<WorkUnit Name="Environment" ID="{7491FB6D-31F4-4D72-863B-7066B2148D21}" OwnerID="{8EC5AB04-AFDD-43C3-A41A-DACB5E5BA730}" PersistMode="Nested">
+			<PropertyList>
+				<Property Name="Color" Type="int16" Value="4"/>
+				<Property Name="OverrideColor" Type="bool" Value="True"/>
+			</PropertyList>
+			<ChildrenList>
+				<Event Name="Ambience_Factory" ID="{A3D887EE-0C8A-46D1-AFAA-E0B126442254}">
+					<ChildrenList>
+						<Action Name="" ID="{E778FFFE-0050-4E08-85CC-8F374CC8D87B}" ShortID="1044126480">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Factory Ambience" ID="{241FCDAB-DE2B-4515-82B7-800904F920F9}" WorkUnitID="{822C7857-305A-4F3C-A08B-4B6049187B1C}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Ping_Notif_Bad" ID="{8D9127CD-37B1-42BA-A1D2-1B7E992539FF}">
+					<ChildrenList>
+						<Action Name="" ID="{DD907C11-7638-4DB6-84B9-D31D14619CA3}" ShortID="251748521">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Ping Notif Bad" ID="{58FBFC2D-C432-4011-ABAF-2C427D0F0F2D}" WorkUnitID="{822C7857-305A-4F3C-A08B-4B6049187B1C}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Knob_Menu" ID="{E33A37E2-F4DD-40A1-8D25-ABA763932081}">
+					<ChildrenList>
+						<Action Name="" ID="{1C27378E-5B76-4A9D-B481-6AAFF5A0E40F}" ShortID="702602522">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Knob_menu" ID="{CA9C3712-A337-4836-AC72-44BFA89DEFED}" WorkUnitID="{D2F24155-8E84-4175-BB7E-B82DF0A2BAD1}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Ping_Notif_Bad_v2" ID="{56177412-A4F8-4422-ABA8-25E6FD5E6DE6}">
+					<ChildrenList>
+						<Action Name="" ID="{FD3F48BE-D12D-4AF4-A694-74E24DA93EDF}" ShortID="411925847">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Ping Notif_v2" ID="{C0E09661-BED5-4D6A-82C4-92037D027A2E}" WorkUnitID="{822C7857-305A-4F3C-A08B-4B6049187B1C}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Ping_Notif_Good" ID="{89E1A0F4-EC0F-4100-912C-669F36553708}">
+					<ChildrenList>
+						<Action Name="" ID="{CA31FA7D-99EA-47FC-950C-2312F3E23F82}" ShortID="531641254">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Ping Positif" ID="{F2B22D70-2A2B-4FD0-BA1B-168904886D58}" WorkUnitID="{822C7857-305A-4F3C-A08B-4B6049187B1C}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Respawn" ID="{D55F8669-67B7-464E-9CA5-082F928BE833}">
+					<ChildrenList>
+						<Action Name="" ID="{954A727D-CC1C-4E25-9255-A86459552BCA}" ShortID="509222573">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Respawn" ID="{F304985E-67EC-4653-BAE9-23769E64F39C}" WorkUnitID="{822C7857-305A-4F3C-A08B-4B6049187B1C}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+						<Action Name="" ID="{34388CC6-2606-4D36-8CD8-577454455011}" ShortID="576691110">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="8"/>
+							</PropertyList>
+							<ReferenceList/>
+							<ChildrenList>
+								<EventActionException Name="" ID="{98D1B3C4-EE74-4822-883E-BE88BB944E7F}">
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="Respawn" ID="{F304985E-67EC-4653-BAE9-23769E64F39C}" WorkUnitID="{822C7857-305A-4F3C-A08B-4B6049187B1C}"/>
+										</Reference>
+									</ReferenceList>
+								</EventActionException>
+							</ChildrenList>
+						</Action>
+						<Action Name="" ID="{51B55799-F3A0-4AD0-A063-3C7DC4EE373B}" ShortID="294604494">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="10"/>
+								<Property Name="Delay" Type="Real64" Value="3"/>
+								<Property Name="FadeTime" Type="Real64" Value="2.5"/>
+							</PropertyList>
+							<ReferenceList/>
+						</Action>
+					</ChildrenList>
+				</Event>
+			</ChildrenList>
+		</WorkUnit>
+	</Events>
+</WwiseDocument>

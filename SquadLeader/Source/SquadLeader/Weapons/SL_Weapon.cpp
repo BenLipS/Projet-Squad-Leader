@@ -9,6 +9,8 @@
 #include "../Soldiers/Players/SoldierPlayerController.h"
 #include "SquadLeader/UI/Interface/WeaponInterface.h"
 #include "GameFramework/HUD.h"
+#include "AkAudioEvent.h"
+#include "AkGameplayStatics.h"
 
 ASL_Weapon::ASL_Weapon()
 {
@@ -32,6 +34,10 @@ void ASL_Weapon::BeginPlay()
 	Super::BeginPlay();
 
 	ForceUpdateAmmo();
+	
+	//AkGameplayStatics::
+
+	//SetSwitch("Environment", "Outdoors", this);
 }
 
 void ASL_Weapon::EndPlay(EEndPlayReason::Type _EndPlayReason)

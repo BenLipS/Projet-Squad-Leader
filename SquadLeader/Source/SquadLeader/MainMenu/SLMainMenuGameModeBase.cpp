@@ -2,9 +2,12 @@
 
 #include "SLMainMenuGameModeBase.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
+#include "AkAudioEvent.h"
+#include "AkGameplayStatics.h"
 
 
 void ASLMainMenuGameModeBase::StartPlay() {
+
 	for (auto PCIterator = GetWorld()->GetPlayerControllerIterator(); PCIterator; PCIterator++)
 	{
 		if (auto PC = PCIterator->Get(); PC)
