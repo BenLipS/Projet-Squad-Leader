@@ -31,6 +31,9 @@ void UGA_FireWeaponProjectile::ActivateAbility(const FGameplayAbilitySpecHandle 
 	// TODO: Make this GA like fireWeaponInstant - Ammo are better handled and also the time between shoots
 	SourceWeapon->DecrementAmmo();
 
+	// Camera Shake
+	SourceSoldier->ShakeCamera(SourceSoldier->GetCameraShakeFireClass());
+
 	if (!CurrentActorInfo->IsNetAuthority())
 		return;
 
