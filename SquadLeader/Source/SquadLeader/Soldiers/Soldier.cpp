@@ -68,17 +68,6 @@ void ASoldier::BeginPlay()
 
 	CacheRelativeTransformMeshInCapsule = GetMesh()->GetRelativeTransform();
 
-	// Teams
-	// TODO: Clients must be aware of their team. If we really want a security with the server, we should call this function
-	// from the server only, have a test to determine wheter we can change the team, then use a ClientSetTeam to replicate the change
-	//if (GetLocalRole() == ROLE_Authority)
-	{
-		// Add this to the team data or use the default team
-		if (GetTeam())
-			GetTeam()->AddSoldierList(this);
-		else if (InitialTeam)
-			SetTeam(InitialTeam);
-	}
 
 	if (StartGameMontage)
 	{
@@ -1094,6 +1083,15 @@ void ASoldier::StopRagdoll()
 	GetMesh()->SetRelativeTransform(CacheRelativeTransformMeshInCapsule);
 }
 
+void ASoldier::RefreshTeam()
+{
+	if (GetTeam())
+	{
+		GetTeam()->RemoveSoldierList(this);
+		GetTeam()->AddSoldierList(this);
+	}
+}
+
 // network for debug team change
 void ASoldier::ServerCycleBetweenTeam_Implementation() {
 	cycleBetweenTeam();
@@ -1125,7 +1123,7 @@ void ASoldier::cycleBetweenTeam()
 					message = GetTeam()->TeamName;  // Log
 				}
 			}
-			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, message);
+			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, "Team changed to " + message);
 		}
 	}
 	else ServerCycleBetweenTeam();
@@ -1138,14 +1136,15 @@ ASoldierTeam* ASoldier::GetTeam()
 
 bool ASoldier::SetTeam(ASoldierTeam* _Team)
 {
-	// TODO: Clients must be aware of their team. If we really want a security with the server, we should call this function
-	// from the server only, have a test to determine wheter we can change the team, then use a ClientSetTeam to replicate the change
-	//if (GetLocalRole() == ROLE_Authority)
-	{
-		Team = _Team;
-		return true;
-	}
-	return false;
+	if (Team)
+		Team->RemoveSoldierList(this);
+
+	Team = _Team;
+
+	if (Team)
+		Team->AddSoldierList(this);
+
+	return true;
 }
 
 void ASoldier::setup_stimulus() {

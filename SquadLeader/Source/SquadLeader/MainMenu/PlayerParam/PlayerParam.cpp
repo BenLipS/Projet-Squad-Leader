@@ -19,7 +19,7 @@ TSubclassOf<ASoldierAI> APlayerParam::GetAIClass(int AINb)
 	if (AINb < AIClass.Num()) {
 		return AIClass[AINb];
 	}
-	return nullptr;
+	return AIClass[0];
 }
 
 void APlayerParam::SetAIClass(TSubclassOf<ASoldierAI> NewClass, int AINb)

@@ -7,14 +7,13 @@
 #include "../AI/AIBasicManager.h"
 #include "ControlAreaManager.h"
 
-
-// Sets default values
 AControlArea::AControlArea()
 {
 	initCollideElement();
 
 	PrimaryActorTick.bCanEverTick = false;
 	bReplicates = true;
+	bAlwaysRelevant = true;
 }
 
 // used when initialising the control area

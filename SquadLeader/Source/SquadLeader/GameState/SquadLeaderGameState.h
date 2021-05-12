@@ -35,11 +35,11 @@ public:
 		TArray<ASoldierTeam*> GetSoldierTeamCollection();
 	UFUNCTION()
 		ASoldierTeam* GetSoldierTeamByID(int TeamId);
-
-	UFUNCTION()
-	void SetControlAreaManager(AControlAreaManager* _ControlAreaManager);
+	
 	UFUNCTION()
 	AControlAreaManager* GetControlAreaManager();
+	UFUNCTION()
+	void SetControlAreaManager(AControlAreaManager* _ControlAreaManager);
 
 	UPROPERTY()
 	FSoldierTeamAddedToList OnSoldierTeamAddedToList;

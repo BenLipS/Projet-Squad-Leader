@@ -28,7 +28,6 @@ public:
 
 public:
 	ASoldierPlayerState();
-	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 
 private:
 	void BeginPlay() override;
@@ -95,6 +94,9 @@ public:
 public:
 	AKillStats* PersonalRecord;
 
-	UPROPERTY(Replicated)
+protected:
 	TSubclassOf<APlayerParam> PlayerParam;
+public:
+	void SetPlayerParam(TSubclassOf<APlayerParam> _PlayerParam, AController* OwningController);
+	TSubclassOf<APlayerParam> GetPlayerParam();
 };

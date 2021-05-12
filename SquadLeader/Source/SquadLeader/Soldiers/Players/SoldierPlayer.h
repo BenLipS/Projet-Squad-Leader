@@ -6,7 +6,9 @@
 #include "Materials/MaterialInterface.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Components/PostProcessComponent.h"
+#include "Net/UnrealNetwork.h"
 #include "SoldierPlayer.generated.h"
+
 class AAISquadManager;
 
 UCLASS()
@@ -20,6 +22,7 @@ public:
 public:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
+	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 	void PossessedBy(AController* _newController) override;
 	void OnRep_PlayerState() override;
 	virtual void DeadTagChanged(const FGameplayTag CallbackTag, int32 NewCount) override;
@@ -27,6 +30,7 @@ public:
 //////////////// Inits
 protected:
 	void InitCameraKiller();
+	void InitSquadManager();
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player class")
@@ -71,17 +75,10 @@ protected:
 //////////////// Squad
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "SquadManager")
-	TSubclassOf<class AAISquadManager> AISquadManagerClass;
+	TSubclassOf<AAISquadManager> AISquadManagerClass;
 
-	UPROPERTY(BlueprintReadOnly, Category = "SquadManager")
-	class AAISquadManager* SquadManager;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Ping")
-	TSubclassOf<class AActor> PingClass;
-
-	UPROPERTY()
-	AActor* PingMesh;
-
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, ReplicatedUsing = OnRep_SquadManager, Category = "SquadManager")
+	AAISquadManager* SquadManager;
 	// Number of AIs to add for the next level up
 	UPROPERTY(EditDefaultsOnly, Category = "SquadManager")
 	FScalableFloat NbAIsForNextLevelUp = 0.f;
@@ -90,6 +87,18 @@ public:
 	UFUNCTION()
 	AAISquadManager* GetSquadManager();
 
+	UFUNCTION()
+	void OnRep_SquadManager();
+
+//////////////// Ping
+protected:
+	UPROPERTY(EditDefaultsOnly, Category = "Ping")
+	TSubclassOf<class AActor> PingClass;
+
+	UPROPERTY()
+	AActor* PingMesh;
+
+public:
 	UFUNCTION(Client, Reliable)
 	void SpawnClientPing(FVector2D PingLocation);
 	void SpawnClientPing_Implementation(FVector2D PingLocation);
