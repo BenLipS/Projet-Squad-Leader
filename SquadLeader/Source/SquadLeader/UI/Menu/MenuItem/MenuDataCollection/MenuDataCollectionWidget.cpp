@@ -68,6 +68,10 @@ void UMenuDataCollectionWidget::InitIntValues()
 		}
 	}
 
+	ResyncDefaultIntvalues();
+}
+
+void UMenuDataCollectionWidget::ResyncDefaultIntvalues() {
 	if (IsValid(DefaultValues))
 	{
 		auto listInts = DefaultValues->GetDefaultObject<AGameParam>()->GetIntParams();

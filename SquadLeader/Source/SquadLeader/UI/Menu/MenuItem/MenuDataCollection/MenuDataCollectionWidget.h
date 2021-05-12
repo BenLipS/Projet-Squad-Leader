@@ -61,6 +61,10 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void RandomizeIntValues();
 
+public:
+	UFUNCTION(BlueprintCallable)
+	void ResyncDefaultIntvalues();
+
 /*public:
 	UFUNCTION(BlueprintCallable)
 	int GetIntData(FString Key);*/

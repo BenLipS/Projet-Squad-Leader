@@ -35,6 +35,18 @@ void AGameParam::RandomiseParam(AGameParam* MinConfig, AGameParam* MaxConfig)
 	RespawnDuration = UKismetMathLibrary::RandomIntegerInRange(MinConfig->RespawnDuration, MaxConfig->RespawnDuration);
 }
 
+void AGameParam::GameParamCopy(AGameParam* TargetParam)
+{
+	NbAIBasicAssault = TargetParam->NbAIBasicAssault;
+	NbAIBasicHeavy = TargetParam->NbAIBasicHeavy;
+	LevelAIBasic = TargetParam->LevelAIBasic;
+	StartingNbAISquad = TargetParam->StartingNbAISquad;
+	LevelAISquad = TargetParam->LevelAISquad;
+	NbTickets = TargetParam->NbTickets;
+	Weather = TargetParam->Weather;
+	RespawnDuration = TargetParam->RespawnDuration;
+}
+
 TMap<FString, int> AGameParam::GetIntParams()
 {
 	TMap<FString, int> ret;

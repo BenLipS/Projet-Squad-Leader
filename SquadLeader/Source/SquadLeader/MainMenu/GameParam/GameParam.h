@@ -49,6 +49,8 @@ public:
 
 	void RandomiseParam(AGameParam* MinConfig, AGameParam* MaxConfig);
 
+	void GameParamCopy(AGameParam* TargetParam);
+
 	UFUNCTION()
 	TMap<FString, int> GetIntParams();
 

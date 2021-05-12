@@ -66,7 +66,7 @@ void USquadLeaderGameInstance::LaunchGame()
 void USquadLeaderGameInstance::SetGameParamToDefault()
 {
     if (auto GM = GetWorld()->GetAuthGameMode<ASLMainMenuGameModeBase>(); GM)
-        GameParam = GM->DefaultGameParam;
+        GameParam.GetDefaultObject()->GameParamCopy(GM->DefaultGameParam.GetDefaultObject());
 }
 
 void USquadLeaderGameInstance::SetGameParamToRandom()
