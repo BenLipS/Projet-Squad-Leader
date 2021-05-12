@@ -339,7 +339,7 @@ void UMinimapWidget::OnUpdatePOIs()
 
 	for (UPointOfInterestWidget* POI : POIList)
 	{
-		if (!IsValid(POI))
+		if (!IsValid(POI) || !IsValid(POI->OwningActor))
 			continue;
 
 		const FVector2D ActorPosition = FVector2D{ POI->OwningActor->GetActorLocation().X, POI->OwningActor->GetActorLocation().Y };
@@ -351,6 +351,12 @@ void UMinimapWidget::OnUpdatePOIs()
 
 		// The POI is too far from the player
 		if (!POI->bPersistant && !IsInDisplay(DiffVec, POI->GetTickSpaceGeometry().GetLocalSize()))
+		{
+			POI->SetVisibility(ESlateVisibility::Collapsed);
+			continue;
+		}
+		// The POI is a dead soldier
+		else if (ASoldier* Soldier = Cast<ASoldier>(POI->OwningActor); Soldier && !Soldier->IsAlive())
 		{
 			POI->SetVisibility(ESlateVisibility::Collapsed);
 			continue;
