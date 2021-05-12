@@ -107,8 +107,18 @@ void AAIBasicManager::Tick(float DeltaSeconds) {
 	double TotalTime = 0.0;
 
 	double startTime = FPlatformTime::Seconds();
-	
-	if ((ControlAreasBeenUpdate || NewSoldierAvailable) && AIBasicAvailable.Num() >= 2) {
+
+	if (ControlAreaAllies.Num() == 1 && ControlAreaNeutral.Num() == 0) {
+		//envoyer toutes les IAs défendre le point de contrôle et envoyer une seule IA sur les autres point de contrôle
+		//FinalDefens();
+		GEngine->AddOnScreenDebugMessage(10, 5.f, FColor::Cyan, TEXT("Tout le monde en defense !!!!"));
+	}
+	else if (ControlAreaEnnemies.Num() == 1 && ControlAreaNeutral.Num() == 0) {
+		//envoyer toutes les IAs attaquer le point de contrôle et laisser une IA défendre sur les autres point de contrôle
+		//FinalAttack();
+		GEngine->AddOnScreenDebugMessage(20, 5.f, FColor::Cyan, TEXT("Tout le monde en Attaque !!!!"));
+	}
+	else if ((ControlAreasBeenUpdate || NewSoldierAvailable) && AIBasicAvailable.Num() >= 2) {
 		ControlAreasBeenUpdate = false;
 		NewSoldierAvailable = false;
 
@@ -363,4 +373,26 @@ bool AAIBasicManager::FindAvailableSoldier(uint32& IndexSoldier) {
 		}
 	}
 	return false;
+}
+
+void AAIBasicManager::FinalAttack() {
+	const uint32 IndexCA = ControlAreaEnnemies[0];
+	auto LastEnnemieControlArea = ListSoldierOnControlArea.Find(IndexCA);
+
+	uint32 IndexSoldier = 0;
+	while (FindAvailableSoldier(IndexSoldier))
+	{
+		uint32 IndexCASoldierOn = 0;
+		if (AIBasicList[IndexSoldier]->GetIndexControlArea(IndexCASoldierOn) && !LastEnnemieControlArea->SoldierIndex.Contains(IndexSoldier)) {
+			UCaptureMission* CaptureMission = Cast<UCaptureMission>(NewObject<UCaptureMission>(this, UCaptureMission::StaticClass()));
+			CaptureMission->InitCaptureMission(-1, MissionPriority::eMIDDLE, m_controlAreaManager->GetControlArea()[IndexCA]);
+			AIBasicList[IndexSoldier]->SetMission<UCaptureMission*>(CaptureMission);
+
+			LastEnnemieControlArea->SoldierIndex.Add(IndexSoldier);
+			ListSoldierOnControlArea.Find(IndexCASoldierOn)->SoldierIndex.Remove(IndexSoldier);
+		}
+	}
+}
+
+void AAIBasicManager::FinalDefens() {
 }

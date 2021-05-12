@@ -164,4 +164,11 @@ protected:
 public:
 	UFUNCTION()
 		uint8 GetTeamID() const noexcept { return Team->Id; }
+
+protected:
+	UFUNCTION()
+	void FinalAttack();
+
+	UFUNCTION()
+		void FinalDefens();
 };
