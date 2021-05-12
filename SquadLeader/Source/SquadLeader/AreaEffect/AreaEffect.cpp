@@ -6,6 +6,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Math/UnrealMathUtility.h"
+#include "Camera/CameraShake.h"
 
 #ifdef UE_BUILD_DEBUG
 #include "DrawDebugHelpers.h"
@@ -171,16 +172,10 @@ void AAreaEffect::ApplyImpulse(AActor* _Actor, const float _DistActorArea)
 	if (ASoldier* Soldier = Cast<ASoldier>(_Actor); Soldier)
 	{
 		Soldier->GetCharacterMovement()->AddImpulse(DetermineImpulse(_Actor, _DistActorArea));
-		//
-		// TODO uncomment camerashake - Each area effect shall have one
-		//
-		//
-		//
-		//Soldier->ShakeCamera();
-	}
 
-	//else if (UStaticMeshComponent * SM = Cast<UStaticMeshComponent>(_Actor->GetRootComponent()); SM && SM->Mobility == EComponentMobility::Movable)
-	//	SM->AddImpulse(DetermineImpulse(_Actor, _DistActorArea));
+		if (CameraShakeClass)
+			Soldier->ShakeCamera(CameraShakeClass);
+	}
 }
 
 float AAreaEffect::DetermineDamage(const float _DistActorArea) const

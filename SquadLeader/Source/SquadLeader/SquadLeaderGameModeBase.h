@@ -24,6 +24,10 @@ public:
 	// virtual void PreLogin(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage) override;
 	virtual void Logout(AController* Exiting) override;
 
+
+	/* Override To Read In Pawn From Custom Controller */
+	UClass* GetDefaultPawnClassForController(AController* InController); //override;  // help
+
 protected:
 	void ChangeGameState();
 	void FetchGameParam();
@@ -61,6 +65,8 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<AInfluenceMapGrid> InfluenceMapClass;
+
+	bool IsGameOver = false;
 
 public:
 	UPROPERTY()
@@ -104,6 +110,26 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Tickets")
 	int TicketToRemove_AIBasic = 1;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Tickets")
+		int FrequenceForControlAreaInfluence = 5;
+	UPROPERTY(EditDefaultsOnly, Category = "Tickets")
+		int ControlAreaTicketsReduction = 1;
+
+	void CheckControlAreaAdvantage();
+
+//////////////// Killing Streak management
+protected:
+	UPROPERTY(EditDefaultsOnly, Category = "KillingStreak")
+		int NbKillsForBounty = 10;
+	UPROPERTY(EditDefaultsOnly, Category = "KillingStreak")
+		int BountyValueInTickets = 2;
+
+	void ManageKillingStreak(ASoldier* _DeadSoldier, ASoldier* _Killer);
+	void ResetKillingStreak(ASoldierPlayer* _Soldier);
+	void IncreaseKillingStreak(ASoldierPlayer* _Soldier);
+	void NotifyKillingStreak(ASoldierPlayer* _Soldier);
+	void NotifyBounty(ASoldierPlayer* _Soldier);
 
 //////////////// EXP Rules
 protected:

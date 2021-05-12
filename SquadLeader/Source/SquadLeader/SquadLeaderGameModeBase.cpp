@@ -40,6 +40,18 @@ void ASquadLeaderGameModeBase::Logout(AController* Exiting)
 }
 
 
+UClass* ASquadLeaderGameModeBase::GetDefaultPawnClassForController(AController* InController)
+{
+	/* Override Functionality to get Pawn from PlayerController */
+	if (ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(InController); PC)
+	{
+		return PC->GetPlayerPawnClass();
+	}
+
+	/* If we don't get the right Controller, use the Default Pawn */
+	return DefaultPawnClass;
+}
+
 void ASquadLeaderGameModeBase::ChangeGameState() {
 	// set parameters for GameState's spawn
 	FActorSpawnParameters SpawnInfo;
@@ -76,6 +88,9 @@ void ASquadLeaderGameModeBase::StartPlay() {
 	// Start timer for the granted EXP over time
 	FTimerHandle Handle{};
 	GetWorldTimerManager().SetTimer(Handle, this, &ASquadLeaderGameModeBase::GrantOverTimeEXPToSoldier, TimeBetweenGrantedEXP, true);
+
+	FTimerHandle ControlAreaTimer{};
+	GetWorldTimerManager().SetTimer(ControlAreaTimer, this, &ASquadLeaderGameModeBase::CheckControlAreaAdvantage, FrequenceForControlAreaInfluence, true);
 
 	Super::StartPlay();
 }
@@ -139,6 +154,18 @@ void ASquadLeaderGameModeBase::InitInfluenceMap() {
 	}
 }
 
+void ASquadLeaderGameModeBase::CheckControlAreaAdvantage()
+{
+	if (AControlAreaManager* ControlAreaManager = Cast<ASquadLeaderInitGameState>(GameState)->GetControlAreaManager(); ControlAreaManager) {
+		if (auto TeamWithAdvantage = ControlAreaManager->GetTeamWithControlAdvantage(); TeamWithAdvantage && (TeamWithAdvantage->Id == 1 || TeamWithAdvantage->Id == 2)) {
+			// we need to find the other team
+			if (auto TeamWithoutAdvantage = Cast<ASquadLeaderInitGameState>(GameState)->GetSoldierTeamByID((TeamWithAdvantage->Id % 2) + 1); TeamWithoutAdvantage) {
+				TeamWithoutAdvantage->RemoveTickets(ControlAreaTicketsReduction);
+			}
+		}
+	}
+}
+
 void ASquadLeaderGameModeBase::RespawnSoldier(ASoldier* _Soldier)
 {
 	if (_Soldier)
@@ -159,33 +186,43 @@ void ASquadLeaderGameModeBase::CheckControlAreaVictoryCondition()
 void ASquadLeaderGameModeBase::CheckTeamTicketsVictoryCondition()
 {
 	for (auto team : Cast<ASquadLeaderGameState>(GameState)->GetSoldierTeamCollection()) {
-		if (team->GetTickets() == 0) {
+		if (team->GetTickets() <= 0) {
 			//GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Red, TEXT("END GAME: Tickets depleted\n") + teams->TeamName + TEXT(" lose !"), false, FVector2D(7, 7));
 			for (auto potentialwinningteam : Cast<ASquadLeaderGameState>(GameState)->GetSoldierTeamCollection())
-			if (potentialwinningteam != team && (potentialwinningteam->Id == 1 || potentialwinningteam->Id == 2))
-				EndGame(potentialwinningteam);
+				if (potentialwinningteam != team && (potentialwinningteam->Id == 1 || potentialwinningteam->Id == 2))
+					EndGame(potentialwinningteam);
 		}
 	}
 }
 
 void ASquadLeaderGameModeBase::EndGame(ASoldierTeam* WinningTeam)
 {
-	for (auto PCIterator = GetWorld()->GetPlayerControllerIterator(); PCIterator; PCIterator++)
-	{
-		if (auto PC = Cast<ASoldierPlayerController>(PCIterator->Get()); PC)
+	if (!IsGameOver) {
+		for (auto PCIterator = GetWorld()->GetPlayerControllerIterator(); PCIterator; PCIterator++)
 		{
-			if (PC->GetTeam() == WinningTeam) {
-				PC->OnGameEnd(1, GetGameTimeSinceCreation());
-			}
-			else {
-				PC->OnGameEnd(-1, GetGameTimeSinceCreation());
+			if (auto PC = Cast<ASoldierPlayerController>(PCIterator->Get()); PC)
+			{
+				if (AKillStats* killRecord = PC->GetPlayerState<ASoldierPlayerState>()->PersonalRecord; killRecord) {
+					if (PC->GetTeam() == WinningTeam) {
+						PC->OnGameEnd(1, GetGameTimeSinceCreation(),
+							killRecord->NbKillAI, killRecord->NbKillPlayer,
+							killRecord->NbDeathByAI, killRecord->NbDeathByPlayer);
+					}
+					else {
+						PC->OnGameEnd(-1, GetGameTimeSinceCreation(),
+							killRecord->NbKillAI, killRecord->NbKillPlayer,
+							killRecord->NbDeathByAI, killRecord->NbDeathByPlayer);
+					}
+				}
 			}
 		}
-	}
 
-	FTimerHandle timerBeforeClosing;
-	GetWorld()->GetTimerManager().SetTimer(timerBeforeClosing, this,
-		&ASquadLeaderGameModeBase::CloseGame, 10.f);  // request to the server to end the game
+		FTimerHandle timerBeforeClosing;
+		GetWorld()->GetTimerManager().SetTimer(timerBeforeClosing, this,
+			&ASquadLeaderGameModeBase::CloseGame, 10.f);  // request to the server to end the game
+
+		IsGameOver = true;
+	}
 }
 
 void ASquadLeaderGameModeBase::CloseGame()
@@ -206,6 +243,7 @@ void ASquadLeaderGameModeBase::NotifySoldierKilled(ASoldier* _DeadSoldier, ASold
 	GrantEXPFromSoldierDeath(_DeadSoldier, _Killer);
 	StartRespawnTimerForDeadSoldier(_DeadSoldier);
 	NotifySoldierDeathToAllPlayers(_DeadSoldier, _Killer);
+	ManageKillingStreak(_DeadSoldier, _Killer);
 }
 
 void ASquadLeaderGameModeBase::NotifyControlAreaCaptured(AControlArea* _ControlArea)
@@ -238,6 +276,64 @@ void ASquadLeaderGameModeBase::UpdateTicketsFromSoldierDeath(ASoldier* _DeadSold
 		CheckTeamTicketsVictoryCondition();
 	}
 }
+
+
+void ASquadLeaderGameModeBase::ManageKillingStreak(ASoldier* _DeadSoldier, ASoldier* _Killer)
+{
+	if (ASoldierPlayer* DeadSoldier = Cast<ASoldierPlayer>(_DeadSoldier); DeadSoldier) {
+		ResetKillingStreak(DeadSoldier);
+	}
+	if (ASoldierPlayer* Killer = Cast<ASoldierPlayer>(_Killer); Killer) {
+		IncreaseKillingStreak(Killer);
+	}
+	if (AAISquadController* SC = Cast<AAISquadController>(_Killer->GetController()); SC) {
+		if (AAISquadManager* SquadManager = SC->SquadManager; SquadManager) {
+			IncreaseKillingStreak(SquadManager->Leader);
+		}
+	}
+}
+
+void ASquadLeaderGameModeBase::ResetKillingStreak(ASoldierPlayer* _Soldier)
+{
+	if (ASoldierPlayerState* PS = _Soldier->GetPlayerState<ASoldierPlayerState>(); PS) {
+		if (PS->KillingStreak >= NbKillsForBounty) {  // apply and notify bounty
+			_Soldier->GetTeam()->RemoveTickets(BountyValueInTickets * (PS->KillingStreak / NbKillsForBounty));
+			PS->IsinKillingStreak = false;
+			NotifyBounty(_Soldier);
+		}
+		PS->KillingStreak = 0;
+	}
+}
+
+void ASquadLeaderGameModeBase::NotifyBounty(ASoldierPlayer* _Soldier)
+{
+	for (auto PCIterator = GetWorld()->GetPlayerControllerIterator(); PCIterator; PCIterator++) {
+		if (ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(PCIterator->Get()); PC) {
+			PC->OnTextNotification_Received(FString::Printf(TEXT("%s's killing spree is over."), *_Soldier->GetName()));
+		}
+	}
+}
+
+void ASquadLeaderGameModeBase::IncreaseKillingStreak(ASoldierPlayer* _Soldier)
+{
+	if (ASoldierPlayerState* PS = _Soldier->GetPlayerState<ASoldierPlayerState>(); PS) {
+		PS->KillingStreak ++;
+		if (PS->KillingStreak % NbKillsForBounty == 0) {  // apply and notify bounty
+			PS->IsinKillingStreak = true;
+			NotifyKillingStreak(_Soldier);
+		}
+	}
+}
+
+void ASquadLeaderGameModeBase::NotifyKillingStreak(ASoldierPlayer* _Soldier)
+{
+	for (auto PCIterator = GetWorld()->GetPlayerControllerIterator(); PCIterator; PCIterator++) {
+		if (ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(PCIterator->Get()); PC) {
+			PC->OnTextNotification_Received(FString::Printf(TEXT("%s is in killing spree !"), *_Soldier->GetName()));
+		}
+	}
+}
+
 
 void ASquadLeaderGameModeBase::StartRespawnTimerForDeadSoldier(ASoldier* _DeadSoldier)
 {

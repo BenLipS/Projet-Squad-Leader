@@ -331,6 +331,11 @@ float ASL_Weapon::GetTargetingSpreadMax() const noexcept
 	return TargetingSpreadMax;
 }
 
+TSubclassOf<UMatineeCameraShake> ASL_Weapon::GetCameraShakeFireClass() const
+{
+	return CameraShakeFireClass;
+}
+
 ASL_LineTrace* ASL_Weapon::GetLineTraceTargetActor()
 {
 	if (LineTraceTargetActor)

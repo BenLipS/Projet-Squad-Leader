@@ -16,17 +16,8 @@ class SQUADLEADER_API AKillStats : public AInfo
 	GENERATED_BODY()
 
 public:
-	AKillStats();
-	
-	// for replication purpose
-	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
-
-	UPROPERTY(Replicated);
 	int NbDeathByAI = 0;
-	UPROPERTY(Replicated);
 	int NbDeathByPlayer = 0;
-	UPROPERTY(Replicated);
 	int NbKillAI = 0;
-	UPROPERTY(Replicated);
 	int NbKillPlayer = 0;
 };

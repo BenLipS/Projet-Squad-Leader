@@ -130,7 +130,8 @@ void ASoldierAI::Die() {
 	Super::Die();
 	auto AIController = Cast<AAIGeneralController>(GetController());
 	if(AIController)
-		AIController->Die();}
+		AIController->Die();
+}
 
 void ASoldierAI::Respawn() {
 	Super::Respawn();
@@ -184,7 +185,14 @@ void ASoldierAI::OnBlurredVisionFromJammer(const bool _IsBlurred)
 		else {
 			UnLockControls();
 			AIController->get_blackboard()->SetValueAsBool("IsStun", false);
+			if (StunFX) {
+				StunFX->Destroy();
+				StunFX = nullptr;
+			}
+		}
+		if (AbilitySystemComponent->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("State.Dead")))) {
 			if (StunFX)StunFX->Destroy();
+			AIController->get_blackboard()->SetValueAsBool("IsStun", false);
 		}
 	}
 }
