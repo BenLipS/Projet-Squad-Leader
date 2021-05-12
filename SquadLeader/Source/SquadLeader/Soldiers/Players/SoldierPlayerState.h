@@ -8,6 +8,7 @@
 #include "../../AbilitySystem/Soldiers/AttributeSetSoldier.h"
 #include "../../AbilitySystem/Soldiers/AbilitySystemSoldier.h"
 #include "../Interface/Teamable.h"
+#include "../../MainMenu/PlayerParam/PlayerParam.h"
 #include "SoldierPlayerState.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FFloatAttributeChanged, float, newValue);
@@ -27,7 +28,6 @@ public:
 
 public:
 	ASoldierPlayerState();
-	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 
 private:
 	void BeginPlay() override;
@@ -92,6 +92,11 @@ public:
 	void BroadCastAllDatas();
 
 public:
-	UPROPERTY(Replicated)
 	AKillStats* PersonalRecord;
+
+protected:
+	TSubclassOf<APlayerParam> PlayerParam;
+public:
+	void SetPlayerParam(TSubclassOf<APlayerParam> _PlayerParam, AController* OwningController);
+	TSubclassOf<APlayerParam> GetPlayerParam();
 };

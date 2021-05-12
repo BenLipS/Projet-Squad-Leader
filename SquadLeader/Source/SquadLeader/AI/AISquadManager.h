@@ -99,13 +99,6 @@ public:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	TSubclassOf<ASoldierAI> ClassAI5;
 
-	// TODO: Are there necessary?
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-	int MaxAIInSquad = 3;
-
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-	int MinAIInSquad = 5;
-
 	UFUNCTION()
 	void Init(ASoldierTeam* _Team, ASoldierPlayer* _Player);
 	

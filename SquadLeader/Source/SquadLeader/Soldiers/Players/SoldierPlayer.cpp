@@ -34,9 +34,8 @@ void ASoldierPlayer::BeginPlay()
 {
 	Super::BeginPlay();
 
-	UpdateTeam();
-
-	InitSquadManager();
+	if (GetTeam())
+		GetTeam()->AddSoldierList(this);
 
 	if (!IsLocallyControlled())
 		return;
@@ -105,6 +104,8 @@ void ASoldierPlayer::PossessedBy(AController* _newController)
 {
 	Super::PossessedBy(_newController);
 	SetAbilitySystemComponent();
+
+	InitSquadManager();
 }
 
 // Client only 
@@ -268,11 +269,8 @@ void ASoldierPlayer::OnRep_SquadManager()
 		// Remove soldier from team then re-add them - This is not the cleanest nor the most optimize solution but it works
 		for (ASoldierAI* Soldier : SquadManager->GetAISoldierList())
 		{
-			if (Soldier && Soldier->GetTeam())
-			{
-				Soldier->GetTeam()->RemoveSoldierList(Soldier);
-				Soldier->UpdateTeam();
-			}
+			if (Soldier)
+				Soldier->RefreshTeam();
 		}
 	}
 }

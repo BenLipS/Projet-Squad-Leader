@@ -48,8 +48,8 @@ void ASoldierAI::BeginPlay()
 
 	check(AbilitySystemComponent);
 
-	if (bUpdateTeamOnSpawn)
-		UpdateTeam();
+	if (bUpdateTeamOnSpawn && GetTeam())
+		GetTeam()->AddSoldierList(this);
 
 	AbilitySystemComponent->InitAbilityActorInfo(this, this);
 

@@ -20,17 +20,19 @@
 void UMinimapWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
-	if (bIsPlayerCentered && IsValid(MaterialCollection))
-	{
-		FVector ActorPosition = GetOwningPlayerPawn()->GetActorLocation();
+	if (GetOwningPlayerPawn()) {
+		if (bIsPlayerCentered && IsValid(MaterialCollection))
+		{
+			FVector ActorPosition = GetOwningPlayerPawn()->GetActorLocation();
 
-		UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MaterialCollection, FName("X"), ActorPosition.X);
+			UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MaterialCollection, FName("X"), ActorPosition.X);
 
-		UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MaterialCollection, FName("Y"), ActorPosition.Y);
+			UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MaterialCollection, FName("Y"), ActorPosition.Y);
+		}
+
+		auto ActorRotation = GetOwningPlayer()->GetPawn<ASoldier>()->GetMesh()->GetComponentRotation();
+		PlayerIconImage->SetRenderTransformAngle(ActorRotation.Yaw);
 	}
-
-	auto ActorRotation = GetOwningPlayer()->GetPawn<ASoldier>()->GetMesh()->GetComponentRotation();
-	PlayerIconImage->SetRenderTransformAngle(ActorRotation.Yaw);
 }
 
 bool UMinimapWidget::IsInDisplay(FVector2D DifferenceVec, FVector2D SizeIn)
@@ -337,6 +339,9 @@ void UMinimapWidget::OnUpdatePOIs()
 
 	for (UPointOfInterestWidget* POI : POIList)
 	{
+		if (!IsValid(POI))
+			continue;
+
 		const FVector2D ActorPosition = FVector2D{ POI->OwningActor->GetActorLocation().X, POI->OwningActor->GetActorLocation().Y };
 		// Diff position between soldier and player
 

@@ -8,6 +8,7 @@
 #include "AI/AISquadManager.h"
 #include "AI/AIBasicController.h"
 #include "AI/InfluenceMap/InfluenceMapGrid.h"
+#include "MainMenu/PlayerParam/PlayerParam.h"
 #include "SquadLeaderGameModeBase.generated.h"
 
 class ASoldier;
@@ -23,6 +24,8 @@ public:
 
 	// virtual void PreLogin(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage) override;
 	virtual void Logout(AController* Exiting) override;
+
+	APawn* SpawnSoldier(TSubclassOf<APlayerParam> PlayerParam, AController* OwningController);
 
 protected:
 	void ChangeGameState();
