@@ -136,4 +136,7 @@ public:
 
 	UFUNCTION()
 		double GetInfluenceAverage();
+
+	UFUNCTION()
+		double GetEnnemiInfluenceAverage();
 };

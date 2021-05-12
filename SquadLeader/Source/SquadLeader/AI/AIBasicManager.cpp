@@ -241,6 +241,33 @@ void AAIBasicManager::UpdateControlArea(const uint8 TeamID, const uint8 IndexCon
 
 }
 
+void AAIBasicManager::LostControlArea(const uint8 IndexContolArea) {
+	if (AIBasicAvailable.Num() > 0) {
+		const double Danger = m_controlAreaManager->GetControlArea()[IndexContolArea]->GetEnnemiInfluenceAverage();
+		const float SoldierValue = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode())->InfluenceMap->CharacterInfluenceValue;
+		const int Maximum = StaticCast<int>(Danger / SoldierValue) + 2;
+
+		auto Elem = ListSoldierOnControlArea.Find(IndexContolArea);
+		uint32 IndexSoldier = 0;
+		while (Elem->SoldierIndex.Num() <= Maximum && FindAvailableSoldier(IndexSoldier)) {
+			uint32 IndexCA = 0;
+			if (AIBasicList[IndexSoldier]->GetIndexControlArea(IndexCA)) {
+				UCaptureMission* CaptureMission = Cast<UCaptureMission>(NewObject<UCaptureMission>(this, UCaptureMission::StaticClass()));
+				CaptureMission->InitCaptureMission(-1, MissionPriority::eMIDDLE, m_controlAreaManager->GetControlArea()[IndexContolArea]);
+				AIBasicList[IndexSoldier]->SetMission<UCaptureMission*>(CaptureMission);
+
+				Elem->SoldierIndex.Add(IndexSoldier);
+				ListSoldierOnControlArea.Find(IndexCA)->SoldierIndex.Remove(IndexSoldier);
+				AIUnavailable(IndexSoldier);
+			}
+			if (Team->Id == 1)
+				GEngine->AddOnScreenDebugMessage(10, 5.f, FColor::Blue, FString::Printf(TEXT("Battre en retraire ! %i IA sont envoyé défendre le point !"), Maximum));
+			if (Team->Id == 2)
+				GEngine->AddOnScreenDebugMessage(20, 5.f, FColor::Red, FString::Printf(TEXT("Battre en retraire ! %i IA sont envoyé défendre le point !"), Maximum));
+		}
+	}
+}
+
 void AAIBasicManager::Strategy() {
 	//GEngine->AddOnScreenDebugMessage(10, 5.f, FColor::Black, FString::Printf(TEXT("Nouvelle Stratégie")));
 
