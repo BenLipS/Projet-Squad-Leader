@@ -104,7 +104,14 @@ void AAIBasicManager::Tick(float DeltaSeconds) {
 	if ((ControlAreasBeenUpdate || NewSoldierAvailable)&& AIBasicAvailable.Num() >= 2) {
 		ControlAreasBeenUpdate = false;
 		NewSoldierAvailable = false;
+		const double startTime = FPlatformTime::Seconds();
+
+		// code de la fonction
 		Strategy();
+
+		const double endTime = FPlatformTime::Seconds();
+		const double elapsedTime = endTime - startTime;
+		//GEngine->AddOnScreenDebugMessage(10 + Team->Id, 5.f, FColor::Yellow, FString::Printf(TEXT("Temps pour faire la stratege : %f ms"), elapsedTime * 1000.0));
 	}
 }
 
@@ -245,10 +252,18 @@ void AAIBasicManager::Strategy() {
 	if (AIBasicAvailable.Num() > 0) {
 		for (uint32 IndexControlAreaEnnemi : ControlAreaEnnemies) {
 			double Danger = m_controlAreaManager->GetControlArea()[IndexControlAreaEnnemi]->GetInfluenceAverage();
-			GEngine->AddOnScreenDebugMessage(10, 5.f, FColor::Black, FString::Printf(TEXT("Danger ennemie : %f."), Danger));
+			/*if(Team->Id == 2)
+				GEngine->AddOnScreenDebugMessage(10 + Team->Id, 5.f, FColor::Red, FString::Printf(TEXT("Danger ennemie : %f."), Danger));
+			if (Team->Id == 1)
+				GEngine->AddOnScreenDebugMessage(10 + Team->Id, 5.f, FColor::Blue, FString::Printf(TEXT("Danger ennemie : %f."), Danger));
+			*/
+			const float SoldierValue = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode())->InfluenceMap->CharacterInfluenceValue;
+			const int Maximum = StaticCast<int>(Danger / SoldierValue)+ 2;
+			//GEngine->AddOnScreenDebugMessage(10 + Team->Id, 5.f, FColor::Blue, FString::Printf(TEXT("Nombre de Soldat suppose envoye  : %i."), Maximum));
+
 			auto Elem = ListSoldierOnControlArea.Find(IndexControlAreaEnnemi);
 			uint32 IndexSoldier = 0;
-			while (Elem->SoldierIndex.Num() <= 6 && FindAvailableSoldier(IndexSoldier)) {
+			while (Elem->SoldierIndex.Num() <= Maximum && FindAvailableSoldier(IndexSoldier)) {
 				uint32 IndexCA = 0;
 				if (AIBasicList[IndexSoldier]->GetIndexControlArea(IndexCA)) {
 					UCaptureMission* CaptureMission = Cast<UCaptureMission>(NewObject<UCaptureMission>(this, UCaptureMission::StaticClass()));
