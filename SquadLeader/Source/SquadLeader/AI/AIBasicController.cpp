@@ -44,16 +44,7 @@ void AAIBasicController::setup_BehaviorTree() {
 }
 
 void AAIBasicController::Tick(float DeltaSeconds) {
-	const double startTime = FPlatformTime::Seconds();
-
-	// code de la fonction
-
-	Super::Tick(DeltaSeconds);
-
-	const double endTime = FPlatformTime::Seconds();
-	const double elapsedTime = endTime - startTime;
-	GEngine->AddOnScreenDebugMessage(10, 5.f, FColor::Yellow, FString::Printf(TEXT("Temps Tick d'une IABasic : %f ms"), elapsedTime * 1000.0));
-
+	/*Super::HomeTick(DeltaSeconds);*/
 }
 
 FVector AAIBasicController::GetRespawnPoint()  // TODO : Change this function to adapt the squad AI respawn

@@ -149,4 +149,12 @@ protected:
 
 	UFUNCTION()
 		bool FindAvailableSoldier(uint32& IndexSoldier);
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Time per Frame")
+		float TimeInterval = 0.02;
+
+protected:
+	UPROPERTY()
+		int LastIndex = 0;
 };

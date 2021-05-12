@@ -101,18 +101,43 @@ void AAIBasicManager::Tick(float DeltaSeconds) {
 	Super::Tick(DeltaSeconds);
 	/*if (GEngine)
 		GEngine->AddOnScreenDebugMessage(80, 2.f, FColor::Black, TEXT("I'm the AIBasicManager"));*/
-	if ((ControlAreasBeenUpdate || NewSoldierAvailable)&& AIBasicAvailable.Num() >= 2) {
+
+	const double StartTime = FPlatformTime::Seconds();
+
+	double TotalTime = 0.0;
+
+	double startTime = FPlatformTime::Seconds();
+	
+	if ((ControlAreasBeenUpdate || NewSoldierAvailable) && AIBasicAvailable.Num() >= 2) {
 		ControlAreasBeenUpdate = false;
 		NewSoldierAvailable = false;
-		const double startTime = FPlatformTime::Seconds();
 
-		// code de la fonction
 		Strategy();
-
-		const double endTime = FPlatformTime::Seconds();
-		const double elapsedTime = endTime - startTime;
-		//GEngine->AddOnScreenDebugMessage(10 + Team->Id, 5.f, FColor::Yellow, FString::Printf(TEXT("Temps pour faire la stratege : %f ms"), elapsedTime * 1000.0));
 	}
+
+	double endTime = FPlatformTime::Seconds();
+	double elapsedTime = endTime - startTime;
+
+	TotalTime += elapsedTime * 1000.0;
+	if (AIBasicList.Num() > 0) {
+		while (TotalTime <= TimeInterval) {
+			if (LastIndex >= AIBasicList.Num())
+				LastIndex = 0;
+			const double _StartTime = FPlatformTime::Seconds();
+			AIBasicList[LastIndex]->HomeTick(DeltaSeconds);
+			const double _EndTime = FPlatformTime::Seconds();
+			const double _ElapsedTime = _EndTime - _StartTime;
+
+			TotalTime += _ElapsedTime * 1000.0;
+
+			LastIndex++;
+		}
+	}
+	double EndTime = FPlatformTime::Seconds();
+	double ElapsedTime = EndTime - StartTime;
+	//Petit soucis je pense, car le temps au total est plus petit que le temps de calcul d'une IA....
+	//GEngine->AddOnScreenDebugMessage(10, 1.f, FColor::Yellow, FString::Printf(TEXT("Temp total du tick du manager : %f ms"), ElapsedTime * 1000.0));
+
 }
 
 void AAIBasicManager::InitValue() {
