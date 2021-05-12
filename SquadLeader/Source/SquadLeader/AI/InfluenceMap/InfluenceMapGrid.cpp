@@ -63,21 +63,28 @@ bool AInfluenceMapGrid::IsValid(FVector _location) const {
 }
 
 void AInfluenceMapGrid::DrawGrid() const {
+	const float Size = m_tile_width / 2.f - 5.f;
 	if (m_DrawCharacterInfluence) {
 		for (const FTileBase& Tile : Grid) {
 			const float ValueTeam1 = Tile.InfluenceTeam[1].InfluenceValue;
 			const float ValueTeam2 = Tile.InfluenceTeam[2].InfluenceValue;
+			
 			if (Tile.State == TileState::Block)
-				DrawDebugSolidBox(GetWorld(), Tile.Location, FVector(95.f, 95.f, 10.f), FColor::Silver);
+				DrawDebugSolidBox(GetWorld(), Tile.Location, FVector(Size, Size, 10.f), FColor::Silver);
 			else if (ValueTeam1 > 0.0f && ValueTeam2 > 0.0f)
-				DrawDebugSolidBox(GetWorld(), Tile.Location, FVector(95.f, 95.f, 10.f), FColor(255 * ValueTeam2, 0, 255 * ValueTeam1));
+				DrawDebugSolidBox(GetWorld(), Tile.Location, FVector(Size, Size, 10.f), FColor(255 * ValueTeam2, 0, 255 * ValueTeam1));
 			else {
 				if (ValueTeam1 > 0.0f)
-					DrawDebugSolidBox(GetWorld(), Tile.Location, FVector(95.f, 95.f, 10.f), FColor(0, 0, 255 * ValueTeam1));
+					DrawDebugSolidBox(GetWorld(), Tile.Location, FVector(Size, Size, 10.f), FColor(0, 0, 255 * ValueTeam1));
 				else if (ValueTeam2 > 0.0f)
-					DrawDebugSolidBox(GetWorld(), Tile.Location, FVector(95.f, 95.f, 10.f), FColor(255 * ValueTeam2, 0, 0));
+					DrawDebugSolidBox(GetWorld(), Tile.Location, FVector(Size, Size, 10.f), FColor(255 * ValueTeam2, 0, 0));
 			}
 		}
+	}
+	if (m_DrawAllGrid) {
+		for (const FTileBase& Tile : Grid)
+			DrawDebugSolidBox(GetWorld(), Tile.Location, FVector(Size, Size, 10.f), FColor::Green);
+
 	}
 }
 
@@ -242,7 +249,7 @@ void AInfluenceMapGrid::Neighboors(int index) noexcept {
 
 void AInfluenceMapGrid::IsNeighboor(int index_1, int index_2) noexcept {
 	int distance = FVector::Dist(Grid[index_1].Location, Grid[index_2].Location);
-	if (distance <= 200.f) {
+	if (distance <= m_tile_width) {
 		Grid[index_1].Neighboors.m_neighboor.Add(index_2);
 	}
 }

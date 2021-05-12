@@ -130,19 +130,19 @@ void ASquadLeaderGameModeBase::InitAIManagers()
 
 void ASquadLeaderGameModeBase::AddAIBasicToManager(AAIBasicController* AIBasic)
 {
-	auto GS = Cast<ASquadLeaderInitGameState>(GameState);
-	if (AIBasic && AIBasic->GetTeam()) {
-		if (auto FoundAIBasicManager = AIBasicManagerCollection.Find(AIBasic->GetTeam()); FoundAIBasicManager) {
-			(*FoundAIBasicManager)->AIBasicList.Add(AIBasic);
-			//if (GEngine)GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString{ "AIBasic " + AIBasic->GetTeam()->TeamName + " added"});
-		}
-		else {
-			//if (GEngine)GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("Une AI n'a pas d'equipe"));
-		}
-	}
-	else {
-		//if (GEngine)GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("AI Spawned thought the manager"));
-	}
+	//auto GS = Cast<ASquadLeaderInitGameState>(GameState);
+	//if (AIBasic && AIBasic->GetTeam()) {
+	//	if (auto FoundAIBasicManager = AIBasicManagerCollection.Find(AIBasic->GetTeam()); FoundAIBasicManager) {
+	//		(*FoundAIBasicManager)->AIBasicList.Add(AIBasic);
+	//		//if (GEngine)GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString{ "AIBasic " + AIBasic->GetTeam()->TeamName + " added"});
+	//	}
+	//	else {
+	//		//if (GEngine)GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("Une AI n'a pas d'equipe"));
+	//	}
+	//}
+	//else {
+	//	//if (GEngine)GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("AI Spawned thought the manager"));
+	//}
 }
 
 void ASquadLeaderGameModeBase::InitInfluenceMap() {

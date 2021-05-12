@@ -129,8 +129,11 @@ void AAIBasicManager::Tick(float DeltaSeconds) {
 	double elapsedTime = endTime - startTime;
 
 	TotalTime += elapsedTime * 1000.0;
+	//GEngine->AddOnScreenDebugMessage(Team->Id, 1.f, FColor::Red, FString::Printf(TEXT("On a %i IA !"), AIBasicList.Num()));
+
 	if (AIBasicList.Num() > 0) {
-		while (TotalTime <= TimeInterval) {
+		size_t NumberTickAI = 0;
+		while (TotalTime <= TimeInterval && NumberTickAI < AIBasicList.Num()) {
 			if (LastIndex >= AIBasicList.Num())
 				LastIndex = 0;
 			const double _StartTime = FPlatformTime::Seconds();
@@ -140,8 +143,10 @@ void AAIBasicManager::Tick(float DeltaSeconds) {
 
 			TotalTime += _ElapsedTime * 1000.0;
 
-			LastIndex++;
+			++LastIndex;
+			++NumberTickAI;
 		}
+		//GEngine->AddOnScreenDebugMessage(10 + Team->Id, 1.f, FColor::Blue, FString::Printf(TEXT("On a fait ticker %i IA !"), NumberTickAI));
 	}
 	double EndTime = FPlatformTime::Seconds();
 	double ElapsedTime = EndTime - StartTime;

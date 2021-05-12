@@ -118,7 +118,7 @@ void ASoldier::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	CurrentPosition = this->GetActorLocation();
 
-	if (FVector::Dist(LastPosition, CurrentPosition) >= 500.f) {
+	if (FVector::Dist(LastPosition, CurrentPosition) >= 1000.f) {
 		LastPosition = CurrentPosition;
 		ASquadLeaderGameModeBase* GM = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
 
