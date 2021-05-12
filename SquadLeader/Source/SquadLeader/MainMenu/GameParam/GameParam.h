@@ -53,7 +53,11 @@ public:
 
 	UFUNCTION()
 	TMap<FString, int> GetIntParams();
+	UFUNCTION()
+	void SetIntParams(TMap<FString, int> ImportedParam);
 
 	UFUNCTION()
 	TMap<FString, FString> GetStringParams();
+	UFUNCTION()
+	void SetStringParams(TMap<FString, FString> ImportedParam);
 };

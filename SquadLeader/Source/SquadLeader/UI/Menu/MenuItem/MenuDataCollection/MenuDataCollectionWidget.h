@@ -65,7 +65,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ResyncDefaultIntvalues();
 
-/*public:
+public:
 	UFUNCTION(BlueprintCallable)
-	int GetIntData(FString Key);*/
+	TMap<FString, int> GetIntData();
+	UFUNCTION(BlueprintCallable)
+	TMap<FString, FString> GetStringData();
 };

@@ -76,6 +76,16 @@ void USquadLeaderGameInstance::SetGameParamToRandom()
     }
 }
 
+void USquadLeaderGameInstance::SaveGameParam(TMap<FString, int> IntData, TMap<FString, FString> StringData)
+{
+    GameParam.GetDefaultObject()->SetStringParams(StringData);
+    GameParam.GetDefaultObject()->SetIntParams(IntData);
+
+    GameParam.GetDefaultObject()->LevelTarget = UserData.Score;
+    GameParam.GetDefaultObject()->LevelRange = UserData.Score;
+}
+
+
 void USquadLeaderGameInstance::JoinGame(FString IPAdress)
 {
     GetFirstGamePlayer()->ConsoleCommand("open " + IPAdress, true);

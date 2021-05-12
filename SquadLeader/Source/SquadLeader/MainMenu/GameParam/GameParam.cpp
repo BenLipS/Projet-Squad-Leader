@@ -65,11 +65,30 @@ TMap<FString, int> AGameParam::GetIntParams()
 	return ret;
 }
 
+void AGameParam::SetIntParams(TMap<FString, int> ImportedParam)
+{
+	if(ImportedParam.Contains("LevelTarget")) LevelTarget = ImportedParam["LevelTarget"];
+	if(ImportedParam.Contains("LevelRange")) LevelRange = ImportedParam["LevelRange"];
+	if(ImportedParam.Contains("NbAIBasicAssault")) NbAIBasicAssault = ImportedParam["NbAIBasicAssault"];
+	if(ImportedParam.Contains("NbAIBasicHeavy")) NbAIBasicHeavy = ImportedParam["NbAIBasicHeavy"];
+	if(ImportedParam.Contains("LevelAIBasic")) LevelAIBasic = ImportedParam["LevelAIBasic"];
+	if(ImportedParam.Contains("StartingNbAISquad")) StartingNbAISquad = ImportedParam["StartingNbAISquad"];
+	if(ImportedParam.Contains("LevelAISquad")) LevelAISquad = ImportedParam["LevelAISquad"];
+	if(ImportedParam.Contains("NbTickets")) NbTickets = ImportedParam["NbTickets"];
+	if(ImportedParam.Contains("Weather")) Weather = ImportedParam["Weather"];
+	if(ImportedParam.Contains("RespawnDuration")) RespawnDuration = ImportedParam["RespawnDuration"];
+}
+
 TMap<FString, FString> AGameParam::GetStringParams()
 {
 	TMap<FString, FString> ret;
 
-	ret.Add(Name);
+	ret.Add("Name", Name);
 
 	return ret;
+}
+
+void AGameParam::SetStringParams(TMap<FString, FString> ImportedParam)
+{
+	if (ImportedParam.Contains("Name")) Name = ImportedParam["Name"];
 }
