@@ -355,12 +355,12 @@ void UMinimapWidget::OnUpdatePOIs()
 			POI->SetVisibility(ESlateVisibility::Collapsed);
 			continue;
 		}
-		// The POI is a dead soldier
-		else if (ASoldier* Soldier = Cast<ASoldier>(POI->OwningActor); Soldier && !Soldier->IsAlive())
-		{
-			POI->SetVisibility(ESlateVisibility::Collapsed);
-			continue;
-		}
+		//// The POI is a dead soldier
+		//else if (ASoldier* Soldier = Cast<ASoldier>(POI->OwningActor); Soldier && !Soldier->IsAlive())
+		//{
+		//	POI->SetVisibility(ESlateVisibility::Collapsed);
+		//	continue;
+		//}
 
 		// Angle between soldier and player (center of the minimap)
 		const float Angle = FMath::Atan2(/* 0.f*/ - DiffY, /* 0.f*/ - DiffX);
