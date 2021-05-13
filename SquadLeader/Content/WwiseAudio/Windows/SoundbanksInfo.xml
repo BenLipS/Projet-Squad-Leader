@@ -16,7 +16,7 @@
 			<ShortName>Init</ShortName>
 			<Path>Init.bnk</Path>
 		</SoundBank>
-		<SoundBank Id="4056684167" Language="SFX" Hash="1879863697">
+		<SoundBank Id="4056684167" Language="SFX" Hash="329388837">
 			<ObjectPath>\SoundBanks\Default Work Unit\Master</ObjectPath>
 			<ShortName>Master</ShortName>
 			<Path>Master.bnk</Path>
@@ -152,6 +152,7 @@
 							<Path>SFX\Rifle_Break_Indoors_6ABA6BE0.wem</Path>
 						</File>
 					</IncludedMemoryFiles>
+					<DefaultSwitchValue>{13976289-5AC8-4837-98E0-6CD8084694A5}</DefaultSwitchValue>
 					<SwitchContainers>
 						<SwitchContainer SwitchValue="{6788ADFB-5691-44C8-8810-FC25B8BA949E}">
 							<Media>
@@ -324,6 +325,7 @@
 							<Path>SFX\Rifle_Mech_09_10C4C929.wem</Path>
 						</File>
 					</IncludedMemoryFiles>
+					<DefaultSwitchValue>{13976289-5AC8-4837-98E0-6CD8084694A5}</DefaultSwitchValue>
 					<SwitchContainers>
 						<SwitchContainer SwitchValue="{13976289-5AC8-4837-98E0-6CD8084694A5}">
 							<Media>
