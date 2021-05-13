@@ -16,11 +16,19 @@
 			<ShortName>Init</ShortName>
 			<Path>Init.bnk</Path>
 		</SoundBank>
-		<SoundBank Id="4056684167" Language="SFX" Hash="4104964158">
+		<SoundBank Id="4056684167" Language="SFX" Hash="2132518969">
 			<ObjectPath>\SoundBanks\Default Work Unit\Master</ObjectPath>
 			<ShortName>Master</ShortName>
 			<Path>Master.bnk</Path>
 			<IncludedEvents>
+				<Event Id="2064847921" Name="Knob_Menu" ObjectPath="\Events\Default Work Unit\Environment\Knob_Menu">
+					<IncludedMemoryFiles>
+						<File Id="576272166" Language="SFX">
+							<ShortName>Knob_menu.wav</ShortName>
+							<Path>SFX\Knob_menu_C1F6DFA0.wem</Path>
+						</File>
+					</IncludedMemoryFiles>
+				</Event>
 				<Event Id="1598298728" Name="Music_Menu" ObjectPath="\Events\Default Work Unit\Music\Music_Menu">
 					<IncludedMemoryFiles>
 						<File Id="509478330" Language="SFX">

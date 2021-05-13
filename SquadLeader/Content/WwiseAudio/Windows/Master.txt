@@ -4,6 +4,7 @@ Event	ID	Name			Wwise Object Path	Notes
 	864948550	Player_Walk_Dirt			\Default Work Unit\Player\Player_Walk_Dirt	
 	1011371181	Rifle_Break			\Default Work Unit\Weapons\Rifle_Break	
 	1598298728	Music_Menu			\Default Work Unit\Music\Music_Menu	
+	2064847921	Knob_Menu			\Default Work Unit\Environment\Knob_Menu	
 	3104059416	Rifle_Fire_Laser			\Default Work Unit\Weapons\Rifle_Fire_Laser	
 	3613905552	Player_Walk_Concrete			\Default Work Unit\Player\Player_Walk_Concrete	
 
@@ -63,6 +64,7 @@ In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size
 	526131352	Pistolet tir 1	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Pistolet tir 1_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Pistol_Laser\Tir\Pistolet tir 1		198044
 	533883570	SL_Menu_Intro_Smooth_142bpm_4-4_67m_P1	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\SL_Menu_Intro_Smooth_142bpm_4-4_67m_P1_D79FB2B7.wem		\Interactive Music Hierarchy\Default Work Unit\Music\Menu\Menu_Music_Smooth\SL_Menu_Intro_Smooth_142bpm_4-4_67m_P0\SL_Menu_Intro_Smooth_142bpm_4-4_67m_P1		2514996
 	548212445	Rifle_Noise_Indoor_05	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Noise_Indoor_05_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Noise\Rifle_Noise_Indoor\Rifle_Noise_Indoor_05		17764
+	576272166	Knob_menu	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Knob_menu_C1F6DFA0.wem		\Actor-Mixer Hierarchy\Default Work Unit\Knob_menu		31252
 	596923229	Rifle_Fire_Click	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Fire_Click_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Fire_Click		36040
 	634404485	Rifle_Mech_07	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Mech_07_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Mech\Rifle_Mech_07		17604
 	660540436	Rifle_Sub_09	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Sub_09_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Sub\Rifle_Sub_09		17244
