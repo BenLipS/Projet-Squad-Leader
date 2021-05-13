@@ -49,6 +49,8 @@ public:
 
 	virtual void BeginPlay() override;
 
+	virtual void Tick(float DeltaSecond) override;
+
 	/*not used*/
 	virtual void Init() override;
 

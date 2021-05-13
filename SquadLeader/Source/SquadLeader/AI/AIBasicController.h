@@ -66,4 +66,11 @@ public:
 	UFUNCTION()
 		bool GetIndexControlArea(uint32& ndexControlArea) const noexcept;
 
+private:
+	UPROPERTY()
+		bool CanTickNow = false;
+
+public:
+	UFUNCTION()
+		void CanTick() noexcept { CanTickNow = true; }
 };

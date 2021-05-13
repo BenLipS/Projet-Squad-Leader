@@ -202,6 +202,13 @@ void AControlArea::calculateControlValue()
 							}
 							PercentageCapture = static_cast<float>(otherTeam.Value->controlValue) / MaxControlValue;
 							OnPercentageChanged.Broadcast(PercentageCapture);
+
+							auto GM = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
+							for (auto& Manager : GM->AIBasicManagerCollection) {
+								if (Manager.Value->GetTeamID() == otherTeam.Key->Id)
+									Manager.Value->LostControlArea(IndexControlArea);
+							}
+
 						}
 						else {
 							otherTeam.Value->controlValue = 0;
@@ -242,6 +249,9 @@ void AControlArea::calculateControlValue()
 
 						for (auto& Manager : GM->AIBasicManagerCollection)
 							Manager.Value->UpdateControlArea(presentTeam->Id, IndexControlArea);
+
+						//double Value = GetInfluenceAverage();
+						//GEngine->AddOnScreenDebugMessage(10,10.f, FColor::Black, FString::Printf(TEXT("L'influence de l'equipe est de : %f."), Value));
 					}
 					if (IsCapturedBy != presentTeam)
 					{
@@ -298,4 +308,27 @@ void AControlArea::UpdateTeamData()
 			}
 		}
 	}
+}
+
+double AControlArea::GetInfluenceAverage() {
+	auto GM = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
+	double Value = GM->InfluenceMap->GetInfluenceAverage(this->GetUniqueID(), GetIsCapturedBy()->Id);
+	return Value;
+}
+
+double AControlArea::GetEnnemiInfluenceAverage() {
+	auto GM = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
+	double Value = 0.0;
+	switch (GetIsCapturedBy()->Id) {
+	case 1:
+		Value = GM->InfluenceMap->GetInfluenceAverage(this->GetUniqueID(), 2);
+		break;
+	case 2:
+		Value = GM->InfluenceMap->GetInfluenceAverage(this->GetUniqueID(), 1);
+		break;
+	default:
+		break;
+	}
+
+	return Value;
 }
