@@ -6,9 +6,11 @@ Event	ID	Name			Wwise Object Path	Notes
 	1598298728	Music_Menu			\Default Work Unit\Music\Music_Menu	
 	2064847921	Knob_Menu			\Default Work Unit\Environment\Knob_Menu	
 	2606610459	Grenade_Glitch_Explosion			\Default Work Unit\Weapons\Grenade_Glitch_Explosion	
+	2984764225	Rocket_Launch			\Default Work Unit\Weapons\Rocket_Launch	
 	3085463790	Ping_Notif_Good			\Default Work Unit\Environment\Ping_Notif_Good	
 	3104059416	Rifle_Fire_Laser			\Default Work Unit\Weapons\Rifle_Fire_Laser	
 	3613905552	Player_Walk_Concrete			\Default Work Unit\Player\Player_Walk_Concrete	
+	3745517719	Rocket_Explode			\Default Work Unit\Weapons\Rocket_Explode	
 
 Switch Group	ID	Name			Wwise Object Path	Notes
 	1229948536	Environment			\Default Work Unit\Environment	
@@ -45,6 +47,7 @@ In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size
 	204496951	Rifle_Kick_09	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Kick_09_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Kick\Rifle_Kick_09		17244
 	213076344	Rifle_Sub_06	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Sub_06_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Sub\Rifle_Sub_06		17344
 	223925318	Rifle_Kick_02	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Kick_02_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Kick\Rifle_Kick_02		17376
+	226443609	Rocket_Trail	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rocket_Trail_2FCB0210.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rocket_Launcher\Rocket_Trail		566216
 	227183882	Rifle_Noise_Indoor_03	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Noise_Indoor_03_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Noise\Rifle_Noise_Indoor\Rifle_Noise_Indoor_03		17268
 	236679741	Fs_Concrete_04	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Fs_Concrete_04_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Player\Player\Fs_Concrete\Fs_Concrete_04		40964
 	255233995	Rifle_Sub_04	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Sub_04_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Sub\Rifle_Sub_04		17844
@@ -57,6 +60,7 @@ In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size
 	339035994	Glitch Grenade	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Glitch Grenade_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Grenade\Glitch Grenade		1536144
 	405945141	Rifle_Kick_05	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Kick_05_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Kick\Rifle_Kick_05		17764
 	433765704	Rifle_Mech_04	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Mech_04_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Mech\Rifle_Mech_04		17844
+	447359387	Rocket_Launch	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rocket_Launch_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rocket_Launcher\Rocket_Launch		298116
 	471182755	Fs_Concrete_05	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Fs_Concrete_05_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Player\Player\Fs_Concrete\Fs_Concrete_05		49200
 	478025488	Fusil d'assault Laser Tir long 1	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Fusil d'assault Laser Tir long 1 _10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Riflle_Laser\Tir\Fusil d'assault Laser Tir long 1		155644
 	483328097	Rifle_Mech_08	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Mech_08_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Mech\Rifle_Mech_08		17148
@@ -101,4 +105,5 @@ In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size
 	1027164728	Fs_Concrete_01	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Fs_Concrete_01_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Player\Player\Fs_Concrete\Fs_Concrete_01		45156
 	1027473740	Fusil d'assault Laser Tir long 4	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Fusil d'assault Laser Tir long 4_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Riflle_Laser\Tir\Fusil d'assault Laser Tir long 4		411544
 	1031786759	Fusil d'assault Laser Tir long 2	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Fusil d'assault Laser Tir long 2_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Riflle_Laser\Tir\Fusil d'assault Laser Tir long 2		188844
+	1073710769	Rocket_Explosion_03	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rocket_Explosion_03_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rocket_Launcher\Rocket_Explosion_03		193272
 

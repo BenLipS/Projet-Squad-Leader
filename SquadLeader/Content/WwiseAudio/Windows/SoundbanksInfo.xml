@@ -16,7 +16,7 @@
 			<ShortName>Init</ShortName>
 			<Path>Init.bnk</Path>
 		</SoundBank>
-		<SoundBank Id="4056684167" Language="SFX" Hash="329388837">
+		<SoundBank Id="4056684167" Language="SFX" Hash="3140220757">
 			<ObjectPath>\SoundBanks\Default Work Unit\Master</ObjectPath>
 			<ShortName>Master</ShortName>
 			<Path>Master.bnk</Path>
@@ -368,6 +368,26 @@
 						<File Id="1031786759" Language="SFX">
 							<ShortName>Fusil d'assault Laser Tir long 2.wav</ShortName>
 							<Path>SFX\Fusil d'assault Laser Tir long 2_10C4C929.wem</Path>
+						</File>
+					</IncludedMemoryFiles>
+				</Event>
+				<Event Id="3745517719" Name="Rocket_Explode" ObjectPath="\Events\Default Work Unit\Weapons\Rocket_Explode">
+					<IncludedMemoryFiles>
+						<File Id="1073710769" Language="SFX">
+							<ShortName>Rocket_Explosion_03.wav</ShortName>
+							<Path>SFX\Rocket_Explosion_03_10C4C929.wem</Path>
+						</File>
+					</IncludedMemoryFiles>
+				</Event>
+				<Event Id="2984764225" Name="Rocket_Launch" ObjectPath="\Events\Default Work Unit\Weapons\Rocket_Launch">
+					<IncludedMemoryFiles>
+						<File Id="226443609" Language="SFX">
+							<ShortName>Rocket_Trail.wav</ShortName>
+							<Path>SFX\Rocket_Trail_2FCB0210.wem</Path>
+						</File>
+						<File Id="447359387" Language="SFX">
+							<ShortName>Rocket_Launch.wav</ShortName>
+							<Path>SFX\Rocket_Launch_10C4C929.wem</Path>
 						</File>
 					</IncludedMemoryFiles>
 				</Event>
