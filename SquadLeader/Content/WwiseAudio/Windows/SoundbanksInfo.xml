@@ -16,11 +16,27 @@
 			<ShortName>Init</ShortName>
 			<Path>Init.bnk</Path>
 		</SoundBank>
-		<SoundBank Id="4056684167" Language="SFX" Hash="3441607445">
+		<SoundBank Id="4056684167" Language="SFX" Hash="3882747379">
 			<ObjectPath>\SoundBanks\Default Work Unit\Master</ObjectPath>
 			<ShortName>Master</ShortName>
 			<Path>Master.bnk</Path>
 			<IncludedEvents>
+				<Event Id="3652742826" Name="Ability_Heal" ObjectPath="\Events\Default Work Unit\Ability\Ability_Heal">
+					<IncludedMemoryFiles>
+						<File Id="685890808" Language="SFX">
+							<ShortName>Healing.wav</ShortName>
+							<Path>SFX\Healing_B4A49850.wem</Path>
+						</File>
+					</IncludedMemoryFiles>
+				</Event>
+				<Event Id="3271497644" Name="Ability_Termal_Vision" ObjectPath="\Events\Default Work Unit\Ability\Ability_Termal_Vision">
+					<IncludedMemoryFiles>
+						<File Id="428661140" Language="SFX">
+							<ShortName>Vision Themique Activation.wav</ShortName>
+							<Path>SFX\Vision Themique Activation_10C4C929.wem</Path>
+						</File>
+					</IncludedMemoryFiles>
+				</Event>
 				<Event Id="2606610459" Name="Grenade_Glitch_Explosion" ObjectPath="\Events\Default Work Unit\Weapons\Grenade_Glitch_Explosion">
 					<IncludedMemoryFiles>
 						<File Id="339035994" Language="SFX">

@@ -1,5 +1,7 @@
 #include "GA_AreaEffectFromSelf.h"
 #include "../../../Soldiers/Soldier.h"
+#include "AkAudioEvent.h"
+#include "AkGameplayStatics.h"
 
 UGA_AreaEffectFromSelf::UGA_AreaEffectFromSelf()
 {
@@ -30,6 +32,8 @@ void UGA_AreaEffectFromSelf::ActivateAbility(const FGameplayAbilitySpecHandle Ha
 			SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 			AreaFX = GetWorld()->SpawnActor<AActor>(AreaFXClass, Cast<ASoldier>(ActorInfo->AvatarActor)->GetLocation(), { 0,0,0 }, SpawnInfo);
 			if (DoesEffectFollowActor)AreaFX->AttachToActor(Cast<ASoldier>(ActorInfo->AvatarActor), FAttachmentTransformRules::KeepWorldTransform);
+			UAkGameplayStatics::PostEventByName("Ability_Heal", Cast<ASoldier>(ActorInfo->AvatarActor));
+
 		}
 		CancelAbility(Handle, ActorInfo, ActivationInfo, true);
 	}

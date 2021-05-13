@@ -9,7 +9,9 @@ Event	ID	Name			Wwise Object Path	Notes
 	2984764225	Rocket_Launch			\Default Work Unit\Weapons\Rocket_Launch	
 	3085463790	Ping_Notif_Good			\Default Work Unit\Environment\Ping_Notif_Good	
 	3104059416	Rifle_Fire_Laser			\Default Work Unit\Weapons\Rifle_Fire_Laser	
+	3271497644	Ability_Termal_Vision			\Default Work Unit\Ability\Ability_Termal_Vision	
 	3613905552	Player_Walk_Concrete			\Default Work Unit\Player\Player_Walk_Concrete	
+	3652742826	Ability_Heal			\Default Work Unit\Ability\Ability_Heal	
 	3745517719	Rocket_Explode			\Default Work Unit\Weapons\Rocket_Explode	
 	3995863025	Rifle_Reloading			\Default Work Unit\Weapons\Rifle_Reloading	
 
@@ -34,6 +36,9 @@ Custom State	ID	Name	State Group	Owner		Notes
 	837913889	Smooth	Music_Menu	\Interactive Music Hierarchy\Default Work Unit\Music\Menu\Menu_Music_Intense\SL_Menu_Intro_Intense_142bpm_4-4_67m_P0		
 	922240415	Smooth	Music_Menu	\Interactive Music Hierarchy\Default Work Unit\Music\Menu\Menu_Music_Intense\SL_Menu_Loop_Intense_142bpm_4-4_67m_P0		
 	950279593	Intense	Music_Menu	\Interactive Music Hierarchy\Default Work Unit\Music\Menu\Menu_Music_Smooth\SL_Menu_Intro_Smooth_142bpm_4-4_67m_P0		
+
+Modulator Time	ID	Name			Wwise Object Path	Notes
+	739056457	New Modulator Time			\Default Work Unit\New Modulator Time	
 
 In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size
 	24728605	Ping Positif	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Ping Positif_E9981748.wem		\Actor-Mixer Hierarchy\Default Work Unit\Environment\Ping\Ping Positif		270064
@@ -62,6 +67,7 @@ In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size
 	327549304	Fs_Concrete_02	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Fs_Concrete_02_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Player\Player\Fs_Concrete\Fs_Concrete_02		45768
 	339035994	Glitch Grenade	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Glitch Grenade_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Grenade\Glitch Grenade		1536144
 	405945141	Rifle_Kick_05	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Kick_05_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Kick\Rifle_Kick_05		17764
+	428661140	Vision Themique Activation	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Vision Themique Activation_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Ability\Vision Themique Activation		69216
 	433765704	Rifle_Mech_04	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Mech_04_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Mech\Rifle_Mech_04		17844
 	447359387	Rocket_Launch	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rocket_Launch_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rocket_Launcher\Rocket_Launch		298116
 	471182755	Fs_Concrete_05	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Fs_Concrete_05_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Player\Player\Fs_Concrete\Fs_Concrete_05		49200
@@ -79,6 +85,7 @@ In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size
 	596923229	Rifle_Fire_Click	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Fire_Click_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Fire_Click		36040
 	634404485	Rifle_Mech_07	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Mech_07_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Mech\Rifle_Mech_07		17604
 	660540436	Rifle_Sub_09	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Sub_09_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Sub\Rifle_Sub_09		17244
+	685890808	Healing	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Healing_B4A49850.wem		\Actor-Mixer Hierarchy\Default Work Unit\Ability\Healing		467572
 	702000156	Rifle_Noise_Outdoor_09	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Noise_Outdoor_09_61176CF4.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Noise\Rifle_Noise_Outdoor\Rifle_Noise_Outdoor_09		17240
 	720802401	Pistolet tir 2	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Pistolet tir 2_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Pistol_Laser\Tir\Pistolet tir 2		190044
 	737452584	Rifle_Kick_06	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Kick_06_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Kick\Rifle_Kick_06		17344
