@@ -336,7 +336,7 @@ void AAIGeneralController::FocusEnemy() {
 	int i = 0;
 	if (SeenSoldier.Num() > 0) {
 		while (!enemyDetected && i < SeenSoldier.Num()) {
-			if (Cast<ASoldier>(SeenSoldier[i])->GetTeam() != Cast<ASoldier>(GetPawn())->GetTeam()) {
+			if (Cast<ASoldier>(SeenSoldier[i])->GetTeam() != Cast<ASoldier>(GetPawn())->GetTeam() && Cast<ASoldier>(SeenSoldier[i])->IsAlive()) {
 				this->SetFocus(SeenSoldier[i]);
 				enemyDetected = true;
 				//TO-DO : if already in the state attacking don't do this line
@@ -350,7 +350,7 @@ void AAIGeneralController::FocusEnemy() {
 		if (!enemyDetected && m_state != m_old_state)
 			m_state = AIBasicState::Search;
 	}else if(m_state != m_old_state)
-		m_state = AIBasicState::Search;
+		m_state = m_old_state;
 }
 
 void AAIGeneralController::Run(ASoldierAI* _soldier, ASoldier* _soldier_enemy) {
@@ -429,7 +429,7 @@ void AAIGeneralController::UpdateSeenEnemySoldier()
 {
 	SeenEnemySoldier.Empty();
 	for (auto& Elem : SeenSoldier) {
-		if (Cast<ASoldier>(Elem)->GetTeam() != GetTeam()) {
+		if (Cast<ASoldier>(Elem)->GetTeam() != GetTeam() && Cast<ASoldier>(Elem)->IsAlive()) {
 			SeenEnemySoldier.Add(Elem);
 		}
 	}

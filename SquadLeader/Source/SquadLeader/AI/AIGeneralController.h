@@ -166,7 +166,7 @@ public:
 	UFUNCTION(BluePrintCallable, Category = "Comportement")
 		virtual void Tick(float DeltaSeconds) override;
 
-	void HomeTick(float DeltaSeconds);
+	virtual void HomeTick(float DeltaSeconds);
 
 	virtual void Die();
 
