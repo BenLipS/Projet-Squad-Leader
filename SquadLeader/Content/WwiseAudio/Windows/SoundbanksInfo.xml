@@ -16,7 +16,7 @@
 			<ShortName>Init</ShortName>
 			<Path>Init.bnk</Path>
 		</SoundBank>
-		<SoundBank Id="4056684167" Language="SFX" Hash="2380009153">
+		<SoundBank Id="4056684167" Language="SFX" Hash="1130925081">
 			<ObjectPath>\SoundBanks\Default Work Unit\Master</ObjectPath>
 			<ShortName>Master</ShortName>
 			<Path>Master.bnk</Path>
@@ -38,6 +38,82 @@
 						<File Id="864600641" Language="SFX">
 							<ShortName>SL_Menu_Smooth_142bpm_4-4_67m_P1.wav</ShortName>
 							<Path>SFX\SL_Menu_Smooth_142bpm_4-4_67m_P1_D79FB2B7.wem</Path>
+						</File>
+					</IncludedMemoryFiles>
+				</Event>
+				<Event Id="225471203" Name="Pistol_Fire_Laser" ObjectPath="\Events\Default Work Unit\Weapons\Pistol_Fire_Laser">
+					<IncludedMemoryFiles>
+						<File Id="526131352" Language="SFX">
+							<ShortName>Pistolet tir 1.wav</ShortName>
+							<Path>SFX\Pistolet tir 1_10C4C929.wem</Path>
+						</File>
+						<File Id="720802401" Language="SFX">
+							<ShortName>Pistolet tir 2.wav</ShortName>
+							<Path>SFX\Pistolet tir 2_10C4C929.wem</Path>
+						</File>
+						<File Id="773706597" Language="SFX">
+							<ShortName>Pistolet tir 4.wav</ShortName>
+							<Path>SFX\Pistolet tir 4_10C4C929.wem</Path>
+						</File>
+						<File Id="874485063" Language="SFX">
+							<ShortName>Pistolet tir 3.wav</ShortName>
+							<Path>SFX\Pistolet tir 3_10C4C929.wem</Path>
+						</File>
+					</IncludedMemoryFiles>
+				</Event>
+				<Event Id="3613905552" Name="Player_Walk_Concrete" ObjectPath="\Events\Default Work Unit\Player\Player_Walk_Concrete">
+					<IncludedMemoryFiles>
+						<File Id="236679741" Language="SFX">
+							<ShortName>Fs_Concrete_04.wav</ShortName>
+							<Path>SFX\Fs_Concrete_04_10C4C929.wem</Path>
+						</File>
+						<File Id="327549304" Language="SFX">
+							<ShortName>Fs_Concrete_02.wav</ShortName>
+							<Path>SFX\Fs_Concrete_02_10C4C929.wem</Path>
+						</File>
+						<File Id="471182755" Language="SFX">
+							<ShortName>Fs_Concrete_05.wav</ShortName>
+							<Path>SFX\Fs_Concrete_05_10C4C929.wem</Path>
+						</File>
+						<File Id="486997837" Language="SFX">
+							<ShortName>Fs_Concrete_07.wav</ShortName>
+							<Path>SFX\Fs_Concrete_07_10C4C929.wem</Path>
+						</File>
+						<File Id="782901620" Language="SFX">
+							<ShortName>Fs_Concrete_03.wav</ShortName>
+							<Path>SFX\Fs_Concrete_03_10C4C929.wem</Path>
+						</File>
+						<File Id="976450647" Language="SFX">
+							<ShortName>Fs_Concrete_06.wav</ShortName>
+							<Path>SFX\Fs_Concrete_06_10C4C929.wem</Path>
+						</File>
+						<File Id="1027164728" Language="SFX">
+							<ShortName>Fs_Concrete_01.wav</ShortName>
+							<Path>SFX\Fs_Concrete_01_10C4C929.wem</Path>
+						</File>
+					</IncludedMemoryFiles>
+				</Event>
+				<Event Id="864948550" Name="Player_Walk_Dirt" ObjectPath="\Events\Default Work Unit\Player\Player_Walk_Dirt">
+					<IncludedMemoryFiles>
+						<File Id="269043868" Language="SFX">
+							<ShortName>Fs_Dirt_1.wav</ShortName>
+							<Path>SFX\Fs_Dirt_1_10C4C929.wem</Path>
+						</File>
+						<File Id="812984617" Language="SFX">
+							<ShortName>Fs_Dirt_4.wav</ShortName>
+							<Path>SFX\Fs_Dirt_4_10C4C929.wem</Path>
+						</File>
+						<File Id="843039296" Language="SFX">
+							<ShortName>Fs_Dirt_5.wav</ShortName>
+							<Path>SFX\Fs_Dirt_5_10C4C929.wem</Path>
+						</File>
+						<File Id="876675882" Language="SFX">
+							<ShortName>Fs_Dirt_9.wav</ShortName>
+							<Path>SFX\Fs_Dirt_9_10C4C929.wem</Path>
+						</File>
+						<File Id="888522232" Language="SFX">
+							<ShortName>Fs_Dirt_2.wav</ShortName>
+							<Path>SFX\Fs_Dirt_2_10C4C929.wem</Path>
 						</File>
 					</IncludedMemoryFiles>
 				</Event>

@@ -17,7 +17,7 @@
 					</PropertyList>
 					<ReferenceList>
 						<Reference Name="Attenuation">
-							<ObjectRef Name="Player_Standard_Grenade" ID="{FA41FFEE-2E1B-463D-A50F-EF2D137A1356}" WorkUnitID="{121019D4-4484-4FD8-9C2A-2F490B6614A6}"/>
+							<ObjectRef Name="Fire Attenuation Global" ID="{09A75D97-37B0-4366-BEC4-D170C128B054}" WorkUnitID="{121019D4-4484-4FD8-9C2A-2F490B6614A6}"/>
 						</Reference>
 						<Reference Name="Conversion">
 							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
@@ -2370,6 +2370,9 @@
 				</ActorMixer>
 				<ActorMixer Name="Pistol_Laser" ID="{011DBC85-2853-4038-8580-C75AE4A4EF61}" ShortID="486148062">
 					<ReferenceList>
+						<Reference Name="Attenuation">
+							<ObjectRef Name="Fire Attenuation Global" ID="{09A75D97-37B0-4366-BEC4-D170C128B054}" WorkUnitID="{121019D4-4484-4FD8-9C2A-2F490B6614A6}"/>
+						</Reference>
 						<Reference Name="Conversion">
 							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
 						</Reference>
@@ -2617,34 +2620,28 @@
 					</PropertyList>
 					<ReferenceList>
 						<Reference Name="Attenuation">
-							<Custom>
-								<Attenuation Name="Attenuation (Custom)" ID="{6FC4EDFD-C486-41C2-8F37-103665D752E8}" ShortID="480492362">
+							<Custom CreatedFrom="{09A75D97-37B0-4366-BEC4-D170C128B054}">
+								<Attenuation Name="Fire Attenuation Global (Custom)" ID="{3CF4FE64-A331-41C0-B824-340F6459246F}" ShortID="1202943">
 									<PropertyList>
 										<Property Name="RadiusMax" Type="Real64" Value="7000"/>
 									</PropertyList>
 									<CurveUsageInfoList>
 										<VolumeDryUsage>
 											<CurveUsageInfo Platform="Linked" CurveToUse="Custom">
-												<Curve Name="VolumeDry" ID="{17ED134C-5A32-433A-B4EE-0F274B0771FA}">
+												<Curve Name="VolumeDry" ID="{7FD838CD-FE06-49B8-9FC1-D474ED9FB555}">
 													<PropertyList>
 														<Property Name="Flags" Type="int32" Value="3"/>
 													</PropertyList>
 													<PointList>
 														<Point>
 															<XPos>0</XPos>
-															<YPos>-0</YPos>
+															<YPos>0</YPos>
 															<Flags>5</Flags>
 															<SegmentShape>Log1</SegmentShape>
 														</Point>
 														<Point>
-															<XPos>770.7254</XPos>
-															<YPos>-12.3536</YPos>
-															<Flags>0</Flags>
-															<SegmentShape>Log3</SegmentShape>
-														</Point>
-														<Point>
-															<XPos>5286.27091</XPos>
-															<YPos>-27.34295</YPos>
+															<XPos>861.39897</XPos>
+															<YPos>-12.78245</YPos>
 															<Flags>0</Flags>
 														</Point>
 														<Point>
@@ -2664,7 +2661,7 @@
 										</VolumeWetUserUsage>
 										<LowPassFilterUsage>
 											<CurveUsageInfo Platform="Linked" CurveToUse="Custom">
-												<Curve Name="LowPassFilter" ID="{4A1021B6-46D8-46FA-B619-61828C8193E5}">
+												<Curve Name="LowPassFilter" ID="{9C92CDFF-29DC-43EE-993D-0068EA35FC2C}">
 													<PropertyList>
 														<Property Name="Flags" Type="int32" Value="65537"/>
 													</PropertyList>
@@ -2673,11 +2670,6 @@
 															<XPos>0</XPos>
 															<YPos>0</YPos>
 															<Flags>5</Flags>
-														</Point>
-														<Point>
-															<XPos>4497.409315</XPos>
-															<YPos>20</YPos>
-															<Flags>0</Flags>
 														</Point>
 														<Point>
 															<XPos>7000</XPos>

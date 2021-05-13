@@ -452,7 +452,7 @@
 								</Reference>
 							</ReferenceList>
 							<ChildrenList>
-								<Sound Name="FS_Forêt_Marche 1" ID="{07DD9531-C60B-4292-8AB8-555F978C9611}" ShortID="126549368">
+								<Sound Name="Fs_Dirt_1" ID="{7191952F-41C9-4DC7-ACC4-D4010E35CC7C}" ShortID="699770832">
 									<ReferenceList>
 										<Reference Name="Conversion">
 											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
@@ -462,25 +462,20 @@
 										</Reference>
 									</ReferenceList>
 									<ChildrenList>
-										<AudioFileSource Name="FS_Forêt_Marche 1" ID="{E0D80DB3-0648-4581-8CA3-D8F3486E81AC}">
-											<PropertyList>
-												<Property Name="FadeOutDuration" Type="Real64" Value="0.00947923533289385"/>
-												<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
-												<Property Name="TrimEnd" Type="Real64" Value="0.302727658455314"/>
-											</PropertyList>
+										<AudioFileSource Name="Fs_Dirt_1" ID="{A0A55D38-CE66-4A89-900E-18CE04D14CC3}">
 											<Language>SFX</Language>
-											<AudioFile>FS_Forêt_Marche 1.wav</AudioFile>
+											<AudioFile>Fs_Dirt_1.wav</AudioFile>
 											<MediaIDList>
-												<MediaID ID="489771822"/>
+												<MediaID ID="269043868"/>
 											</MediaIDList>
 										</AudioFileSource>
 									</ChildrenList>
 									<ObjectLists/>
 									<ActiveSourceList>
-										<ActiveSource Name="FS_Forêt_Marche 1" ID="{E0D80DB3-0648-4581-8CA3-D8F3486E81AC}" Platform="Linked"/>
+										<ActiveSource Name="Fs_Dirt_1" ID="{A0A55D38-CE66-4A89-900E-18CE04D14CC3}" Platform="Linked"/>
 									</ActiveSourceList>
 								</Sound>
-								<Sound Name="FS_Forêt_Marche 2" ID="{306DE733-14C3-4531-B1B3-8C88576A569F}" ShortID="348190802">
+								<Sound Name="Fs_Dirt_2" ID="{A0C406CD-B0DC-437C-8D3D-2CF8A68613DD}" ShortID="413410908">
 									<ReferenceList>
 										<Reference Name="Conversion">
 											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
@@ -490,25 +485,20 @@
 										</Reference>
 									</ReferenceList>
 									<ChildrenList>
-										<AudioFileSource Name="FS_Forêt_Marche 2" ID="{DD48513C-43A6-4ED0-BDFD-B1131A72431E}">
-											<PropertyList>
-												<Property Name="FadeOutDuration" Type="Real64" Value="0.0241720500988793"/>
-												<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
-												<Property Name="TrimEnd" Type="Real64" Value="0.351679630850363"/>
-											</PropertyList>
+										<AudioFileSource Name="Fs_Dirt_2" ID="{65398584-6B8E-44B0-8ED7-AA786F2955E1}">
 											<Language>SFX</Language>
-											<AudioFile>FS_Forêt_Marche 2.wav</AudioFile>
+											<AudioFile>Fs_Dirt_2.wav</AudioFile>
 											<MediaIDList>
-												<MediaID ID="138684528"/>
+												<MediaID ID="888522232"/>
 											</MediaIDList>
 										</AudioFileSource>
 									</ChildrenList>
 									<ObjectLists/>
 									<ActiveSourceList>
-										<ActiveSource Name="FS_Forêt_Marche 2" ID="{DD48513C-43A6-4ED0-BDFD-B1131A72431E}" Platform="Linked"/>
+										<ActiveSource Name="Fs_Dirt_2" ID="{65398584-6B8E-44B0-8ED7-AA786F2955E1}" Platform="Linked"/>
 									</ActiveSourceList>
 								</Sound>
-								<Sound Name="FS_Forêt_Marche 4" ID="{271CF6D1-B29A-4D8D-AF5E-0EBDC36973B8}" ShortID="541787650">
+								<Sound Name="Fs_Dirt_4" ID="{B26C6AB3-B026-4419-A2D3-93E69CAC8B26}" ShortID="875335197">
 									<ReferenceList>
 										<Reference Name="Conversion">
 											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
@@ -518,25 +508,20 @@
 										</Reference>
 									</ReferenceList>
 									<ChildrenList>
-										<AudioFileSource Name="FS_Forêt_Marche 4" ID="{9993360A-754A-4B20-89F4-5107BC5F7132}">
-											<PropertyList>
-												<Property Name="FadeOutDuration" Type="Real64" Value="0.0161147000659196"/>
-												<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
-												<Property Name="TrimEnd" Type="Real64" Value="0.349309822017139"/>
-											</PropertyList>
+										<AudioFileSource Name="Fs_Dirt_4" ID="{9308CEF3-6D4C-48A4-80B0-98E6AFCC1E41}">
 											<Language>SFX</Language>
-											<AudioFile>FS_Forêt_Marche 4.wav</AudioFile>
+											<AudioFile>Fs_Dirt_4.wav</AudioFile>
 											<MediaIDList>
-												<MediaID ID="830199457"/>
+												<MediaID ID="812984617"/>
 											</MediaIDList>
 										</AudioFileSource>
 									</ChildrenList>
 									<ObjectLists/>
 									<ActiveSourceList>
-										<ActiveSource Name="FS_Forêt_Marche 4" ID="{9993360A-754A-4B20-89F4-5107BC5F7132}" Platform="Linked"/>
+										<ActiveSource Name="Fs_Dirt_4" ID="{9308CEF3-6D4C-48A4-80B0-98E6AFCC1E41}" Platform="Linked"/>
 									</ActiveSourceList>
 								</Sound>
-								<Sound Name="FS_Forêt_Marche 5" ID="{BC3852C1-90C2-4892-96E6-82563B203B12}" ShortID="590309922">
+								<Sound Name="Fs_Dirt_5" ID="{24B4F29C-28C8-47A6-B6C2-C07A6E08224B}" ShortID="835090036">
 									<ReferenceList>
 										<Reference Name="Conversion">
 											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
@@ -546,25 +531,20 @@
 										</Reference>
 									</ReferenceList>
 									<ChildrenList>
-										<AudioFileSource Name="FS_Forêt_Marche 5" ID="{DEA42C74-889A-4778-9EB0-E0CF5DE50C65}">
-											<PropertyList>
-												<Property Name="FadeOutDuration" Type="Real64" Value="0.0270158206987475"/>
-												<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
-												<Property Name="TrimEnd" Type="Real64" Value="0.334685179834027"/>
-											</PropertyList>
+										<AudioFileSource Name="Fs_Dirt_5" ID="{E54A5FBE-A5F7-42A4-A93F-FA99651C02B8}">
 											<Language>SFX</Language>
-											<AudioFile>FS_Forêt_Marche 5.wav</AudioFile>
+											<AudioFile>Fs_Dirt_5.wav</AudioFile>
 											<MediaIDList>
-												<MediaID ID="513197303"/>
+												<MediaID ID="843039296"/>
 											</MediaIDList>
 										</AudioFileSource>
 									</ChildrenList>
 									<ObjectLists/>
 									<ActiveSourceList>
-										<ActiveSource Name="FS_Forêt_Marche 5" ID="{DEA42C74-889A-4778-9EB0-E0CF5DE50C65}" Platform="Linked"/>
+										<ActiveSource Name="Fs_Dirt_5" ID="{E54A5FBE-A5F7-42A4-A93F-FA99651C02B8}" Platform="Linked"/>
 									</ActiveSourceList>
 								</Sound>
-								<Sound Name="FS_Forêt_Marche 9" ID="{D31616E3-75EF-4391-AF5D-BB67E92AE12E}" ShortID="157165504">
+								<Sound Name="Fs_Dirt_9" ID="{E4105317-F060-4D6C-B771-B2000CCC1B5D}" ShortID="926312487">
 									<ReferenceList>
 										<Reference Name="Conversion">
 											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
@@ -574,22 +554,17 @@
 										</Reference>
 									</ReferenceList>
 									<ChildrenList>
-										<AudioFileSource Name="FS_Forêt_Marche 9" ID="{D016399C-7998-4D58-9EBF-6BA6EE3EE3E0}">
-											<PropertyList>
-												<Property Name="FadeOutDuration" Type="Real64" Value="0.034472602739726"/>
-												<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
-												<Property Name="TrimEnd" Type="Real64" Value="0.453068493150685"/>
-											</PropertyList>
+										<AudioFileSource Name="Fs_Dirt_9" ID="{69641231-78EC-48DF-8A02-4A996B981367}">
 											<Language>SFX</Language>
-											<AudioFile>FS_Forêt_Marche 9.wav</AudioFile>
+											<AudioFile>Fs_Dirt_9.wav</AudioFile>
 											<MediaIDList>
-												<MediaID ID="1043300124"/>
+												<MediaID ID="876675882"/>
 											</MediaIDList>
 										</AudioFileSource>
 									</ChildrenList>
 									<ObjectLists/>
 									<ActiveSourceList>
-										<ActiveSource Name="FS_Forêt_Marche 9" ID="{D016399C-7998-4D58-9EBF-6BA6EE3EE3E0}" Platform="Linked"/>
+										<ActiveSource Name="Fs_Dirt_9" ID="{69641231-78EC-48DF-8A02-4A996B981367}" Platform="Linked"/>
 									</ActiveSourceList>
 								</Sound>
 							</ChildrenList>
