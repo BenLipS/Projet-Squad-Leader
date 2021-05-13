@@ -80,25 +80,8 @@ public:
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	int OverrideStartNumberOfSoldiers = -1;
-	UPROPERTY(BlueprintReadOnly)
-	uint8 StartNumberOfSoldiers = 3;
 
 public:
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-	TSubclassOf<ASoldierAI> ClassAI1;
-
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-	TSubclassOf<ASoldierAI> ClassAI2;
-
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-	TSubclassOf<ASoldierAI> ClassAI3;
-
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-	TSubclassOf<ASoldierAI> ClassAI4;
-
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-	TSubclassOf<ASoldierAI> ClassAI5;
-
 	UFUNCTION()
 	void Init(ASoldierTeam* _Team, ASoldierPlayer* _Player);
 	
