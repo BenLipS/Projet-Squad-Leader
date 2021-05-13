@@ -16,11 +16,19 @@
 			<ShortName>Init</ShortName>
 			<Path>Init.bnk</Path>
 		</SoundBank>
-		<SoundBank Id="4056684167" Language="SFX" Hash="2132518969">
+		<SoundBank Id="4056684167" Language="SFX" Hash="2941844023">
 			<ObjectPath>\SoundBanks\Default Work Unit\Master</ObjectPath>
 			<ShortName>Master</ShortName>
 			<Path>Master.bnk</Path>
 			<IncludedEvents>
+				<Event Id="2606610459" Name="Grenade_Glitch_Explosion" ObjectPath="\Events\Default Work Unit\Weapons\Grenade_Glitch_Explosion">
+					<IncludedMemoryFiles>
+						<File Id="339035994" Language="SFX">
+							<ShortName>Glitch Grenade.wav</ShortName>
+							<Path>SFX\Glitch Grenade_10C4C929.wem</Path>
+						</File>
+					</IncludedMemoryFiles>
+				</Event>
 				<Event Id="2064847921" Name="Knob_Menu" ObjectPath="\Events\Default Work Unit\Environment\Knob_Menu">
 					<IncludedMemoryFiles>
 						<File Id="576272166" Language="SFX">
@@ -46,6 +54,14 @@
 						<File Id="864600641" Language="SFX">
 							<ShortName>SL_Menu_Smooth_142bpm_4-4_67m_P1.wav</ShortName>
 							<Path>SFX\SL_Menu_Smooth_142bpm_4-4_67m_P1_D79FB2B7.wem</Path>
+						</File>
+					</IncludedMemoryFiles>
+				</Event>
+				<Event Id="3085463790" Name="Ping_Notif_Good" ObjectPath="\Events\Default Work Unit\Environment\Ping_Notif_Good">
+					<IncludedMemoryFiles>
+						<File Id="24728605" Language="SFX">
+							<ShortName>Ping Positif.wav</ShortName>
+							<Path>SFX\Ping Positif_E9981748.wem</Path>
 						</File>
 					</IncludedMemoryFiles>
 				</Event>

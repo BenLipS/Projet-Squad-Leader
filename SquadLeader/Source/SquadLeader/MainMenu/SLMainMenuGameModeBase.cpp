@@ -2,8 +2,6 @@
 
 #include "SLMainMenuGameModeBase.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
-#include "AkAudioEvent.h"
-#include "AkGameplayStatics.h"
 
 
 void ASLMainMenuGameModeBase::StartPlay() {

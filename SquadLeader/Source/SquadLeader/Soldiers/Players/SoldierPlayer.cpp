@@ -12,6 +12,8 @@
 #include "TimerManager.h"
 #include "SquadLeader/Weapons/SL_Weapon.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "AkAudioEvent.h"
+#include "AkGameplayStatics.h"
 
 ASoldierPlayer::ASoldierPlayer(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer)
 {
@@ -376,6 +378,7 @@ void ASoldierPlayer::SpawnPing(FVector PingLocation)
 			}
 		}
 		SpawnClientPing({ PingMesh->GetActorLocation().X, PingMesh->GetActorLocation().Y });
+		UAkGameplayStatics::PostEventByName("Ping_Notif_Good", this);
 	}
 }
 

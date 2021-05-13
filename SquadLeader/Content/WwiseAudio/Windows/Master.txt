@@ -5,6 +5,8 @@ Event	ID	Name			Wwise Object Path	Notes
 	1011371181	Rifle_Break			\Default Work Unit\Weapons\Rifle_Break	
 	1598298728	Music_Menu			\Default Work Unit\Music\Music_Menu	
 	2064847921	Knob_Menu			\Default Work Unit\Environment\Knob_Menu	
+	2606610459	Grenade_Glitch_Explosion			\Default Work Unit\Weapons\Grenade_Glitch_Explosion	
+	3085463790	Ping_Notif_Good			\Default Work Unit\Environment\Ping_Notif_Good	
 	3104059416	Rifle_Fire_Laser			\Default Work Unit\Weapons\Rifle_Fire_Laser	
 	3613905552	Player_Walk_Concrete			\Default Work Unit\Player\Player_Walk_Concrete	
 
@@ -31,6 +33,7 @@ Custom State	ID	Name	State Group	Owner		Notes
 	950279593	Intense	Music_Menu	\Interactive Music Hierarchy\Default Work Unit\Music\Menu\Menu_Music_Smooth\SL_Menu_Intro_Smooth_142bpm_4-4_67m_P0		
 
 In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size
+	24728605	Ping Positif	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Ping Positif_E9981748.wem		\Actor-Mixer Hierarchy\Default Work Unit\Environment\Ping\Ping Positif		270064
 	38262662	Rifle_Noise_Indoor_06	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Noise_Indoor_06_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Noise\Rifle_Noise_Indoor\Rifle_Noise_Indoor_06		17344
 	38953370	Rifle_Noise_Indoor_09	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Noise_Indoor_09_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Noise\Rifle_Noise_Indoor\Rifle_Noise_Indoor_09		17240
 	69188623	Rifle_Noise_Outdoor_06	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Noise_Outdoor_06_7262C52E.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Noise\Rifle_Noise_Outdoor\Rifle_Noise_Outdoor_06		17344
@@ -51,6 +54,7 @@ In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size
 	296015639	Rifle_Noise_Outdoor_04	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Noise_Outdoor_04_4077E293.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Noise\Rifle_Noise_Outdoor\Rifle_Noise_Outdoor_04		17844
 	317687095	Rifle_Sub_07	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Sub_07_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Sub\Rifle_Sub_07		17604
 	327549304	Fs_Concrete_02	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Fs_Concrete_02_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Player\Player\Fs_Concrete\Fs_Concrete_02		45768
+	339035994	Glitch Grenade	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Glitch Grenade_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Grenade\Glitch Grenade		1536144
 	405945141	Rifle_Kick_05	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Kick_05_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Kick\Rifle_Kick_05		17764
 	433765704	Rifle_Mech_04	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Mech_04_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Mech\Rifle_Mech_04		17844
 	471182755	Fs_Concrete_05	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Fs_Concrete_05_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Player\Player\Fs_Concrete\Fs_Concrete_05		49200
