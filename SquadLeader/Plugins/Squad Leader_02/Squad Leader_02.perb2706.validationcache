@@ -1,42 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ValidationCache Version="1" SchemaVersion="103">
-	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Virtual Acoustics\Default Work Unit.wwu" DateLow="1620861017" DateHigh="0"/>
-	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Triggers\Default Work Unit.wwu" DateLow="1620861017" DateHigh="0"/>
-	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Switches\Default Work Unit.wwu" DateLow="1620926505" DateHigh="0"/>
-	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\States\Default Work Unit.wwu" DateLow="1620861017" DateHigh="0"/>
-	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Squad Leader_02.wproj" DateLow="1620861017" DateHigh="0"/>
+	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Virtual Acoustics\Default Work Unit.wwu" DateLow="1620929854" DateHigh="0"/>
+	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Triggers\Default Work Unit.wwu" DateLow="1620929854" DateHigh="0"/>
+	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Switches\Default Work Unit.wwu" DateLow="1620929854" DateHigh="0"/>
+	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\States\Default Work Unit.wwu" DateLow="1620929854" DateHigh="0"/>
+	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Squad Leader_02.wproj" DateLow="1620929854" DateHigh="0"/>
 	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Squad Leader_02.perb2706.wsettings" DateLow="1620924075" DateHigh="0"/>
-	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Soundcaster Sessions\Default Work Unit.wwu" DateLow="1620862113" DateHigh="0"/>
-	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\SoundBanks\Default Work Unit.wwu" DateLow="1620862113" DateHigh="0"/>
-	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Queries\Factory Queries.wwu" DateLow="1620861017" DateHigh="0"/>
-	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Queries\Default Work Unit.wwu" DateLow="1620861017" DateHigh="0"/>
-	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Presets\Factory Spatial Audio.wwu" DateLow="1620852272" DateHigh="0"/>
-	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Presets\Default Work Unit.wwu" DateLow="1620861017" DateHigh="0"/>
-	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Modulators\Default Work Unit.wwu" DateLow="1620861017" DateHigh="0"/>
-	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Mixing Sessions\Default Work Unit.wwu" DateLow="1620861017" DateHigh="0"/>
-	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Metadata\Default Work Unit.wwu" DateLow="1620852272" DateHigh="0"/>
-	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Master-Mixer Hierarchy\Default Work Unit.wwu" DateLow="1620861017" DateHigh="0"/>
-	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Interactive Music Hierarchy\Music.wwu" DateLow="1620861017" DateHigh="0"/>
-	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Interactive Music Hierarchy\Default Work Unit.wwu" DateLow="1620861017" DateHigh="0"/>
-	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Game Parameters\Default Work Unit.wwu" DateLow="1620861017" DateHigh="0"/>
-	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Events\Weapons.wwu" DateLow="1620862113" DateHigh="0"/>
-	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Events\Player.wwu" DateLow="1620861017" DateHigh="0"/>
-	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Events\Music.wwu" DateLow="1620861017" DateHigh="0"/>
-	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Events\Environment.wwu" DateLow="1620861017" DateHigh="0"/>
-	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Events\Ennemy.wwu" DateLow="1620861017" DateHigh="0"/>
-	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Events\Default Work Unit.wwu" DateLow="1620861017" DateHigh="0"/>
-	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Events\Ability.wwu" DateLow="1620861017" DateHigh="0"/>
-	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Effects\Factory Effects.wwu" DateLow="1620861017" DateHigh="0"/>
-	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Effects\Default Work Unit.wwu" DateLow="1620861017" DateHigh="0"/>
-	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Dynamic Dialogue\Default Work Unit.wwu" DateLow="1620861017" DateHigh="0"/>
-	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Conversion Settings\Factory Conversion Settings.wwu" DateLow="1620861017" DateHigh="0"/>
-	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Conversion Settings\Default Work Unit.wwu" DateLow="1620861017" DateHigh="0"/>
-	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Control Surface Sessions\Default Work Unit.wwu" DateLow="1620861017" DateHigh="0"/>
-	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Audio Devices\Default Work Unit.wwu" DateLow="1620861017" DateHigh="0"/>
-	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Attenuations\Default Work Unit.wwu" DateLow="1620922850" DateHigh="0"/>
-	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Actor-Mixer Hierarchy\Weapons.wwu" DateLow="1620917872" DateHigh="0"/>
-	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Actor-Mixer Hierarchy\Player.wwu" DateLow="1620920012" DateHigh="0"/>
-	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Actor-Mixer Hierarchy\Environment.wwu" DateLow="1620861017" DateHigh="0"/>
-	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Actor-Mixer Hierarchy\Default Work Unit.wwu" DateLow="1620861017" DateHigh="0"/>
-	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Actor-Mixer Hierarchy\Ability.wwu" DateLow="1620861017" DateHigh="0"/>
+	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Soundcaster Sessions\Default Work Unit.wwu" DateLow="1620929854" DateHigh="0"/>
+	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\SoundBanks\Default Work Unit.wwu" DateLow="1620929854" DateHigh="0"/>
+	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Queries\Factory Queries.wwu" DateLow="1620929854" DateHigh="0"/>
+	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Queries\Default Work Unit.wwu" DateLow="1620929854" DateHigh="0"/>
+	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Presets\Factory Spatial Audio.wwu" DateLow="1620929854" DateHigh="0"/>
+	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Presets\Default Work Unit.wwu" DateLow="1620929854" DateHigh="0"/>
+	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Modulators\Default Work Unit.wwu" DateLow="1620929850" DateHigh="0"/>
+	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Mixing Sessions\Default Work Unit.wwu" DateLow="1620929850" DateHigh="0"/>
+	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Metadata\Default Work Unit.wwu" DateLow="1620929850" DateHigh="0"/>
+	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Master-Mixer Hierarchy\Default Work Unit.wwu" DateLow="1620929850" DateHigh="0"/>
+	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Interactive Music Hierarchy\Music.wwu" DateLow="1620929850" DateHigh="0"/>
+	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Interactive Music Hierarchy\Default Work Unit.wwu" DateLow="1620929850" DateHigh="0"/>
+	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Game Parameters\Default Work Unit.wwu" DateLow="1620929850" DateHigh="0"/>
+	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Events\Weapons.wwu" DateLow="1620929850" DateHigh="0"/>
+	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Events\Player.wwu" DateLow="1620929850" DateHigh="0"/>
+	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Events\Music.wwu" DateLow="1620929850" DateHigh="0"/>
+	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Events\Environment.wwu" DateLow="1620929850" DateHigh="0"/>
+	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Events\Ennemy.wwu" DateLow="1620929850" DateHigh="0"/>
+	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Events\Default Work Unit.wwu" DateLow="1620929850" DateHigh="0"/>
+	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Events\Ability.wwu" DateLow="1620929850" DateHigh="0"/>
+	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Effects\Factory Effects.wwu" DateLow="1620929850" DateHigh="0"/>
+	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Effects\Default Work Unit.wwu" DateLow="1620929850" DateHigh="0"/>
+	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Dynamic Dialogue\Default Work Unit.wwu" DateLow="1620929850" DateHigh="0"/>
+	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Conversion Settings\Factory Conversion Settings.wwu" DateLow="1620929850" DateHigh="0"/>
+	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Conversion Settings\Default Work Unit.wwu" DateLow="1620929850" DateHigh="0"/>
+	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Control Surface Sessions\Default Work Unit.wwu" DateLow="1620929850" DateHigh="0"/>
+	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Audio Devices\Default Work Unit.wwu" DateLow="1620929850" DateHigh="0"/>
+	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Attenuations\Default Work Unit.wwu" DateLow="1620929850" DateHigh="0"/>
+	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Actor-Mixer Hierarchy\Weapons.wwu" DateLow="1620929850" DateHigh="0"/>
+	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Actor-Mixer Hierarchy\Player.wwu" DateLow="1620929850" DateHigh="0"/>
+	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Actor-Mixer Hierarchy\Environment.wwu" DateLow="1620929850" DateHigh="0"/>
+	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Actor-Mixer Hierarchy\Default Work Unit.wwu" DateLow="1620929850" DateHigh="0"/>
+	<ValidationCacheItem File="E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\Actor-Mixer Hierarchy\Ability.wwu" DateLow="1620929850" DateHigh="0"/>
 </ValidationCache>
