@@ -34,6 +34,9 @@ void ASoldierPlayer::BeginPlay()
 {
 	Super::BeginPlay();
 
+	if (GetTeam())
+		GetTeam()->AddSoldierList(this);
+
 	if (!IsLocallyControlled())
 		return;
 
@@ -89,25 +92,20 @@ void ASoldierPlayer::Tick(float DeltaTime)
 	}
 }
 
+void ASoldierPlayer::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ASoldierPlayer, SquadManager);
+}
+
 // Server only 
 void ASoldierPlayer::PossessedBy(AController* _newController)
 {
 	Super::PossessedBy(_newController);
 	SetAbilitySystemComponent();
 
-	/*Init Squad Manager for this Player*/
-
-	FActorSpawnParameters SpawnInfo;
-	SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn; // La maniere de faire le respawn
-	FTransform LocationTemp{ {0.f, -1000.f, 0.f}, {0.f,0.f,0.f} };
-	SquadManager = GetWorld()->SpawnActorDeferred<AAISquadManager>(AISquadManagerClass, LocationTemp, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
-
-	if (SquadManager)
-	{
-		SquadManager->FinishSpawning(LocationTemp);
-		SquadManager->Init(GetTeam(), this);
-		Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode())->ListAISquadManagers.Add(SquadManager);
-	}
+	InitSquadManager();
 }
 
 // Client only 
@@ -153,6 +151,25 @@ void ASoldierPlayer::InitCameraKiller()
 	FollowKillerCamera->SetAbsolute(true, true, true);
 	FollowKillerCamera->SetFieldOfView(BaseFOVNormal);
 	FollowKillerCamera->Deactivate();
+}
+
+void ASoldierPlayer::InitSquadManager()
+{
+	if (GetLocalRole() < ENetRole::ROLE_Authority)
+		return;
+
+	FActorSpawnParameters SpawnInfo;
+	SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	SquadManager = GetWorld()->SpawnActorDeferred<AAISquadManager>(AISquadManagerClass, FTransform{}, this, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+
+	if (SquadManager)
+	{
+		// SquadManager->Init(GetTeam(), this);  // done on the begin play of this element
+		SquadManager->FinishSpawning(FTransform{});
+
+		if (ASquadLeaderGameModeBase* GM = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode()); GM)
+			GM->ListAISquadManagers.Add(SquadManager);
+	}
 }
 
 void ASoldierPlayer::OnBlurredVisionFromJammer(const bool _IsBlurred)
@@ -243,6 +260,19 @@ void ASoldierPlayer::UnLockControls()
 AAISquadManager* ASoldierPlayer::GetSquadManager()
 {
 	return SquadManager;
+}
+
+void ASoldierPlayer::OnRep_SquadManager()
+{
+	if (SquadManager)
+	{
+		// Remove soldier from team then re-add them - This is not the cleanest nor the most optimize solution but it works
+		for (ASoldierAI* Soldier : SquadManager->GetAISoldierList())
+		{
+			if (Soldier)
+				Soldier->RefreshTeam();
+		}
+	}
 }
 
 void ASoldierPlayer::LookUp(const float _Val)
@@ -504,6 +534,7 @@ void ASoldierPlayer::OnReceiveDamage(const FVector& _ImpactPoint, const FVector&
 			StartHitReactMontage(HitReactLeftMontage);
 	}
 
+	ShakeCamera(CameraShakeReceiveDamageClass);
 }
 
 void ASoldierPlayer::ClientOnReceiveDamage_Implementation(const FVector& _ImpactPoint, const FVector& _SourcePoint)

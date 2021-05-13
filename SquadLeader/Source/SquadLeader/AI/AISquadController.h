@@ -49,6 +49,8 @@ public:
 
 	virtual void BeginPlay() override;
 
+	virtual void Tick(float DeltaSecond) override;
+
 	/*not used*/
 	virtual void Init() override;
 
@@ -56,7 +58,7 @@ public:
 	AAISquadManager* SquadManager;
 
 	UPROPERTY()
-		bool RunToFormation = false;
+	bool RunToFormation = false;
 public:
 	/* For BT Task  */
 	UFUNCTION(BlueprintCallable, Category = "Formation Behaviour")

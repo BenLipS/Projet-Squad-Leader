@@ -135,8 +135,8 @@ public:
 	void OnEnnemyTicket_Received_Implementation(int newTicket);
 
 	UFUNCTION(Client, Reliable)
-	void OnGameEnd(const int MatchResult, float GameDuration);  // -1 for a loss and 1 for a victory
-	void OnGameEnd_Implementation(const int MatchResult, float GameDuration);
+	void OnGameEnd(const int MatchResult, float GameDuration, int NbKillAI, int NbKillPlayer, int NbDeathByAI, int NbDeathByPlayer);  // -1 for a loss and 1 for a victory
+	void OnGameEnd_Implementation(const int MatchResult, float GameDuration, int NbKillAI, int NbKillPlayer, int NbDeathByAI, int NbDeathByPlayer);
 
 	UFUNCTION(Client, Unreliable)
 	void OnChatMessageReceived(const FString& message);
@@ -176,7 +176,21 @@ public:
 	/*UFUNCTION()
 	float GetCooldown(const ESoldierAbilityInputID _AbilityID);*/
 
+
+protected:
+	/* Return The Correct PlayerParams Class Client-Side */
+	UFUNCTION(Reliable, Client)
+	void DeterminePlayerParams();
+	virtual void DeterminePlayerParams_Implementation();
+
+	/* Set Pawn Class On Server For This Controller */
+	UFUNCTION(Reliable, Server, WithValidation)
+	virtual void ServerSetPawn(TSubclassOf<APlayerParam> PlayerParam);
+	virtual void ServerSetPawn_Implementation(TSubclassOf<APlayerParam> PlayerParam);
+	virtual bool ServerSetPawn_Validate(TSubclassOf<APlayerParam> PlayerParam);
+
 //////////////// Cheat
+public:
 	UFUNCTION(Exec)
 	void Cheat_AddAISquad();
 

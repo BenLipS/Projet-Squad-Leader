@@ -20,17 +20,19 @@
 void UMinimapWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
-	if (bIsPlayerCentered && IsValid(MaterialCollection))
-	{
-		FVector ActorPosition = GetOwningPlayerPawn()->GetActorLocation();
+	if (GetOwningPlayerPawn()) {
+		if (bIsPlayerCentered && IsValid(MaterialCollection))
+		{
+			FVector ActorPosition = GetOwningPlayerPawn()->GetActorLocation();
 
-		UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MaterialCollection, FName("X"), ActorPosition.X);
+			UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MaterialCollection, FName("X"), ActorPosition.X);
 
-		UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MaterialCollection, FName("Y"), ActorPosition.Y);
+			UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MaterialCollection, FName("Y"), ActorPosition.Y);
+		}
+
+		auto ActorRotation = GetOwningPlayer()->GetPawn<ASoldier>()->GetMesh()->GetComponentRotation();
+		PlayerIconImage->SetRenderTransformAngle(ActorRotation.Yaw);
 	}
-
-	auto ActorRotation = GetOwningPlayer()->GetPawn<ASoldier>()->GetMesh()->GetComponentRotation();
-	PlayerIconImage->SetRenderTransformAngle(ActorRotation.Yaw);
 }
 
 bool UMinimapWidget::IsInDisplay(FVector2D DifferenceVec, FVector2D SizeIn)
@@ -104,7 +106,6 @@ void UMinimapWidget::SetInteractivity(bool InInteractivity)
 			}
 		}
 	}
-	
 }
 
 void UMinimapWidget::NativeConstruct()
@@ -166,7 +167,7 @@ void UMinimapWidget::SetupDelegateToObject_Implementation(UObject* _ObjectIn)
 void UMinimapWidget::OnSoldierAddedToTeam(ASoldier* _Soldier)
 {
 	ASoldierPlayer* Player = Cast<ASoldierPlayer>(GetOwningPlayerPawn());
-	if (!Player || Cast<ASoldier>(Player) == _Soldier || !Player->IsLocallyControlled())
+	if (!Player || Cast<ASoldier>(Player) == _Soldier)
 		return;
 
 	UPointOfInterestWidget* POI;
@@ -175,11 +176,11 @@ void UMinimapWidget::OnSoldierAddedToTeam(ASoldier* _Soldier)
 	{
 		POI = CreateWidget<UPointOfInterestWidget>(MinimapSoldierOverlay, EnnemyIconWidgetClass);
 	}
-	else if (!!Cast<ASoldierPlayer>(_Soldier))// Soldier is a allie player
+	else if (!!Cast<ASoldierPlayer>(_Soldier)) // Soldier is a allie player
 	{
 		POI = CreateWidget<UPointOfInterestWidget>(MinimapSoldierOverlay, PlayerAllieIconWidgetClass);
 	}
-	else if (Player->GetSquadManager()->HasSoldier(_Soldier)) // Soldier is part of the player's squad - // TODO: Review the test
+	else if (Player->GetSquadManager() && Player->GetSquadManager()->HasSoldier(_Soldier)) // Soldier is part of the player's squad
 	{
 		POI = CreateWidget<UPointOfInterestWidget>(MinimapSoldierOverlay, SquadIconWidgetClass);
 	}
@@ -198,6 +199,7 @@ void UMinimapWidget::OnSoldierAddedToTeam(ASoldier* _Soldier)
 		}
 		
 		POI->OwningActor = _Soldier;
+		POI->SetVisibility(ESlateVisibility::Collapsed);
 		POIList.Add(POI);
 	}
 }
@@ -261,9 +263,16 @@ void UMinimapWidget::OnPingDestroyed()
 void UMinimapWidget::OnSoldierRemovedFromTeam(ASoldier* _Soldier)
 {
 	// Remove any widget whose actor ref match _Soldier
-	POIList.RemoveAll([&_Soldier](UPointOfInterestWidget* POI) { return POI->OwningActor == _Soldier; });
-
-	// TODO do I have to remove from viewport ?
+	for (int i = 0; i < POIList.Num();)
+	{
+		if (POIList[i]->OwningActor == _Soldier)
+		{
+			POIList[i]->RemoveFromViewport();
+			POIList.RemoveAt(i);
+		}
+		else
+			++i;
+	}
 }
 
 void UMinimapWidget::OnUpdatePOIs()
@@ -330,9 +339,12 @@ void UMinimapWidget::OnUpdatePOIs()
 
 	for (UPointOfInterestWidget* POI : POIList)
 	{
+		if (!IsValid(POI->OwningActor) || !IsValid(POI->OwningActor->GetRootComponent()))
+			continue;
+
 		const FVector2D ActorPosition = FVector2D{ POI->OwningActor->GetActorLocation().X, POI->OwningActor->GetActorLocation().Y };
 		// Diff position between soldier and player
-		
+
 		const float DiffX = (CenterScreen.X - ActorPosition.X) / Coeff;
 		const float DiffY = (ActorPosition.Y - CenterScreen.Y) / Coeff; // Implicit * -1
 		const FVector2D DiffVec = { DiffX, DiffY };
@@ -343,6 +355,12 @@ void UMinimapWidget::OnUpdatePOIs()
 			POI->SetVisibility(ESlateVisibility::Collapsed);
 			continue;
 		}
+		//// The POI is a dead soldier
+		//else if (ASoldier* Soldier = Cast<ASoldier>(POI->OwningActor); Soldier && !Soldier->IsAlive())
+		//{
+		//	POI->SetVisibility(ESlateVisibility::Collapsed);
+		//	continue;
+		//}
 
 		// Angle between soldier and player (center of the minimap)
 		const float Angle = FMath::Atan2(/* 0.f*/ - DiffY, /* 0.f*/ - DiffX);

@@ -26,7 +26,6 @@ AAIBasicController::AAIBasicController()
 
 void AAIBasicController::BeginPlay() {
 	Super::BeginPlay();
-	Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode())->AddAIBasicToManager(this);
 }
 
 void AAIBasicController::Init() {
@@ -44,7 +43,7 @@ void AAIBasicController::setup_BehaviorTree() {
 }
 
 void AAIBasicController::Tick(float DeltaSeconds) {
-	Super::Tick(DeltaSeconds);
+	/*Super::HomeTick(DeltaSeconds);*/
 }
 
 FVector AAIBasicController::GetRespawnPoint()  // TODO : Change this function to adapt the squad AI respawn

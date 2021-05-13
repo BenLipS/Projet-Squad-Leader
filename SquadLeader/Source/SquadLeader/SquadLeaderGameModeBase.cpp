@@ -5,6 +5,7 @@
 #include "Soldiers/Players/SoldierPlayerState.h"
 #include "Soldiers/Soldier.h"
 #include "AbilitySystemGlobals.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "SquadLeaderGameInstance.h"
 #include "MainMenu/GameParam/GameParam.h"
 
@@ -39,6 +40,32 @@ void ASquadLeaderGameModeBase::Logout(AController* Exiting)
 	Super::Logout(Exiting);
 }
 
+
+APawn* ASquadLeaderGameModeBase::SpawnSoldier(TSubclassOf<APlayerParam> PlayerParam, AController* OwningController)
+{
+	if (auto SLInitGameState = Cast<ASquadLeaderInitGameState>(GameState); SLInitGameState) {
+		if (ASoldierTeam* NewSoldierTeam = SLInitGameState->GetSoldierTeamByID(PlayerParam->GetDefaultObject<APlayerParam>()->GetTeam()); NewSoldierTeam) {
+			TArray<ASoldierSpawn*> SpawnList = NewSoldierTeam->GetUsableSpawnPoints();
+			if (SpawnList.Num() > 0) {
+				ASoldierSpawn* SpawnPoint = SpawnList[UKismetMathLibrary::RandomIntegerInRange(0, SpawnList.Num() - 1)];
+				
+				FTransform SpawnPosition = { SpawnPoint->GetActorRotation(), SpawnPoint->GetActorLocation() };
+				APawn* NewPawn = GetWorld()->SpawnActorDeferred<APawn>(PlayerParam->GetDefaultObject<APlayerParam>()->GetPlayerClass(),
+					SpawnPosition, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+				
+				if (NewPawn) {
+					NewPawn->Controller = OwningController;
+					Cast<ASoldier>(NewPawn)->SetTeam(NewSoldierTeam);
+					//set AISquad composition
+
+					NewPawn->FinishSpawning(SpawnPosition);
+					return NewPawn;
+				}
+			}
+		}
+	}
+	return nullptr;
+}
 
 void ASquadLeaderGameModeBase::ChangeGameState() {
 	// set parameters for GameState's spawn
@@ -116,23 +143,6 @@ void ASquadLeaderGameModeBase::InitAIManagers()
 	//Each Player init a SquadManager in SoldierPlayer.cpp PossessedBy
 }
 
-void ASquadLeaderGameModeBase::AddAIBasicToManager(AAIBasicController* AIBasic)
-{
-	auto GS = Cast<ASquadLeaderInitGameState>(GameState);
-	if (AIBasic && AIBasic->GetTeam()) {
-		if (auto FoundAIBasicManager = AIBasicManagerCollection.Find(AIBasic->GetTeam()); FoundAIBasicManager) {
-			(*FoundAIBasicManager)->AIBasicList.Add(AIBasic);
-			//if (GEngine)GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString{ "AIBasic " + AIBasic->GetTeam()->TeamName + " added"});
-		}
-		else {
-			//if (GEngine)GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("Une AI n'a pas d'equipe"));
-		}
-	}
-	else {
-		//if (GEngine)GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("AI Spawned thought the manager"));
-	}
-}
-
 void ASquadLeaderGameModeBase::InitInfluenceMap() {
 	FTransform LocationTemp{ {0.f, 0.f, 0.f}, {0.f,0.f,0.f} };
 	AInfluenceMapGrid* _InfluenceMap = GetWorld()->SpawnActorDeferred<AInfluenceMapGrid>(InfluenceMapClass, LocationTemp, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
@@ -185,22 +195,32 @@ void ASquadLeaderGameModeBase::CheckTeamTicketsVictoryCondition()
 
 void ASquadLeaderGameModeBase::EndGame(ASoldierTeam* WinningTeam)
 {
-	for (auto PCIterator = GetWorld()->GetPlayerControllerIterator(); PCIterator; PCIterator++)
-	{
-		if (auto PC = Cast<ASoldierPlayerController>(PCIterator->Get()); PC)
+	if (!IsGameOver) {
+		for (auto PCIterator = GetWorld()->GetPlayerControllerIterator(); PCIterator; PCIterator++)
 		{
-			if (PC->GetTeam() == WinningTeam) {
-				PC->OnGameEnd(1, GetGameTimeSinceCreation());
-			}
-			else {
-				PC->OnGameEnd(-1, GetGameTimeSinceCreation());
+			if (auto PC = Cast<ASoldierPlayerController>(PCIterator->Get()); PC)
+			{
+				if (AKillStats* killRecord = PC->GetPlayerState<ASoldierPlayerState>()->PersonalRecord; killRecord) {
+					if (PC->GetTeam() == WinningTeam) {
+						PC->OnGameEnd(1, GetGameTimeSinceCreation(),
+							killRecord->NbKillAI, killRecord->NbKillPlayer,
+							killRecord->NbDeathByAI, killRecord->NbDeathByPlayer);
+					}
+					else {
+						PC->OnGameEnd(-1, GetGameTimeSinceCreation(),
+							killRecord->NbKillAI, killRecord->NbKillPlayer,
+							killRecord->NbDeathByAI, killRecord->NbDeathByPlayer);
+					}
+				}
 			}
 		}
-	}
 
-	FTimerHandle timerBeforeClosing;
-	GetWorld()->GetTimerManager().SetTimer(timerBeforeClosing, this,
-		&ASquadLeaderGameModeBase::CloseGame, 10.f);  // request to the server to end the game
+		FTimerHandle timerBeforeClosing;
+		GetWorld()->GetTimerManager().SetTimer(timerBeforeClosing, this,
+			&ASquadLeaderGameModeBase::CloseGame, 10.f);  // request to the server to end the game
+
+		IsGameOver = true;
+	}
 }
 
 void ASquadLeaderGameModeBase::CloseGame()

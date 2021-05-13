@@ -3,7 +3,8 @@
 #include "UI/Interface/StatInfoInterface.h"
 #include "UI/Interface/StatInfoInterface.h"
 #include "UI/Menu/MenuItem/MenuList/MenuListInfo.h"
-#include <iostream>
+#include "UI/Menu/MenuItem/MenuList/MenuListGame.h"
+#include "UI/HUD/MainMenuHUD.h"
 
 #include "winsock.h"
 
@@ -31,6 +32,9 @@ void USquadLeaderGameInstance::Shutdown()
     // when closing
     if (OnlineStatus) {
         HttpCallChangeConnectedStatus(0);  // notify server of the deconnexion
+        if (GameID != "") {
+            HttpCallDeleteGame();
+        }
     }
     UserData.Save(UserDataFilename);  // save data
 }
@@ -49,11 +53,14 @@ void USquadLeaderGameInstance::OnStart()
 void USquadLeaderGameInstance::LaunchGame()
 {
     if (OnlineStatus) {
+        if (GameID != "") {
+            HttpCallDeleteGame();
+        }
         HttpCallCreateNewGame();
         HttpCallChangeConnectedStatus(2); // notify that the client is joining a new game
     }
     // GetFirstGamePlayer()->ConsoleCommand("open HUB_Level?listen", true);
-    GetFirstGamePlayer()->ConsoleCommand("open Factory_V1?listen", true);
+    GetFirstGamePlayer()->ConsoleCommand("open Factory_V2?listen", true);
 }
 
 void USquadLeaderGameInstance::SetGameParamToDefault()
@@ -74,7 +81,7 @@ void USquadLeaderGameInstance::JoinGame(FString IPAdress)
     GetFirstGamePlayer()->ConsoleCommand("open " + IPAdress, true);
 }
 
-bool USquadLeaderGameInstance::UpdateNetworkStatus(const int MatchResult, float GameDuration, int XP, AKillStats* KillData)
+bool USquadLeaderGameInstance::UpdateNetworkStatus(const int MatchResult, float GameDuration, int XP, int NbKillAI, int NbKillPlayer, int NbDeathByAI, int NbDeathByPlayer)
 {
     if (OnlineStatus) {
         // first do some process and save it in UserData
@@ -87,13 +94,13 @@ bool USquadLeaderGameInstance::UpdateNetworkStatus(const int MatchResult, float 
         else return false;  // error in the entry data
 
         // add kill data
-        UserData.NbKillIA += KillData->NbKillAI;
-        UserData.NbKillPlayer += KillData->NbKillPlayer;
-        UserData.NbDeathIA += KillData->NbDeathByAI;
-        UserData.NbDeathPlayer += KillData->NbDeathByPlayer;
+        UserData.NbKillIA += NbKillAI;
+        UserData.NbKillPlayer += NbKillPlayer;
+        UserData.NbDeathIA += NbDeathByAI;
+        UserData.NbDeathPlayer += NbDeathByPlayer;
 
         // update GameDuration
-        UserData.PlayTime += GameDuration;
+        UserData.PlayTime += GameDuration/60;  // time in minute
 
         // update score
         UserData.Score = (UserData.Score * (UserData.NbVictory + UserData.NbLoss - 1) + (XP / 100)) / (UserData.NbVictory + UserData.NbLoss);
@@ -126,18 +133,17 @@ void USquadLeaderGameInstance::ProfileInfo()
     statsIn.Add("Number of deaths per players", FString::FromInt(UserData.NbDeathPlayer));
     statsIn.Add("Number of wins", FString::FromInt(UserData.NbVictory));
     statsIn.Add("Number of defeats", FString::FromInt(UserData.NbLoss));
-    
+
     float WinRate;
-    if (UserData.NbLoss == 0) {
-        WinRate = UserData.NbVictory;
+    if ((UserData.NbLoss + UserData.NbVictory) == 0) {
+        WinRate = 0;
     }
     else {
-        WinRate = static_cast<float>(UserData.NbVictory) / UserData.NbLoss;
+        WinRate = static_cast<float>(UserData.NbVictory) / (UserData.NbLoss + UserData.NbVictory);
     }
     statsIn.Add("Win rate", FString::SanitizeFloat(WinRate));
     statsIn.Add("Score", FString::FromInt(UserData.Score));
     statsIn.Add("Playtime", FString::FromInt(UserData.PlayTime));
-    
 
     if (auto PC = GetPrimaryPlayerController(); PC)
     {
@@ -147,8 +153,13 @@ void USquadLeaderGameInstance::ProfileInfo()
             HUD->OnStatsInfoReceived(statsIn);
         }
     }
+}
 
-    
+void USquadLeaderGameInstance::GetGameAvailable()
+{
+    if (OnlineStatus) {
+        HttpCallGetGame();
+    }
 }
 
 
@@ -277,6 +288,18 @@ void USquadLeaderGameInstance::HttpCallDeleteGame()
     Request->ProcessRequest();
 }
 
+void USquadLeaderGameInstance::HttpCallGetGame()
+{
+    TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = Http->CreateRequest();
+    Request->OnProcessRequestComplete().BindUObject(this, &USquadLeaderGameInstance::OnResponseGetGame);
+    Request->SetHeader("Content-Type", "application/x-www-form-urlencoded");
+    FString authHeader = FString("Bearer ") + AuthToken;
+    Request->SetHeader("Authorization", authHeader);
+    Request->SetURL(BaseServerDataAdress + UserData.Id + "/Games/getAvailable");
+    Request->SetVerb("GET");
+    Request->ProcessRequest();
+}
+
 void USquadLeaderGameInstance::HttpCallChangeConnectedStatus(int status)
 {
     TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = Http->CreateRequest();
@@ -304,7 +327,7 @@ void USquadLeaderGameInstance::HttpCallUpdatePlayerAfterGame()
         "&nbVictory=" + FString::FromInt(UserData.NbVictory) +
         "&nbLoss=" + FString::FromInt(UserData.NbLoss) +
         "&score=" + FString::FromInt(UserData.Score) +
-        "&playTime=" + FString::FromInt(UserData.PlayTime) + 
+        "&playTime=" + FString::FromInt(UserData.PlayTime) +
         "&isInGame=" + FString::FromInt(1));
     Request->SetVerb("PATCH");
     Request->ProcessRequest();
@@ -421,6 +444,37 @@ void USquadLeaderGameInstance::OnResponseDeleteGame(FHttpRequestPtr Request, FHt
     }
     else {  // no connection to the data server or problems
         // TODO: retry later
+        NoConnexionComportment();
+    }
+}
+
+void USquadLeaderGameInstance::OnResponseGetGame(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
+{
+    if (bWasSuccessful) {
+        TArray<TSharedPtr<FJsonValue>> JsonArray;
+        //Create a reader pointer to read the json data
+        TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(Response->GetContentAsString());
+        //Deserialize the json data given Reader and the actual object to deserialize
+        if (FJsonSerializer::Deserialize(Reader, JsonArray)) {
+            // send data to the user interface
+            
+            if (auto PC = GetPrimaryPlayerController(); PC)
+            {
+                if (auto HUD = PC->GetHUD<AMainMenuHUD>(); HUD)
+                {
+                    HUD->OnGamesInfoCleanOrder();
+                    for (auto JsonObject : JsonArray)
+                    {
+                        FString Name = JsonObject->AsObject()->GetStringField("name");
+                        FString MoreInfo = "Level: " + JsonObject->AsObject()->GetStringField("levelTarget");
+                        FString IP = JsonObject->AsObject()->GetStringField("ipAdress");
+                        HUD->OnGameInfoReceived(Name, MoreInfo, IP);
+                    }
+                }
+            }
+        }
+    }
+    else {  // no connection to the data server or problems
         NoConnexionComportment();
     }
 }

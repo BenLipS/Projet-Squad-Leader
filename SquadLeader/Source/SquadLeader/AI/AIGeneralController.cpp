@@ -54,15 +54,17 @@ void AAIGeneralController::InitMissionList() {
 	m_missionList->Init(this);
 }
 
-void AAIGeneralController::Tick(float DeltaSeconds) {
+void AAIGeneralController::Tick(float DeltaSeconds) {}
+
+void AAIGeneralController::HomeTick(float DeltaSeconds) {
 	if (IsActivated) {
 		Super::Tick(DeltaSeconds);
 		Sens();
 	}
-		Think(); // == if we need to change the BehaviorTree,
+	Think(); // == if we need to change the BehaviorTree,
 	if (IsActivated) {
-			Act();
-		
+		Act();
+
 		//Act will also be done in the behavior tree
 		FlockingComponent->UpdateFlockingPosition(DeltaSeconds);
 
@@ -445,7 +447,9 @@ void AAIGeneralController::EmptyMissionList() {
 void AAIGeneralController::Die() {
 	//ResetBlackBoard();
 	SeenSoldier.Empty();
+	SeenEnemySoldier.Empty();
 	PerceptionComponent->ForgetAll();
+	PerceptionComponent->SetSenseEnabled(UAISense_Sight::StaticClass(), false);
 }
 
 void AAIGeneralController::Respawn() 
@@ -457,9 +461,11 @@ void AAIGeneralController::Respawn()
 	//ResetBlackBoard() shall not
 	SetState(AIBasicState::Moving);
 	SeenSoldier.Empty();
+	SeenEnemySoldier.Empty();
 	if(AAISquadController* AISquad = Cast<AAISquadController>(this); AISquad)
 		SetState(AIBasicState::Formation);
 	PerceptionComponent->ForgetAll();
+	PerceptionComponent->SetSenseEnabled(UAISense_Sight::StaticClass(), true);
 }
 
 void AAIGeneralController::ResetBlackBoard()

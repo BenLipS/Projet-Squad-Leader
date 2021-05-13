@@ -9,6 +9,7 @@ UGA_OverheatingWeapon::UGA_OverheatingWeapon() : TimeOverHeat { 10.f }, TimeBetw
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.OverheatingWeapon")));
+	ActivationOwnedTags.AddTag(FGameplayTag::RequestGameplayTag(FName("State.Weapon.Overheating")));
 }
 
 bool UGA_OverheatingWeapon::CanActivateAbility(const FGameplayAbilitySpecHandle _Handle, const FGameplayAbilityActorInfo* _ActorInfo, const FGameplayTagContainer* _SourceTags, const FGameplayTagContainer* _TargetTags, OUT FGameplayTagContainer* _OptionalRelevantTags) const

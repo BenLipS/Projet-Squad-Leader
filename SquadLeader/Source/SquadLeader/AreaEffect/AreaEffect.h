@@ -8,6 +8,7 @@
 #include "AreaEffect.generated.h"
 
 class ASoldier;
+class UMatineeCameraShake;
 
 UCLASS()
 class SQUADLEADER_API AAreaEffect : public AActor
@@ -23,6 +24,11 @@ protected:
 
 	ASoldier* SourceSoldier = nullptr;
 	FName ProfileAreaEffectCollisionName;
+
+//////////////// Camera
+	// Camera shake to apply to soldiers
+	UPROPERTY(EditDefaultsOnly, Category = "Camera|Camera Shake")
+	TSubclassOf<UMatineeCameraShake> CameraShakeClass;
 
 //////////////// Effects
 protected:

@@ -11,8 +11,9 @@ UGA_FireWeaponProjectile::UGA_FireWeaponProjectile()
 	AbilityID = ESoldierAbilityInputID::BasicAttack;
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.FireWeapon.Projectile.Bazooka")));
 
-	ActivationOwnedTags.AddTag(FGameplayTag::RequestGameplayTag(FName("State.Firing")));
-	ActivationBlockedTags.AddTag(FGameplayTag::RequestGameplayTag(FName("State.ReloadingWeapon")));
+	ActivationOwnedTags.AddTag(FGameplayTag::RequestGameplayTag(FName("State.Weapon.Firing")));
+	ActivationBlockedTags.AddTag(FGameplayTag::RequestGameplayTag(FName("State.Weapon.Reloading")));
+	ActivationBlockedTags.AddTag(FGameplayTag::RequestGameplayTag(FName("State.CastingSpell")));
 }
 
 void UGA_FireWeaponProjectile::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
@@ -30,6 +31,9 @@ void UGA_FireWeaponProjectile::ActivateAbility(const FGameplayAbilitySpecHandle 
 
 	// TODO: Make this GA like fireWeaponInstant - Ammo are better handled and also the time between shoots
 	SourceWeapon->DecrementAmmo();
+
+	// Camera Shake
+	SourceSoldier->ShakeCamera(SourceSoldier->GetCameraShakeFireClass());
 
 	if (!CurrentActorInfo->IsNetAuthority())
 		return;

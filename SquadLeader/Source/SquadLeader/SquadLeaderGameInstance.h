@@ -3,9 +3,9 @@
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
 #include "MainMenu/PlayerData/PlayerData.h"
+#include "MainMenu/PlayerParam/PlayerParam.h"
 #include "MainMenu/GameParam/GameParam.h"
 #include "Runtime/Online/HTTP/Public/Http.h"
-#include "Soldiers/Players/KillStats.h"
 #include "SquadLeaderGameInstance.generated.h"
 
 
@@ -50,12 +50,13 @@ public:
 		void JoinGame(FString IPAdress);
 	UFUNCTION(BlueprintCallable)
 		void ProfileInfo();
+	UFUNCTION(BlueprintCallable)
+		void GetGameAvailable();
 
 	UFUNCTION(BlueprintCallable)
 		bool const GetNetworkStatus() { return OnlineStatus; }
 
-	UFUNCTION(BlueprintCallable)
-		bool UpdateNetworkStatus(const int MatchResult, float GameDuration, int XP, AKillStats* KillData);
+	bool UpdateNetworkStatus(const int MatchResult, float GameDuration, int XP, int NbKillAI, int NbKillPlayer, int NbDeathByAI, int NbDeathByPlayer);
 
 private:
 	void NoConnexionComportment();
@@ -71,6 +72,8 @@ private:
 	void HttpCallAllowFriendForGame();
 	void HttpCallDeleteGame();
 
+	void HttpCallGetGame();
+
 	void HttpCallChangeConnectedStatus(int status);
 
 	void HttpCallUpdatePlayerAfterGame();
@@ -82,11 +85,16 @@ private:
 	void OnResponseReceivedReceiveSync(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 	void OnResponseCreateNewGame(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 	void OnResponseDeleteGame(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
+	void OnResponseGetGame(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 	void OnResponseDoNothing(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 
 public:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf <AGameParam> GameParam;
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf <APlayerParam> PlayerParam;
+
 private:
 	FString GameID = "";  // only define if a game is create
 };

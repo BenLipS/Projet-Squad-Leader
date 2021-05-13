@@ -23,7 +23,6 @@ ASL_Weapon::ASL_Weapon()
 
 	// Tags
 	WeaponAbilityTag = FGameplayTag::RequestGameplayTag("Ability.Skill.FireWeapon");
-	WeaponIsFiringTag = FGameplayTag::RequestGameplayTag("Weapon.IsFiring");
 	FireMode = FGameplayTag::RequestGameplayTag("Weapon.FireMode.Automatic");
 }
 
@@ -329,6 +328,11 @@ float ASL_Weapon::GetTargetingSpreadIncrement() const noexcept
 float ASL_Weapon::GetTargetingSpreadMax() const noexcept
 {
 	return TargetingSpreadMax;
+}
+
+TSubclassOf<UMatineeCameraShake> ASL_Weapon::GetCameraShakeFireClass() const
+{
+	return CameraShakeFireClass;
 }
 
 ASL_LineTrace* ASL_Weapon::GetLineTraceTargetActor()
