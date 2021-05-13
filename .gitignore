@@ -87,4 +87,4 @@ BattleFront/Saved/Config/Windows/Engine.ini
 **/userData.json
 
 # Wwise
-**/Plugins/Wwise/**.lib
+**/Plugins
