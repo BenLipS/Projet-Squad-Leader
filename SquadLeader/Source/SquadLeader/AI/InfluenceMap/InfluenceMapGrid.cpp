@@ -63,21 +63,28 @@ bool AInfluenceMapGrid::IsValid(FVector _location) const {
 }
 
 void AInfluenceMapGrid::DrawGrid() const {
+	const float Size = m_tile_width / 2.f - 5.f;
 	if (m_DrawCharacterInfluence) {
 		for (const FTileBase& Tile : Grid) {
 			const float ValueTeam1 = Tile.InfluenceTeam[1].InfluenceValue;
 			const float ValueTeam2 = Tile.InfluenceTeam[2].InfluenceValue;
+			
 			if (Tile.State == TileState::Block)
-				DrawDebugSolidBox(GetWorld(), Tile.Location, FVector(95.f, 95.f, 10.f), FColor::Silver);
+				DrawDebugSolidBox(GetWorld(), Tile.Location, FVector(Size, Size, 10.f), FColor::Silver);
 			else if (ValueTeam1 > 0.0f && ValueTeam2 > 0.0f)
-				DrawDebugSolidBox(GetWorld(), Tile.Location, FVector(95.f, 95.f, 10.f), FColor(255 * ValueTeam2, 0, 255 * ValueTeam1));
+				DrawDebugSolidBox(GetWorld(), Tile.Location, FVector(Size, Size, 10.f), FColor(255 * ValueTeam2, 0, 255 * ValueTeam1));
 			else {
 				if (ValueTeam1 > 0.0f)
-					DrawDebugSolidBox(GetWorld(), Tile.Location, FVector(95.f, 95.f, 10.f), FColor(0, 0, 255 * ValueTeam1));
+					DrawDebugSolidBox(GetWorld(), Tile.Location, FVector(Size, Size, 10.f), FColor(0, 0, 255 * ValueTeam1));
 				else if (ValueTeam2 > 0.0f)
-					DrawDebugSolidBox(GetWorld(), Tile.Location, FVector(95.f, 95.f, 10.f), FColor(255 * ValueTeam2, 0, 0));
+					DrawDebugSolidBox(GetWorld(), Tile.Location, FVector(Size, Size, 10.f), FColor(255 * ValueTeam2, 0, 0));
 			}
 		}
+	}
+	if (m_DrawAllGrid) {
+		for (const FTileBase& Tile : Grid)
+			DrawDebugSolidBox(GetWorld(), Tile.Location, FVector(Size, Size, 10.f), FColor::Green);
+
 	}
 }
 
@@ -242,7 +249,7 @@ void AInfluenceMapGrid::Neighboors(int index) noexcept {
 
 void AInfluenceMapGrid::IsNeighboor(int index_1, int index_2) noexcept {
 	int distance = FVector::Dist(Grid[index_1].Location, Grid[index_2].Location);
-	if (distance <= 200.f) {
+	if (distance <= m_tile_width) {
 		Grid[index_1].Neighboors.m_neighboor.Add(index_2);
 	}
 }
@@ -369,7 +376,7 @@ void AInfluenceMapGrid::UpdateTile(int index, float value, int team, Type type, 
 	if (!bool2) {
 
 		if (type == Type::ControlArea) {
-			Grid[index].InfluenceTeam[team].InfluenceValue = 0.5f;
+			Grid[index].InfluenceTeam[team].InfluenceValue = ControlAreaInfluenceValue + (0.1f * Grid[index].ActorsID.Num());
 			Grid[index].InfluenceTeam[team].Types.Add(type);
 		}
 		else {
@@ -502,10 +509,8 @@ void AInfluenceMapGrid::UpdateSoldier(const uint16 IndexSoldier, const uint8 Tea
 		for (uint32 index : ActorsData[IndexSoldier].IndexInfluence) {
 			Grid[index].ActorsID.Remove(SoldierID);
 
-			Grid[index].InfluenceTeam[Team].InfluenceValue -= 0.1f;
-
-			if (Grid[index].InfluenceTeam[Team].Types.Contains(Type::ControlArea) && Grid[index].InfluenceTeam[Team].InfluenceValue < CharacterInfluenceValue) {
-				Grid[index].InfluenceTeam[Team].InfluenceValue = 0.5f;
+			if (Grid[index].ActorsID.Num() <= 0) {
+				Grid[index].InfluenceTeam[Team].InfluenceValue = 0.0f;
 				switch (Team) {
 				case 1:
 					m_index_team1.Remove(index);
@@ -517,18 +522,11 @@ void AInfluenceMapGrid::UpdateSoldier(const uint16 IndexSoldier, const uint8 Tea
 					break;
 				}
 			}
-			else if (Grid[index].InfluenceTeam[Team].InfluenceValue < CharacterInfluenceValue)
-			{
-				Grid[index].InfluenceTeam[Team].InfluenceValue = 0.0f;
-				switch (Team) {
-				case 1:
-					m_index_team1.Remove(index);
-					break;
-				case 2:
-					m_index_team2.Remove(index);
-					break;
-				default:
-					break;
+			else {
+				Grid[index].InfluenceTeam[Team].InfluenceValue -= 0.1f;
+				if (Grid[index].InfluenceTeam[Team].Types.Contains(Type::ControlArea)) {
+					if (Grid[index].InfluenceTeam[Team].InfluenceValue < ControlAreaInfluenceValue)
+						Grid[index].InfluenceTeam[Team].InfluenceValue = ControlAreaInfluenceValue;
 				}
 			}
 		}
@@ -573,4 +571,19 @@ void AInfluenceMapGrid::EraseObstacleInfluence(FGridPackageObstacle Message) {
 		for (uint32 Index : ActorsData[IndexActor].IndexInfluence)
 			Grid[Index].State = TileState::Free;
 	}
+}
+
+double AInfluenceMapGrid::GetInfluenceAverage(const uint32 ActorID, const uint8 Team) {
+	//GEngine->AddOnScreenDebugMessage(20, 5.f, FColor::Blue, TEXT("Début du calcule de la moyenne...."));
+	for (FActorData& ActorData : ActorsData) {
+		if (ActorData.ActorID == ActorID) {
+			float Value = 0.f;
+			for (uint32 Index : ActorData.IndexInfluence) {
+				Value += Grid[Index].InfluenceTeam.Find(Team)->InfluenceValue;
+			}
+			float Average = Value / ActorData.IndexInfluence.Num();
+			return Average;
+		}
+	}
+	return 0.0;
 }
