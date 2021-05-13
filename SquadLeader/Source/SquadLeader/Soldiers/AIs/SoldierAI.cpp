@@ -11,15 +11,20 @@ ASoldierAI::ASoldierAI(const FObjectInitializer& _ObjectInitializer) : Super(_Ob
 	AttributeSet = CreateDefaultSubobject<UAttributeSetSoldier>(TEXT("Attribute Set"));
 }
 
+void ASoldierAI::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ASoldierAI, bUpdateTeamOnSpawn);
+}
+
 // TODO: See with AI team how to proceed
 void ASoldierAI::LockControls()
 {
-	
 	if (AAIGeneralController* AIController = Cast<AAIGeneralController>(GetController()); AIController) {
 		AIController->IsActivated = false;
 		AIController->StopMovement();
 	}
-	
 }
 
 void ASoldierAI::UnLockControls()
@@ -42,6 +47,9 @@ void ASoldierAI::BeginPlay()
 	Super::BeginPlay();
 
 	check(AbilitySystemComponent);
+
+	if (bUpdateTeamOnSpawn && GetTeam())
+		GetTeam()->AddSoldierList(this);
 
 	AbilitySystemComponent->InitAbilityActorInfo(this, this);
 

@@ -14,6 +14,10 @@ ShieldScale{ FVector{ 1.f, 1.f, 1.f } }
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.SpawnPhysicalShield")));
+	ActivationOwnedTags.AddTag(FGameplayTag::RequestGameplayTag(FName("State.CastingSpell.ActivatingPhysicalShield")));
+	ActivationBlockedTags.AddTag(FGameplayTag::RequestGameplayTag(FName("State.CastingSpell")));
+	ActivationBlockedTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.ReloadWeapon")));
+	CancelAbilitiesWithTag.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.FireWeapon")));
 	SpawnShieldEventTag = FGameplayTag::RequestGameplayTag(FName("Event.Ability.ShieldSpawned"));
 }
 

@@ -4,10 +4,12 @@
 
 UGA_QuickDash::UGA_QuickDash()
 {
+	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
+
 	AbilityInputID = ESoldierAbilityInputID::QuickDash;
 	AbilityID = ESoldierAbilityInputID::QuickDash;
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.QuickDash")));
-	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
+	ActivationOwnedTags.AddTag(FGameplayTag::RequestGameplayTag(FName("State.Movement.Dashing")));
 }
 
 void UGA_QuickDash::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
@@ -51,7 +53,7 @@ void UGA_QuickDash::CancelAbility(const FGameplayAbilitySpecHandle Handle, const
 	/*if (ASoldier* Soldier = Cast<ASoldier>(ActorInfo->AvatarActor.Get()); Soldier)
 	{
 		FGameplayTagContainer EffectTagsToRemove;
-		EffectTagsToRemove.AddTag(FGameplayTag::RequestGameplayTag(FName("State.Running")));
+		EffectTagsToRemove.AddTag(FGameplayTag::RequestGameplayTag(FName("State.Movement.Running")));
 		Soldier->GetAbilitySystemComponent()->RemoveActiveEffectsWithGrantedTags(EffectTagsToRemove);
 	}*/
 }

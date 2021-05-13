@@ -58,7 +58,7 @@ public:
 	AAISquadManager* SquadManager;
 
 	UPROPERTY()
-		bool RunToFormation = false;
+	bool RunToFormation = false;
 public:
 	/* For BT Task  */
 	UFUNCTION(BlueprintCallable, Category = "Formation Behaviour")

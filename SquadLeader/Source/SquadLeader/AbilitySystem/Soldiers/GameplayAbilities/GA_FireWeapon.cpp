@@ -13,8 +13,9 @@ UGA_FireWeapon::UGA_FireWeapon()
 	AbilityID = ESoldierAbilityInputID::BasicAttack;
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.FireWeapon")));
 
-	ActivationOwnedTags.AddTag(FGameplayTag::RequestGameplayTag(FName("State.Firing")));
-	ActivationBlockedTags.AddTag(FGameplayTag::RequestGameplayTag(FName("State.ReloadingWeapon")));
+	ActivationOwnedTags.AddTag(FGameplayTag::RequestGameplayTag(FName("State.Weapon.Firing")));
+	ActivationBlockedTags.AddTag(FGameplayTag::RequestGameplayTag(FName("State.Weapon.Reloading")));
+	ActivationBlockedTags.AddTag(FGameplayTag::RequestGameplayTag(FName("State.CastingSpell")));
 }
 
 void UGA_FireWeapon::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
