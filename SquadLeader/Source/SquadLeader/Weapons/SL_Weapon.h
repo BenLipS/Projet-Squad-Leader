@@ -114,7 +114,6 @@ public:
 protected:
 	// Cache tags
 	FGameplayTag WeaponAbilityTag;
-	FGameplayTag WeaponIsFiringTag;
 
 //////////////// Stats
 protected:
