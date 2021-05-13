@@ -8,7 +8,7 @@ UGA_Aim::UGA_Aim()
 	AbilityInputID = ESoldierAbilityInputID::Aim;
 	AbilityID = ESoldierAbilityInputID::Aim;
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Aim")));
-	ActivationOwnedTags.AddTag(FGameplayTag::RequestGameplayTag(FName("State.Aiming")));
+	ActivationOwnedTags.AddTag(FGameplayTag::RequestGameplayTag(FName("State.Weapon.Aiming")));
 }
 
 void UGA_Aim::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)

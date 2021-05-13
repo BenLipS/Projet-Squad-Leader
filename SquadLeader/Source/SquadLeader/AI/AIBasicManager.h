@@ -134,6 +134,9 @@ public:
 	UFUNCTION()
 		void UpdateControlArea(const uint8 TeamID, const uint8 IndexControlArea);
 
+	UFUNCTION()
+		void LostControlArea(const uint8 IndexContolArea);
+
 protected:
 	UPROPERTY()
 		bool ControlAreasBeenUpdate = false;
@@ -149,4 +152,23 @@ protected:
 
 	UFUNCTION()
 		bool FindAvailableSoldier(uint32& IndexSoldier);
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Time per Frame")
+		float TimeInterval = 0.02;
+
+protected:
+	UPROPERTY()
+		int LastIndex = 0;
+
+public:
+	UFUNCTION()
+		uint8 GetTeamID() const noexcept { return Team->Id; }
+
+protected:
+	UFUNCTION()
+	void FinalAttack();
+
+	UFUNCTION()
+		void FinalDefens();
 };

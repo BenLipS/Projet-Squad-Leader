@@ -96,7 +96,7 @@ public:
 	TSubclassOf <AGameParam> GameParam;
 
 	UPROPERTY(EditDefaultsOnly)
-		TSubclassOf <APlayerParam> PlayerParam;
+	TSubclassOf <APlayerParam> PlayerParam;
 
 private:
 	FString GameID = "";  // only define if a game is create

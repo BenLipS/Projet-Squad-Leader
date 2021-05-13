@@ -5,6 +5,7 @@
 #include "Soldiers/Players/SoldierPlayerState.h"
 #include "Soldiers/Soldier.h"
 #include "AbilitySystemGlobals.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "SquadLeaderGameInstance.h"
 #include "MainMenu/GameParam/GameParam.h"
 
@@ -40,16 +41,30 @@ void ASquadLeaderGameModeBase::Logout(AController* Exiting)
 }
 
 
-UClass* ASquadLeaderGameModeBase::GetDefaultPawnClassForController(AController* InController)
+APawn* ASquadLeaderGameModeBase::SpawnSoldier(TSubclassOf<APlayerParam> PlayerParam, AController* OwningController)
 {
-	/* Override Functionality to get Pawn from PlayerController */
-	if (ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(InController); PC)
-	{
-		return PC->GetPlayerPawnClass();
-	}
+	if (auto SLInitGameState = Cast<ASquadLeaderInitGameState>(GameState); SLInitGameState) {
+		if (ASoldierTeam* NewSoldierTeam = SLInitGameState->GetSoldierTeamByID(PlayerParam->GetDefaultObject<APlayerParam>()->GetTeam()); NewSoldierTeam) {
+			TArray<ASoldierSpawn*> SpawnList = NewSoldierTeam->GetUsableSpawnPoints();
+			if (SpawnList.Num() > 0) {
+				ASoldierSpawn* SpawnPoint = SpawnList[UKismetMathLibrary::RandomIntegerInRange(0, SpawnList.Num() - 1)];
+				
+				FTransform SpawnPosition = { SpawnPoint->GetActorRotation(), SpawnPoint->GetActorLocation() };
+				APawn* NewPawn = GetWorld()->SpawnActorDeferred<APawn>(PlayerParam->GetDefaultObject<APlayerParam>()->GetPlayerClass(),
+					SpawnPosition, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+				
+				if (NewPawn) {
+					NewPawn->Controller = OwningController;
+					Cast<ASoldier>(NewPawn)->SetTeam(NewSoldierTeam);
+					//set AISquad composition
 
-	/* If we don't get the right Controller, use the Default Pawn */
-	return DefaultPawnClass;
+					NewPawn->FinishSpawning(SpawnPosition);
+					return NewPawn;
+				}
+			}
+		}
+	}
+	return nullptr;
 }
 
 void ASquadLeaderGameModeBase::ChangeGameState() {
@@ -126,23 +141,6 @@ void ASquadLeaderGameModeBase::InitAIManagers()
 
 	/*Init AISquad Manager*/
 	//Each Player init a SquadManager in SoldierPlayer.cpp PossessedBy
-}
-
-void ASquadLeaderGameModeBase::AddAIBasicToManager(AAIBasicController* AIBasic)
-{
-	auto GS = Cast<ASquadLeaderInitGameState>(GameState);
-	if (AIBasic && AIBasic->GetTeam()) {
-		if (auto FoundAIBasicManager = AIBasicManagerCollection.Find(AIBasic->GetTeam()); FoundAIBasicManager) {
-			(*FoundAIBasicManager)->AIBasicList.Add(AIBasic);
-			//if (GEngine)GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString{ "AIBasic " + AIBasic->GetTeam()->TeamName + " added"});
-		}
-		else {
-			//if (GEngine)GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("Une AI n'a pas d'equipe"));
-		}
-	}
-	else {
-		//if (GEngine)GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("AI Spawned thought the manager"));
-	}
 }
 
 void ASquadLeaderGameModeBase::InitInfluenceMap() {

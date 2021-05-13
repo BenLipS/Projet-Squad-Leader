@@ -112,7 +112,6 @@ void ASoldierTeam::CleanSoldierList()
 	SoldierList.RemoveAll([](ASoldier* element) {return element == nullptr; });
 }
 
-
 void ASoldierTeam::AddSpawn(ASoldierSpawn* newSpawn)
 {
 	if (GetLocalRole() == ROLE_Authority)

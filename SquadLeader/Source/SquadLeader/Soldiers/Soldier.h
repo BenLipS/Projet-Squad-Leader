@@ -228,10 +228,9 @@ public:
 	// Class Name:
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
 	virtual SoldierClass GetClass() { return SoldierClass::NONE; }
-	
+
 	UPROPERTY(EditDefaultsOnly, Category = "Player class")
 	FString ClassName = "Soldier";
-
 
 	// Attribute changed callbacks
 	FDelegateHandle HealthChangedDelegateHandle;
@@ -514,8 +513,8 @@ protected:
 
 //////////////// Soldier team
 public:
-	UPROPERTY(BlueprintReadOnly, Category = "PlayerTeam")
-	ASoldierTeam* InitialTeam;  // for debug use
+	UFUNCTION()
+	void RefreshTeam();
 
 	UFUNCTION(Reliable, Server, WithValidation)
 	void ServerCycleBetweenTeam();
@@ -525,7 +524,7 @@ public:
 
 //////////////// Teamable
 protected:
-	UPROPERTY(replicated)
+	UPROPERTY(Replicated)
 	ASoldierTeam* Team;
 
 public:

@@ -18,8 +18,6 @@ class SQUADLEADER_API ASoldierPlayerController : public APlayerController, publi
 public:
 	ASoldierPlayerController();
 
-	UClass* GetPlayerPawnClass();
-
 protected:
 	virtual void BeginPlay() override;
 	virtual void OnPossess(APawn* InPawn) override;
@@ -178,7 +176,21 @@ public:
 	/*UFUNCTION()
 	float GetCooldown(const ESoldierAbilityInputID _AbilityID);*/
 
+
+protected:
+	/* Return The Correct PlayerParams Class Client-Side */
+	UFUNCTION(Reliable, Client)
+	void DeterminePlayerParams();
+	virtual void DeterminePlayerParams_Implementation();
+
+	/* Set Pawn Class On Server For This Controller */
+	UFUNCTION(Reliable, Server, WithValidation)
+	virtual void ServerSetPawn(TSubclassOf<APlayerParam> PlayerParam);
+	virtual void ServerSetPawn_Implementation(TSubclassOf<APlayerParam> PlayerParam);
+	virtual bool ServerSetPawn_Validate(TSubclassOf<APlayerParam> PlayerParam);
+
 //////////////// Cheat
+public:
 	UFUNCTION(Exec)
 	void Cheat_AddAISquad();
 

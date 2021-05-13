@@ -60,7 +60,7 @@ void USquadLeaderGameInstance::LaunchGame()
         HttpCallChangeConnectedStatus(2); // notify that the client is joining a new game
     }
     // GetFirstGamePlayer()->ConsoleCommand("open HUB_Level?listen", true);
-    GetFirstGamePlayer()->ConsoleCommand("open Factory_V1?listen", true);
+    GetFirstGamePlayer()->ConsoleCommand("open Factory_V2?listen", true);
 }
 
 void USquadLeaderGameInstance::SetGameParamToDefault()
