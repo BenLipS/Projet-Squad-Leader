@@ -26,6 +26,9 @@ protected:
 	UPROPERTY(Replicated)
 	TArray<AHUBPlayerParam*> PlayersInfo;
 
+protected:
+	virtual void BeginPlay() override;
+
 public:
 	UFUNCTION(NetMulticast, unreliable)
 	void RefreshPlayerInfo();

@@ -37,7 +37,7 @@ private:
 
 	FString AuthToken;
 
-	bool OnlineStatus;
+	bool OnlineStatus = false;
 	
 public:
 	UFUNCTION(BlueprintCallable)
@@ -55,6 +55,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		bool const GetNetworkStatus() { return OnlineStatus; }
+
+	UFUNCTION(BlueprintCallable)
+		void ChangeNetworkState(int NewState);
 
 	bool UpdateNetworkStatus(const int MatchResult, float GameDuration, int XP, int NbKillAI, int NbKillPlayer, int NbDeathByAI, int NbDeathByPlayer);
 

@@ -1,4 +1,5 @@
 #include "SL_HUBGameStateBase.h"
+#include "../SquadLeaderGameInstance.h"
 #include "../UI/Interface/StatInfoInterface.h"
 #include "../UI/HUD/SL_HUD.h"
 
@@ -11,6 +12,12 @@ void ASL_HUBGameStateBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME_CONDITION_NOTIFY(ASL_HUBGameStateBase, PlayersInfo, COND_None, REPNOTIFY_Always);
+}
+
+void ASL_HUBGameStateBase::BeginPlay()
+{
+	// notify the bdd base that the player have join a new game
+	GetGameInstance<USquadLeaderGameInstance>()->ChangeNetworkState(2);
 }
 
 void ASL_HUBGameStateBase::RefreshPlayerInfo_Implementation()
