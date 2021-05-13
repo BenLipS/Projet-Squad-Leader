@@ -25,7 +25,6 @@ ASL_Weapon::ASL_Weapon()
 
 	// Tags
 	WeaponAbilityTag = FGameplayTag::RequestGameplayTag("Ability.Skill.FireWeapon");
-	WeaponIsFiringTag = FGameplayTag::RequestGameplayTag("Weapon.IsFiring");
 	FireMode = FGameplayTag::RequestGameplayTag("Weapon.FireMode.Automatic");
 }
 

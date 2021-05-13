@@ -101,11 +101,58 @@ void AAIBasicManager::Tick(float DeltaSeconds) {
 	Super::Tick(DeltaSeconds);
 	/*if (GEngine)
 		GEngine->AddOnScreenDebugMessage(80, 2.f, FColor::Black, TEXT("I'm the AIBasicManager"));*/
-	if ((ControlAreasBeenUpdate || NewSoldierAvailable)&& AIBasicAvailable.Num() >= 2) {
+
+	const double StartTime = FPlatformTime::Seconds();
+
+	double TotalTime = 0.0;
+
+	double startTime = FPlatformTime::Seconds();
+
+	if (ControlAreaAllies.Num() == 1 && ControlAreaNeutral.Num() == 0) {
+		//envoyer toutes les IAs défendre le point de contrôle et envoyer une seule IA sur les autres point de contrôle
+		//FinalDefens();
+		//GEngine->AddOnScreenDebugMessage(10, 5.f, FColor::Cyan, TEXT("Tout le monde en defense !!!!"));
+	}
+	else if (ControlAreaEnnemies.Num() == 1 && ControlAreaNeutral.Num() == 0) {
+		//envoyer toutes les IAs attaquer le point de contrôle et laisser une IA défendre sur les autres point de contrôle
+		//FinalAttack();
+		//GEngine->AddOnScreenDebugMessage(20, 5.f, FColor::Cyan, TEXT("Tout le monde en Attaque !!!!"));
+	}
+	else if ((ControlAreasBeenUpdate || NewSoldierAvailable) && AIBasicAvailable.Num() >= 2) {
 		ControlAreasBeenUpdate = false;
 		NewSoldierAvailable = false;
+
 		Strategy();
 	}
+
+	double endTime = FPlatformTime::Seconds();
+	double elapsedTime = endTime - startTime;
+
+	TotalTime += elapsedTime * 1000.0;
+	//GEngine->AddOnScreenDebugMessage(Team->Id, 1.f, FColor::Red, FString::Printf(TEXT("On a %i IA !"), AIBasicList.Num()));
+
+	if (AIBasicList.Num() > 0) {
+		size_t NumberTickAI = 0;
+		while (TotalTime <= TimeInterval && NumberTickAI < AIBasicList.Num()) {
+			if (LastIndex >= AIBasicList.Num())
+				LastIndex = 0;
+			const double _StartTime = FPlatformTime::Seconds();
+			AIBasicList[LastIndex]->HomeTick(DeltaSeconds);
+			const double _EndTime = FPlatformTime::Seconds();
+			const double _ElapsedTime = _EndTime - _StartTime;
+
+			TotalTime += _ElapsedTime * 1000.0;
+
+			++LastIndex;
+			++NumberTickAI;
+		}
+		//GEngine->AddOnScreenDebugMessage(10 + Team->Id, 1.f, FColor::Blue, FString::Printf(TEXT("On a fait ticker %i IA !"), NumberTickAI));
+	}
+	double EndTime = FPlatformTime::Seconds();
+	double ElapsedTime = EndTime - StartTime;
+	//Petit soucis je pense, car le temps au total est plus petit que le temps de calcul d'une IA....
+	//GEngine->AddOnScreenDebugMessage(10, 1.f, FColor::Yellow, FString::Printf(TEXT("Temp total du tick du manager : %f ms"), ElapsedTime * 1000.0));
+
 }
 
 void AAIBasicManager::InitValue() {
@@ -209,50 +256,35 @@ void AAIBasicManager::UpdateControlArea(const uint8 TeamID, const uint8 IndexCon
 
 }
 
+void AAIBasicManager::LostControlArea(const uint8 IndexContolArea) {
+	if (AIBasicAvailable.Num() > 0) {
+		const double Danger = m_controlAreaManager->GetControlArea()[IndexContolArea]->GetEnnemiInfluenceAverage();
+		const float SoldierValue = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode())->InfluenceMap->CharacterInfluenceValue;
+		const int Maximum = StaticCast<int>(Danger / SoldierValue) + 2;
+
+		auto Elem = ListSoldierOnControlArea.Find(IndexContolArea);
+		uint32 IndexSoldier = 0;
+		while (Elem->SoldierIndex.Num() <= Maximum && FindAvailableSoldier(IndexSoldier)) {
+			uint32 IndexCA = 0;
+			if (AIBasicList[IndexSoldier]->GetIndexControlArea(IndexCA)) {
+				UCaptureMission* CaptureMission = Cast<UCaptureMission>(NewObject<UCaptureMission>(this, UCaptureMission::StaticClass()));
+				CaptureMission->InitCaptureMission(-1, MissionPriority::eMIDDLE, m_controlAreaManager->GetControlArea()[IndexContolArea]);
+				AIBasicList[IndexSoldier]->SetMission<UCaptureMission*>(CaptureMission);
+
+				Elem->SoldierIndex.Add(IndexSoldier);
+				ListSoldierOnControlArea.Find(IndexCA)->SoldierIndex.Remove(IndexSoldier);
+				AIUnavailable(IndexSoldier);
+			}
+			/*if (Team->Id == 1)
+				GEngine->AddOnScreenDebugMessage(10, 5.f, FColor::Blue, FString::Printf(TEXT("Battre en retraire ! %i IA sont envoyé défendre le point !"), Maximum));
+			if (Team->Id == 2)
+				GEngine->AddOnScreenDebugMessage(20, 5.f, FColor::Red, FString::Printf(TEXT("Battre en retraire ! %i IA sont envoyé défendre le point !"), Maximum));*/
+		}
+	}
+}
+
 void AAIBasicManager::Strategy() {
 	//GEngine->AddOnScreenDebugMessage(10, 5.f, FColor::Black, FString::Printf(TEXT("Nouvelle Stratégie")));
-	bool FindNewControlArea = false;
-	//On cherche dans les ControlAreaNeutre
-	//if (ControlAreaNeutral.Num() > 0) {
-	//	for (uint8 IndexSoldier: AIBasicAvailable) {
-	//		uint32 IndexControlArea = 0;
-	//		if (FindControlAreaOn(IndexSoldier, IndexControlArea)) {
-	//			if (ListSoldierOnControlArea.Find(IndexControlArea)->SoldierIndex.Num() > 1) {
-	//				if (SendOnNeutalControlArea(IndexSoldier, IndexControlArea)) {
-	//					AIUnavailable(IndexSoldier);
-	//					FindNewControlArea = true;
-	//				}
-	//			}
-	//		}
-	//	}
-	//}
-	////On cherhce dans les ControlArea des Ennemies
-	//if (!FindNewControlArea && ControlAreaEnnemies.Num() > 0) {
-	//	for (uint8 IndexSoldier : AIBasicAvailable) {
-	//		uint32 IndexControlArea = 0;
-	//		if (FindControlAreaOn(IndexSoldier, IndexControlArea)) {
-	//			if (ListSoldierOnControlArea.Find(IndexControlArea)->SoldierIndex.Num() > 1) {
-	//				if (SendOnEnnemieControlArea(IndexSoldier, IndexControlArea)) {
-	//					AIUnavailable(IndexSoldier);
-	//					FindNewControlArea = true;
-	//				}
-	//			}
-	//		}
-	//	}
-	//}
-	/*for (size_t i = 0; i != AIBasicAvailable.Num(); ++i) {
-		const uint32 IndexSoldier = AIBasicAvailable[i];
-		uint32 IndexCA = 0;
-		if (AIBasicList[IndexSoldier]->GetIndexControlArea(IndexCA)) {
-			if (ListSoldierOnControlArea[IndexCA].SoldierIndex.Num() > 1) {
-				const float Timer = 10.f;
-				if(Team->Id == 1)
-					GEngine->AddOnScreenDebugMessage(i, Timer, FColor::Purple, FString::Printf(TEXT("L'IA num %i, est sur la zone de controle num %i"), IndexSoldier, IndexCA));
-				if(Team->Id == 2)
-					GEngine->AddOnScreenDebugMessage(10 + i, Timer, FColor::Turquoise, FString::Printf(TEXT("L'IA num %i, est sur la zone de controle num %i"), IndexSoldier, IndexCA));
-			}
-		}
-	}*/
 
 	//Voir si on peut envoyer des IAs capturer un point de contrôle neutre
 	for (uint32 IndexNeutralControlArea : ControlAreaNeutral) {
@@ -286,9 +318,19 @@ void AAIBasicManager::Strategy() {
 	//Si possible envoyer les IAs sur des Zone de contrôle Ennemie
 	if (AIBasicAvailable.Num() > 0) {
 		for (uint32 IndexControlAreaEnnemi : ControlAreaEnnemies) {
+			double Danger = m_controlAreaManager->GetControlArea()[IndexControlAreaEnnemi]->GetInfluenceAverage();
+			/*if(Team->Id == 2)
+				GEngine->AddOnScreenDebugMessage(10 + Team->Id, 5.f, FColor::Red, FString::Printf(TEXT("Danger ennemie : %f."), Danger));
+			if (Team->Id == 1)
+				GEngine->AddOnScreenDebugMessage(10 + Team->Id, 5.f, FColor::Blue, FString::Printf(TEXT("Danger ennemie : %f."), Danger));
+			*/
+			const float SoldierValue = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode())->InfluenceMap->CharacterInfluenceValue;
+			const int Maximum = StaticCast<int>(Danger / SoldierValue)+ 2;
+			//GEngine->AddOnScreenDebugMessage(10 + Team->Id, 5.f, FColor::Blue, FString::Printf(TEXT("Nombre de Soldat suppose envoye  : %i."), Maximum));
+
 			auto Elem = ListSoldierOnControlArea.Find(IndexControlAreaEnnemi);
 			uint32 IndexSoldier = 0;
-			while (Elem->SoldierIndex.Num() <= 6 && FindAvailableSoldier(IndexSoldier)) {
+			while (Elem->SoldierIndex.Num() <= Maximum && FindAvailableSoldier(IndexSoldier)) {
 				uint32 IndexCA = 0;
 				if (AIBasicList[IndexSoldier]->GetIndexControlArea(IndexCA)) {
 					UCaptureMission* CaptureMission = Cast<UCaptureMission>(NewObject<UCaptureMission>(this, UCaptureMission::StaticClass()));
@@ -336,4 +378,26 @@ bool AAIBasicManager::FindAvailableSoldier(uint32& IndexSoldier) {
 		}
 	}
 	return false;
+}
+
+void AAIBasicManager::FinalAttack() {
+	const uint32 IndexCA = ControlAreaEnnemies[0];
+	auto LastEnnemieControlArea = ListSoldierOnControlArea.Find(IndexCA);
+
+	uint32 IndexSoldier = 0;
+	while (FindAvailableSoldier(IndexSoldier))
+	{
+		uint32 IndexCASoldierOn = 0;
+		if (AIBasicList[IndexSoldier]->GetIndexControlArea(IndexCASoldierOn) && !LastEnnemieControlArea->SoldierIndex.Contains(IndexSoldier)) {
+			UCaptureMission* CaptureMission = Cast<UCaptureMission>(NewObject<UCaptureMission>(this, UCaptureMission::StaticClass()));
+			CaptureMission->InitCaptureMission(-1, MissionPriority::eMIDDLE, m_controlAreaManager->GetControlArea()[IndexCA]);
+			AIBasicList[IndexSoldier]->SetMission<UCaptureMission*>(CaptureMission);
+
+			LastEnnemieControlArea->SoldierIndex.Add(IndexSoldier);
+			ListSoldierOnControlArea.Find(IndexCASoldierOn)->SoldierIndex.Remove(IndexSoldier);
+		}
+	}
+}
+
+void AAIBasicManager::FinalDefens() {
 }

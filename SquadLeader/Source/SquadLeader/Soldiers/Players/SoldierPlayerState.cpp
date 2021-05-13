@@ -1,5 +1,6 @@
 #include "SoldierPlayerState.h"
 #include "SoldierPlayerController.h"
+#include "../../SquadLeaderGameModeBase.h"
 
 ASoldierPlayerState::ASoldierPlayerState()
 {
@@ -8,7 +9,6 @@ ASoldierPlayerState::ASoldierPlayerState()
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
 	AttributeSet = CreateDefaultSubobject<UAttributeSetSoldier>(TEXT("Attribute Set"));
 
-	bReplicates = true;
 	NetUpdateFrequency = 100.0f;
 }
 
@@ -31,13 +31,6 @@ void ASoldierPlayerState::InitializeAttributeChangeCallbacks()
 		EXPChangedDelegateHandle = AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetEXPAttribute()).AddUObject(this, &ASoldierPlayerState::EXPChanged);
 		EXPLevelUpChangedDelegateHandle = AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetEXPLevelUpAttribute()).AddUObject(this, &ASoldierPlayerState::EXPLevelUpChanged);
 	}
-}
-
-void ASoldierPlayerState::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	DOREPLIFETIME(ASoldierPlayerState, PlayerParam);
 }
 
 ASoldierTeam* ASoldierPlayerState::GetTeam()
@@ -134,4 +127,19 @@ void ASoldierPlayerState::BroadCastAllDatas()
 	OnMaxShieldChanged.Broadcast(GetMaxShield());
 	OnEXPChanged.Broadcast(GetEXP());
 	OnEXPLevelUpChanged.Broadcast(GetEXPLevelUp());
+}
+
+void ASoldierPlayerState::SetPlayerParam(TSubclassOf<APlayerParam> _PlayerParam, AController* OwningController)
+{
+	PlayerParam = _PlayerParam;
+	APlayerParam* PP = PlayerParam.GetDefaultObject();
+	PP->AdaptAllAIToTeam();
+
+	// recreate a new pawn and possess it
+	OwningController->Possess(OwningController->GetWorld()->GetAuthGameMode<ASquadLeaderGameModeBase>()->SpawnSoldier(PlayerParam, OwningController));
+}
+
+TSubclassOf<APlayerParam> ASoldierPlayerState::GetPlayerParam()
+{
+	return PlayerParam;
 }

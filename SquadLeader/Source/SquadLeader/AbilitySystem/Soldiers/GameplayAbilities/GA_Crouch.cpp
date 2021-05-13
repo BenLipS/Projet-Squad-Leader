@@ -10,7 +10,7 @@ UGA_Crouch::UGA_Crouch()
 	AbilityInputID = ESoldierAbilityInputID::Crouch;
 	AbilityID = ESoldierAbilityInputID::Crouch;
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Crouch")));
-	ActivationOwnedTags.AddTag(FGameplayTag::RequestGameplayTag(FName("State.Crouching")));
+	ActivationOwnedTags.AddTag(FGameplayTag::RequestGameplayTag(FName("State.Movement.Crouching")));
 }
 
 void UGA_Crouch::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)

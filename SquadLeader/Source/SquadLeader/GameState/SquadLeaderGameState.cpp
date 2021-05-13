@@ -28,7 +28,7 @@ TArray<ASoldierTeam*> ASquadLeaderGameState::GetSoldierTeamCollection()
 
 ASoldierTeam* ASquadLeaderGameState::GetSoldierTeamByID(int TeamId)
 {
-	for (ASoldierTeam* team : SoldierTeamCollection) {
+	for (ASoldierTeam* team: SoldierTeamCollection) {
 		if (team->Id == TeamId)
 			return team;
 	}

@@ -75,6 +75,10 @@ void AAISquadController::BeginPlay()
 	blackboard->SetValueAsBool("HasOrder", false);
 }
 
+void AAISquadController::Tick(float DeltaSecond) {
+	HomeTick(DeltaSecond);
+}
+
 void AAISquadController::Init()
 {
 	Super::Init();

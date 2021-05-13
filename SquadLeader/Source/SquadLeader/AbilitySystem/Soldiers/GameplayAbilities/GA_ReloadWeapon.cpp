@@ -11,7 +11,9 @@ UGA_ReloadWeapon::UGA_ReloadWeapon()
 	AbilityInputID = ESoldierAbilityInputID::ReloadWeapon;
 	AbilityID = ESoldierAbilityInputID::ReloadWeapon;
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.ReloadWeapon")));
-	ActivationOwnedTags.AddTag(FGameplayTag::RequestGameplayTag(FName("State.ReloadingWeapon")));
+	ActivationOwnedTags.AddTag(FGameplayTag::RequestGameplayTag(FName("State.Weapon.Reloading")));
+	ActivationBlockedTags.AddTag(FGameplayTag::RequestGameplayTag(FName("State.CastingSpell")));
+	CancelAbilitiesWithTag.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.FireWeapon")));
 }
 
 void UGA_ReloadWeapon::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)

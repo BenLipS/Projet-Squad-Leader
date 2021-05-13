@@ -93,6 +93,7 @@ protected:
 	bool bIsPlayerCentered = true;
 
 //////////////// Points of interest
+	UPROPERTY()
 	TArray<UPointOfInterestWidget*> POIList;
 
 // Squad
