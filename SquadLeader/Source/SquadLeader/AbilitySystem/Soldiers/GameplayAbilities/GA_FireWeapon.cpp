@@ -48,7 +48,7 @@ void UGA_FireWeapon::ActivateAbility(const FGameplayAbilitySpecHandle Handle, co
 		InstantAbilityHandle = ASC->FindAbilitySpecHandleForClass(GA_FireWeaponInstantClass, SourceWeapon);
 		HandleFire();
 		SourceSoldier->OnStartFiring();
-		if (SourceWeapon->GetFireMode() != FGameplayTag::RequestGameplayTag(FName("Weapon.FireMode.SemiAuto")) && SourceSoldier->IsA<ASoldierPlayer>())
+		if (SourceWeapon->GetFireMode() != FGameplayTag::RequestGameplayTag(FName("Weapon.FireMode.SemiAuto")) && SourceSoldier->IsA<ASoldierPlayer>() && Cast<ASoldierPlayer>(SourceSoldier)->GetClass() != SoldierClass::SUPPORT)
 		{
 			UAkGameplayStatics::PostEventByName("Rifle_Fire", SourceWeapon);
 		}
@@ -77,7 +77,7 @@ void UGA_FireWeapon::EndAbility(const FGameplayAbilitySpecHandle Handle, const F
 
 	SourceSoldier->OnStopFiring();
 
-	if (SourceWeapon->GetFireMode() != FGameplayTag::RequestGameplayTag(FName("Weapon.FireMode.SemiAuto")) && SourceSoldier->IsA<ASoldierPlayer>())
+	if (SourceWeapon->GetFireMode() != FGameplayTag::RequestGameplayTag(FName("Weapon.FireMode.SemiAuto")) && SourceSoldier->IsA<ASoldierPlayer>() && Cast<ASoldierPlayer>(SourceSoldier)->GetClass() != SoldierClass::SUPPORT)
 	{
 		UAkGameplayStatics::PostEventByName("Rifle_Break", SourceWeapon);
 	}

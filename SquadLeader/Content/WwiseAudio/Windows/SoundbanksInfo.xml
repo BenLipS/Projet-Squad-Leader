@@ -16,7 +16,7 @@
 			<ShortName>Init</ShortName>
 			<Path>Init.bnk</Path>
 		</SoundBank>
-		<SoundBank Id="4056684167" Language="SFX" Hash="3140220757">
+		<SoundBank Id="4056684167" Language="SFX" Hash="3441607445">
 			<ObjectPath>\SoundBanks\Default Work Unit\Master</ObjectPath>
 			<ShortName>Master</ShortName>
 			<Path>Master.bnk</Path>
@@ -368,6 +368,26 @@
 						<File Id="1031786759" Language="SFX">
 							<ShortName>Fusil d'assault Laser Tir long 2.wav</ShortName>
 							<Path>SFX\Fusil d'assault Laser Tir long 2_10C4C929.wem</Path>
+						</File>
+					</IncludedMemoryFiles>
+				</Event>
+				<Event Id="3995863025" Name="Rifle_Reloading" ObjectPath="\Events\Default Work Unit\Weapons\Rifle_Reloading">
+					<IncludedMemoryFiles>
+						<File Id="193618871" Language="SFX">
+							<ShortName>Rifle_Reloading.wav</ShortName>
+							<Path>SFX\Rifle_Reloading_10C4C929.wem</Path>
+						</File>
+						<File Id="274132836" Language="SFX">
+							<ShortName>Rifle_Reloading_Clothes_02.wav</ShortName>
+							<Path>SFX\Rifle_Reloading_Clothes_02_10C4C929.wem</Path>
+						</File>
+						<File Id="777929252" Language="SFX">
+							<ShortName>Rifle_Reloading_Clothes_01.wav</ShortName>
+							<Path>SFX\Rifle_Reloading_Clothes_01_10C4C929.wem</Path>
+						</File>
+						<File Id="848243290" Language="SFX">
+							<ShortName>Rifle_Reloading_Clothes_03.wav</ShortName>
+							<Path>SFX\Rifle_Reloading_Clothes_03_10C4C929.wem</Path>
 						</File>
 					</IncludedMemoryFiles>
 				</Event>
