@@ -275,10 +275,10 @@ void AAIBasicManager::LostControlArea(const uint8 IndexContolArea) {
 				ListSoldierOnControlArea.Find(IndexCA)->SoldierIndex.Remove(IndexSoldier);
 				AIUnavailable(IndexSoldier);
 			}
-			if (Team->Id == 1)
+			/*if (Team->Id == 1)
 				GEngine->AddOnScreenDebugMessage(10, 5.f, FColor::Blue, FString::Printf(TEXT("Battre en retraire ! %i IA sont envoyé défendre le point !"), Maximum));
 			if (Team->Id == 2)
-				GEngine->AddOnScreenDebugMessage(20, 5.f, FColor::Red, FString::Printf(TEXT("Battre en retraire ! %i IA sont envoyé défendre le point !"), Maximum));
+				GEngine->AddOnScreenDebugMessage(20, 5.f, FColor::Red, FString::Printf(TEXT("Battre en retraire ! %i IA sont envoyé défendre le point !"), Maximum));*/
 		}
 	}
 }

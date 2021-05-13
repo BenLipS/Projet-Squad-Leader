@@ -128,23 +128,6 @@ void ASquadLeaderGameModeBase::InitAIManagers()
 	//Each Player init a SquadManager in SoldierPlayer.cpp PossessedBy
 }
 
-void ASquadLeaderGameModeBase::AddAIBasicToManager(AAIBasicController* AIBasic)
-{
-	//auto GS = Cast<ASquadLeaderInitGameState>(GameState);
-	//if (AIBasic && AIBasic->GetTeam()) {
-	//	if (auto FoundAIBasicManager = AIBasicManagerCollection.Find(AIBasic->GetTeam()); FoundAIBasicManager) {
-	//		(*FoundAIBasicManager)->AIBasicList.Add(AIBasic);
-	//		//if (GEngine)GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString{ "AIBasic " + AIBasic->GetTeam()->TeamName + " added"});
-	//	}
-	//	else {
-	//		//if (GEngine)GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("Une AI n'a pas d'equipe"));
-	//	}
-	//}
-	//else {
-	//	//if (GEngine)GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("AI Spawned thought the manager"));
-	//}
-}
-
 void ASquadLeaderGameModeBase::InitInfluenceMap() {
 	FTransform LocationTemp{ {0.f, 0.f, 0.f}, {0.f,0.f,0.f} };
 	AInfluenceMapGrid* _InfluenceMap = GetWorld()->SpawnActorDeferred<AInfluenceMapGrid>(InfluenceMapClass, LocationTemp, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);

@@ -26,7 +26,6 @@ AAIBasicController::AAIBasicController()
 
 void AAIBasicController::BeginPlay() {
 	Super::BeginPlay();
-	Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode())->AddAIBasicToManager(this);
 }
 
 void AAIBasicController::Init() {
