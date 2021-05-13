@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "Core.h"
+#include "Slate/SlateBrushAsset.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "camera/cameracomponent.h"
@@ -43,10 +44,32 @@ struct SQUADLEADER_API FSoldier_Inventory
 	// Grenade ?
 };
 
+USTRUCT()
+struct SQUADLEADER_API FSoldierIconAsset
+{
+	GENERATED_USTRUCT_BODY()
+
+	FSoldierIconAsset() = default;
+
+	UPROPERTY(EditAnywhere)
+	USlateBrushAsset* Icon;
+
+	UPROPERTY(EditAnywhere)
+	USlateBrushAsset* Background;
+};
+
 UCLASS()
 class SQUADLEADER_API ASoldier : public ACharacter, public IAbilitySystemInterface, public ITeamable
 {
 	GENERATED_BODY()
+
+public:
+	UFUNCTION(BlueprintCallable)
+	static TArray<SoldierClass> GetAllPlayableClass();
+
+	UFUNCTION(BlueprintCallable)
+	static FString SoldierClassToStr(SoldierClass SoldierClassIn);
+
 
 public:
 	ASoldier(const FObjectInitializer& _ObjectInitializer);

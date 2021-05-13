@@ -17,6 +17,36 @@
 #include "SquadLeader/Weapons/SL_Weapon.h"
 //#include "DrawDebugHelpers.h"
 
+TArray<SoldierClass> ASoldier::GetAllPlayableClass()
+{
+	auto ret = TArray<SoldierClass>();
+
+	ret.Add(SoldierClass::ASSAULT);
+	ret.Add(SoldierClass::HEAVY);
+	ret.Add(SoldierClass::SUPPORT);
+
+	return ret;
+}
+
+FString ASoldier::SoldierClassToStr(SoldierClass SoldierClassIn)
+{
+	switch (SoldierClassIn)
+	{
+	case SoldierClass::ASSAULT:
+		return "Assault";
+		break;
+	case SoldierClass::HEAVY:
+		return "Heavy";
+		break;
+	case SoldierClass::SUPPORT:
+		return "Support";
+		break;
+	default:
+		return "None";
+		break;
+	}
+}
+
 ASoldier::ASoldier(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer.SetDefaultSubobjectClass<USoldierMovementComponent>(ACharacter::CharacterMovementComponentName)),
 bAbilitiesInitialized{ false },
 WeaponAttachPointRightHand{ FName("WeaponSocketRightHand") },
