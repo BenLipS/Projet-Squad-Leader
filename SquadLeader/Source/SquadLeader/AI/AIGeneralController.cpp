@@ -346,6 +346,7 @@ void AAIGeneralController::FocusEnemy() {
 		if (FocusEnemyAlive) {
 			if (SeeFocusEnemy) {
 				this->SetFocus(_FocusEnemy);
+				m_state = AIBasicState::Attacking;
 				blackboard->SetValueAsVector("EnemyLocation", _FocusEnemy->GetActorLocation());
 				return;
 			}
@@ -380,6 +381,7 @@ void AAIGeneralController::FocusEnemy() {
 	}
 	else {
 		if (SeenEnemySoldier.Num() > 0) {
+			blackboard->ClearValue("FocusActor");
 			m_state = AIBasicState::Attacking;
 			this->SetFocus(SeenEnemySoldier[0]);
 			blackboard->SetValueAsObject("FocusActor", SeenEnemySoldier[0]);
@@ -666,12 +668,13 @@ void AAIGeneralController::SetPatrolPoint()
 }
 
 ResultState AAIGeneralController::ArriveAtDestination() {
+	if (m_state == AIBasicState::Attacking)
+		return ResultState::Failed;
+
 	if ( GetPawn() && FVector::Dist(GetPawn()->GetActorLocation(), GetObjectifLocation()) < 300.f) {
 		m_missionList->StateChange();
 		return ResultState::Success;
 	}
-	if (m_state == AIBasicState::Attacking)
-		return ResultState::Failed;
 
 	return ResultState::InProgress;
 }
