@@ -18,7 +18,7 @@ void UMenuListClassItemWidget::SetPlayerClass(SoldierClass newClass)
 	if (auto ClassList = Cast<UMenuListClass>(OwnerList); IsValid(ClassList))
 	{
 		auto newClassAsset = ClassList->GetAssetFromClass(CurrentClass);
-		SetRightData(ASoldier::SoldierClassToStr(CurrentClass));
+		SetRightData(" " + ASoldier::SoldierClassToStr(CurrentClass) + " ");
 		if (IsValid(newClassAsset.Icon) && IsValid(IconImage))
 		{
 			IconImage->SetBrushFromAsset(newClassAsset.Icon);
