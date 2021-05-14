@@ -42,16 +42,16 @@ void ASquadLeaderGameModeBase::Logout(AController* Exiting)
 }
 
 
-APawn* ASquadLeaderGameModeBase::SpawnSoldier(TSubclassOf<APlayerParam> PlayerParam, AController* OwningController)
+APawn* ASquadLeaderGameModeBase::SpawnSoldier(APlayerParam* PlayerParam, AController* OwningController)
 {
 	if (auto SLInitGameState = Cast<ASquadLeaderInitGameState>(GameState); SLInitGameState) {
-		if (ASoldierTeam* NewSoldierTeam = SLInitGameState->GetSoldierTeamByID(PlayerParam->GetDefaultObject<APlayerParam>()->GetTeam()); NewSoldierTeam) {
+		if (ASoldierTeam* NewSoldierTeam = SLInitGameState->GetSoldierTeamByID(PlayerParam->GetTeam()); NewSoldierTeam) {
 			TArray<ASoldierSpawn*> SpawnList = NewSoldierTeam->GetUsableSpawnPoints();
 			if (SpawnList.Num() > 0) {
 				ASoldierSpawn* SpawnPoint = SpawnList[UKismetMathLibrary::RandomIntegerInRange(0, SpawnList.Num() - 1)];
 				
 				FTransform SpawnPosition = { SpawnPoint->GetActorRotation(), SpawnPoint->GetActorLocation() };
-				APawn* NewPawn = GetWorld()->SpawnActorDeferred<APawn>(PlayerParam->GetDefaultObject<APlayerParam>()->GetPlayerClass(),
+				APawn* NewPawn = GetWorld()->SpawnActorDeferred<APawn>(PlayerParam->GetPlayerClass(),
 					SpawnPosition, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 				
 				if (NewPawn) {

@@ -38,7 +38,7 @@ void ASoldierPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 	CreateHUD();
-	DeterminePlayerParams();
+	ClientDeterminePlayerParams();
 }
 
 void ASoldierPlayerController::CreateHUD_Implementation()
@@ -446,20 +446,21 @@ void ASoldierPlayerController::OnWallVisionDeactivate_Implementation()
 
 
 // Pawn Class
-void ASoldierPlayerController::DeterminePlayerParams_Implementation()
+void ASoldierPlayerController::ClientDeterminePlayerParams_Implementation()
 {
 	if (IsLocalController()) //Only Do This Locally (NOT Client-Only, since Server wants this too!)
 	{
-		ServerSetPawn(GetGameInstance<USquadLeaderGameInstance>()->PlayerParam);
+		auto test = GetGameInstance<USquadLeaderGameInstance>()->PlayerParam.GetDefaultObject();
+		ServerSetPawn(GetGameInstance<USquadLeaderGameInstance>()->PlayerParam.GetDefaultObject());
 	}
 }
 
-bool ASoldierPlayerController::ServerSetPawn_Validate(TSubclassOf<APlayerParam> PlayerParam)
+bool ASoldierPlayerController::ServerSetPawn_Validate(APlayerParam* PlayerParam)
 {
 	return true;
 }
 
-void ASoldierPlayerController::ServerSetPawn_Implementation(TSubclassOf<APlayerParam> PlayerParam)
+void ASoldierPlayerController::ServerSetPawn_Implementation(APlayerParam* PlayerParam)
 {
 	GetPlayerState<ASoldierPlayerState>()->SetPlayerParam(PlayerParam, this);
 }
