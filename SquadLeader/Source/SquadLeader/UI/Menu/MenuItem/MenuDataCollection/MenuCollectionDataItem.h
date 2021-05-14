@@ -6,12 +6,9 @@
 #include "../../../SL_UserWidget.h"
 #include "MenuCollectionDataItem.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class SQUADLEADER_API UMenuCollectionDataItem : public USL_UserWidget
 {
 	GENERATED_BODY()
-	
+
 };

@@ -18,6 +18,8 @@ class SQUADLEADER_API AAIBasicController : public AAIGeneralController
 public:
 	AAIBasicController();
 
+	virtual void HomeTick(float DeltaSeconds) override { Super::HomeTick(DeltaSeconds); }
+
 protected:
 
 	UPROPERTY()

@@ -25,9 +25,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Replicated)
 		FString Name;
 	UPROPERTY(EditDefaultsOnly, Replicated)
-		int LevelTarget;
+		int LevelTarget; //Not fixed by user
 	UPROPERTY(EditDefaultsOnly, Replicated)
-		int LevelRange;
+		int LevelRange; //Not fixed by user
 	UPROPERTY(EditDefaultsOnly, Replicated)
 		int NbAIBasicAssault;
 	UPROPERTY(EditDefaultsOnly, Replicated)
@@ -41,11 +41,23 @@ public:
 	UPROPERTY(EditDefaultsOnly, Replicated)
 		int NbTickets;
 	UPROPERTY(EditDefaultsOnly, Replicated)
-		int Weather;
+		int Weather; //Not fixed by user
 	UPROPERTY(EditDefaultsOnly, Replicated)
 		int RespawnDuration;
 	UPROPERTY(EditDefaultsOnly, Replicated)
-		bool FriendOnly;
+		bool FriendOnly; //Not fixed by user
 
 	void RandomiseParam(AGameParam* MinConfig, AGameParam* MaxConfig);
+
+	void GameParamCopy(AGameParam* TargetParam);
+
+	UFUNCTION()
+	TMap<FString, int> GetIntParams();
+	UFUNCTION()
+	void SetIntParams(TMap<FString, int> ImportedParam);
+
+	UFUNCTION()
+	TMap<FString, FString> GetStringParams();
+	UFUNCTION()
+	void SetStringParams(TMap<FString, FString> ImportedParam);
 };

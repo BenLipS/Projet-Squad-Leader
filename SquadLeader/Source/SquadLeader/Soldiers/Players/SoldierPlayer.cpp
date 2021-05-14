@@ -164,7 +164,7 @@ void ASoldierPlayer::InitSquadManager()
 
 	if (SquadManager)
 	{
-		SquadManager->Init(GetTeam(), this);
+		//SquadManager->Init(GetTeam(), this);  // done on the begin play of this element
 		SquadManager->FinishSpawning(FTransform{});
 
 		if (ASquadLeaderGameModeBase* GM = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode()); GM)
