@@ -14,6 +14,7 @@
 #include "GameState/SquadLeaderCloseGameState.h"
 
 
+
 ASquadLeaderGameModeBase::ASquadLeaderGameModeBase()
 {
 	static ConstructorHelpers::FClassFinder<ASoldierPlayerController> PlayerControllerObject(TEXT("/Game/BluePrints/Soldiers/Players/BP_SoldierPlayerController"));

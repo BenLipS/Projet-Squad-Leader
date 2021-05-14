@@ -9,6 +9,7 @@
 			<ChildrenList>
 				<ActorMixer Name="Player" ID="{D5A4AF6F-E80C-4E03-877C-8F26D195099B}" ShortID="128871971">
 					<PropertyList>
+						<Property Name="3DSpatialization" Type="int16" Value="2"/>
 						<Property Name="UserAuxSendVolume0" Type="Real64">
 							<ValueList>
 								<Value>-20</Value>
@@ -575,6 +576,7 @@
 				</ActorMixer>
 				<Sound Name="Player_Dash" ID="{E806447A-4E6E-446A-A819-D3D23BF99201}" ShortID="953170638">
 					<PropertyList>
+						<Property Name="3DSpatialization" Type="int16" Value="2"/>
 						<Property Name="Volume" Type="Real64">
 							<ValueList>
 								<Value>2</Value>
@@ -582,6 +584,9 @@
 						</Property>
 					</PropertyList>
 					<ReferenceList>
+						<Reference Name="Attenuation">
+							<ObjectRef Name="Abilities" ID="{43090DA3-6273-4F7D-8856-2C0A43E52A37}" WorkUnitID="{121019D4-4484-4FD8-9C2A-2F490B6614A6}"/>
+						</Reference>
 						<Reference Name="Conversion">
 							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
 						</Reference>
@@ -622,6 +627,9 @@
 						</Property>
 					</PropertyList>
 					<ReferenceList>
+						<Reference Name="Attenuation">
+							<ObjectRef Name="Player Sounds" ID="{590EC12E-3019-486E-8103-340D41EE83FB}" WorkUnitID="{121019D4-4484-4FD8-9C2A-2F490B6614A6}"/>
+						</Reference>
 						<Reference Name="Conversion">
 							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
 						</Reference>
@@ -645,6 +653,7 @@
 				</Sound>
 				<RandomSequenceContainer Name="Hurt" ID="{1BC9BD19-8E3E-49ED-972A-395E78FF230F}" ShortID="95228205">
 					<PropertyList>
+						<Property Name="3DSpatialization" Type="int16" Value="2"/>
 						<Property Name="Volume" Type="Real64">
 							<ValueList>
 								<Value>4</Value>
@@ -788,6 +797,7 @@
 				</RandomSequenceContainer>
 				<Sound Name="Player_Jump_Concrete" ID="{37A25345-E17F-435A-8306-18A8B037BD52}" ShortID="409980393">
 					<PropertyList>
+						<Property Name="3DSpatialization" Type="int16" Value="2"/>
 						<Property Name="Highpass" Type="int16">
 							<ValueList>
 								<Value>3</Value>
@@ -806,7 +816,7 @@
 					</PropertyList>
 					<ReferenceList>
 						<Reference Name="Attenuation">
-							<ObjectRef Name="Player_Standard_Grenade" ID="{FA41FFEE-2E1B-463D-A50F-EF2D137A1356}" WorkUnitID="{121019D4-4484-4FD8-9C2A-2F490B6614A6}"/>
+							<ObjectRef Name="Abilities" ID="{43090DA3-6273-4F7D-8856-2C0A43E52A37}" WorkUnitID="{121019D4-4484-4FD8-9C2A-2F490B6614A6}"/>
 						</Reference>
 						<Reference Name="Conversion">
 							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>

@@ -5,6 +5,7 @@
 			<ChildrenList>
 				<Sound Name="Healing" ID="{0BF2220B-3DBA-45DF-8F1C-CA2BF1FF9192}" ShortID="138332466">
 					<PropertyList>
+						<Property Name="3DSpatialization" Type="int16" Value="2"/>
 						<Property Name="Pitch" Type="int32">
 							<RTPCList>
 								<RTPC Name="" ID="{DC72943C-C628-4D45-A7F7-BDE6545FC20C}" ShortID="959488900">
@@ -74,6 +75,7 @@
 				</Sound>
 				<Sound Name="Vision Themique Activation" ID="{87B16CF3-F88A-42CB-BAA9-61032AB8110D}" ShortID="103219673">
 					<PropertyList>
+						<Property Name="3DSpatialization" Type="int16" Value="2"/>
 						<Property Name="Pitch" Type="int32">
 							<ValueList>
 								<Value>-960</Value>

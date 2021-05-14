@@ -167,6 +167,9 @@
 				</ActorMixer>
 				<Sound Name="Respawn" ID="{F304985E-67EC-4653-BAE9-23769E64F39C}" ShortID="307510140">
 					<ReferenceList>
+						<Reference Name="Attenuation">
+							<ObjectRef Name="Abilities" ID="{43090DA3-6273-4F7D-8856-2C0A43E52A37}" WorkUnitID="{121019D4-4484-4FD8-9C2A-2F490B6614A6}"/>
+						</Reference>
 						<Reference Name="Conversion">
 							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
 						</Reference>

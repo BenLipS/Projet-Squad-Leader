@@ -16,7 +16,7 @@
 			<ShortName>Init</ShortName>
 			<Path>Init.bnk</Path>
 		</SoundBank>
-		<SoundBank Id="4056684167" Language="SFX" Hash="3882747379">
+		<SoundBank Id="4056684167" Language="SFX" Hash="2427390667">
 			<ObjectPath>\SoundBanks\Default Work Unit\Master</ObjectPath>
 			<ShortName>Master</ShortName>
 			<Path>Master.bnk</Path>
@@ -37,6 +37,14 @@
 						</File>
 					</IncludedMemoryFiles>
 				</Event>
+				<Event Id="3972200603" Name="Ennemy_Hit" ObjectPath="\Events\Default Work Unit\Ennemy\Ennemy_Hit">
+					<IncludedMemoryFiles>
+						<File Id="57055349" Language="SFX">
+							<ShortName>Ennemy_Rifle_Hit.wav</ShortName>
+							<Path>SFX\Ennemy_Rifle_Hit_10C4C929.wem</Path>
+						</File>
+					</IncludedMemoryFiles>
+				</Event>
 				<Event Id="2606610459" Name="Grenade_Glitch_Explosion" ObjectPath="\Events\Default Work Unit\Weapons\Grenade_Glitch_Explosion">
 					<IncludedMemoryFiles>
 						<File Id="339035994" Language="SFX">
@@ -45,11 +53,35 @@
 						</File>
 					</IncludedMemoryFiles>
 				</Event>
+				<Event Id="212046171" Name="Grenade_Standard_Explosion" ObjectPath="\Events\Default Work Unit\Weapons\Grenade_Standard_Explosion">
+					<IncludedMemoryFiles>
+						<File Id="953873261" Language="SFX">
+							<ShortName>Grenade_Explosion.wav</ShortName>
+							<Path>SFX\Grenade_Explosion_0A1229C8.wem</Path>
+						</File>
+					</IncludedMemoryFiles>
+				</Event>
 				<Event Id="2064847921" Name="Knob_Menu" ObjectPath="\Events\Default Work Unit\Environment\Knob_Menu">
 					<IncludedMemoryFiles>
 						<File Id="576272166" Language="SFX">
 							<ShortName>Knob_menu.wav</ShortName>
 							<Path>SFX\Knob_menu_C1F6DFA0.wem</Path>
+						</File>
+					</IncludedMemoryFiles>
+				</Event>
+				<Event Id="620878633" Name="Music_Gameplay" ObjectPath="\Events\Default Work Unit\Music\Music_Gameplay">
+					<IncludedMemoryFiles>
+						<File Id="181366782" Language="SFX">
+							<ShortName>Gameplay_Squad as Leader_Boucle 2_4-4_105BPM_107m_P4b.wav</ShortName>
+							<Path>SFX\Gameplay_Squad as Leader_Boucle 2_4-4_105BPM_107m_P4b_D79FB2B7.wem</Path>
+						</File>
+						<File Id="564386817" Language="SFX">
+							<ShortName>Gameplay_Squad as Leader_Boucle 1_4-4_105BPM_107m_P4b.wav</ShortName>
+							<Path>SFX\Gameplay_Squad as Leader_Boucle 1_4-4_105BPM_107m_P4b_D79FB2B7.wem</Path>
+						</File>
+						<File Id="567887608" Language="SFX">
+							<ShortName>Gameplay_Squad as Leader_Boucle 3_4-4_105BPM_107m_P4b.wav</ShortName>
+							<Path>SFX\Gameplay_Squad as Leader_Boucle 3_4-4_105BPM_107m_P4b_D79FB2B7.wem</Path>
 						</File>
 					</IncludedMemoryFiles>
 				</Event>
@@ -70,6 +102,14 @@
 						<File Id="864600641" Language="SFX">
 							<ShortName>SL_Menu_Smooth_142bpm_4-4_67m_P1.wav</ShortName>
 							<Path>SFX\SL_Menu_Smooth_142bpm_4-4_67m_P1_D79FB2B7.wem</Path>
+						</File>
+					</IncludedMemoryFiles>
+				</Event>
+				<Event Id="3567402573" Name="Ping_Notif_Bad_v2" ObjectPath="\Events\Default Work Unit\Environment\Ping_Notif_Bad_v2">
+					<IncludedMemoryFiles>
+						<File Id="181715303" Language="SFX">
+							<ShortName>Ping Notif_v2.wav</ShortName>
+							<Path>SFX\Ping Notif_v2_10C4C929.wem</Path>
 						</File>
 					</IncludedMemoryFiles>
 				</Event>
@@ -98,6 +138,22 @@
 						<File Id="874485063" Language="SFX">
 							<ShortName>Pistolet tir 3.wav</ShortName>
 							<Path>SFX\Pistolet tir 3_10C4C929.wem</Path>
+						</File>
+					</IncludedMemoryFiles>
+				</Event>
+				<Event Id="2394582229" Name="Player_Dash" ObjectPath="\Events\Default Work Unit\Player\Player_Dash">
+					<IncludedMemoryFiles>
+						<File Id="634926199" Language="SFX">
+							<ShortName>Player_Dash.wav</ShortName>
+							<Path>SFX\Player_Dash_46FE6E04.wem</Path>
+						</File>
+					</IncludedMemoryFiles>
+				</Event>
+				<Event Id="3185701113" Name="Player_Jump_Concrete" ObjectPath="\Events\Default Work Unit\Player\Player_Jump_Concrete">
+					<IncludedMemoryFiles>
+						<File Id="1035804576" Language="SFX">
+							<ShortName>Jump_Concrete_01.wav</ShortName>
+							<Path>SFX\Jump_Concrete_01_10C4C929.wem</Path>
 						</File>
 					</IncludedMemoryFiles>
 				</Event>
@@ -154,6 +210,14 @@
 						<File Id="888522232" Language="SFX">
 							<ShortName>Fs_Dirt_2.wav</ShortName>
 							<Path>SFX\Fs_Dirt_2_10C4C929.wem</Path>
+						</File>
+					</IncludedMemoryFiles>
+				</Event>
+				<Event Id="4279841335" Name="Respawn" ObjectPath="\Events\Default Work Unit\Environment\Respawn">
+					<IncludedMemoryFiles>
+						<File Id="985193590" Language="SFX">
+							<ShortName>Teleportation.wav</ShortName>
+							<Path>SFX\Teleportation_93F1374A.wem</Path>
 						</File>
 					</IncludedMemoryFiles>
 				</Event>

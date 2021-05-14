@@ -15,6 +15,9 @@
 #include "AkAudioEvent.h"
 #include "AkGameplayStatics.h"
 
+#include "AkAudioEvent.h"
+#include "AkGameplayStatics.h"
+
 ASoldierPlayer::ASoldierPlayer(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer)
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -41,6 +44,8 @@ void ASoldierPlayer::BeginPlay()
 
 	if (!IsLocallyControlled())
 		return;
+
+	UAkGameplayStatics::PostEventByName("Music_Gameplay", this);
 
 	ensure(MaterialGlitchInterface);
 	ensure(MaterialBrokenGlassRightInterface);

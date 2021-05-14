@@ -9,6 +9,7 @@
 			<ChildrenList>
 				<ActorMixer Name="Rifle_Fire" ID="{0A3982F2-C0C1-47D6-9F72-E829F0244BE6}" ShortID="1056921233">
 					<PropertyList>
+						<Property Name="3DSpatialization" Type="int16" Value="2"/>
 						<Property Name="Volume" Type="Real64">
 							<ValueList>
 								<Value>-9</Value>
@@ -2375,6 +2376,9 @@
 					<ObjectLists/>
 				</ActorMixer>
 				<ActorMixer Name="Pistol_Laser" ID="{011DBC85-2853-4038-8580-C75AE4A4EF61}" ShortID="486148062">
+					<PropertyList>
+						<Property Name="3DSpatialization" Type="int16" Value="2"/>
+					</PropertyList>
 					<ReferenceList>
 						<Reference Name="Attenuation">
 							<ObjectRef Name="Fire Attenuation Global" ID="{09A75D97-37B0-4366-BEC4-D170C128B054}" WorkUnitID="{121019D4-4484-4FD8-9C2A-2F490B6614A6}"/>
@@ -3093,6 +3097,9 @@
 					<ObjectLists/>
 				</ActorMixer>
 				<ActorMixer Name="Grenade" ID="{E7762522-1F55-4196-AF70-8D1EC91DE589}" ShortID="781287455">
+					<PropertyList>
+						<Property Name="3DSpatialization" Type="int16" Value="2"/>
+					</PropertyList>
 					<ReferenceList>
 						<Reference Name="Attenuation">
 							<ObjectRef Name="Player_Standard_Grenade" ID="{FA41FFEE-2E1B-463D-A50F-EF2D137A1356}" WorkUnitID="{121019D4-4484-4FD8-9C2A-2F490B6614A6}"/>

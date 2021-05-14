@@ -52,6 +52,7 @@ void USquadLeaderGameInstance::OnStart()
 
 void USquadLeaderGameInstance::LaunchGame()
 {
+
     if (OnlineStatus) {
         if (GameID != "") {
             HttpCallDeleteGame();
