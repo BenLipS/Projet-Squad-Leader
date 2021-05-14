@@ -33,6 +33,7 @@ void AAISquadManager::Init(ASoldierTeam* _Team, ASoldierPlayer* _Player)
 	Leader = _Player;
 
 	// fetch information from the game mode if available (so server only)
+	uint8 StartNumberOfSoldiers;
 	if (GetLocalRole() == ROLE_Authority) {
 		if (OverrideStartNumberOfSoldiers < 0) {
 			// get game mode params directly from the source because "StartPlay" is not guaranteed to have been already called

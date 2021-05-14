@@ -94,6 +94,8 @@ void UMissionList::EndMission() {
 	if (m_missions.Num() > 1) {
 		m_missions.RemoveAt(m_index_current_mission);
 	}
+
+	m_index_current_mission = m_missions.Num() - 1;
 	StateChange();
 }
 

@@ -60,13 +60,13 @@ void USquadLeaderGameInstance::LaunchGame()
         HttpCallChangeConnectedStatus(2); // notify that the client is joining a new game
     }
     // GetFirstGamePlayer()->ConsoleCommand("open HUB_Level?listen", true);
-    GetFirstGamePlayer()->ConsoleCommand("open Factory_V1?listen", true);
+    GetFirstGamePlayer()->ConsoleCommand("open Factory_V2?listen", true);
 }
 
 void USquadLeaderGameInstance::SetGameParamToDefault()
 {
     if (auto GM = GetWorld()->GetAuthGameMode<ASLMainMenuGameModeBase>(); GM)
-        GameParam = GM->DefaultGameParam;
+        GameParam.GetDefaultObject()->GameParamCopy(GM->DefaultGameParam.GetDefaultObject());
 }
 
 void USquadLeaderGameInstance::SetGameParamToRandom()
@@ -75,6 +75,16 @@ void USquadLeaderGameInstance::SetGameParamToRandom()
         GameParam.GetDefaultObject()->RandomiseParam(GM->MinGameParam.GetDefaultObject(), GM->MaxGameParam.GetDefaultObject());
     }
 }
+
+void USquadLeaderGameInstance::SaveGameParam(TMap<FString, int> IntData, TMap<FString, FString> StringData)
+{
+    GameParam.GetDefaultObject()->SetStringParams(StringData);
+    GameParam.GetDefaultObject()->SetIntParams(IntData);
+
+    GameParam.GetDefaultObject()->LevelTarget = UserData.Score;
+    GameParam.GetDefaultObject()->LevelRange = UserData.Score;
+}
+
 
 void USquadLeaderGameInstance::JoinGame(FString IPAdress)
 {

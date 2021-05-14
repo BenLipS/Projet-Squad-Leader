@@ -95,12 +95,6 @@ public:
 	UFUNCTION()
 	void InitInfluenceMap();
 
-	/*
-	* For AI placed via drag and drop
-	*/
-	UFUNCTION()
-	void AddAIBasicToManager(AAIBasicController* AIBasic);
-
 	UFUNCTION()
 	TArray<AAISquadManager*> GetSquadManagers() { return ListAISquadManagers; }
 

@@ -166,6 +166,8 @@ public:
 	UFUNCTION(BluePrintCallable, Category = "Comportement")
 		virtual void Tick(float DeltaSeconds) override;
 
+	virtual void HomeTick(float DeltaSeconds);
+
 	virtual void Die();
 
 	virtual void Respawn();
@@ -230,6 +232,9 @@ protected:
 	*/
 	UFUNCTION()
 		void FocusEnemy();
+
+	UFUNCTION()
+		bool SeeFocusActor();
 
 	/*
 	* Make the AI run if it's possible
@@ -496,4 +501,5 @@ public:
 
 	UFUNCTION()
 		virtual void BecomeUnavailable() {};
+
 };
