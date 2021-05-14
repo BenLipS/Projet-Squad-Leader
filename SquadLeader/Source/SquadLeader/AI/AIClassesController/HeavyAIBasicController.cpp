@@ -22,7 +22,11 @@ void AHeavyAIBasicController::CheckIfRegenShield() {
 }
 
 void AHeavyAIBasicController::Tick(float DeltaSeconds) {
-	Super::Tick(DeltaSeconds);
+	//Super::Tick(DeltaSeconds);
+}
+
+void AHeavyAIBasicController::HomeTick(float DeltaSeconds) {
+	Super::HomeTick(DeltaSeconds);
 
 	CheckIfRegenShield();
 
