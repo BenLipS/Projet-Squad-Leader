@@ -21,6 +21,8 @@ void ASupportAISquadController::CheckIfLaunchHeal() {
 	bool IsAnAllyHealthVeryLow = false;
 
 	if (SquadManager) {
+		if (!SquadManager->Leader)
+			return;
 		for (auto AISquad : SquadManager->AISquadControllerList) {
 			TotalHealth += Cast<ASoldier>(AISquad->GetPawn())->GetHealth();
 			TotalMaxHealth += Cast<ASoldier>(AISquad->GetPawn())->GetMaxHealth();
