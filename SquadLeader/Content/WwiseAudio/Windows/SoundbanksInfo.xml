@@ -16,7 +16,7 @@
 			<ShortName>Init</ShortName>
 			<Path>Init.bnk</Path>
 		</SoundBank>
-		<SoundBank Id="4056684167" Language="SFX" Hash="2427390667">
+		<SoundBank Id="4056684167" Language="SFX" Hash="3674792214">
 			<ObjectPath>\SoundBanks\Default Work Unit\Master</ObjectPath>
 			<ShortName>Master</ShortName>
 			<Path>Master.bnk</Path>
@@ -69,6 +69,32 @@
 						</File>
 					</IncludedMemoryFiles>
 				</Event>
+				<Event Id="352040410" Name="Music_Cinematic_Defeat" ObjectPath="\Events\Default Work Unit\Music\Music_Cinematic_Defeat">
+					<IncludedMemoryFiles>
+						<File Id="20044209" Language="SFX">
+							<ShortName>SL_Defeat_Loop_160bpm_4-4_28m_P0_v2.wav</ShortName>
+							<Path>SFX\SL_Defeat_Loop_160bpm_4-4_28m_P0_v2_D79FB2B7.wem</Path>
+						</File>
+						<File Id="624004163" Language="SFX">
+							<ShortName>SL_Defeat_160bpm_5-4_13m_P0.wav</ShortName>
+							<Path>SFX\SL_Defeat_160bpm_5-4_13m_P0_D79FB2B7.wem</Path>
+						</File>
+					</IncludedMemoryFiles>
+				</Event>
+				<Event Id="3998970921" Name="Music_Cinematic_Defeat_Stop" ObjectPath="\Events\Default Work Unit\Music\Music_Cinematic_Defeat_Stop"/>
+				<Event Id="2478077287" Name="Music_Cinematic_Victory" ObjectPath="\Events\Default Work Unit\Music\Music_Cinematic_Victory">
+					<IncludedMemoryFiles>
+						<File Id="126587482" Language="SFX">
+							<ShortName>SL_Victory_Loop_131bpm_4-4_16m_P0_v2.wav</ShortName>
+							<Path>SFX\SL_Victory_Loop_131bpm_4-4_16m_P0_v2_D79FB2B7.wem</Path>
+						</File>
+						<File Id="152678438" Language="SFX">
+							<ShortName>SL_Victoryt_Intro_131bpm_4-4_16m_P0_v2.wav</ShortName>
+							<Path>SFX\SL_Victoryt_Intro_131bpm_4-4_16m_P0_v2_D79FB2B7.wem</Path>
+						</File>
+					</IncludedMemoryFiles>
+				</Event>
+				<Event Id="415032610" Name="Music_Cinematic_Victory_Stop" ObjectPath="\Events\Default Work Unit\Music\Music_Cinematic_Victory_Stop"/>
 				<Event Id="620878633" Name="Music_Gameplay" ObjectPath="\Events\Default Work Unit\Music\Music_Gameplay">
 					<IncludedMemoryFiles>
 						<File Id="181366782" Language="SFX">
@@ -488,6 +514,22 @@
 						<File Id="447359387" Language="SFX">
 							<ShortName>Rocket_Launch.wav</ShortName>
 							<Path>SFX\Rocket_Launch_10C4C929.wem</Path>
+						</File>
+					</IncludedMemoryFiles>
+				</Event>
+				<Event Id="3441377354" Name="Stinger_Gameplay_Negative" ObjectPath="\Events\Default Work Unit\Music\Stinger_Gameplay_Negative">
+					<IncludedMemoryFiles>
+						<File Id="744608046" Language="SFX">
+							<ShortName>Stingner Neg.wav</ShortName>
+							<Path>SFX\Stingner Neg_D79FB2B7.wem</Path>
+						</File>
+					</IncludedMemoryFiles>
+				</Event>
+				<Event Id="1242808314" Name="Stinger_Gameplay_Positive" ObjectPath="\Events\Default Work Unit\Music\Stinger_Gameplay_Positive">
+					<IncludedMemoryFiles>
+						<File Id="997277729" Language="SFX">
+							<ShortName>Stingner Pos.wav</ShortName>
+							<Path>SFX\Stingner Pos_D79FB2B7.wem</Path>
 						</File>
 					</IncludedMemoryFiles>
 				</Event>

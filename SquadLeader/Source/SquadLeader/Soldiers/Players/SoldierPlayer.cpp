@@ -252,6 +252,19 @@ void ASoldierPlayer::ClientSetSoldierKiller_Implementation(ASoldier* _SoldierKil
 	SetSoldierKiller(_SoldierKiller);
 }
 
+void ASoldierPlayer::ClientNotifyControlAreaTaken_Implementation(const bool _IsOwned)
+{
+	if(_IsOwned)UAkGameplayStatics::PostEventByName("Stinger_Gameplay_Positive", this);
+	else UAkGameplayStatics::PostEventByName("Stinger_Gameplay_Negative", this);
+}
+
+void ASoldierPlayer::ClientNotifyEndGame_Implementation(const bool _HasWin)
+{
+	UAkGameplayStatics::PostEventByName("Music_Gameplay_Stop", this);
+	if(_HasWin)UAkGameplayStatics::PostEventByName("Music_Cinematic_Victory", this);
+	else UAkGameplayStatics::PostEventByName("Music_Cinematic_Defeat", this);
+}
+
 void ASoldierPlayer::LockControls()
 {
 	if (APlayerController* PC = Cast<APlayerController>(Controller); PC)

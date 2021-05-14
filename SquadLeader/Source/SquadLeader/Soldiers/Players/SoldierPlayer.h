@@ -67,6 +67,14 @@ public:
 	void ClientSetSoldierKiller(ASoldier* _SoldierKiller);
 	void ClientSetSoldierKiller_Implementation(ASoldier* _SoldierKiller);
 
+	UFUNCTION(Client, Reliable)
+	void ClientNotifyControlAreaTaken(const bool _IsOwned);
+	void ClientNotifyControlAreaTaken_Implementation(const bool _IsOwned);
+
+	UFUNCTION(Client, Reliable)
+	void ClientNotifyEndGame(const bool _HasWin);
+	void ClientNotifyEndGame_Implementation(const bool _HasWin);
+
 //////////////// Controllers
 protected:
 	virtual void LockControls() override;
