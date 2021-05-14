@@ -25,4 +25,5 @@ public:
 
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "JumpHeight")
 		float JumpHeight = 1000.f;
+
 };

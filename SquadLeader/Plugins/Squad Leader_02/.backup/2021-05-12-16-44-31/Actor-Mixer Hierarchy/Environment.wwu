@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{822C7857-305A-4F3C-A08B-4B6049187B1C}" SchemaVersion="94" RootDocumentID="{D2F24155-8E84-4175-BB7E-B82DF0A2BAD1}">
+	<AudioObjects>
+		<WorkUnit Name="Environment" ID="{822C7857-305A-4F3C-A08B-4B6049187B1C}" OwnerID="{D2F24155-8E84-4175-BB7E-B82DF0A2BAD1}" PersistMode="Nested">
+			<ChildrenList>
+				<Sound Name="Factory Ambience" ID="{241FCDAB-DE2B-4515-82B7-800904F920F9}" ShortID="345290662">
+					<PropertyList>
+						<Property Name="IsLoopingEnabled" Type="bool" Value="True"/>
+						<Property Name="Volume" Type="Real64">
+							<ValueList>
+								<Value>-9</Value>
+							</ValueList>
+						</Property>
+					</PropertyList>
+					<ReferenceList>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="Environment" ID="{CFF2ED0F-2CE6-4DB9-9D57-BDAD9F80561F}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<AudioFileSource Name="Factory Ambience" ID="{0FDE826D-0D38-4999-80E0-3077427A6108}" ShortID="20234757">
+							<Language>SFX</Language>
+							<AudioFile>Factory Ambience.wav</AudioFile>
+						</AudioFileSource>
+					</ChildrenList>
+					<ActiveSourceList>
+						<ActiveSource Name="Factory Ambience" ID="{0FDE826D-0D38-4999-80E0-3077427A6108}" Platform="Linked"/>
+					</ActiveSourceList>
+				</Sound>
+				<ActorMixer Name="Ping" ID="{F2722383-3979-424E-8149-A79AF72C71C0}" ShortID="523722026">
+					<PropertyList>
+						<Property Name="Volume" Type="Real64">
+							<ValueList>
+								<Value>4</Value>
+							</ValueList>
+						</Property>
+					</PropertyList>
+					<ReferenceList>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="Weapons_Sfx" ID="{2567D8A9-864F-40E5-A8FC-BD305C7F6F4D}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<Sound Name="Ping Notif Bad" ID="{58FBFC2D-C432-4011-ABAF-2C427D0F0F2D}" ShortID="219199121">
+							<PropertyList>
+								<Property Name="Highpass" Type="int16">
+									<ValueList>
+										<Value>13</Value>
+									</ValueList>
+								</Property>
+								<Property Name="Volume" Type="Real64">
+									<ValueList>
+										<Value>-1</Value>
+									</ValueList>
+								</Property>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Player_Ability" ID="{358320B3-3649-4995-A063-A5C2DBEC63EE}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<AudioFileSource Name="Ping Notif" ID="{665A3C3C-0D98-4406-9AD1-53466CA95052}" ShortID="1066125221">
+									<PropertyList>
+										<Property Name="FadeOutDuration" Type="Real64" Value="0.920552511415531"/>
+										<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
+										<Property Name="TrimBegin" Type="Real64" Value="0.171655432871896"/>
+										<Property Name="TrimEnd" Type="Real64" Value="1.52466509703197"/>
+									</PropertyList>
+									<Language>SFX</Language>
+									<AudioFile>Ping Notif.wav</AudioFile>
+								</AudioFileSource>
+							</ChildrenList>
+							<ActiveSourceList>
+								<ActiveSource Name="Ping Notif" ID="{665A3C3C-0D98-4406-9AD1-53466CA95052}" Platform="Linked"/>
+							</ActiveSourceList>
+						</Sound>
+						<Sound Name="Ping Notif_v2" ID="{C0E09661-BED5-4D6A-82C4-92037D027A2E}" ShortID="68021148">
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<AudioFileSource Name="Ping Notif_v2" ID="{01CBF46B-7111-4EF0-AFD5-FFE5573BA806}" ShortID="181715303">
+									<Language>SFX</Language>
+									<AudioFile>Ping Notif_v2.wav</AudioFile>
+								</AudioFileSource>
+							</ChildrenList>
+							<ActiveSourceList>
+								<ActiveSource Name="Ping Notif_v2" ID="{01CBF46B-7111-4EF0-AFD5-FFE5573BA806}" Platform="Linked"/>
+							</ActiveSourceList>
+						</Sound>
+						<Sound Name="Ping Positif" ID="{F2B22D70-2A2B-4FD0-BA1B-168904886D58}" ShortID="136040726">
+							<PropertyList>
+								<Property Name="Highpass" Type="int16">
+									<ValueList>
+										<Value>8</Value>
+									</ValueList>
+								</Property>
+								<Property Name="Lowpass" Type="int16">
+									<ValueList>
+										<Value>31</Value>
+									</ValueList>
+								</Property>
+								<Property Name="Volume" Type="Real64">
+									<ValueList>
+										<Value>-11</Value>
+									</ValueList>
+								</Property>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Player_Ability" ID="{358320B3-3649-4995-A063-A5C2DBEC63EE}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<AudioFileSource Name="Ping Positif" ID="{1B2D5518-35F3-43CB-9F63-6CAC9A6CC2F1}" ShortID="24728605">
+									<PropertyList>
+										<Property Name="FadeInDuration" Type="Real64" Value="0.038527397260274"/>
+										<Property Name="FadeOutDuration" Type="Real64" Value="0.134845890410959"/>
+										<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
+										<Property Name="TrimBegin" Type="Real64" Value="0.481592465753424"/>
+										<Property Name="TrimEnd" Type="Real64" Value="1.88784246575343"/>
+									</PropertyList>
+									<Language>SFX</Language>
+									<AudioFile>Ping Positif.wav</AudioFile>
+								</AudioFileSource>
+							</ChildrenList>
+							<ActiveSourceList>
+								<ActiveSource Name="Ping Positif" ID="{1B2D5518-35F3-43CB-9F63-6CAC9A6CC2F1}" Platform="Linked"/>
+							</ActiveSourceList>
+						</Sound>
+					</ChildrenList>
+				</ActorMixer>
+				<Sound Name="Respawn" ID="{F304985E-67EC-4653-BAE9-23769E64F39C}" ShortID="307510140">
+					<ReferenceList>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="Weapons_Sfx" ID="{2567D8A9-864F-40E5-A8FC-BD305C7F6F4D}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<AudioFileSource Name="Teleportation" ID="{864F40AD-03E6-4B64-9C82-21F7ACC62CFF}" ShortID="985193590">
+							<PropertyList>
+								<Property Name="FadeOutDuration" Type="Real64" Value="4.41909246575342"/>
+								<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
+								<Property Name="TrimEnd" Type="Real64" Value="4.43236301369863"/>
+							</PropertyList>
+							<Language>SFX</Language>
+							<AudioFile>Teleportation.wav</AudioFile>
+						</AudioFileSource>
+					</ChildrenList>
+					<ActiveSourceList>
+						<ActiveSource Name="Teleportation" ID="{864F40AD-03E6-4B64-9C82-21F7ACC62CFF}" Platform="Linked"/>
+					</ActiveSourceList>
+				</Sound>
+			</ChildrenList>
+		</WorkUnit>
+	</AudioObjects>
+</WwiseDocument>

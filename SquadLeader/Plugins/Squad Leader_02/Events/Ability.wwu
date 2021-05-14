@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{E62EFA09-FB1C-449E-8C9B-EDDDD49054C4}" SchemaVersion="103" RootDocumentID="{8EC5AB04-AFDD-43C3-A41A-DACB5E5BA730}" ParentDocumentID="{8EC5AB04-AFDD-43C3-A41A-DACB5E5BA730}">
+	<Events>
+		<WorkUnit Name="Ability" ID="{E62EFA09-FB1C-449E-8C9B-EDDDD49054C4}" OwnerID="{8EC5AB04-AFDD-43C3-A41A-DACB5E5BA730}" PersistMode="Nested">
+			<PropertyList>
+				<Property Name="Color" Type="int16" Value="1"/>
+				<Property Name="OverrideColor" Type="bool" Value="True"/>
+			</PropertyList>
+			<ChildrenList>
+				<Event Name="Ability_Heal" ID="{31ABCD9D-6C5E-4D8E-817C-5C80BC34CACA}">
+					<ChildrenList>
+						<Action Name="" ID="{8FACAC44-F53B-4321-A391-54C20F62666F}" ShortID="924944428">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Healing" ID="{0BF2220B-3DBA-45DF-8F1C-CA2BF1FF9192}" WorkUnitID="{E5C15937-436E-4D98-A62F-A4835ADB5539}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Ability_Termal_Vision" ID="{F275C884-BE30-4E98-A8D0-C0FE6FCE55B3}">
+					<ChildrenList>
+						<Action Name="" ID="{6415B6D7-13F4-4837-AE0D-2092B0400AEA}" ShortID="79221571">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Vision Themique Activation" ID="{87B16CF3-F88A-42CB-BAA9-61032AB8110D}" WorkUnitID="{E5C15937-436E-4D98-A62F-A4835ADB5539}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+			</ChildrenList>
+		</WorkUnit>
+	</Events>
+</WwiseDocument>

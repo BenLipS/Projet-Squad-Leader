@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{D2F24155-8E84-4175-BB7E-B82DF0A2BAD1}" SchemaVersion="94">
+	<AudioObjects>
+		<WorkUnit Name="Default Work Unit" ID="{D2F24155-8E84-4175-BB7E-B82DF0A2BAD1}" PersistMode="Standalone">
+			<ChildrenList>
+				<WorkUnit Name="Weapons" ID="{B1220508-C83C-4308-949D-0D02874B8A4B}" PersistMode="Reference"/>
+				<WorkUnit Name="Player" ID="{924891FC-435B-4571-AB36-2CC6B60D907C}" PersistMode="Reference"/>
+				<WorkUnit Name="Environment" ID="{822C7857-305A-4F3C-A08B-4B6049187B1C}" PersistMode="Reference"/>
+				<WorkUnit Name="Ability" ID="{E5C15937-436E-4D98-A62F-A4835ADB5539}" PersistMode="Reference"/>
+				<Sound Name="Knob_menu" ID="{CA9C3712-A337-4836-AC72-44BFA89DEFED}" ShortID="992664410">
+					<PropertyList>
+						<Property Name="Volume" Type="Real64">
+							<ValueList>
+								<Value>3</Value>
+							</ValueList>
+						</Property>
+					</PropertyList>
+					<ReferenceList>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<AudioFileSource Name="Knob_menu" ID="{14DF00A4-180E-4838-A7D6-62A0FAD66AE6}" ShortID="576272166">
+							<PropertyList>
+								<Property Name="FadeOutDuration" Type="Real64" Value="6.59230114260603E-03"/>
+								<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
+								<Property Name="TrimEnd" Type="Real64" Value="0.162434300153812"/>
+							</PropertyList>
+							<Language>SFX</Language>
+							<AudioFile>Knob_menu.wav</AudioFile>
+						</AudioFileSource>
+					</ChildrenList>
+					<ActiveSourceList>
+						<ActiveSource Name="Knob_menu" ID="{14DF00A4-180E-4838-A7D6-62A0FAD66AE6}" Platform="Linked"/>
+					</ActiveSourceList>
+				</Sound>
+			</ChildrenList>
+		</WorkUnit>
+	</AudioObjects>
+</WwiseDocument>

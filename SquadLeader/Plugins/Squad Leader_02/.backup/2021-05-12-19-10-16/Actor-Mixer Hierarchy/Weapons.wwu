@@ -1,0 +1,2699 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{B1220508-C83C-4308-949D-0D02874B8A4B}" SchemaVersion="94" RootDocumentID="{D2F24155-8E84-4175-BB7E-B82DF0A2BAD1}">
+	<AudioObjects>
+		<WorkUnit Name="Weapons" ID="{B1220508-C83C-4308-949D-0D02874B8A4B}" OwnerID="{D2F24155-8E84-4175-BB7E-B82DF0A2BAD1}" PersistMode="Nested">
+			<PropertyList>
+				<Property Name="Color" Type="int16" Value="10"/>
+				<Property Name="OverrideColor" Type="bool" Value="True"/>
+			</PropertyList>
+			<ChildrenList>
+				<ActorMixer Name="Rifle_Fire" ID="{0A3982F2-C0C1-47D6-9F72-E829F0244BE6}" ShortID="1056921233">
+					<PropertyList>
+						<Property Name="Volume" Type="Real64">
+							<ValueList>
+								<Value>-9</Value>
+							</ValueList>
+						</Property>
+					</PropertyList>
+					<ReferenceList>
+						<Reference Name="Attenuation">
+							<ObjectRef Name="Player_Standard_Grenade" ID="{FA41FFEE-2E1B-463D-A50F-EF2D137A1356}" WorkUnitID="{121019D4-4484-4FD8-9C2A-2F490B6614A6}"/>
+						</Reference>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="Rifle" ID="{16DBA8EF-66A8-4FEB-90D8-2BF06CDAD6EC}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<RandomSequenceContainer Name="Rifle_Kick" ID="{D56F2649-3AA4-4F2F-B1AB-8D0B86CA2DCE}" ShortID="658614923">
+							<PropertyList>
+								<Property Name="PlayMechanismLoop" Type="bool" Value="True"/>
+								<Property Name="PlayMechanismSpecialTransitions" Type="bool" Value="True"/>
+								<Property Name="PlayMechanismSpecialTransitionsType" Type="int16" Value="3"/>
+								<Property Name="PlayMechanismSpecialTransitionsValue" Type="Real64" Value="0.09"/>
+								<Property Name="PlayMechanismStepOrContinuous" Type="int16" Value="0"/>
+								<Property Name="RandomAvoidRepeatingCount" Type="int32" Value="3"/>
+								<Property Name="Volume" Type="Real64">
+									<ValueList>
+										<Value>-4</Value>
+									</ValueList>
+								</Property>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<Sound Name="Rifle_Kick_01" ID="{CF7F4A25-BBCE-4DFC-AF01-88B3D474C857}" ShortID="439458066">
+									<PropertyList>
+										<Property Name="Inclusion" Type="bool">
+											<ValueList>
+												<Value>False</Value>
+											</ValueList>
+										</Property>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="Rifle_Kick_01" ID="{7046C052-DD57-4497-A990-1B762F9305A5}" ShortID="649458979">
+											<Language>SFX</Language>
+											<AudioFile>Rifle_Kick_01.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="Rifle_Kick_01" ID="{7046C052-DD57-4497-A990-1B762F9305A5}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="Rifle_Kick_02" ID="{D6D3BB52-3A0A-4C6C-AAA9-82C363F83BD8}" ShortID="406908358">
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="Rifle_Kick_02" ID="{A08D998E-E0E1-460B-A6F6-32A62EB81465}" ShortID="223925318">
+											<Language>SFX</Language>
+											<AudioFile>Rifle_Kick_02.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="Rifle_Kick_02" ID="{A08D998E-E0E1-460B-A6F6-32A62EB81465}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="Rifle_Kick_03" ID="{33B41AD0-D367-40AA-91FF-0CE99F72A7B2}" ShortID="780412983">
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="Rifle_Kick_03" ID="{679162C4-C136-47C4-BF8D-62433C9DE82E}" ShortID="798581257">
+											<Language>SFX</Language>
+											<AudioFile>Rifle_Kick_03.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="Rifle_Kick_03" ID="{679162C4-C136-47C4-BF8D-62433C9DE82E}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="Rifle_Kick_04" ID="{93BC8695-25CC-4961-BDD8-45EFEFCF1C4B}" ShortID="569997876">
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="Rifle_Kick_04" ID="{F5E20597-36E6-41CB-A93E-940C75EA6391}" ShortID="912326113">
+											<Language>SFX</Language>
+											<AudioFile>Rifle_Kick_04.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="Rifle_Kick_04" ID="{F5E20597-36E6-41CB-A93E-940C75EA6391}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="Rifle_Kick_05" ID="{2F9879B6-D72F-4B9B-8612-F628570C40A7}" ShortID="402020601">
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="Rifle_Kick_05" ID="{92B8C223-31FF-4DB9-BB4D-0E2E6DAA110D}" ShortID="405945141">
+											<Language>SFX</Language>
+											<AudioFile>Rifle_Kick_05.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="Rifle_Kick_05" ID="{92B8C223-31FF-4DB9-BB4D-0E2E6DAA110D}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="Rifle_Kick_06" ID="{5CF649AD-9CDC-4625-8911-2E4D95B697F6}" ShortID="1047059089">
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="Rifle_Kick_06" ID="{4081E421-22EB-44EC-970C-38F7967F5D0C}" ShortID="737452584">
+											<Language>SFX</Language>
+											<AudioFile>Rifle_Kick_06.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="Rifle_Kick_06" ID="{4081E421-22EB-44EC-970C-38F7967F5D0C}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="Rifle_Kick_07" ID="{1E92CAEB-A13F-4B21-87C8-EECEC80AD6B8}" ShortID="777733253">
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="Rifle_Kick_07" ID="{A2258300-0F7C-4FCB-8D7F-332C911DFE14}" ShortID="979556673">
+											<Language>SFX</Language>
+											<AudioFile>Rifle_Kick_07.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="Rifle_Kick_07" ID="{A2258300-0F7C-4FCB-8D7F-332C911DFE14}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="Rifle_Kick_08" ID="{C5EB9D40-0D7C-4EF9-8F72-8FC34A296BB8}" ShortID="6612068">
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="Rifle_Kick_08" ID="{CA8C457E-800C-4251-B02C-75C08BA76B8B}" ShortID="919581035">
+											<Language>SFX</Language>
+											<AudioFile>Rifle_Kick_08.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="Rifle_Kick_08" ID="{CA8C457E-800C-4251-B02C-75C08BA76B8B}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="Rifle_Kick_09" ID="{D001806B-A3FF-48F4-9B15-5B8A91165822}" ShortID="794258461">
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="Rifle_Kick_09" ID="{5D3F2664-1271-4EE1-9C4F-3E33BA290FB5}" ShortID="204496951">
+											<Language>SFX</Language>
+											<AudioFile>Rifle_Kick_09.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="Rifle_Kick_09" ID="{5D3F2664-1271-4EE1-9C4F-3E33BA290FB5}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="Rifle_Kick_10" ID="{545BFB15-5B86-4D57-AF0C-C23062225513}" ShortID="530085730">
+									<PropertyList>
+										<Property Name="Inclusion" Type="bool">
+											<ValueList>
+												<Value>False</Value>
+											</ValueList>
+										</Property>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="Rifle_Kick_10" ID="{169EDB7E-40CA-44AB-8915-CFB7DC9CE5F1}" ShortID="325470898">
+											<Language>SFX</Language>
+											<AudioFile>Rifle_Kick_10.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="Rifle_Kick_10" ID="{169EDB7E-40CA-44AB-8915-CFB7DC9CE5F1}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+							</ChildrenList>
+						</RandomSequenceContainer>
+						<RandomSequenceContainer Name="Rifle_Mech" ID="{8B8BD15D-6C26-448B-B529-A0414C74E118}" ShortID="555993012">
+							<PropertyList>
+								<Property Name="PlayMechanismLoop" Type="bool" Value="True"/>
+								<Property Name="PlayMechanismSpecialTransitions" Type="bool" Value="True"/>
+								<Property Name="PlayMechanismSpecialTransitionsType" Type="int16" Value="3"/>
+								<Property Name="PlayMechanismSpecialTransitionsValue" Type="Real64" Value="0.09"/>
+								<Property Name="PlayMechanismStepOrContinuous" Type="int16" Value="0"/>
+								<Property Name="RandomAvoidRepeatingCount" Type="int32" Value="3"/>
+								<Property Name="Volume" Type="Real64">
+									<ValueList>
+										<Value>2</Value>
+									</ValueList>
+								</Property>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<Sound Name="Rifle_Mech_01" ID="{3EE1F77E-CF14-431A-9E82-417BE9AF3727}" ShortID="827022761">
+									<PropertyList>
+										<Property Name="Inclusion" Type="bool">
+											<ValueList>
+												<Value>False</Value>
+											</ValueList>
+										</Property>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="Rifle_Mech_01" ID="{0DF25886-0EED-4738-9AEB-B1523517E002}" ShortID="20663218">
+											<Language>SFX</Language>
+											<AudioFile>Rifle_Mech_01.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="Rifle_Mech_01" ID="{0DF25886-0EED-4738-9AEB-B1523517E002}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="Rifle_Mech_02" ID="{27C05483-268C-43F0-80D5-780BEE9D27B8}" ShortID="696743030">
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="Rifle_Mech_02" ID="{EEC99853-C3DD-4079-BFAC-D637AE9B1620}" ShortID="275112532">
+											<Language>SFX</Language>
+											<AudioFile>Rifle_Mech_02.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="Rifle_Mech_02" ID="{EEC99853-C3DD-4079-BFAC-D637AE9B1620}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="Rifle_Mech_03" ID="{B7D3FF87-0F61-46DF-B9D4-345139C3B0C4}" ShortID="334494303">
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="Rifle_Mech_03" ID="{C4D35A48-8A0A-401C-AD93-138B72116999}" ShortID="76129885">
+											<Language>SFX</Language>
+											<AudioFile>Rifle_Mech_03.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="Rifle_Mech_03" ID="{C4D35A48-8A0A-401C-AD93-138B72116999}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="Rifle_Mech_04" ID="{0923097B-2E81-4536-B0E0-5D12CF9190B3}" ShortID="111979830">
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="Rifle_Mech_04" ID="{92779011-C978-4EFA-9CD6-AE5395D75515}" ShortID="433765704">
+											<Language>SFX</Language>
+											<AudioFile>Rifle_Mech_04.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="Rifle_Mech_04" ID="{92779011-C978-4EFA-9CD6-AE5395D75515}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="Rifle_Mech_05" ID="{AD518E99-99B2-4702-AF34-FA5996938CB4}" ShortID="895951984">
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="Rifle_Mech_05" ID="{A3B26566-A382-4554-BA21-8DC8D4E9DA8A}" ShortID="754211678">
+											<Language>SFX</Language>
+											<AudioFile>Rifle_Mech_05.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="Rifle_Mech_05" ID="{A3B26566-A382-4554-BA21-8DC8D4E9DA8A}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="Rifle_Mech_06" ID="{192474DC-A3DA-4CEB-B36E-B49D2401E060}" ShortID="930818011">
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="Rifle_Mech_06" ID="{CF85B1D9-3CDB-4B02-9CE3-288D3D8BE6C8}" ShortID="747833201">
+											<Language>SFX</Language>
+											<AudioFile>Rifle_Mech_06.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="Rifle_Mech_06" ID="{CF85B1D9-3CDB-4B02-9CE3-288D3D8BE6C8}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="Rifle_Mech_07" ID="{54748C0A-E43F-4EA2-8907-391A54AED588}" ShortID="453062402">
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="Rifle_Mech_07" ID="{50A14AF1-F6ED-4281-8357-86E1058AF5D0}" ShortID="634404485">
+											<Language>SFX</Language>
+											<AudioFile>Rifle_Mech_07.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="Rifle_Mech_07" ID="{50A14AF1-F6ED-4281-8357-86E1058AF5D0}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="Rifle_Mech_08" ID="{D101F807-A3D0-43B0-8CFA-97FE4BD590D1}" ShortID="625072583">
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="Rifle_Mech_08" ID="{EA3C4C37-1F9E-4757-81B2-42EB669201A9}" ShortID="483328097">
+											<Language>SFX</Language>
+											<AudioFile>Rifle_Mech_08.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="Rifle_Mech_08" ID="{EA3C4C37-1F9E-4757-81B2-42EB669201A9}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="Rifle_Mech_09" ID="{8D90EB17-7725-4EF7-B6DA-EDB403463BD2}" ShortID="498902991">
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="Rifle_Mech_09" ID="{45E2D561-ABD2-43A0-83E5-12105E285DEB}" ShortID="1010860481">
+											<Language>SFX</Language>
+											<AudioFile>Rifle_Mech_09.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="Rifle_Mech_09" ID="{45E2D561-ABD2-43A0-83E5-12105E285DEB}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="Rifle_Mech_10" ID="{BADB70CF-4D00-4486-8E92-AABB8E18884F}" ShortID="910167182">
+									<PropertyList>
+										<Property Name="Inclusion" Type="bool">
+											<ValueList>
+												<Value>False</Value>
+											</ValueList>
+										</Property>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="Rifle_Mech_10" ID="{4474E043-CB17-40D0-8367-DCFEFDB38176}" ShortID="875485491">
+											<Language>SFX</Language>
+											<AudioFile>Rifle_Mech_10.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="Rifle_Mech_10" ID="{4474E043-CB17-40D0-8367-DCFEFDB38176}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+							</ChildrenList>
+						</RandomSequenceContainer>
+						<RandomSequenceContainer Name="Rifle_Sub" ID="{C4522A78-AE99-4101-84F9-5FA0CD5B1F51}" ShortID="848309772">
+							<PropertyList>
+								<Property Name="PlayMechanismLoop" Type="bool" Value="True"/>
+								<Property Name="PlayMechanismSpecialTransitions" Type="bool" Value="True"/>
+								<Property Name="PlayMechanismSpecialTransitionsType" Type="int16" Value="3"/>
+								<Property Name="PlayMechanismSpecialTransitionsValue" Type="Real64" Value="0.09"/>
+								<Property Name="PlayMechanismStepOrContinuous" Type="int16" Value="0"/>
+								<Property Name="RandomAvoidRepeatingCount" Type="int32" Value="3"/>
+								<Property Name="Volume" Type="Real64">
+									<ValueList>
+										<Value>-4</Value>
+									</ValueList>
+								</Property>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<Sound Name="Rifle_Sub_01" ID="{63D462A2-AFCA-487C-A71F-4AEADAE39719}" ShortID="1009826023">
+									<PropertyList>
+										<Property Name="Inclusion" Type="bool">
+											<ValueList>
+												<Value>False</Value>
+											</ValueList>
+										</Property>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="Rifle_Sub_01" ID="{688240B2-BA1B-4D92-8321-D64C833FAD3A}" ShortID="693201892">
+											<Language>SFX</Language>
+											<AudioFile>Rifle_Sub_01.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="Rifle_Sub_01" ID="{688240B2-BA1B-4D92-8321-D64C833FAD3A}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="Rifle_Sub_02" ID="{43BF9996-A146-46EA-8A0C-4444946658E6}" ShortID="850560966">
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="Rifle_Sub_02" ID="{EBE8D640-4038-4A89-A018-1B58B430C1E2}" ShortID="488527879">
+											<Language>SFX</Language>
+											<AudioFile>Rifle_Sub_02.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="Rifle_Sub_02" ID="{EBE8D640-4038-4A89-A018-1B58B430C1E2}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="Rifle_Sub_03" ID="{A64865F7-BF7F-46B5-A125-16B1E7C68A34}" ShortID="976260276">
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="Rifle_Sub_03" ID="{BD6C14A4-4CA6-470A-8166-5D73F3D690C5}" ShortID="520814987">
+											<Language>SFX</Language>
+											<AudioFile>Rifle_Sub_03.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="Rifle_Sub_03" ID="{BD6C14A4-4CA6-470A-8166-5D73F3D690C5}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="Rifle_Sub_04" ID="{CCBD1ABB-7C51-44D5-A46C-D1F4EDF40E8A}" ShortID="514188935">
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="Rifle_Sub_04" ID="{80196558-7AC5-4CBD-A975-5585538E0B02}" ShortID="255233995">
+											<Language>SFX</Language>
+											<AudioFile>Rifle_Sub_04.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="Rifle_Sub_04" ID="{80196558-7AC5-4CBD-A975-5585538E0B02}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="Rifle_Sub_05" ID="{1B70709B-D090-4232-927E-F1A88E89F7DB}" ShortID="13541456">
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="Rifle_Sub_05" ID="{45A0BB0A-D80D-4697-A9F8-3D1018DB5A1A}" ShortID="943172253">
+											<Language>SFX</Language>
+											<AudioFile>Rifle_Sub_05.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="Rifle_Sub_05" ID="{45A0BB0A-D80D-4697-A9F8-3D1018DB5A1A}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="Rifle_Sub_06" ID="{54699206-3846-4435-97AA-A5B13F443ABC}" ShortID="445738813">
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="Rifle_Sub_06" ID="{3955A1E6-363D-4860-9A3D-C03F9448DD16}" ShortID="213076344">
+											<Language>SFX</Language>
+											<AudioFile>Rifle_Sub_06.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="Rifle_Sub_06" ID="{3955A1E6-363D-4860-9A3D-C03F9448DD16}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="Rifle_Sub_07" ID="{BD789AD1-696C-4FFB-906F-9287F39ACFEB}" ShortID="1016024309">
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="Rifle_Sub_07" ID="{1EEBE6A6-37A2-46E8-AFF7-E452C2ECF96A}" ShortID="317687095">
+											<Language>SFX</Language>
+											<AudioFile>Rifle_Sub_07.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="Rifle_Sub_07" ID="{1EEBE6A6-37A2-46E8-AFF7-E452C2ECF96A}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="Rifle_Sub_08" ID="{A00949D9-B420-4BA8-ACEE-978FFE068F44}" ShortID="41097057">
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="Rifle_Sub_08" ID="{0BAFD62F-C6F2-4C7D-B6DB-6042DB3E0FBB}" ShortID="909078294">
+											<Language>SFX</Language>
+											<AudioFile>Rifle_Sub_08.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="Rifle_Sub_08" ID="{0BAFD62F-C6F2-4C7D-B6DB-6042DB3E0FBB}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="Rifle_Sub_09" ID="{E674EA1F-85CA-4669-96E8-E0FCD8C48211}" ShortID="764330683">
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="Rifle_Sub_09" ID="{1555E30B-EEBB-427F-AB6E-5C7480829276}" ShortID="660540436">
+											<Language>SFX</Language>
+											<AudioFile>Rifle_Sub_09.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="Rifle_Sub_09" ID="{1555E30B-EEBB-427F-AB6E-5C7480829276}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="Rifle_Sub_10" ID="{43962788-8F8D-44FF-B7A2-7E8A32B17026}" ShortID="570819319">
+									<PropertyList>
+										<Property Name="Inclusion" Type="bool">
+											<ValueList>
+												<Value>False</Value>
+											</ValueList>
+										</Property>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="Rifle_Sub_10" ID="{C6B945F2-1B8D-4D23-AD11-2A149C4B44EA}" ShortID="992357749">
+											<Language>SFX</Language>
+											<AudioFile>Rifle_Sub_10.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="Rifle_Sub_10" ID="{C6B945F2-1B8D-4D23-AD11-2A149C4B44EA}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+							</ChildrenList>
+						</RandomSequenceContainer>
+						<SwitchContainer Name="Rifle_Break" ID="{D7BB8884-3BC4-4F90-9068-397586BD8962}" ShortID="568275966">
+							<PropertyList>
+								<Property Name="OverrideOutput" Type="bool" Value="True"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+								</Reference>
+								<Reference Name="SwitchGroupOrStateGroup">
+									<ObjectRef Name="Environment" ID="{51C0C1E3-DBFE-42E2-8418-ED9FE2F331C4}" WorkUnitID="{42A1949C-AA88-4459-B910-F96175CB8AF3}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<Sound Name="Rifle_Break_Outdoor_Dry" ID="{3F564089-99A5-4EAF-A0FC-A4980D5FD244}" ShortID="883524389">
+									<PropertyList>
+										<Property Name="Inclusion" Type="bool">
+											<ValueList>
+												<Value>False</Value>
+											</ValueList>
+										</Property>
+										<Property Name="OverrideUserAuxSends" Type="bool" Value="True"/>
+										<Property Name="Volume" Type="Real64">
+											<ValueList>
+												<Value>-7</Value>
+											</ValueList>
+										</Property>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="Rifle_Break_Outdoors" ID="{E2002047-E0EC-42F8-B82F-1DEC52DA6D26}" ShortID="723281670">
+											<PropertyList>
+												<Property Name="FadeInDuration" Type="Real64" Value="7.68317402768622E-03"/>
+												<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
+												<Property Name="TrimBegin" Type="Real64" Value="5.80506482091848E-02"/>
+											</PropertyList>
+											<Language>SFX</Language>
+											<AudioFile>Rifle_Break_Outdoors.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="Rifle_Break_Outdoors" ID="{E2002047-E0EC-42F8-B82F-1DEC52DA6D26}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="Rifle_Break_Indoors" ID="{D24CA2D3-1B33-4106-B7DE-025A777B1365}" ShortID="150944673">
+									<PropertyList>
+										<Property Name="Volume" Type="Real64">
+											<ValueList>
+												<Value>-5</Value>
+											</ValueList>
+										</Property>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="Rifle_Break_Indoors" ID="{C59BC285-981E-4770-B4A3-7A01BDE1C7D1}" ShortID="742403516">
+											<PropertyList>
+												<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
+												<Property Name="TrimBegin" Type="Real64" Value="0.036497974416845"/>
+											</PropertyList>
+											<Language>SFX</Language>
+											<AudioFile>Rifle_Break_Indoors.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="Rifle_Break_Indoors" ID="{C59BC285-981E-4770-B4A3-7A01BDE1C7D1}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="Rifle_Break_Outdoor" ID="{049F2E15-477E-4438-99B5-36460E92AC25}" ShortID="1011995316">
+									<PropertyList>
+										<Property Name="Volume" Type="Real64">
+											<ValueList>
+												<Value>9</Value>
+											</ValueList>
+										</Property>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="Rifle_Break_Outdoor" ID="{4B75D513-9B78-4921-A3DB-042D29CF5572}" ShortID="128573212">
+											<PropertyList>
+												<Property Name="LoopBegin" Type="Real64" Value="3.70916809360731E-02"/>
+												<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
+												<Property Name="TrimBegin" Type="Real64" Value="3.69481533710928E-02"/>
+											</PropertyList>
+											<Language>SFX</Language>
+											<AudioFile>Rifle_Break_Outdoor.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="Rifle_Break_Outdoor" ID="{4B75D513-9B78-4921-A3DB-042D29CF5572}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+							</ChildrenList>
+							<GroupingInfo>
+								<GroupingBehaviorList>
+									<GroupingBehavior>
+										<ItemRef Name="Rifle_Break_Outdoor" ID="{049F2E15-477E-4438-99B5-36460E92AC25}"/>
+									</GroupingBehavior>
+									<GroupingBehavior>
+										<ItemRef Name="Rifle_Break_Outdoor_Dry" ID="{3F564089-99A5-4EAF-A0FC-A4980D5FD244}"/>
+									</GroupingBehavior>
+									<GroupingBehavior>
+										<ItemRef Name="Rifle_Break_Indoors" ID="{D24CA2D3-1B33-4106-B7DE-025A777B1365}"/>
+									</GroupingBehavior>
+								</GroupingBehaviorList>
+								<GroupingList>
+									<Grouping>
+										<SwitchRef Name="Outdoors" ID="{13976289-5AC8-4837-98E0-6CD8084694A5}"/>
+										<ItemList>
+											<ItemRef Name="Rifle_Break_Outdoor_Dry" ID="{3F564089-99A5-4EAF-A0FC-A4980D5FD244}"/>
+											<ItemRef Name="Rifle_Break_Outdoor" ID="{049F2E15-477E-4438-99B5-36460E92AC25}"/>
+										</ItemList>
+									</Grouping>
+									<Grouping>
+										<SwitchRef Name="Indoors" ID="{6788ADFB-5691-44C8-8810-FC25B8BA949E}"/>
+										<ItemList>
+											<ItemRef Name="Rifle_Break_Indoors" ID="{D24CA2D3-1B33-4106-B7DE-025A777B1365}"/>
+										</ItemList>
+									</Grouping>
+								</GroupingList>
+							</GroupingInfo>
+						</SwitchContainer>
+						<Sound Name="Rifle_Out of ammo" ID="{E74C2B65-E7B7-48EE-AB3F-02D74A7F5FC0}" ShortID="1040821619">
+							<PropertyList>
+								<Property Name="OverrideOutput" Type="bool" Value="True"/>
+								<Property Name="Volume" Type="Real64">
+									<ValueList>
+										<Value>-3</Value>
+									</ValueList>
+								</Property>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<AudioFileSource Name="Rifle_Clonk" ID="{10169B01-DD94-434F-B85F-8DC61BB5E341}" ShortID="561351686">
+									<PropertyList>
+										<Property Name="FadeInDuration" Type="Real64" Value="6.00299657534246E-03"/>
+										<Property Name="FadeOutDuration" Type="Real64" Value="8.00399543378993E-03"/>
+										<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
+										<Property Name="TrimBegin" Type="Real64" Value="4.70234731735159E-02"/>
+										<Property Name="TrimEnd" Type="Real64" Value="0.298148829908676"/>
+									</PropertyList>
+									<Language>SFX</Language>
+									<AudioFile>Rifle_Clonk.wav</AudioFile>
+								</AudioFileSource>
+							</ChildrenList>
+							<ActiveSourceList>
+								<ActiveSource Name="Rifle_Clonk" ID="{10169B01-DD94-434F-B85F-8DC61BB5E341}" Platform="Linked"/>
+							</ActiveSourceList>
+						</Sound>
+						<ActorMixer Name="Rifle_Reloading" ID="{8281B776-8BBC-4193-BC6E-2E9188456F00}" ShortID="223149865">
+							<PropertyList>
+								<Property Name="OverrideOutput" Type="bool" Value="True"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<Sound Name="Rifle_Reloading" ID="{02D6DD91-44EC-4C4B-B2F9-8A6371476088}" ShortID="773805307">
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="Rifle_Reloading" ID="{2EC1638C-0709-460B-BA12-C3E1C242A6FB}" ShortID="193618871">
+											<Language>SFX</Language>
+											<AudioFile>Rifle_Reloading.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="Rifle_Reloading" ID="{2EC1638C-0709-460B-BA12-C3E1C242A6FB}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<RandomSequenceContainer Name="Rifle_Reloading_Clothes" ID="{5E47314A-386E-4E7F-B08B-2B7B90A364B0}" ShortID="389513115">
+									<PropertyList>
+										<Property Name="Highpass" Type="int16">
+											<ValueList>
+												<Value>23</Value>
+											</ValueList>
+										</Property>
+										<Property Name="Volume" Type="Real64">
+											<ValueList>
+												<Value>-2</Value>
+											</ValueList>
+										</Property>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<Sound Name="Rifle_Reloading_Clothes_01" ID="{6F72B4D4-9BC1-4C3B-A188-DE1AA7B897C4}" ShortID="582345166">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Rifle_Reloading_Clothes_01" ID="{185A403A-9CED-4560-8D14-129450867D93}" ShortID="777929252">
+													<Language>SFX</Language>
+													<AudioFile>Rifle_Reloading_Clothes_01.wav</AudioFile>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="Rifle_Reloading_Clothes_01" ID="{185A403A-9CED-4560-8D14-129450867D93}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<Sound Name="Rifle_Reloading_Clothes_02" ID="{0CE43E87-D23C-48D6-AB8B-B4EFA6B12EBB}" ShortID="1051365848">
+											<PropertyList>
+												<Property Name="Volume" Type="Real64">
+													<ValueList>
+														<Value>-2</Value>
+													</ValueList>
+												</Property>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Rifle_Reloading_Clothes_02" ID="{15DABDEF-D593-49D4-B7F1-173609FE18F2}" ShortID="274132836">
+													<Language>SFX</Language>
+													<AudioFile>Rifle_Reloading_Clothes_02.wav</AudioFile>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="Rifle_Reloading_Clothes_02" ID="{15DABDEF-D593-49D4-B7F1-173609FE18F2}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<Sound Name="Rifle_Reloading_Clothes_03" ID="{4DE9DEF0-8D23-4B44-95BE-985B3F03F4FA}" ShortID="1069839787">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Rifle_Reloading_Clothes_03" ID="{6EAC3542-FA96-4FED-B47C-B3A07FC90DCC}" ShortID="848243290">
+													<Language>SFX</Language>
+													<AudioFile>Rifle_Reloading_Clothes_03.wav</AudioFile>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="Rifle_Reloading_Clothes_03" ID="{6EAC3542-FA96-4FED-B47C-B3A07FC90DCC}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+									</ChildrenList>
+								</RandomSequenceContainer>
+							</ChildrenList>
+						</ActorMixer>
+						<Sound Name="Rifle_Fire_Click" ID="{5AFB5C1F-1FEF-452E-A36D-CC7D3DDF4202}" ShortID="832407361">
+							<PropertyList>
+								<Property Name="OverrideUserAuxSends" Type="bool" Value="True"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<AudioFileSource Name="Rifle_Fire_Click" ID="{23DBF0AF-675B-4D7F-A7DC-E7D20045824F}" ShortID="596923229">
+									<PropertyList>
+										<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
+									</PropertyList>
+									<Language>SFX</Language>
+									<AudioFile>Rifle_Fire_Click.wav</AudioFile>
+								</AudioFileSource>
+							</ChildrenList>
+							<ActiveSourceList>
+								<ActiveSource Name="Rifle_Fire_Click" ID="{23DBF0AF-675B-4D7F-A7DC-E7D20045824F}" Platform="Linked"/>
+							</ActiveSourceList>
+						</Sound>
+						<SwitchContainer Name="Rifle_Noise" ID="{074C49B9-24AE-4CDB-94CA-D72AF7E1C2BD}" ShortID="649506629">
+							<PropertyList>
+								<Property Name="Volume" Type="Real64">
+									<ValueList>
+										<Value>1</Value>
+									</ValueList>
+								</Property>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+								</Reference>
+								<Reference Name="SwitchGroupOrStateGroup">
+									<ObjectRef Name="Environment" ID="{51C0C1E3-DBFE-42E2-8418-ED9FE2F331C4}" WorkUnitID="{42A1949C-AA88-4459-B910-F96175CB8AF3}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<RandomSequenceContainer Name="Rifle_Noise_Indoor_Dry" ID="{33AEA99A-AC25-449F-BCFB-C2224D86EAE4}" ShortID="508285854">
+									<PropertyList>
+										<Property Name="Inclusion" Type="bool">
+											<ValueList>
+												<Value>False</Value>
+											</ValueList>
+										</Property>
+										<Property Name="PlayMechanismLoop" Type="bool" Value="True"/>
+										<Property Name="PlayMechanismSpecialTransitions" Type="bool" Value="True"/>
+										<Property Name="PlayMechanismSpecialTransitionsType" Type="int16" Value="3"/>
+										<Property Name="PlayMechanismSpecialTransitionsValue" Type="Real64" Value="0.09"/>
+										<Property Name="PlayMechanismStepOrContinuous" Type="int16" Value="0"/>
+										<Property Name="RandomAvoidRepeatingCount" Type="int32" Value="3"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<Sound Name="Rifle_Noise_01" ID="{DA976D33-7559-42AB-BD78-25511005D6DB}" ShortID="566005255">
+											<PropertyList>
+												<Property Name="Inclusion" Type="bool">
+													<ValueList>
+														<Value>False</Value>
+													</ValueList>
+												</Property>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Rifle_Noise_01" ID="{7ABCB2B5-F87F-4B7C-AB07-1285BCB71F17}" ShortID="105677948">
+													<Language>SFX</Language>
+													<AudioFile>Rifle_Noise_01.wav</AudioFile>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="Rifle_Noise_01" ID="{7ABCB2B5-F87F-4B7C-AB07-1285BCB71F17}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<Sound Name="Rifle_Noise_02" ID="{408E3D66-C5CE-492F-B6C1-8749366FCC01}" ShortID="907689515">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Rifle_Noise_02" ID="{5716AF7E-63C6-4071-8D5F-B7263C2A8844}" ShortID="603301323">
+													<Language>SFX</Language>
+													<AudioFile>Rifle_Noise_02.wav</AudioFile>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="Rifle_Noise_02" ID="{5716AF7E-63C6-4071-8D5F-B7263C2A8844}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<Sound Name="Rifle_Noise_03" ID="{5136AE37-3EF5-4120-83B4-3EB6C7F6F8B0}" ShortID="344123624">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Rifle_Noise_03" ID="{576179CD-B68A-4EF4-8662-224FA736B7C5}" ShortID="582972817">
+													<Language>SFX</Language>
+													<AudioFile>Rifle_Noise_03.wav</AudioFile>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="Rifle_Noise_03" ID="{576179CD-B68A-4EF4-8662-224FA736B7C5}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<Sound Name="Rifle_Noise_04" ID="{1D26EBDE-F4DA-4571-A9B3-E42DE4E61E92}" ShortID="507016155">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Rifle_Noise_04" ID="{6BA55439-96AF-4392-8379-7A5CA80A757C}" ShortID="33896297">
+													<Language>SFX</Language>
+													<AudioFile>Rifle_Noise_04.wav</AudioFile>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="Rifle_Noise_04" ID="{6BA55439-96AF-4392-8379-7A5CA80A757C}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<Sound Name="Rifle_Noise_05" ID="{3E78699B-33CB-4742-AFBF-CBBEE7D9864F}" ShortID="209678950">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Rifle_Noise_05" ID="{6DDCC3C4-A291-4E44-8E87-80891F870295}" ShortID="652605924">
+													<Language>SFX</Language>
+													<AudioFile>Rifle_Noise_05.wav</AudioFile>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="Rifle_Noise_05" ID="{6DDCC3C4-A291-4E44-8E87-80891F870295}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<Sound Name="Rifle_Noise_06" ID="{95C1290A-CC16-441D-9E64-FACA1D4E56B7}" ShortID="572418064">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Rifle_Noise_06" ID="{7EBC68F0-0123-4400-8BC1-9ED4AF063642}" ShortID="429212929">
+													<Language>SFX</Language>
+													<AudioFile>Rifle_Noise_06.wav</AudioFile>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="Rifle_Noise_06" ID="{7EBC68F0-0123-4400-8BC1-9ED4AF063642}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<Sound Name="Rifle_Noise_07" ID="{5D56E042-41E5-4F19-8BF1-234891AA362F}" ShortID="1016148844">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Rifle_Noise_07" ID="{B6D79151-C75D-4496-90A2-CD5CD0B44616}" ShortID="1008305510">
+													<Language>SFX</Language>
+													<AudioFile>Rifle_Noise_07.wav</AudioFile>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="Rifle_Noise_07" ID="{B6D79151-C75D-4496-90A2-CD5CD0B44616}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<Sound Name="Rifle_Noise_08" ID="{F251A4B0-5B83-445F-9D73-7355847B811A}" ShortID="970430225">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Rifle_Noise_08" ID="{89064FB6-1B05-4556-9FE9-5FBBCD39AEC8}" ShortID="705152059">
+													<Language>SFX</Language>
+													<AudioFile>Rifle_Noise_08.wav</AudioFile>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="Rifle_Noise_08" ID="{89064FB6-1B05-4556-9FE9-5FBBCD39AEC8}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<Sound Name="Rifle_Noise_09" ID="{6D1060AA-EC71-44A4-B787-FE2D56818369}" ShortID="64367140">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Rifle_Noise_09" ID="{F55BEDEC-B050-4CB0-97BC-7D62A5E69702}" ShortID="720868928">
+													<Language>SFX</Language>
+													<AudioFile>Rifle_Noise_09.wav</AudioFile>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="Rifle_Noise_09" ID="{F55BEDEC-B050-4CB0-97BC-7D62A5E69702}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<Sound Name="Rifle_Noise_10" ID="{E2C08903-024A-4796-93CE-C53EA2E4337D}" ShortID="636891707">
+											<PropertyList>
+												<Property Name="Inclusion" Type="bool">
+													<ValueList>
+														<Value>False</Value>
+													</ValueList>
+												</Property>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Rifle_Noise_10" ID="{67CC36B8-9F66-4896-B6B1-4DE6B0E8CA12}" ShortID="305340327">
+													<Language>SFX</Language>
+													<AudioFile>Rifle_Noise_10.wav</AudioFile>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="Rifle_Noise_10" ID="{67CC36B8-9F66-4896-B6B1-4DE6B0E8CA12}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+									</ChildrenList>
+								</RandomSequenceContainer>
+								<RandomSequenceContainer Name="Rifle_Noise_Outdoor_Dry" ID="{9DD51F52-A04F-4210-A8C1-8C55E73CB976}" ShortID="632605094">
+									<PropertyList>
+										<Property Name="Inclusion" Type="bool">
+											<ValueList>
+												<Value>False</Value>
+											</ValueList>
+										</Property>
+										<Property Name="OverrideUserAuxSends" Type="bool" Value="True"/>
+										<Property Name="PlayMechanismLoop" Type="bool" Value="True"/>
+										<Property Name="PlayMechanismSpecialTransitions" Type="bool" Value="True"/>
+										<Property Name="PlayMechanismSpecialTransitionsType" Type="int16" Value="3"/>
+										<Property Name="PlayMechanismSpecialTransitionsValue" Type="Real64" Value="0.09"/>
+										<Property Name="PlayMechanismStepOrContinuous" Type="int16" Value="0"/>
+										<Property Name="RandomAvoidRepeatingCount" Type="int32" Value="3"/>
+										<Property Name="Volume" Type="Real64">
+											<ValueList>
+												<Value>-2</Value>
+											</ValueList>
+										</Property>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<Sound Name="Rifle_Noise_01" ID="{C61FEBEE-368F-4717-9A38-A9C24746F637}" ShortID="84630679">
+											<PropertyList>
+												<Property Name="Inclusion" Type="bool">
+													<ValueList>
+														<Value>False</Value>
+													</ValueList>
+												</Property>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Rifle_Noise_01" ID="{FC699075-B939-401B-9F62-91BB8FBC7A7B}" ShortID="120925301">
+													<Language>SFX</Language>
+													<AudioFile>Rifle_Noise_01.wav</AudioFile>
+													<ConvertedFileIDList>
+														<File ID="105677948"/>
+													</ConvertedFileIDList>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="Rifle_Noise_01" ID="{FC699075-B939-401B-9F62-91BB8FBC7A7B}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<Sound Name="Rifle_Noise_02" ID="{95C27F77-A159-4C1D-AE71-1CD1872CB975}" ShortID="232021096">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Rifle_Noise_02" ID="{440EB4FA-FF5B-4677-8B0F-A446EBD69A81}" ShortID="931754648">
+													<Language>SFX</Language>
+													<AudioFile>Rifle_Noise_02.wav</AudioFile>
+													<ConvertedFileIDList>
+														<File ID="603301323"/>
+													</ConvertedFileIDList>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="Rifle_Noise_02" ID="{440EB4FA-FF5B-4677-8B0F-A446EBD69A81}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<Sound Name="Rifle_Noise_03" ID="{66D7B4B5-8163-4E5A-8DE6-FC8AA22DFFA5}" ShortID="763306090">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Rifle_Noise_03" ID="{AC4AAE6D-02F9-457A-888C-455D691E87E0}" ShortID="1031286452">
+													<Language>SFX</Language>
+													<AudioFile>Rifle_Noise_03.wav</AudioFile>
+													<ConvertedFileIDList>
+														<File ID="582972817"/>
+													</ConvertedFileIDList>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="Rifle_Noise_03" ID="{AC4AAE6D-02F9-457A-888C-455D691E87E0}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<Sound Name="Rifle_Noise_04" ID="{4A75D95D-8871-4665-BBDF-D2D88D566984}" ShortID="533136360">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Rifle_Noise_04" ID="{696D8DFA-E77E-4107-81FD-5E5EB5686CDB}" ShortID="532221625">
+													<Language>SFX</Language>
+													<AudioFile>Rifle_Noise_04.wav</AudioFile>
+													<ConvertedFileIDList>
+														<File ID="33896297"/>
+													</ConvertedFileIDList>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="Rifle_Noise_04" ID="{696D8DFA-E77E-4107-81FD-5E5EB5686CDB}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<Sound Name="Rifle_Noise_05" ID="{D3ECC5A3-B5D5-4C49-BE71-BE24FD4C483E}" ShortID="245285454">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Rifle_Noise_05" ID="{E802E004-6684-4576-9826-E70A1BD662AC}" ShortID="116611097">
+													<Language>SFX</Language>
+													<AudioFile>Rifle_Noise_05.wav</AudioFile>
+													<ConvertedFileIDList>
+														<File ID="652605924"/>
+													</ConvertedFileIDList>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="Rifle_Noise_05" ID="{E802E004-6684-4576-9826-E70A1BD662AC}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<Sound Name="Rifle_Noise_06" ID="{6BD471E1-6E34-46A4-AB91-6F0477DA5DB8}" ShortID="483869794">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Rifle_Noise_06" ID="{6141821B-1CCD-4127-B849-9B0BE00009EB}" ShortID="538388487">
+													<Language>SFX</Language>
+													<AudioFile>Rifle_Noise_06.wav</AudioFile>
+													<ConvertedFileIDList>
+														<File ID="429212929"/>
+													</ConvertedFileIDList>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="Rifle_Noise_06" ID="{6141821B-1CCD-4127-B849-9B0BE00009EB}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<Sound Name="Rifle_Noise_07" ID="{371D0281-7992-42BB-BEE0-A0F45CB397D3}" ShortID="219384964">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Rifle_Noise_07" ID="{D8C7CA07-CDDD-478F-A1EE-9FEB2481FFF8}" ShortID="24205959">
+													<Language>SFX</Language>
+													<AudioFile>Rifle_Noise_07.wav</AudioFile>
+													<ConvertedFileIDList>
+														<File ID="1008305510"/>
+													</ConvertedFileIDList>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="Rifle_Noise_07" ID="{D8C7CA07-CDDD-478F-A1EE-9FEB2481FFF8}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<Sound Name="Rifle_Noise_08" ID="{E4252F11-2F06-41DC-A4DB-4D0EAE7EC6BC}" ShortID="538232507">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Rifle_Noise_08" ID="{443614D6-3C71-488E-8515-A793B2807B93}" ShortID="383913062">
+													<Language>SFX</Language>
+													<AudioFile>Rifle_Noise_08.wav</AudioFile>
+													<ConvertedFileIDList>
+														<File ID="705152059"/>
+													</ConvertedFileIDList>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="Rifle_Noise_08" ID="{443614D6-3C71-488E-8515-A793B2807B93}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<Sound Name="Rifle_Noise_09" ID="{CFA97091-3FFA-4C11-8A14-EA085A5E7139}" ShortID="334289289">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Rifle_Noise_09" ID="{683537AA-879B-42EF-B715-34EBE5DFBFB6}" ShortID="547731527">
+													<Language>SFX</Language>
+													<AudioFile>Rifle_Noise_09.wav</AudioFile>
+													<ConvertedFileIDList>
+														<File ID="720868928"/>
+													</ConvertedFileIDList>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="Rifle_Noise_09" ID="{683537AA-879B-42EF-B715-34EBE5DFBFB6}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<Sound Name="Rifle_Noise_10" ID="{EFA315E5-503A-484C-B9A4-0E3F3AD97B4B}" ShortID="65970579">
+											<PropertyList>
+												<Property Name="Inclusion" Type="bool">
+													<ValueList>
+														<Value>False</Value>
+													</ValueList>
+												</Property>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Rifle_Noise_10" ID="{70568FDD-9EB7-4CED-8050-B44E61374E77}" ShortID="873209648">
+													<Language>SFX</Language>
+													<AudioFile>Rifle_Noise_10.wav</AudioFile>
+													<ConvertedFileIDList>
+														<File ID="305340327"/>
+													</ConvertedFileIDList>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="Rifle_Noise_10" ID="{70568FDD-9EB7-4CED-8050-B44E61374E77}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+									</ChildrenList>
+								</RandomSequenceContainer>
+								<RandomSequenceContainer Name="Rifle_Noise_Outdoor" ID="{75179945-6DB1-4B59-9E33-64B8EE263347}" ShortID="62123448">
+									<PropertyList>
+										<Property Name="PlayMechanismLoop" Type="bool" Value="True"/>
+										<Property Name="PlayMechanismSpecialTransitions" Type="bool" Value="True"/>
+										<Property Name="PlayMechanismSpecialTransitionsType" Type="int16" Value="3"/>
+										<Property Name="PlayMechanismSpecialTransitionsValue" Type="Real64" Value="0.09"/>
+										<Property Name="PlayMechanismStepOrContinuous" Type="int16" Value="0"/>
+										<Property Name="RandomAvoidRepeatingCount" Type="int32" Value="3"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<Sound Name="Rifle_Noise_Outdoor_02" ID="{5763AA14-0322-4236-8DEE-A56CCDF249BD}" ShortID="66556498">
+											<PropertyList>
+												<Property Name="Inclusion" Type="bool">
+													<ValueList>
+														<Value>False</Value>
+													</ValueList>
+												</Property>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Rifle_Noise_Outdoor_02" ID="{DF0C59EC-3678-4022-8F1C-1E7FBDEE5669}" ShortID="540717820">
+													<PropertyList>
+														<Property Name="FadeOutDuration" Type="Real64" Value="8.29987500865381E-04"/>
+														<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
+													</PropertyList>
+													<Language>SFX</Language>
+													<AudioFile>Rifle_Noise_Outdoor_02.wav</AudioFile>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="Rifle_Noise_Outdoor_02" ID="{DF0C59EC-3678-4022-8F1C-1E7FBDEE5669}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<Sound Name="Rifle_Noise_Outdoor_03" ID="{395E779E-E796-4615-8321-E93F64DE339D}" ShortID="231888567">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Rifle_Noise_Outdoor_03" ID="{6D555854-C630-4A6F-94D3-6EC488A4126D}" ShortID="196001769">
+													<PropertyList>
+														<Property Name="FadeOutDuration" Type="Real64" Value="1.47666721599649E-03"/>
+														<Property Name="LoopBegin" Type="Real64" Value="0"/>
+														<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
+													</PropertyList>
+													<Language>SFX</Language>
+													<AudioFile>Rifle_Noise_Outdoor_03.wav</AudioFile>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="Rifle_Noise_Outdoor_03" ID="{6D555854-C630-4A6F-94D3-6EC488A4126D}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<Sound Name="Rifle_Noise_Outdoor_04" ID="{85DAF64A-1454-48C4-8A9B-2EED82E353A5}" ShortID="293329940">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Rifle_Noise_Outdoor_04" ID="{B46865B4-D97E-40A1-AC45-4D3AF67E7DEE}" ShortID="296015639">
+													<PropertyList>
+														<Property Name="FadeOutDuration" Type="Real64" Value="1.40401834761592E-03"/>
+														<Property Name="LoopBegin" Type="Real64" Value="0"/>
+														<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
+													</PropertyList>
+													<Language>SFX</Language>
+													<AudioFile>Rifle_Noise_Outdoor_04.wav</AudioFile>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="Rifle_Noise_Outdoor_04" ID="{B46865B4-D97E-40A1-AC45-4D3AF67E7DEE}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<Sound Name="Rifle_Noise_Outdoor_05" ID="{1B0C1D2B-A264-4CA3-B251-66AD58E9DED2}" ShortID="643156066">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Rifle_Noise_Outdoor_05" ID="{2F02629E-63B7-4E53-A0D7-31823D0029D1}" ShortID="170623293">
+													<PropertyList>
+														<Property Name="FadeOutDuration" Type="Real64" Value="3.22078938694792E-03"/>
+														<Property Name="LoopBegin" Type="Real64" Value="0"/>
+														<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
+													</PropertyList>
+													<Language>SFX</Language>
+													<AudioFile>Rifle_Noise_Outdoor_05.wav</AudioFile>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="Rifle_Noise_Outdoor_05" ID="{2F02629E-63B7-4E53-A0D7-31823D0029D1}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<Sound Name="Rifle_Noise_Outdoor_06" ID="{EE9980FD-1BE9-4437-96CE-069BDAB51510}" ShortID="742351597">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Rifle_Noise_Outdoor_06" ID="{E2E3F291-3A88-4D8F-A5AC-CBF2DB9BBF7C}" ShortID="69188623">
+													<PropertyList>
+														<Property Name="FadeOutDuration" Type="Real64" Value="2.25444957152275E-03"/>
+														<Property Name="LoopBegin" Type="Real64" Value="0"/>
+														<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
+													</PropertyList>
+													<Language>SFX</Language>
+													<AudioFile>Rifle_Noise_Outdoor_06.wav</AudioFile>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="Rifle_Noise_Outdoor_06" ID="{E2E3F291-3A88-4D8F-A5AC-CBF2DB9BBF7C}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<Sound Name="Rifle_Noise_Outdoor_07" ID="{6433516F-AB40-47C1-A423-A96E677944FF}" ShortID="186240830">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Rifle_Noise_Outdoor_07" ID="{0F8E205D-38A7-4160-8BAF-9BD3A3B58CFF}" ShortID="740374785">
+													<PropertyList>
+														<Property Name="FadeOutDuration" Type="Real64" Value="6.08086134915403E-03"/>
+														<Property Name="LoopBegin" Type="Real64" Value="0"/>
+														<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
+													</PropertyList>
+													<Language>SFX</Language>
+													<AudioFile>Rifle_Noise_Outdoor_07.wav</AudioFile>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="Rifle_Noise_Outdoor_07" ID="{0F8E205D-38A7-4160-8BAF-9BD3A3B58CFF}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<Sound Name="Rifle_Noise_Outdoor_08" ID="{C3262B0A-BD70-4E1D-8B9F-BA49E1E9571E}" ShortID="814277544">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Rifle_Noise_Outdoor_08" ID="{3C96FFAA-00D3-40ED-A910-9AF1F3DBF30F}" ShortID="524220479">
+													<PropertyList>
+														<Property Name="FadeOutDuration" Type="Real64" Value="1.87695012085257E-03"/>
+														<Property Name="LoopBegin" Type="Real64" Value="0"/>
+														<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
+													</PropertyList>
+													<Language>SFX</Language>
+													<AudioFile>Rifle_Noise_Outdoor_08.wav</AudioFile>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="Rifle_Noise_Outdoor_08" ID="{3C96FFAA-00D3-40ED-A910-9AF1F3DBF30F}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<Sound Name="Rifle_Noise_Outdoor_09" ID="{710403ED-664A-49EF-B686-EC31AEA1C09B}" ShortID="621363144">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Rifle_Noise_Outdoor_09" ID="{E9E33417-054F-45A9-8955-AE22EB3F85F9}" ShortID="702000156">
+													<PropertyList>
+														<Property Name="FadeOutDuration" Type="Real64" Value="2.41779279279279E-03"/>
+														<Property Name="LoopBegin" Type="Real64" Value="0"/>
+														<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
+													</PropertyList>
+													<Language>SFX</Language>
+													<AudioFile>Rifle_Noise_Outdoor_09.wav</AudioFile>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="Rifle_Noise_Outdoor_09" ID="{E9E33417-054F-45A9-8955-AE22EB3F85F9}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+									</ChildrenList>
+								</RandomSequenceContainer>
+								<RandomSequenceContainer Name="Rifle_Noise_Indoor" ID="{98D583A0-E223-41DC-972F-58F4B3B2EEF9}" ShortID="335585259">
+									<PropertyList>
+										<Property Name="PlayMechanismLoop" Type="bool" Value="True"/>
+										<Property Name="PlayMechanismSpecialTransitions" Type="bool" Value="True"/>
+										<Property Name="PlayMechanismSpecialTransitionsType" Type="int16" Value="3"/>
+										<Property Name="PlayMechanismSpecialTransitionsValue" Type="Real64" Value="0.09"/>
+										<Property Name="PlayMechanismStepOrContinuous" Type="int16" Value="0"/>
+										<Property Name="RandomAvoidRepeatingCount" Type="int32" Value="3"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<Sound Name="Rifle_Noise_Indoor_02" ID="{64CE69D8-262B-4CA8-9F5E-7073F758A24B}" ShortID="61354804">
+											<PropertyList>
+												<Property Name="Inclusion" Type="bool">
+													<ValueList>
+														<Value>False</Value>
+													</ValueList>
+												</Property>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Rifle_Noise_Indoor_02" ID="{9C15B554-E190-4123-A5B1-D6740AE2D840}" ShortID="207399955">
+													<Language>SFX</Language>
+													<AudioFile>Rifle_Noise_Indoor_02.wav</AudioFile>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="Rifle_Noise_Indoor_02" ID="{9C15B554-E190-4123-A5B1-D6740AE2D840}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<Sound Name="Rifle_Noise_Indoor_03" ID="{2EF18102-B42D-4401-A696-790486CF1E9F}" ShortID="925049048">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Rifle_Noise_Indoor_03" ID="{B636C3A9-6761-4EC0-A741-4CEBC712ED89}" ShortID="227183882">
+													<Language>SFX</Language>
+													<AudioFile>Rifle_Noise_Indoor_03.wav</AudioFile>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="Rifle_Noise_Indoor_03" ID="{B636C3A9-6761-4EC0-A741-4CEBC712ED89}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<Sound Name="Rifle_Noise_Indoor_04" ID="{0DFB0D85-C823-4B7B-8F21-0777DBE0022E}" ShortID="1067182981">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Rifle_Noise_Indoor_04" ID="{7248E2F1-E2D5-4FC7-833B-756995F36280}" ShortID="919970010">
+													<Language>SFX</Language>
+													<AudioFile>Rifle_Noise_Indoor_04.wav</AudioFile>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="Rifle_Noise_Indoor_04" ID="{7248E2F1-E2D5-4FC7-833B-756995F36280}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<Sound Name="Rifle_Noise_Indoor_05" ID="{09CD1BB7-55F4-4127-B3C1-C02CF4FA054A}" ShortID="941588544">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Rifle_Noise_Indoor_05" ID="{31FBF7C6-5FC7-4D9B-ABA8-93B4CCC14032}" ShortID="548212445">
+													<Language>SFX</Language>
+													<AudioFile>Rifle_Noise_Indoor_05.wav</AudioFile>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="Rifle_Noise_Indoor_05" ID="{31FBF7C6-5FC7-4D9B-ABA8-93B4CCC14032}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<Sound Name="Rifle_Noise_Indoor_06" ID="{E599A480-8DAE-412D-BA99-FB535EDAA862}" ShortID="1062791644">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Rifle_Noise_Indoor_06" ID="{0EEAB63D-8106-4E6A-91BF-FCCB2B9AEF20}" ShortID="38262662">
+													<Language>SFX</Language>
+													<AudioFile>Rifle_Noise_Indoor_06.wav</AudioFile>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="Rifle_Noise_Indoor_06" ID="{0EEAB63D-8106-4E6A-91BF-FCCB2B9AEF20}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<Sound Name="Rifle_Noise_Indoor_07" ID="{11250A66-8688-4F8E-A66E-40F2E7A90306}" ShortID="889787160">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Rifle_Noise_Indoor_07" ID="{5805E497-CF2F-4B12-8BDC-4CDEAD0BF1EB}" ShortID="122202214">
+													<Language>SFX</Language>
+													<AudioFile>Rifle_Noise_Indoor_07.wav</AudioFile>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="Rifle_Noise_Indoor_07" ID="{5805E497-CF2F-4B12-8BDC-4CDEAD0BF1EB}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<Sound Name="Rifle_Noise_Indoor_08" ID="{656FFC3D-6BD5-4395-99D5-058D186AD725}" ShortID="192278124">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Rifle_Noise_Indoor_08" ID="{D21597DD-B3DC-4CA4-8593-4E2A0B88FA39}" ShortID="899760190">
+													<Language>SFX</Language>
+													<AudioFile>Rifle_Noise_Indoor_08.wav</AudioFile>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="Rifle_Noise_Indoor_08" ID="{D21597DD-B3DC-4CA4-8593-4E2A0B88FA39}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<Sound Name="Rifle_Noise_Indoor_09" ID="{532C7820-2946-4E7C-A37E-207FF4C279AF}" ShortID="1059735785">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Rifle_Noise_Indoor_09" ID="{2A880DE7-27B1-4BA8-AE75-CE5B7277220B}" ShortID="38953370">
+													<Language>SFX</Language>
+													<AudioFile>Rifle_Noise_Indoor_09.wav</AudioFile>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="Rifle_Noise_Indoor_09" ID="{2A880DE7-27B1-4BA8-AE75-CE5B7277220B}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+									</ChildrenList>
+								</RandomSequenceContainer>
+							</ChildrenList>
+							<GroupingInfo>
+								<GroupingBehaviorList>
+									<GroupingBehavior>
+										<ItemRef Name="Rifle_Noise_Outdoor" ID="{75179945-6DB1-4B59-9E33-64B8EE263347}"/>
+									</GroupingBehavior>
+									<GroupingBehavior>
+										<ItemRef Name="Rifle_Noise_Outdoor_Dry" ID="{9DD51F52-A04F-4210-A8C1-8C55E73CB976}"/>
+									</GroupingBehavior>
+									<GroupingBehavior>
+										<ItemRef Name="Rifle_Noise_Indoor_Dry" ID="{33AEA99A-AC25-449F-BCFB-C2224D86EAE4}"/>
+									</GroupingBehavior>
+									<GroupingBehavior>
+										<ItemRef Name="Rifle_Noise_Indoor" ID="{98D583A0-E223-41DC-972F-58F4B3B2EEF9}"/>
+									</GroupingBehavior>
+								</GroupingBehaviorList>
+								<GroupingList>
+									<Grouping>
+										<SwitchRef Name="Outdoors" ID="{13976289-5AC8-4837-98E0-6CD8084694A5}"/>
+										<ItemList>
+											<ItemRef Name="Rifle_Noise_Outdoor" ID="{75179945-6DB1-4B59-9E33-64B8EE263347}"/>
+											<ItemRef Name="Rifle_Noise_Outdoor_Dry" ID="{9DD51F52-A04F-4210-A8C1-8C55E73CB976}"/>
+										</ItemList>
+									</Grouping>
+									<Grouping>
+										<SwitchRef Name="Indoors" ID="{6788ADFB-5691-44C8-8810-FC25B8BA949E}"/>
+										<ItemList>
+											<ItemRef Name="Rifle_Noise_Indoor_Dry" ID="{33AEA99A-AC25-449F-BCFB-C2224D86EAE4}"/>
+											<ItemRef Name="Rifle_Noise_Indoor" ID="{98D583A0-E223-41DC-972F-58F4B3B2EEF9}"/>
+										</ItemList>
+									</Grouping>
+								</GroupingList>
+							</GroupingInfo>
+						</SwitchContainer>
+					</ChildrenList>
+				</ActorMixer>
+				<ActorMixer Name="Rocket_Launcher" ID="{53C879F5-19BD-40B8-B728-608B64ED9510}" ShortID="545904922">
+					<PropertyList>
+						<Property Name="3DSpatialization" Type="int16" Value="2"/>
+					</PropertyList>
+					<ReferenceList>
+						<Reference Name="Attenuation">
+							<ObjectRef Name="Player_Standard_Grenade" ID="{FA41FFEE-2E1B-463D-A50F-EF2D137A1356}" WorkUnitID="{121019D4-4484-4FD8-9C2A-2F490B6614A6}"/>
+						</Reference>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="Weapons_Sfx" ID="{2567D8A9-864F-40E5-A8FC-BD305C7F6F4D}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<Sound Name="Rocket_Launch" ID="{578196AF-2935-4DC6-BCA0-85B750E4C701}" ShortID="670212619">
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<AudioFileSource Name="Rocket_Launch" ID="{35A9DF40-CD97-4CD6-94E9-1E61EF5C2B57}" ShortID="447359387">
+									<Language>SFX</Language>
+									<AudioFile>Rocket_Launch.wav</AudioFile>
+								</AudioFileSource>
+							</ChildrenList>
+							<ActiveSourceList>
+								<ActiveSource Name="Rocket_Launch" ID="{35A9DF40-CD97-4CD6-94E9-1E61EF5C2B57}" Platform="Linked"/>
+							</ActiveSourceList>
+						</Sound>
+						<Sound Name="Rocket_Trail" ID="{9B65AB7F-105C-4524-8928-8739E9A15DFC}" ShortID="823992068">
+							<PropertyList>
+								<Property Name="IsLoopingEnabled" Type="bool" Value="True"/>
+								<Property Name="Volume" Type="Real64">
+									<ValueList>
+										<Value>-9</Value>
+									</ValueList>
+								</Property>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<AudioFileSource Name="Rocket_Trail" ID="{480A4E4C-5E15-4F1E-B32B-A3BBA000ACBD}" ShortID="226443609">
+									<PropertyList>
+										<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
+										<Property Name="TrimBegin" Type="Real64" Value="9.37750428082192E-02"/>
+									</PropertyList>
+									<Language>SFX</Language>
+									<AudioFile>Rocket_Trail.wav</AudioFile>
+								</AudioFileSource>
+							</ChildrenList>
+							<ActiveSourceList>
+								<ActiveSource Name="Rocket_Trail" ID="{480A4E4C-5E15-4F1E-B32B-A3BBA000ACBD}" Platform="Linked"/>
+							</ActiveSourceList>
+						</Sound>
+						<Sound Name="Rocket_Explosion_03" ID="{32E4E003-49D2-4E23-9F63-646B3FCBD0BB}" ShortID="791922909">
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<AudioFileSource Name="Rocket_Explosion_03" ID="{FF0E6609-5714-43E0-8B87-DB872A54F0AB}" ShortID="1073710769">
+									<Language>SFX</Language>
+									<AudioFile>Rocket_Explosion_03.wav</AudioFile>
+								</AudioFileSource>
+							</ChildrenList>
+							<ActiveSourceList>
+								<ActiveSource Name="Rocket_Explosion_03" ID="{FF0E6609-5714-43E0-8B87-DB872A54F0AB}" Platform="Linked"/>
+							</ActiveSourceList>
+						</Sound>
+					</ChildrenList>
+				</ActorMixer>
+				<ActorMixer Name="Pistol_Laser" ID="{011DBC85-2853-4038-8580-C75AE4A4EF61}" ShortID="486148062">
+					<ReferenceList>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<RandomSequenceContainer Name="Tir" ID="{FE6970B6-C814-46EE-83B4-E2D93DD55443}" ShortID="477066426">
+							<PropertyList>
+								<Property Name="Volume" Type="Real64">
+									<ValueList>
+										<Value>-5</Value>
+									</ValueList>
+								</Property>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<Sound Name="Pistolet tir 2" ID="{A4C6E209-F29A-429E-B3AC-6998A0DDAC94}" ShortID="370913277">
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="Pistolet tir 2" ID="{32F6B2DE-FCE1-4F7B-88D6-5EA08B38A7EC}" ShortID="720802401">
+											<Language>SFX</Language>
+											<AudioFile>Pistolet tir 2.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="Pistolet tir 2" ID="{32F6B2DE-FCE1-4F7B-88D6-5EA08B38A7EC}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="Pistolet tir 3" ID="{91218E31-7753-433C-B42E-16753F94D867}" ShortID="60104874">
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="Pistolet tir 3" ID="{B916D857-BC0F-4B22-8B19-2D6088892F58}" ShortID="874485063">
+											<Language>SFX</Language>
+											<AudioFile>Pistolet tir 3.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="Pistolet tir 3" ID="{B916D857-BC0F-4B22-8B19-2D6088892F58}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="Pistolet tir 4" ID="{81FAEC3E-A01B-4E10-A189-9FBEA7917D30}" ShortID="592409960">
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="Pistolet tir 4" ID="{523CFD50-0294-443F-9E59-34CA77F69004}" ShortID="773706597">
+											<Language>SFX</Language>
+											<AudioFile>Pistolet tir 4.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="Pistolet tir 4" ID="{523CFD50-0294-443F-9E59-34CA77F69004}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="Pistolet tir 1" ID="{4A66FD92-E584-433C-A9BB-828CEB39B3BC}" ShortID="454398826">
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="Pistolet tir 1" ID="{645A5F2E-C6FF-4E2F-82FC-828E66BF91E1}" ShortID="526131352">
+											<Language>SFX</Language>
+											<AudioFile>Pistolet tir 1.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="Pistolet tir 1" ID="{645A5F2E-C6FF-4E2F-82FC-828E66BF91E1}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+							</ChildrenList>
+						</RandomSequenceContainer>
+						<RandomSequenceContainer Name="Recharge" ID="{682FAF05-8388-4B89-A8FE-174C3EC68674}" ShortID="334823616">
+							<PropertyList>
+								<Property Name="Volume" Type="Real64">
+									<ValueList>
+										<Value>-4</Value>
+									</ValueList>
+								</Property>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<Sound Name="Pistolet Recharge 1" ID="{30774B68-2E93-4A1B-9168-42F07EB90205}" ShortID="128901503">
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="Pistolet Recharge 1" ID="{0D05221C-7BFA-4278-B2E5-F40642024488}" ShortID="955148735">
+											<Language>SFX</Language>
+											<AudioFile>Pistolet Recharge 1.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="Pistolet Recharge 1" ID="{0D05221C-7BFA-4278-B2E5-F40642024488}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="Pistolet Recharge 2" ID="{5C71B6DF-87BC-4665-9C5D-4D97BF9BFB53}" ShortID="139629556">
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="Pistolet Recharge 2" ID="{B1996A31-316C-46A8-B37F-5801ED5F4898}" ShortID="418828120">
+											<Language>SFX</Language>
+											<AudioFile>Pistolet Recharge 2.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="Pistolet Recharge 2" ID="{B1996A31-316C-46A8-B37F-5801ED5F4898}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="Pistolet recharge 4" ID="{5BC09490-DA95-4E89-82A2-603A68FB65A8}" ShortID="4257030">
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="Pistolet recharge 4" ID="{EDC41CF6-7AC0-49E4-BC0E-BC6EADD2B3E2}" ShortID="303200896">
+											<Language>SFX</Language>
+											<AudioFile>Pistolet recharge 4.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="Pistolet recharge 4" ID="{EDC41CF6-7AC0-49E4-BC0E-BC6EADD2B3E2}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="Pistolet_ recharge 3" ID="{0257D112-1AC3-4292-8303-A3C2E4FF8B42}" ShortID="475043871">
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="Pistolet_ recharge 3" ID="{BE3B10A6-8E69-4107-930C-C2DC563E6B40}" ShortID="650862902">
+											<Language>SFX</Language>
+											<AudioFile>Pistolet. recharge 3.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="Pistolet_ recharge 3" ID="{BE3B10A6-8E69-4107-930C-C2DC563E6B40}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+							</ChildrenList>
+						</RandomSequenceContainer>
+					</ChildrenList>
+				</ActorMixer>
+				<ActorMixer Name="Riflle_Laser" ID="{569E98FB-9B59-4705-A00D-9A091907166B}" ShortID="364583876">
+					<ReferenceList>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<RandomSequenceContainer Name="Tir" ID="{EDAC4842-5891-441B-8CB7-84CD1D59B459}" ShortID="864315048">
+							<PropertyList>
+								<Property Name="Volume" Type="Real64">
+									<ValueList>
+										<Value>-7</Value>
+									</ValueList>
+								</Property>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<Sound Name="Fusil d'assault Laser Tir cour 2" ID="{8D0F2E47-FCD9-4D4D-A835-AEEB84AC5340}" ShortID="844170846">
+									<PropertyList>
+										<Property Name="Inclusion" Type="bool">
+											<ValueList>
+												<Value>False</Value>
+											</ValueList>
+										</Property>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="Fusil d'assault Laser Tir cour 2" ID="{9F8293DA-2DF4-48C4-BF64-8497F338E19D}" ShortID="21791401">
+											<Language>SFX</Language>
+											<AudioFile>Fusil d'assault Laser Tir cour 2.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="Fusil d'assault Laser Tir cour 2" ID="{9F8293DA-2DF4-48C4-BF64-8497F338E19D}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="Fusil d'assault Laser Tir cour 3" ID="{9C80A7B9-6C6C-4876-8586-D636515A6BA8}" ShortID="684449987">
+									<PropertyList>
+										<Property Name="Inclusion" Type="bool">
+											<ValueList>
+												<Value>False</Value>
+											</ValueList>
+										</Property>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="Fusil d'assault Laser Tir cour 3" ID="{9F98A782-0247-4C33-ADC0-C6B0C7E36B84}" ShortID="68522853">
+											<Language>SFX</Language>
+											<AudioFile>Fusil d'assault Laser Tir cour 3.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="Fusil d'assault Laser Tir cour 3" ID="{9F98A782-0247-4C33-ADC0-C6B0C7E36B84}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="Fusil d'assault Laser Tir cour 4" ID="{B99C2389-F2A1-4496-A6AD-CB408C8C1036}" ShortID="960384258">
+									<PropertyList>
+										<Property Name="Inclusion" Type="bool">
+											<ValueList>
+												<Value>False</Value>
+											</ValueList>
+										</Property>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="Fusil d'assault Laser Tir cour 4" ID="{BC88DACB-4223-4B5B-A636-9B27BA5F5D6A}" ShortID="426261751">
+											<Language>SFX</Language>
+											<AudioFile>Fusil d'assault Laser Tir cour 4.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="Fusil d'assault Laser Tir cour 4" ID="{BC88DACB-4223-4B5B-A636-9B27BA5F5D6A}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="Fusil d'assault Laser Tir court 1" ID="{CD11E70D-3C78-4B54-8A11-FA9A204AF5D0}" ShortID="691271118">
+									<PropertyList>
+										<Property Name="Inclusion" Type="bool">
+											<ValueList>
+												<Value>False</Value>
+											</ValueList>
+										</Property>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="Fusil d'assault Laser Tir court 1" ID="{45D48963-F038-4571-BBEE-1758AB733956}" ShortID="543419740">
+											<Language>SFX</Language>
+											<AudioFile>Fusil d'assault Laser Tir court 1 .wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="Fusil d'assault Laser Tir court 1" ID="{45D48963-F038-4571-BBEE-1758AB733956}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="Fusil d'assault Laser Tir long 1 " ID="{FBA67B0A-C0F9-4E35-AC68-B596CFAA4BCD}" ShortID="298558836">
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="Fusil d'assault Laser Tir long 1 " ID="{DFF9DDCA-710B-4B50-A0EC-2C388027DA36}" ShortID="478025488">
+											<Language>SFX</Language>
+											<AudioFile>Fusil d'assault Laser Tir long 1 .wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="Fusil d'assault Laser Tir long 1 " ID="{DFF9DDCA-710B-4B50-A0EC-2C388027DA36}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="Fusil d'assault Laser Tir long 2" ID="{DE031D03-D3BE-4796-8CCB-A5C558C5F1D4}" ShortID="226937818">
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="Fusil d'assault Laser Tir long 2" ID="{8ADFC2C3-68F5-4A0B-9304-737EB2A864B1}" ShortID="1031786759">
+											<Language>SFX</Language>
+											<AudioFile>Fusil d'assault Laser Tir long 2.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="Fusil d'assault Laser Tir long 2" ID="{8ADFC2C3-68F5-4A0B-9304-737EB2A864B1}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="Fusil d'assault Laser Tir long 3" ID="{CBD5B9F0-7424-470F-AE1A-90A8A7D9C7AF}" ShortID="188847183">
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="Fusil d'assault Laser Tir long 3" ID="{8922F7A2-5DA1-4E25-B20B-DF56EBEDC1AD}" ShortID="257882592">
+											<Language>SFX</Language>
+											<AudioFile>Fusil d'assault Laser Tir long 3.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="Fusil d'assault Laser Tir long 3" ID="{8922F7A2-5DA1-4E25-B20B-DF56EBEDC1AD}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="Fusil d'assault Laser Tir long 4" ID="{E0E49DDF-A1AA-4679-B6F8-1F7012E9ED40}" ShortID="157303034">
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="Fusil d'assault Laser Tir long 4" ID="{2F33D4E1-0FD0-4D78-9377-5E299D9BAAEF}" ShortID="1027473740">
+											<Language>SFX</Language>
+											<AudioFile>Fusil d'assault Laser Tir long 4.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="Fusil d'assault Laser Tir long 4" ID="{2F33D4E1-0FD0-4D78-9377-5E299D9BAAEF}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+							</ChildrenList>
+						</RandomSequenceContainer>
+						<RandomSequenceContainer Name="Recharge" ID="{3F73797C-E74F-4969-8F80-034EF7716038}" ShortID="226972726">
+							<PropertyList>
+								<Property Name="Volume" Type="Real64">
+									<ValueList>
+										<Value>-6</Value>
+									</ValueList>
+								</Property>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<Sound Name="Fusil d'assault Laser Recharge 1" ID="{E9B231D1-A25C-4886-8C87-D917E3FE3C5A}" ShortID="529368383">
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="Fusil d'assault Laser Recharge 1" ID="{000C3633-33C6-43F2-8F76-FFB88858C854}" ShortID="599878946">
+											<Language>SFX</Language>
+											<AudioFile>Fusil d'assault Laser Recharge 1.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="Fusil d'assault Laser Recharge 1" ID="{000C3633-33C6-43F2-8F76-FFB88858C854}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="Fusil d'assault Laser Recharge 2" ID="{A1062162-2161-4FFC-9D9C-FF1BE494C9AA}" ShortID="258326502">
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="Fusil d'assault Laser Recharge 2" ID="{55781B7F-CF64-4AB4-9DFA-4E99554624D1}" ShortID="694004133">
+											<Language>SFX</Language>
+											<AudioFile>Fusil d'assault Laser Recharge 2.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="Fusil d'assault Laser Recharge 2" ID="{55781B7F-CF64-4AB4-9DFA-4E99554624D1}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="Fusil d'assault Laser Recharge 3" ID="{20DCD15E-3FFB-4FDA-9C7F-9EF0F4BD6041}" ShortID="114641677">
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="Fusil d'assault Laser Recharge 3" ID="{ED11105B-2D56-4D41-B89B-BEA7E920AE5E}" ShortID="105781984">
+											<Language>SFX</Language>
+											<AudioFile>Fusil d'assault Laser Recharge 3.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="Fusil d'assault Laser Recharge 3" ID="{ED11105B-2D56-4D41-B89B-BEA7E920AE5E}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="Fusil d'assault Laser Recharge 4" ID="{96206F3E-92BF-4F62-81AE-0855B07CA375}" ShortID="344391285">
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="Fusil d'assault Laser Recharge 4" ID="{E279574D-FA8D-4BF9-B185-8BCEC61860A6}" ShortID="943409562">
+											<Language>SFX</Language>
+											<AudioFile>Fusil d'assault Laser Recharge 4.wav</AudioFile>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="Fusil d'assault Laser Recharge 4" ID="{E279574D-FA8D-4BF9-B185-8BCEC61860A6}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+							</ChildrenList>
+						</RandomSequenceContainer>
+					</ChildrenList>
+				</ActorMixer>
+				<ActorMixer Name="Grenade" ID="{E7762522-1F55-4196-AF70-8D1EC91DE589}" ShortID="781287455">
+					<ReferenceList>
+						<Reference Name="Attenuation">
+							<ObjectRef Name="Player_Standard_Grenade" ID="{FA41FFEE-2E1B-463D-A50F-EF2D137A1356}" WorkUnitID="{121019D4-4484-4FD8-9C2A-2F490B6614A6}"/>
+						</Reference>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="Weapons_Sfx" ID="{2567D8A9-864F-40E5-A8FC-BD305C7F6F4D}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<Sound Name="Glitch Grenade" ID="{89DD7039-57F2-41F2-9236-557CB4EC9537}" ShortID="950351376">
+							<PropertyList>
+								<Property Name="Volume" Type="Real64">
+									<ValueList>
+										<Value>-7</Value>
+									</ValueList>
+								</Property>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<AudioFileSource Name="Glitch Grenade" ID="{4D70BD57-AAED-4CCA-9B62-49740F76C729}" ShortID="339035994">
+									<Language>SFX</Language>
+									<AudioFile>Glitch Grenade.wav</AudioFile>
+								</AudioFileSource>
+							</ChildrenList>
+							<ActiveSourceList>
+								<ActiveSource Name="Glitch Grenade" ID="{4D70BD57-AAED-4CCA-9B62-49740F76C729}" Platform="Linked"/>
+							</ActiveSourceList>
+						</Sound>
+						<Sound Name="Grenade_Explosion" ID="{D675DDB7-DF58-417A-82A7-ED5059A27C58}" ShortID="631530732">
+							<PropertyList>
+								<Property Name="3DSpatialization" Type="int16" Value="2"/>
+								<Property Name="Pitch" Type="int32">
+									<ValueList>
+										<Value>400</Value>
+									</ValueList>
+								</Property>
+								<Property Name="SpeakerPanning3DSpatializationMix" Type="int32" Value="50"/>
+								<Property Name="UserAuxSendVolume0" Type="Real64">
+									<ValueList>
+										<Value>-16</Value>
+									</ValueList>
+								</Property>
+								<Property Name="Volume" Type="Real64">
+									<ValueList>
+										<Value>-5</Value>
+									</ValueList>
+								</Property>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Attenuation">
+									<ObjectRef Name="Player_Standard_Grenade" ID="{FA41FFEE-2E1B-463D-A50F-EF2D137A1356}" WorkUnitID="{121019D4-4484-4FD8-9C2A-2F490B6614A6}"/>
+								</Reference>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Weapons_Sfx" ID="{2567D8A9-864F-40E5-A8FC-BD305C7F6F4D}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<AudioFileSource Name="Grenade_Explosion" ID="{4CE5114D-0BDE-4823-B347-BC0F62C7F7AE}" ShortID="953873261">
+									<PropertyList>
+										<Property Name="FadeOutDuration" Type="Real64" Value="0.114825556506849"/>
+										<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
+									</PropertyList>
+									<Language>SFX</Language>
+									<AudioFile>Grenade_Explosion.wav</AudioFile>
+								</AudioFileSource>
+							</ChildrenList>
+							<ActiveSourceList>
+								<ActiveSource Name="Grenade_Explosion" ID="{4CE5114D-0BDE-4823-B347-BC0F62C7F7AE}" Platform="Linked"/>
+							</ActiveSourceList>
+						</Sound>
+						<Sound Name="Grenade Lancé" ID="{EF9E2E1A-C111-4809-9CEA-5C5DB3AB06E2}" ShortID="637977236">
+							<PropertyList>
+								<Property Name="Volume" Type="Real64">
+									<ValueList>
+										<Value>-9</Value>
+									</ValueList>
+								</Property>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F0F51901-E944-4CE9-97B9-A8703938B9D6}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<AudioFileSource Name="Grenade Lancé" ID="{0624EF3A-F4E7-4CE7-A68F-3E28BFD8D79B}" ShortID="935707491">
+									<Language>SFX</Language>
+									<AudioFile>Grenade Lancé.wav</AudioFile>
+								</AudioFileSource>
+							</ChildrenList>
+							<ActiveSourceList>
+								<ActiveSource Name="Grenade Lancé" ID="{0624EF3A-F4E7-4CE7-A68F-3E28BFD8D79B}" Platform="Linked"/>
+							</ActiveSourceList>
+						</Sound>
+					</ChildrenList>
+				</ActorMixer>
+			</ChildrenList>
+		</WorkUnit>
+	</AudioObjects>
+</WwiseDocument>

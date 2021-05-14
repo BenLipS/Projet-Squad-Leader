@@ -12,6 +12,11 @@
 #include "TimerManager.h"
 #include "SquadLeader/Weapons/SL_Weapon.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "AkAudioEvent.h"
+#include "AkGameplayStatics.h"
+
+#include "AkAudioEvent.h"
+#include "AkGameplayStatics.h"
 
 ASoldierPlayer::ASoldierPlayer(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer)
 {
@@ -39,6 +44,8 @@ void ASoldierPlayer::BeginPlay()
 
 	if (!IsLocallyControlled())
 		return;
+
+	UAkGameplayStatics::PostEventByName("Music_Gameplay", this);
 
 	ensure(MaterialGlitchInterface);
 	ensure(MaterialBrokenGlassRightInterface);
@@ -245,6 +252,19 @@ void ASoldierPlayer::ClientSetSoldierKiller_Implementation(ASoldier* _SoldierKil
 	SetSoldierKiller(_SoldierKiller);
 }
 
+void ASoldierPlayer::ClientNotifyControlAreaTaken_Implementation(const bool _IsOwned)
+{
+	if(_IsOwned)UAkGameplayStatics::PostEventByName("Stinger_Gameplay_Positive", this);
+	else UAkGameplayStatics::PostEventByName("Stinger_Gameplay_Negative", this);
+}
+
+void ASoldierPlayer::ClientNotifyEndGame_Implementation(const bool _HasWin)
+{
+	UAkGameplayStatics::PostEventByName("Music_Gameplay_Stop", this);
+	if(_HasWin)UAkGameplayStatics::PostEventByName("Music_Cinematic_Victory", this);
+	else UAkGameplayStatics::PostEventByName("Music_Cinematic_Defeat", this);
+}
+
 void ASoldierPlayer::LockControls()
 {
 	if (APlayerController* PC = Cast<APlayerController>(Controller); PC)
@@ -406,6 +426,7 @@ void ASoldierPlayer::SpawnPing(FVector PingLocation)
 			}
 		}
 		SpawnClientPing({ PingMesh->GetActorLocation().X, PingMesh->GetActorLocation().Y });
+		UAkGameplayStatics::PostEventByName("Ping_Notif_Good", this);
 	}
 }
 

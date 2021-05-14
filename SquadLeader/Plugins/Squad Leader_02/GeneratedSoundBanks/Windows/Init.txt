@@ -1,0 +1,25 @@
+State Group	ID	Name			Wwise Object Path	Notes
+	620878633	Music_Gameplay			\Default Work Unit\Music_Gameplay	
+	1598298728	Music_Menu			\Default Work Unit\Music_Menu	
+
+State	ID	Name	State Group			Notes
+	748895195	None	Music_Gameplay			
+	2881596337	Boucle_01	Music_Gameplay			
+	2881596338	Boucle_02	Music_Gameplay			
+	2881596339	Boucle_03	Music_Gameplay			
+	748895195	None	Music_Menu			
+	3394241439	Smooth	Music_Menu			
+	4223512837	Intense	Music_Menu			
+
+Audio Bus	ID	Name			Wwise Object Path	Notes
+	427673160	Weapons_Sfx			\Default Work Unit\Master Audio Bus\Weapons_Sfx	
+	541470702	Player_Movement			\Default Work Unit\Master Audio Bus\Player_Movement	
+	1229948536	Environment			\Default Work Unit\Master Audio Bus\Environment	
+	2306288597	Player_Ability			\Default Work Unit\Master Audio Bus\Player_Ability	
+	3803692087	Master Audio Bus			\Default Work Unit\Master Audio Bus	
+	4262674733	Rifle			\Default Work Unit\Master Audio Bus\Rifle	
+
+Audio Devices	ID	Name	Type				Notes
+	2317455096	No_Output	No Output			
+	3859886410	System	System			
+

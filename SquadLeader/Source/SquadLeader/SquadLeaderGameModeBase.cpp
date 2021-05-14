@@ -14,6 +14,7 @@
 #include "GameState/SquadLeaderCloseGameState.h"
 
 
+
 ASquadLeaderGameModeBase::ASquadLeaderGameModeBase()
 {
 	static ConstructorHelpers::FClassFinder<ASoldierPlayerController> PlayerControllerObject(TEXT("/Game/BluePrints/Soldiers/Players/BP_SoldierPlayerController"));
@@ -205,11 +206,21 @@ void ASquadLeaderGameModeBase::EndGame(ASoldierTeam* WinningTeam)
 						PC->OnGameEnd(1, GetGameTimeSinceCreation(),
 							killRecord->NbKillAI, killRecord->NbKillPlayer,
 							killRecord->NbDeathByAI, killRecord->NbDeathByPlayer);
+						for (ASoldier* Soldier : PC->GetTeam()->GetSoldierList())
+						{
+							if (ASoldierPlayer* Player = Cast<ASoldierPlayer>(Soldier); Player)
+							Player->ClientNotifyEndGame(true);
+						}
 					}
 					else {
 						PC->OnGameEnd(-1, GetGameTimeSinceCreation(),
 							killRecord->NbKillAI, killRecord->NbKillPlayer,
 							killRecord->NbDeathByAI, killRecord->NbDeathByPlayer);
+						for (ASoldier* Soldier : PC->GetTeam()->GetSoldierList())
+						{
+							if (ASoldierPlayer* Player = Cast<ASoldierPlayer>(Soldier); Player)
+								Player->ClientNotifyEndGame(false);
+						}
 					}
 				}
 			}
@@ -256,12 +267,38 @@ void ASquadLeaderGameModeBase::NotifySoldierKilled(ASoldier* _DeadSoldier, ASold
 
 void ASquadLeaderGameModeBase::NotifyControlAreaCaptured(AControlArea* _ControlArea)
 {
-	if (ASoldierTeam* Team = _ControlArea->GetIsTakenBy(); Team)
+	ASoldierTeam* TeamOwner = _ControlArea->GetIsTakenBy();
+
+	//TMap<ASoldierTeam*, AControlAreaTeamStat*> TeamData;
+	for (auto Pair : _ControlArea->TeamData)
 	{
-		for (ASoldier* Soldier : Team->GetSoldierList())
+		if (ASoldierTeam * SoldierTeam = Pair.Key; SoldierTeam == TeamOwner)
+		{
+			for (ASoldier* Soldier : SoldierTeam->GetSoldierList())
+			{
+				if (ASoldierPlayer* Player = Cast<ASoldierPlayer>(Soldier); Player)
+					Player->ClientNotifyControlAreaTaken(true);
+			}
+		}
+		else
+		{
+			for (ASoldier* Soldier : SoldierTeam->GetSoldierList())
+			{
+				if (ASoldierPlayer* Player = Cast<ASoldierPlayer>(Soldier); Player)
+					Player->ClientNotifyControlAreaTaken(false);
+			}
+		}
+	}
+
+
+
+	if (TeamOwner)
+	{
+		for (ASoldier* Soldier : TeamOwner->GetSoldierList())
 		{
 			if (Soldier->IsA<ASoldierPlayer>())
 				Soldier->GrantEXP(EXP_ControlAreaCaptured);
+			
 		}
 		CheckControlAreaVictoryCondition();
 	}

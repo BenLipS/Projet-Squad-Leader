@@ -5,6 +5,8 @@
 #include "Abilities/Tasks/AbilityTask_WaitDelay.h"
 #include "SquadLeader/AbilitySystem/Soldiers/AbilityTasks/AbilityTask_PlayMontageAndWaitForEvent.h"
 #include "GameFramework/Actor.h"
+#include "AkAudioEvent.h"
+#include "AkGameplayStatics.h"
 
 UGA_WallVision::UGA_WallVision()
 {
@@ -108,6 +110,7 @@ void UGA_WallVision::StartWallVision()
 		TaskWaitDelay->OnFinish.AddDynamic(this, &UGA_WallVision::EndWallVision);
 		SourceSoldier->UpdateWallVisionPostEffect(1.f);
 		TaskWaitDelay->ReadyForActivation();
+		UAkGameplayStatics::PostEventByName("Ability_Termal_Vision", SourceSoldier);
 	}
 	else
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, false, false);
