@@ -581,6 +581,12 @@ void AInfluenceMapGrid::EraseObstacleInfluence(FGridPackageObstacle Message) {
 			Grid[Index].State = TileState::Free;
 	}
 }
+void AInfluenceMapGrid::EraseSoldierInfluence(FGridPackage Message) {
+	uint16 Indexactor = 0;
+	if (ActorAlreadyExist(Message.ActorID, Indexactor)) {
+		UpdateSoldier(Indexactor, Message.team_value, Message.ActorID);
+	}
+}
 
 double AInfluenceMapGrid::GetInfluenceAverage(const uint32 ActorID, const uint8 Team) {
 	//GEngine->AddOnScreenDebugMessage(20, 5.f, FColor::Blue, TEXT("Début du calcule de la moyenne...."));

@@ -504,6 +504,7 @@ void AAIGeneralController::Die() {
 	SeenEnemySoldier.Empty();
 	PerceptionComponent->ForgetAll();
 	PerceptionComponent->SetSenseEnabled(UAISense_Sight::StaticClass(), false);
+
 }
 
 void AAIGeneralController::Respawn() 

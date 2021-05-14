@@ -301,6 +301,9 @@ protected:
 
 public:
 	void EraseObstacleInfluence(FGridPackageObstacle Message);
+	void EraseSoldierInfluence(FGridPackage Message);
 
 	double GetInfluenceAverage(const uint32 ActorID, const uint8 Team);
+
+
 };
