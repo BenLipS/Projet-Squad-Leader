@@ -30,7 +30,7 @@ protected:
 
 public:
 	UFUNCTION()
-	bool GetUsable() { return canBeUsed; }
+	bool GetUsable() const { return canBeUsed; }
 
 	UPROPERTY(EditInstanceOnly, Category = "SpawnData")
 	int SpawnRadius = 200;

@@ -9,6 +9,7 @@
 #include "../AbilitySystem/Soldiers/AbilitySystemSoldier.h"
 #include "SquadLeader/SquadLeader.h"
 #include "Interface/Teamable.h"
+#include "SquadLeader/ControlArea/ControlArea.h"
 //
 #include "SoldierTeam.h"
 //
@@ -533,8 +534,8 @@ public:
 
 /////////////// Respawn
 public:
-	UFUNCTION()
-	virtual FVector GetRespawnPoint() { return FVector(0.f, 0.f, 1500.f); }  // function overide in SoldierPlayer and Soldier AI
+	UFUNCTION(BlueprintCallable)
+	virtual FVector GetRespawnPoint(AControlArea* _ControlArea = nullptr) { return FVector(0.f, 0.f, 1500.f); }
 
 //////////////// For AIPerception
 private:
