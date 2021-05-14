@@ -233,6 +233,9 @@ protected:
 	UFUNCTION()
 		void FocusEnemy();
 
+	UFUNCTION()
+		bool SeeFocusActor();
+
 	/*
 	* Make the AI run if it's possible
 	*/
