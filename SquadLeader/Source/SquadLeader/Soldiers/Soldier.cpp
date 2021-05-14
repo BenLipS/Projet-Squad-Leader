@@ -15,6 +15,7 @@
 #include "Particles/ParticleSystemComponent.h"
 #include "SquadLeader/SquadLeader.h"
 #include "SquadLeader/Weapons/SL_Weapon.h"
+#include "Camera/CameraShake.h"
 //#include "DrawDebugHelpers.h"
 
 TArray<SoldierClass> ASoldier::GetAllPlayableClass()
@@ -97,17 +98,6 @@ void ASoldier::BeginPlay()
 
 	CacheRelativeTransformMeshInCapsule = GetMesh()->GetRelativeTransform();
 
-	// Teams
-	// TODO: Clients must be aware of their team. If we really want a security with the server, we should call this function
-	// from the server only, have a test to determine wheter we can change the team, then use a ClientSetTeam to replicate the change
-	//if (GetLocalRole() == ROLE_Authority)
-	{
-		// Add this to the team data or use the default team
-		if (GetTeam())
-			GetTeam()->AddSoldierList(this);
-		else if (InitialTeam)
-			SetTeam(InitialTeam);
-	}
 
 	if (StartGameMontage)
 	{
@@ -147,7 +137,7 @@ void ASoldier::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	CurrentPosition = this->GetActorLocation();
 
-	if (FVector::Dist(LastPosition, CurrentPosition) >= 500.f) {
+	if (FVector::Dist(LastPosition, CurrentPosition) >= 1000.f) {
 		LastPosition = CurrentPosition;
 		ASquadLeaderGameModeBase* GM = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
 
@@ -581,7 +571,7 @@ void ASoldier::Landed(const FHitResult& _Hit)
 	if (AbilitySystemComponent)
 	{
 		FGameplayTagContainer EffectTagsToRemove;
-		EffectTagsToRemove.AddTag(FGameplayTag::RequestGameplayTag(FName("State.Jumping")));
+		EffectTagsToRemove.AddTag(FGameplayTag::RequestGameplayTag(FName("State.Movement.Jumping")));
 		AbilitySystemComponent->RemoveActiveEffectsWithGrantedTags(EffectTagsToRemove);
 	}
 }
@@ -866,10 +856,14 @@ void ASoldier::SetCurrentWeapon(ASL_Weapon* _NewWeapon, ASL_Weapon* _LastWeapon)
 	if (_NewWeapon == _LastWeapon)
 		return;
 
-	// Cancel active weapon abilities
+	// Cancel active weapon abilities and run ability for heavy weapon
 	if (AbilitySystemComponent)
 	{
 		FGameplayTagContainer AbilityTagsToCancel = FGameplayTagContainer(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.FireWeapon")));
+
+		if (_NewWeapon && _NewWeapon->IsHeavyWeapon())
+			AbilityTagsToCancel.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Run")));
+
 		AbilitySystemComponent->CancelAbilities(&AbilityTagsToCancel);
 	}
 
@@ -904,6 +898,8 @@ void ASoldier::SetCurrentWeapon(ASL_Weapon* _NewWeapon, ASL_Weapon* _LastWeapon)
 		if (!CurrentWeapon->HasAmmo())
 			ActivateAbility(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.ReloadWeapon")));
 	}
+
+	UpdateFOV(); // Because every weapon has its own FOV
 }
 
 void ASoldier::UnEquipWeapon(ASL_Weapon* _WeaponToUnEquip)
@@ -1047,9 +1043,23 @@ void ASoldier::OnReceiveDamage(const FVector& _ImpactPoint, const FVector& _Sour
 {
 }
 
+TSubclassOf<UMatineeCameraShake> ASoldier::GetCameraShakeReceiveDamageClass() const
+{
+	return CameraShakeReceiveDamageClass;
+}
+
 TSubclassOf<UMatineeCameraShake> ASoldier::GetCameraShakeFireClass() const
 {
-	return CameraShakeFireClass;
+	return CurrentWeapon ? CurrentWeapon->GetCameraShakeFireClass() : nullptr;
+}
+
+void ASoldier::ShakeCamera(TSubclassOf<UMatineeCameraShake> _CameraShakeClass)
+{
+	if (!IsLocallyControlled())
+		return;
+
+	if (APlayerController* PC = Cast<APlayerController>(Controller); PC)
+		PC->ClientStartCameraShake(_CameraShakeClass);
 }
 
 FRotator ASoldier::GetSyncControlRotation() const noexcept
@@ -1103,6 +1113,15 @@ void ASoldier::StopRagdoll()
 	GetMesh()->SetRelativeTransform(CacheRelativeTransformMeshInCapsule);
 }
 
+void ASoldier::RefreshTeam()
+{
+	if (GetTeam())
+	{
+		GetTeam()->RemoveSoldierList(this);
+		GetTeam()->AddSoldierList(this);
+	}
+}
+
 // network for debug team change
 void ASoldier::ServerCycleBetweenTeam_Implementation() {
 	cycleBetweenTeam();
@@ -1134,7 +1153,7 @@ void ASoldier::cycleBetweenTeam()
 					message = GetTeam()->TeamName;  // Log
 				}
 			}
-			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, message);
+			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, "Team changed to " + message);
 		}
 	}
 	else ServerCycleBetweenTeam();
@@ -1147,14 +1166,15 @@ ASoldierTeam* ASoldier::GetTeam()
 
 bool ASoldier::SetTeam(ASoldierTeam* _Team)
 {
-	// TODO: Clients must be aware of their team. If we really want a security with the server, we should call this function
-	// from the server only, have a test to determine wheter we can change the team, then use a ClientSetTeam to replicate the change
-	//if (GetLocalRole() == ROLE_Authority)
-	{
-		Team = _Team;
-		return true;
-	}
-	return false;
+	if (Team)
+		Team->RemoveSoldierList(this);
+
+	Team = _Team;
+
+	if (Team)
+		Team->AddSoldierList(this);
+
+	return true;
 }
 
 void ASoldier::setup_stimulus() {

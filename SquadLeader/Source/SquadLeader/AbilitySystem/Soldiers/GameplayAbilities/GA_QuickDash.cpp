@@ -1,13 +1,17 @@
 #include "GA_QuickDash.h"
 #include "../../../Soldiers/Soldier.h"
 #include "Abilities/Tasks/AbilityTask_ApplyRootMotionConstantForce.h"
+#include "AkAudioEvent.h"
+#include "AkGameplayStatics.h"
 
 UGA_QuickDash::UGA_QuickDash()
 {
+	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
+
 	AbilityInputID = ESoldierAbilityInputID::QuickDash;
 	AbilityID = ESoldierAbilityInputID::QuickDash;
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.QuickDash")));
-	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
+	ActivationOwnedTags.AddTag(FGameplayTag::RequestGameplayTag(FName("State.Movement.Dashing")));
 }
 
 void UGA_QuickDash::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
@@ -23,6 +27,8 @@ void UGA_QuickDash::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 
 			UAbilityTask_ApplyRootMotionConstantForce* Task = UAbilityTask_ApplyRootMotionConstantForce::ApplyRootMotionConstantForce(this, FName("Apply Root Motion Constant Force"), Direction, Strength, Duration, bIsAdditive, nullptr, ERootMotionFinishVelocityMode::SetVelocity, Soldier->GetVelocity(), 0.f, true);
 			
+			UAkGameplayStatics::PostEventByName("Player_Dash", Cast<ASoldier>(ActorInfo->AvatarActor));
+
 			Task->OnFinish.AddDynamic(this, &UGA_QuickDash::OnDashEnded);
 			Task->ReadyForActivation();
 		}
@@ -51,7 +57,7 @@ void UGA_QuickDash::CancelAbility(const FGameplayAbilitySpecHandle Handle, const
 	/*if (ASoldier* Soldier = Cast<ASoldier>(ActorInfo->AvatarActor.Get()); Soldier)
 	{
 		FGameplayTagContainer EffectTagsToRemove;
-		EffectTagsToRemove.AddTag(FGameplayTag::RequestGameplayTag(FName("State.Running")));
+		EffectTagsToRemove.AddTag(FGameplayTag::RequestGameplayTag(FName("State.Movement.Running")));
 		Soldier->GetAbilitySystemComponent()->RemoveActiveEffectsWithGrantedTags(EffectTagsToRemove);
 	}*/
 }

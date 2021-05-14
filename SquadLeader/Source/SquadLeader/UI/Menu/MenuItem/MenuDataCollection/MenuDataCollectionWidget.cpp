@@ -68,6 +68,10 @@ void UMenuDataCollectionWidget::InitIntValues()
 		}
 	}
 
+	ResyncDefaultIntvalues();
+}
+
+void UMenuDataCollectionWidget::ResyncDefaultIntvalues() {
 	if (IsValid(DefaultValues))
 	{
 		auto listInts = DefaultValues->GetDefaultObject<AGameParam>()->GetIntParams();
@@ -86,14 +90,28 @@ void UMenuDataCollectionWidget::RandomizeIntValues()
 {
 }
 
-/*int UMenuDataCollectionWidget::GetData(FString Key)
+
+TMap<FString, int> UMenuDataCollectionWidget::GetIntData()
 {
-	if (auto DataItem = DataItems.Find(Key); DataItem && IsValid(*DataItem))
+	TMap<FString, int> IntData;
+
+	for (auto DataItem : DataInts)
 	{
-		return (*DataItem)->GetDataValue();
+		int value = DataItem.Value->GetDataValue();
+		IntData.Add(DataItem.Key, value);
 	}
-	else
+	return IntData;
+}
+
+TMap<FString, FString> UMenuDataCollectionWidget::GetStringData()
+{
+	TMap<FString, FString> StringData;
+
+	for (auto DataItem : DataStrings)
 	{
-		return 0;
+		if (FString value = DataItem.Value->GetDataValue(); !value.IsEmpty()) {
+			StringData.Add(DataItem.Key, value);
+		}
 	}
-}*/
+	return StringData;
+}

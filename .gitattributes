@@ -10,4 +10,5 @@
 *.wav filter=lfs diff=lfs merge=lfs
 *.umap filter=lfs diff=lfs merge=lfs
 *.uasset filter=lfs diff=lfs merge=lfs
+*.bnk filter=lfs diff=lfs merge=lfs
 

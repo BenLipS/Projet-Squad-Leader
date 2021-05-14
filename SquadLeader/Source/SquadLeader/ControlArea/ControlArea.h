@@ -123,4 +123,20 @@ public:
 
 	UFUNCTION()
 		int GetInfluenceRadius() const noexcept { return InfluenceRadius; }
+
+private:
+	UPROPERTY()
+		uint8 IndexControlArea;
+
+public:
+	UFUNCTION()
+		void SetIndexControlArea(const uint8 Index) noexcept { IndexControlArea = Index; }
+	UFUNCTION()
+		uint8 GetIndexControlArea() const noexcept { return IndexControlArea; }
+
+	UFUNCTION()
+		double GetInfluenceAverage();
+
+	UFUNCTION()
+		double GetEnnemiInfluenceAverage();
 };

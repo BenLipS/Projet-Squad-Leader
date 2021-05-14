@@ -14,6 +14,7 @@ void APlayerHUD::BeginPlay()
 {
 	Super::BeginPlay();
 	BindControlAreas();
+	BindSoldierTeamChanges();
 	//TODO : Init Tickets
 }
 
@@ -21,7 +22,7 @@ void APlayerHUD::OnInitHUD()
 {
 	SetPlayerStateLink();
 	SetAIStateLink();
-	BindSoldierTeamChanges();
+	//BindSoldierTeamChanges();
 	BindControlAreas();
 }
 

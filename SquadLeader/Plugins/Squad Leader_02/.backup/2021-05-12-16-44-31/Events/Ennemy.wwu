@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{0A3C2729-C9B9-45C8-BCE3-38E860BB3203}" SchemaVersion="94" RootDocumentID="{8EC5AB04-AFDD-43C3-A41A-DACB5E5BA730}">
+	<Events>
+		<WorkUnit Name="Ennemy" ID="{0A3C2729-C9B9-45C8-BCE3-38E860BB3203}" OwnerID="{8EC5AB04-AFDD-43C3-A41A-DACB5E5BA730}" PersistMode="Nested">
+			<PropertyList>
+				<Property Name="Color" Type="int16" Value="19"/>
+				<Property Name="OverrideColor" Type="bool" Value="True"/>
+			</PropertyList>
+			<ChildrenList>
+				<Event Name="Ennemy_Hit" ID="{A47CCB6A-2762-411F-ADAB-5E24DA2C441D}">
+					<ChildrenList>
+						<Action Name="" ID="{62685CCD-6D2A-4812-BB95-4CC02AF24CB0}" ShortID="736672414">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Ennemy_Rifle_Hit" ID="{B0FC44F1-F320-4339-B828-540F8B40A72F}" WorkUnitID="{924891FC-435B-4571-AB36-2CC6B60D907C}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+			</ChildrenList>
+		</WorkUnit>
+	</Events>
+</WwiseDocument>

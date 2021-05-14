@@ -43,9 +43,9 @@ void AAISquadController::setup_BehaviorTree() {
 
 FVector AAISquadController::GetRespawnPoint()  // TODO : Change this function to adapt the squad AI respawn
 {
-	if (ASoldier* soldier = Cast<ASoldier>(GetPawn()); soldier) {
-		if (soldier->GetTeam()) {
-			auto AvailableSpawnPoints = soldier->GetTeam()->GetUsableSpawnPoints();
+	if (ASoldierPlayer* leader = SquadManager->Leader; leader) {
+		if (leader->GetTeam()) {
+			auto AvailableSpawnPoints = leader->GetTeam()->GetUsableSpawnPoints();
 			if (AvailableSpawnPoints.Num() > 0) {
 
 				ASoldierSpawn* OptimalSpawn = AvailableSpawnPoints[0];
@@ -56,7 +56,7 @@ FVector AAISquadController::GetRespawnPoint()  // TODO : Change this function to
 				};
 
 				for (auto loop : AvailableSpawnPoints) {
-					if (CalculateMinimalDistance(soldier->GetActorLocation(), loop->GetActorLocation(), OptimalSpawn->GetActorLocation())) {
+					if (CalculateMinimalDistance(leader->GetActorLocation(), loop->GetActorLocation(), OptimalSpawn->GetActorLocation())) {
 						OptimalSpawn = loop;
 					}
 				}
@@ -73,6 +73,10 @@ void AAISquadController::BeginPlay()
 	Super::BeginPlay();
 	blackboard->SetValueAsBool("IsInFormation", true);
 	blackboard->SetValueAsBool("HasOrder", false);
+}
+
+void AAISquadController::Tick(float DeltaSecond) {
+	HomeTick(DeltaSecond);
 }
 
 void AAISquadController::Init()
@@ -151,4 +155,11 @@ void AAISquadController::ChooseState() {
 	else {
 		MovingState();
 	}
+}
+
+void AAISquadController::BecomeAvailable() {
+	return;
+}
+void AAISquadController::BecomeUnavailable() {
+	return;
 }

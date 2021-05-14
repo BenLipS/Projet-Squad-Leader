@@ -53,48 +53,42 @@ public:
 
 public:
 	AAISquadManager();
+
+protected:
+	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 
 public:
+	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
+
+public:
 	UPROPERTY(BlueprintReadOnly)
-	TArray<AAISquadController*> AISquadList;
+	TArray<AAISquadController*> AISquadControllerList;
+
+protected:
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_AISoldierList)
+	TArray<ASoldierAI*> AISoldierList;
+
+	// Utilsier les fonctions ici quand on ajoute une ia pur forcer le squadManage Onrep
+	// Faudra verifier qu on n a pas de duplicat
+	UFUNCTION()
+	void OnRep_AISoldierList();
+
+public:
+	TArray<ASoldierAI*> GetAISoldierList() const;
 
 protected:
 	UPROPERTY(EditDefaultsOnly)
-		int OverrideStartNumberOfSoldiers = -1;
-	UPROPERTY(BlueprintReadOnly)
-		uint8 StartNumberOfSoldiers = 3;
+	int OverrideStartNumberOfSoldiers = -1;
 
 public:
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-		TSubclassOf<ASoldierAI> ClassAI1;
-
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-		TSubclassOf<ASoldierAI> ClassAI2;
-
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-		TSubclassOf<ASoldierAI> ClassAI3;
-
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-		TSubclassOf<ASoldierAI> ClassAI4;
-
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-		TSubclassOf<ASoldierAI> ClassAI5;
-
-	// TODO: Are there necessary?
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-		int MaxAIInSquad = 3;
-
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-		int MinAIInSquad = 5;
-
 	UFUNCTION()
 	void Init(ASoldierTeam* _Team, ASoldierPlayer* _Player);
 	
 	UPROPERTY()
 	ASoldierTeam* Team;
 
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	ASoldierPlayer* Leader;
 
 	UFUNCTION(Server, Reliable)
@@ -102,7 +96,7 @@ public:
 	void AddAnAIToSquad_Implementation();
 
 	// Check whether this manager controls the given soldier
-	bool HasSoldier(const ASoldier* _Soldier) const;
+	bool HasSoldier(ASoldier* _Soldier) const;
 
 	auto GetMission() { return Mission; };
 

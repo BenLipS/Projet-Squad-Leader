@@ -26,6 +26,15 @@ TArray<ASoldierTeam*> ASquadLeaderGameState::GetSoldierTeamCollection()
 	return SoldierTeamCollection;
 }
 
+ASoldierTeam* ASquadLeaderGameState::GetSoldierTeamByID(int TeamId)
+{
+	for (ASoldierTeam* team: SoldierTeamCollection) {
+		if (team->Id == TeamId)
+			return team;
+	}
+	return nullptr;
+}
+
 void ASquadLeaderGameState::SetControlAreaManager(AControlAreaManager* _ControlAreaManager)
 {
 	ControlAreaManager = _ControlAreaManager;

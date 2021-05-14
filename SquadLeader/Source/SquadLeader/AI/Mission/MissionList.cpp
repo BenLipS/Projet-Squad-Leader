@@ -10,22 +10,50 @@ auto FMissionAction::operator()(UCaptureMission* _mission)const
 	//GEngine->AddOnScreenDebugMessage(40, 10.f, FColor::Yellow, TEXT("Hello ! Mission de type UCaptureMission"));
 	_mission->SetState(MissionState::eRUNNING);
 	m_ai_controller->SetControlAreaBB(_mission->GetControlArea());
+
+	m_ai_controller->BecomeUnavailable();
 }
 auto FMissionAction::operator()(UDefendMission* _mission)const
 {
 	//GEngine->AddOnScreenDebugMessage(40, 10.f, FColor::Yellow, TEXT("Mission de type UDefendMission"));
 	_mission->SetState(MissionState::eRUNNING);
+	m_ai_controller->BecomeUnavailable();
 }
 auto FMissionAction::operator()(UPatrolMission* _mission)const
 {
 	//GEngine->AddOnScreenDebugMessage(50, 10.f, FColor::Blue, TEXT("Mission de type UPatrolMission"));
 	_mission->SetState(MissionState::eRUNNING);
+	m_ai_controller->BecomeAvailable();
 }
 auto FMissionAction::operator()(UFormationMission* _mission)const
 {
 	//GEngine->AddOnScreenDebugMessage(50, 10.f, FColor::Blue, TEXT("Mission de type UFormationMission"));
 	_mission->SetState(MissionState::eRUNNING);
+	m_ai_controller->BecomeUnavailable();
 }
+auto FMissionAction::operator()(UPatrolControlAreaMission* _mission) const {
+	//GEngine->AddOnScreenDebugMessage(10, 1.f, FColor::Black, TEXT("Mission PatrolControlArea en cours...."));
+	_mission->SetState(MissionState::eRUNNING);
+	m_ai_controller->BecomeAvailable();
+}
+
+auto FAIState::operator()(UCaptureMission* _mission) const {
+	m_ai_controller->SetState(AIBasicState::Capturing);
+}
+auto FAIState::operator()(UPatrolMission* _mission) const {
+	m_ai_controller->SetState(AIBasicState::Patroling);
+}
+auto FAIState::operator()(UDefendMission* _mission) const {
+	m_ai_controller->SetState(AIBasicState::Defend);
+}
+auto FAIState::operator()(UFormationMission* _mission) const {
+	m_ai_controller->SetState(AIBasicState::Formation);
+}
+auto FAIState::operator()(UPatrolControlAreaMission* _mission) const {
+	//GEngine->AddOnScreenDebugMessage(10, 1.f, FColor::Black, TEXT("Changement d'état pour partir en patrouille !"));
+	m_ai_controller->SetState(AIBasicState::Patroling);
+}
+
 
 UMissionList::UMissionList() : m_ai_controller{} {
 }
@@ -66,11 +94,14 @@ void UMissionList::EndMission() {
 	if (m_missions.Num() > 1) {
 		m_missions.RemoveAt(m_index_current_mission);
 	}
+
+	m_index_current_mission = m_missions.Num() - 1;
+	StateChange();
 }
 
 void UMissionList::StateChange(){
-	/*if(m_missions.Num() > 0)
-		Visit(m_stateChange, m_missions[m_index_current_mission]);*/
+	if(m_missions.Num() > 0)
+		Visit(m_stateChange, m_missions[m_index_current_mission]);
 }
 
 void UMissionList::Empty() {

@@ -18,7 +18,7 @@
 class UFlockingComponent;
 
 /*
-* For a many function we need to send a signal 
+* For a many function we need to send a signal  to the beahvior tree
 * A function can then send if it's a succes, a failure or un progress
 */
 UENUM()
@@ -166,6 +166,8 @@ public:
 	UFUNCTION(BluePrintCallable, Category = "Comportement")
 		virtual void Tick(float DeltaSeconds) override;
 
+	virtual void HomeTick(float DeltaSeconds);
+
 	virtual void Die();
 
 	virtual void Respawn();
@@ -230,6 +232,9 @@ protected:
 	*/
 	UFUNCTION()
 		void FocusEnemy();
+
+	UFUNCTION()
+		bool SeeFocusActor();
 
 	/*
 	* Make the AI run if it's possible
@@ -490,4 +495,11 @@ public:
 
 	UFUNCTION()
 		TSubclassOf<UNavigationQueryFilter> GetQueryFilter() const noexcept { return DefaultNavigationFilterClass; }
+
+	UFUNCTION()
+		virtual void BecomeAvailable() {};
+
+	UFUNCTION()
+		virtual void BecomeUnavailable() {};
+
 };

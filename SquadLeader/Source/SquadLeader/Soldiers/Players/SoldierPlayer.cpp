@@ -12,6 +12,11 @@
 #include "TimerManager.h"
 #include "SquadLeader/Weapons/SL_Weapon.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "AkAudioEvent.h"
+#include "AkGameplayStatics.h"
+
+#include "AkAudioEvent.h"
+#include "AkGameplayStatics.h"
 
 ASoldierPlayer::ASoldierPlayer(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer)
 {
@@ -34,8 +39,13 @@ void ASoldierPlayer::BeginPlay()
 {
 	Super::BeginPlay();
 
+	if (GetTeam())
+		GetTeam()->AddSoldierList(this);
+
 	if (!IsLocallyControlled())
 		return;
+
+	UAkGameplayStatics::PostEventByName("Music_Gameplay", this);
 
 	ensure(MaterialGlitchInterface);
 	ensure(MaterialBrokenGlassRightInterface);
@@ -89,25 +99,20 @@ void ASoldierPlayer::Tick(float DeltaTime)
 	}
 }
 
+void ASoldierPlayer::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ASoldierPlayer, SquadManager);
+}
+
 // Server only 
 void ASoldierPlayer::PossessedBy(AController* _newController)
 {
 	Super::PossessedBy(_newController);
 	SetAbilitySystemComponent();
 
-	/*Init Squad Manager for this Player*/
-
-	FActorSpawnParameters SpawnInfo;
-	SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn; // La maniere de faire le respawn
-	FTransform LocationTemp{ {0.f, -1000.f, 0.f}, {0.f,0.f,0.f} };
-	SquadManager = GetWorld()->SpawnActorDeferred<AAISquadManager>(AISquadManagerClass, LocationTemp, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
-
-	if (SquadManager)
-	{
-		SquadManager->FinishSpawning(LocationTemp);
-		SquadManager->Init(GetTeam(), this);
-		Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode())->ListAISquadManagers.Add(SquadManager);
-	}
+	InitSquadManager();
 }
 
 // Client only 
@@ -153,6 +158,25 @@ void ASoldierPlayer::InitCameraKiller()
 	FollowKillerCamera->SetAbsolute(true, true, true);
 	FollowKillerCamera->SetFieldOfView(BaseFOVNormal);
 	FollowKillerCamera->Deactivate();
+}
+
+void ASoldierPlayer::InitSquadManager()
+{
+	if (GetLocalRole() < ENetRole::ROLE_Authority)
+		return;
+
+	FActorSpawnParameters SpawnInfo;
+	SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	SquadManager = GetWorld()->SpawnActorDeferred<AAISquadManager>(AISquadManagerClass, FTransform{}, this, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+
+	if (SquadManager)
+	{
+		//SquadManager->Init(GetTeam(), this);  // done on the begin play of this element
+		SquadManager->FinishSpawning(FTransform{});
+
+		if (ASquadLeaderGameModeBase* GM = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode()); GM)
+			GM->ListAISquadManagers.Add(SquadManager);
+	}
 }
 
 void ASoldierPlayer::OnBlurredVisionFromJammer(const bool _IsBlurred)
@@ -228,6 +252,19 @@ void ASoldierPlayer::ClientSetSoldierKiller_Implementation(ASoldier* _SoldierKil
 	SetSoldierKiller(_SoldierKiller);
 }
 
+void ASoldierPlayer::ClientNotifyControlAreaTaken_Implementation(const bool _IsOwned)
+{
+	if(_IsOwned)UAkGameplayStatics::PostEventByName("Stinger_Gameplay_Positive", this);
+	else UAkGameplayStatics::PostEventByName("Stinger_Gameplay_Negative", this);
+}
+
+void ASoldierPlayer::ClientNotifyEndGame_Implementation(const bool _HasWin)
+{
+	UAkGameplayStatics::PostEventByName("Music_Gameplay_Stop", this);
+	if(_HasWin)UAkGameplayStatics::PostEventByName("Music_Cinematic_Victory", this);
+	else UAkGameplayStatics::PostEventByName("Music_Cinematic_Defeat", this);
+}
+
 void ASoldierPlayer::LockControls()
 {
 	if (APlayerController* PC = Cast<APlayerController>(Controller); PC)
@@ -243,6 +280,19 @@ void ASoldierPlayer::UnLockControls()
 AAISquadManager* ASoldierPlayer::GetSquadManager()
 {
 	return SquadManager;
+}
+
+void ASoldierPlayer::OnRep_SquadManager()
+{
+	if (SquadManager)
+	{
+		// Remove soldier from team then re-add them - This is not the cleanest nor the most optimize solution but it works
+		for (ASoldierAI* Soldier : SquadManager->GetAISoldierList())
+		{
+			if (Soldier)
+				Soldier->RefreshTeam();
+		}
+	}
 }
 
 void ASoldierPlayer::LookUp(const float _Val)
@@ -376,6 +426,7 @@ void ASoldierPlayer::SpawnPing(FVector PingLocation)
 			}
 		}
 		SpawnClientPing({ PingMesh->GetActorLocation().X, PingMesh->GetActorLocation().Y });
+		UAkGameplayStatics::PostEventByName("Ping_Notif_Good", this);
 	}
 }
 
@@ -504,6 +555,7 @@ void ASoldierPlayer::OnReceiveDamage(const FVector& _ImpactPoint, const FVector&
 			StartHitReactMontage(HitReactLeftMontage);
 	}
 
+	ShakeCamera(CameraShakeReceiveDamageClass);
 }
 
 void ASoldierPlayer::ClientOnReceiveDamage_Implementation(const FVector& _ImpactPoint, const FVector& _SourcePoint)

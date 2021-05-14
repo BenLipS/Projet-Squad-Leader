@@ -40,6 +40,9 @@ public:
 	void SetCollisionProfile(const FName& _Name);
 	FName GetCollisionProfile() const;
 
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+		void ExplodeSoundEvent();
+
 //Attributes
 protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Projectile")

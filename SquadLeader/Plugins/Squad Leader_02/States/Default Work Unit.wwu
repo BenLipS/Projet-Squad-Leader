@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{2CAE0A14-8901-43FD-A4A2-72A4A826DF8A}" SchemaVersion="103">
+	<States>
+		<WorkUnit Name="Default Work Unit" ID="{2CAE0A14-8901-43FD-A4A2-72A4A826DF8A}" PersistMode="Standalone">
+			<ChildrenList>
+				<StateGroup Name="Music_Menu" ID="{B22056DD-2A17-4AFE-9F4D-8FD4D362DB89}">
+					<ChildrenList>
+						<State Name="None" ID="{5E178B99-6F7B-4A51-8CC6-F31199A6B9CD}"/>
+						<State Name="Intense" ID="{6441D4BD-D590-446F-B4E1-74DCDA48162D}"/>
+						<State Name="Smooth" ID="{775DFFC5-BC4A-4D3A-BBE9-E09B3CCCE004}"/>
+					</ChildrenList>
+					<TransitionList>
+						<Transition>
+							<StartState Name="Smooth" ID="{775DFFC5-BC4A-4D3A-BBE9-E09B3CCCE004}"/>
+							<EndState Name="Intense" ID="{6441D4BD-D590-446F-B4E1-74DCDA48162D}"/>
+							<Time>1.5</Time>
+							<IsShared>false</IsShared>
+						</Transition>
+						<Transition>
+							<StartState Name="Intense" ID="{6441D4BD-D590-446F-B4E1-74DCDA48162D}"/>
+							<EndState Name="Smooth" ID="{775DFFC5-BC4A-4D3A-BBE9-E09B3CCCE004}"/>
+							<Time>1.5</Time>
+							<IsShared>false</IsShared>
+						</Transition>
+					</TransitionList>
+				</StateGroup>
+				<StateGroup Name="Music_Gameplay" ID="{10E142A1-7EF7-429A-A340-B838A81CAF59}">
+					<ChildrenList>
+						<State Name="None" ID="{7FD5B3F6-317F-40F7-80E4-8E41B133C2E6}"/>
+						<State Name="Boucle_01" ID="{75252BAC-3C30-43F7-9DBC-5EDD12024078}"/>
+						<State Name="Boucle_02" ID="{7AB0078C-C250-422F-992E-F2FB4E8934AB}"/>
+						<State Name="Boucle_03" ID="{F10F4686-4CFA-48DD-901F-0DE0F86772A7}"/>
+					</ChildrenList>
+				</StateGroup>
+			</ChildrenList>
+		</WorkUnit>
+	</States>
+</WwiseDocument>

@@ -1,14 +1,20 @@
 #include "GA_WallVision.h"
 #include "../../../Soldiers/Players/SoldierPlayer.h"
 #include "../../../Soldiers/Players/SoldierPlayerController.h"
+#include "SquadLeader/AbilitySystem/Soldiers/GameplayEffects/States/GE_StateCastingSpell.h"
 #include "Abilities/Tasks/AbilityTask_WaitDelay.h"
 #include "SquadLeader/AbilitySystem/Soldiers/AbilityTasks/AbilityTask_PlayMontageAndWaitForEvent.h"
 #include "GameFramework/Actor.h"
+#include "AkAudioEvent.h"
+#include "AkGameplayStatics.h"
 
 UGA_WallVision::UGA_WallVision()
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.WallVision")));
+	ActivationBlockedTags.AddTag(FGameplayTag::RequestGameplayTag(FName("State.CastingSpell")));
+	CancelAbilitiesWithTag.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.ReloadWeapon")));
+	CancelAbilitiesWithTag.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.FireWeapon")));
 	WallVisionReadyEventTag = FGameplayTag::RequestGameplayTag(FName("Event.Ability.WallVisionReady"));
 }
 
@@ -49,6 +55,12 @@ void UGA_WallVision::ActivateAbility(const FGameplayAbilitySpecHandle Handle, co
 			TaskPlayMontage->OnCancelled.AddDynamic(this, &UGA_WallVision::MontageInterruptedOrCancelled);
 			TaskPlayMontage->OnEventReceived.AddDynamic(this, &UGA_WallVision::MontageSentEvent);
 			TaskPlayMontage->ReadyForActivation();
+
+			// State during the activation
+			UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo();
+			FGameplayEffectContextHandle EffectContext = ASC->MakeEffectContext();
+			FGameplayEffectSpecHandle SpecHandle = ASC->MakeOutgoingSpec(UGE_StateCastingSpell::StaticClass(), 1.f, EffectContext);
+			ASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 		}
 	}
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
@@ -67,12 +79,20 @@ void UGA_WallVision::EndAbility(const FGameplayAbilitySpecHandle Handle, const F
 void UGA_WallVision::MontageCompletedOrBlendedOut()
 {
 	SourceSoldier->UseCurrentWeaponWithRightHand();
+
+	FGameplayTagContainer EffectTagsToRemove;
+	EffectTagsToRemove.AddTag(FGameplayTag::RequestGameplayTag(FName("State.CastingSpell")));
+	GetAbilitySystemComponentFromActorInfo()->RemoveActiveEffectsWithGrantedTags(EffectTagsToRemove);
 }
 
 void UGA_WallVision::MontageInterruptedOrCancelled()
 {
 	SourceSoldier->UseCurrentWeaponWithRightHand();
 	CancelAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true);
+
+	FGameplayTagContainer EffectTagsToRemove;
+	EffectTagsToRemove.AddTag(FGameplayTag::RequestGameplayTag(FName("State.CastingSpell")));
+	GetAbilitySystemComponentFromActorInfo()->RemoveActiveEffectsWithGrantedTags(EffectTagsToRemove);
 }
 
 void UGA_WallVision::MontageSentEvent(FGameplayTag _EventTag, FGameplayEventData _EventData)
@@ -90,6 +110,7 @@ void UGA_WallVision::StartWallVision()
 		TaskWaitDelay->OnFinish.AddDynamic(this, &UGA_WallVision::EndWallVision);
 		SourceSoldier->UpdateWallVisionPostEffect(1.f);
 		TaskWaitDelay->ReadyForActivation();
+		UAkGameplayStatics::PostEventByName("Ability_Termal_Vision", SourceSoldier);
 	}
 	else
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, false, false);

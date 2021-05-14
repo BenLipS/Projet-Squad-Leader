@@ -11,15 +11,20 @@ ASoldierAI::ASoldierAI(const FObjectInitializer& _ObjectInitializer) : Super(_Ob
 	AttributeSet = CreateDefaultSubobject<UAttributeSetSoldier>(TEXT("Attribute Set"));
 }
 
+void ASoldierAI::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ASoldierAI, bUpdateTeamOnSpawn);
+}
+
 // TODO: See with AI team how to proceed
 void ASoldierAI::LockControls()
 {
-	
 	if (AAIGeneralController* AIController = Cast<AAIGeneralController>(GetController()); AIController) {
 		AIController->IsActivated = false;
 		AIController->StopMovement();
 	}
-	
 }
 
 void ASoldierAI::UnLockControls()
@@ -42,6 +47,9 @@ void ASoldierAI::BeginPlay()
 	Super::BeginPlay();
 
 	check(AbilitySystemComponent);
+
+	if (bUpdateTeamOnSpawn && GetTeam())
+		GetTeam()->AddSoldierList(this);
 
 	AbilitySystemComponent->InitAbilityActorInfo(this, this);
 
@@ -130,7 +138,8 @@ void ASoldierAI::Die() {
 	Super::Die();
 	auto AIController = Cast<AAIGeneralController>(GetController());
 	if(AIController)
-		AIController->Die();}
+		AIController->Die();
+}
 
 void ASoldierAI::Respawn() {
 	Super::Respawn();
@@ -184,7 +193,14 @@ void ASoldierAI::OnBlurredVisionFromJammer(const bool _IsBlurred)
 		else {
 			UnLockControls();
 			AIController->get_blackboard()->SetValueAsBool("IsStun", false);
+			if (StunFX) {
+				StunFX->Destroy();
+				StunFX = nullptr;
+			}
+		}
+		if (AbilitySystemComponent->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("State.Dead")))) {
 			if (StunFX)StunFX->Destroy();
+			AIController->get_blackboard()->SetValueAsBool("IsStun", false);
 		}
 	}
 }
