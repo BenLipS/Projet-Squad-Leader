@@ -71,29 +71,6 @@
 								</Reference>
 							</ReferenceList>
 						</Action>
-						<Action Name="" ID="{34388CC6-2606-4D36-8CD8-577454455011}" ShortID="576691110">
-							<PropertyList>
-								<Property Name="ActionType" Type="int16" Value="8"/>
-							</PropertyList>
-							<ReferenceList/>
-							<ChildrenList>
-								<EventActionException Name="" ID="{98D1B3C4-EE74-4822-883E-BE88BB944E7F}">
-									<ReferenceList>
-										<Reference Name="Target">
-											<ObjectRef Name="Respawn" ID="{F304985E-67EC-4653-BAE9-23769E64F39C}" WorkUnitID="{822C7857-305A-4F3C-A08B-4B6049187B1C}"/>
-										</Reference>
-									</ReferenceList>
-								</EventActionException>
-							</ChildrenList>
-						</Action>
-						<Action Name="" ID="{51B55799-F3A0-4AD0-A063-3C7DC4EE373B}" ShortID="294604494">
-							<PropertyList>
-								<Property Name="ActionType" Type="int16" Value="10"/>
-								<Property Name="Delay" Type="Real64" Value="3"/>
-								<Property Name="FadeTime" Type="Real64" Value="2.5"/>
-							</PropertyList>
-							<ReferenceList/>
-						</Action>
 					</ChildrenList>
 				</Event>
 			</ChildrenList>
