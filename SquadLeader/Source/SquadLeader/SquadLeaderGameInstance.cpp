@@ -66,7 +66,7 @@ void USquadLeaderGameInstance::LaunchGame()
 void USquadLeaderGameInstance::SetGameParamToDefault()
 {
     if (auto GM = GetWorld()->GetAuthGameMode<ASLMainMenuGameModeBase>(); GM)
-        GameParam = GM->DefaultGameParam;
+        GameParam.GetDefaultObject()->GameParamCopy(GM->DefaultGameParam.GetDefaultObject());
 }
 
 void USquadLeaderGameInstance::SetGameParamToRandom()
@@ -75,6 +75,16 @@ void USquadLeaderGameInstance::SetGameParamToRandom()
         GameParam.GetDefaultObject()->RandomiseParam(GM->MinGameParam.GetDefaultObject(), GM->MaxGameParam.GetDefaultObject());
     }
 }
+
+void USquadLeaderGameInstance::SaveGameParam(TMap<FString, int> IntData, TMap<FString, FString> StringData)
+{
+    GameParam.GetDefaultObject()->SetStringParams(StringData);
+    GameParam.GetDefaultObject()->SetIntParams(IntData);
+
+    GameParam.GetDefaultObject()->LevelTarget = UserData.Score;
+    GameParam.GetDefaultObject()->LevelRange = UserData.Score;
+}
+
 
 void USquadLeaderGameInstance::JoinGame(FString IPAdress)
 {
