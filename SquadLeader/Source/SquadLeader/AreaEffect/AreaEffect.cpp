@@ -68,32 +68,31 @@ void AAreaEffect::OnReadyToApplyEffects()
 	FCollisionQueryParams QueryParams{};
 	QueryParams.AddIgnoredActor(this);
 
-	if (GetWorld()->SweepMultiByProfile(HitActors, StartTrace, EndTrace, FQuat::FQuat(), ProfileAreaEffectCollisionName, CollisionShape, QueryParams))
+	GetWorld()->SweepMultiByProfile(HitActors, StartTrace, EndTrace, FQuat::FQuat(), ProfileAreaEffectCollisionName, CollisionShape, QueryParams);
+	
+	for (int32 i = 0; i < HitActors.Num(); ++i)
 	{
-		for (int32 i = 0; i < HitActors.Num(); ++i)
+		AActor* TargetActor = HitActors[i].GetActor();
+		if (TargetActor == nullptr)
+			continue;
+
+		const float DistActorArea = FVector::Dist(TargetActor->GetActorLocation(), GetActorLocation());
+
+		if (ASoldier* TargetSoldier = Cast<ASoldier>(TargetActor); TargetSoldier && TargetSoldier->GetAbilitySystemComponent())
 		{
-			AActor* TargetActor = HitActors[i].GetActor();
-			if (TargetActor == nullptr)
+			// Make sure there is no object blocking the effect
+			TArray<FHitResult> HitActorsBeforeSoldier = HitActors;
+			HitActorsBeforeSoldier.RemoveAt(i, HitActors.Num() - i);
+
+			if (!ValidateEffectOnSoldier(HitActors[i], HitActorsBeforeSoldier))
 				continue;
 
-			const float DistActorArea = FVector::Dist(TargetActor->GetActorLocation(), GetActorLocation());
-
-			if (ASoldier* TargetSoldier = Cast<ASoldier>(TargetActor); TargetSoldier && TargetSoldier->GetAbilitySystemComponent())
-			{
-				// Make sure there is no object blocking the effect
-				TArray<FHitResult> HitActorsBeforeSoldier = HitActors;
-				HitActorsBeforeSoldier.RemoveAt(i, HitActors.Num() - i);
-
-				if (!ValidateEffectOnSoldier(HitActors[i], HitActorsBeforeSoldier))
-					continue;
-
-				UAbilitySystemComponent* TargetASC = TargetSoldier->GetAbilitySystemComponent();
-				ApplyDamages(TargetASC, DistActorArea);
-				ApplyGameplayEffects(TargetASC);
-			}
-
-			ApplyImpulse(TargetActor, DistActorArea);
+			UAbilitySystemComponent* TargetASC = TargetSoldier->GetAbilitySystemComponent();
+			ApplyDamages(TargetASC, DistActorArea);
+			ApplyGameplayEffects(TargetASC);
 		}
+
+		ApplyImpulse(TargetActor, DistActorArea);
 	}
 }
 
