@@ -181,11 +181,11 @@ void ASquadLeaderGameModeBase::CheckControlAreaAdvantage()
 	}
 }
 
-void ASquadLeaderGameModeBase::RespawnSoldier(ASoldier* _Soldier)
+void ASquadLeaderGameModeBase::RespawnSoldier(ASoldier* _Soldier, AControlArea* _ControlArea)
 {
 	if (_Soldier)
 	{
-		_Soldier->SetActorLocation(_Soldier->GetRespawnPoint());
+		_Soldier->SetActorLocation(_Soldier->GetRespawnPoint(_ControlArea));
 		_Soldier->Respawn();
 	}
 }
@@ -252,13 +252,23 @@ void ASquadLeaderGameModeBase::CloseGame()
 	//FGenericPlatformMisc::RequestExit(false);
 }
 
+void ASquadLeaderGameModeBase::DisplayRespawnHUD(ASoldierPlayer* _SoldierPlayer)
+{
+	AControlAreaManager* ControlAreaManager = Cast<ASquadLeaderInitGameState>(GameState)->GetControlAreaManager();
+	if (ControlAreaManager)
+	{
+		ASoldierPlayerController* PC = _SoldierPlayer->GetController<ASoldierPlayerController>();
+		PC->ClientDisplayRespawnWidget();
+	}
+}
+
 void ASquadLeaderGameModeBase::NotifySoldierKilled(ASoldier* _DeadSoldier, ASoldier* _Killer)
 {
 	UpdateTicketsFromSoldierDeath(_DeadSoldier);
 	GrantEXPFromSoldierDeath(_DeadSoldier, _Killer);
-	StartRespawnTimerForDeadSoldier(_DeadSoldier);
 	NotifySoldierDeathToAllPlayers(_DeadSoldier, _Killer);
 	ManageKillingStreak(_DeadSoldier, _Killer);
+	StartRespawnTimerForDeadSoldier(_DeadSoldier);
 }
 
 void ASquadLeaderGameModeBase::NotifyControlAreaCaptured(AControlArea* _ControlArea)
@@ -355,7 +365,11 @@ void ASquadLeaderGameModeBase::StartRespawnTimerForDeadSoldier(ASoldier* _DeadSo
 	FTimerHandle RespawnTimerHandle;
 	FTimerDelegate RespawnDelegate;
 
-	RespawnDelegate = FTimerDelegate::CreateUObject(this, &ASquadLeaderGameModeBase::RespawnSoldier, _DeadSoldier);
+	if (ASoldierPlayer* SoldierPlayer = Cast<ASoldierPlayer>(_DeadSoldier))
+		RespawnDelegate = FTimerDelegate::CreateUObject(this, &ASquadLeaderGameModeBase::DisplayRespawnHUD, SoldierPlayer);
+	else
+		RespawnDelegate = FTimerDelegate::CreateUObject(this, &ASquadLeaderGameModeBase::RespawnSoldier, _DeadSoldier, (AControlArea*)nullptr);
+	
 	GetWorldTimerManager().SetTimer(RespawnTimerHandle, RespawnDelegate, RespawnDelay, false);
 
 	/*if (ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(_Controller); PC)

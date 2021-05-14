@@ -62,6 +62,10 @@ public:
 	void BindMainAbilities();
 	void NotifyMainAbilityCooldown(const float _Cooldown, const ESoldierAbilityInputID _ID);
 	void NotifySoldierHit(const float _Damage, const bool _bIsHeadShot);
+	
+	UFUNCTION(BlueprintCallable, Reliable, Client, Category = "Respawn")
+	void ClientDisplayRespawnWidget();
+	void ClientDisplayRespawnWidget_Implementation();
 
 //////////////// Movements
 protected:

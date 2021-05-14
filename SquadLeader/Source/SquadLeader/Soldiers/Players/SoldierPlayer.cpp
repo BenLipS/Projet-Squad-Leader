@@ -446,29 +446,34 @@ void ASoldierPlayer::LevelUp()
 	}
 }
 
-FVector ASoldierPlayer::GetRespawnPoint()
+FVector ASoldierPlayer::GetRespawnPoint(AControlArea* _ControlArea)
 {
-	if (GetTeam()) {
-		auto AvailableSpawnPoints = GetTeam()->GetUsableSpawnPoints();
-		if (AvailableSpawnPoints.Num() > 0) {
+	const FVector DefaultPosition = FVector{ 200.f, 200.f, 1500.f };
+	if (!GetTeam())
+		return DefaultPosition;
 
-			ASoldierSpawn* OptimalSpawn = AvailableSpawnPoints[0];
-			auto CalculateMinimalDistance = [](FVector PlayerPos, FVector FirstPoint, FVector SecondPoint) {  // return true if the first point is closest
-				float dist1 = FVector::Dist(PlayerPos, FirstPoint);
-				float dist2 = FVector::Dist(PlayerPos, SecondPoint);
-				return dist1 < dist2;
-			};
+	if (_ControlArea)
+		return _ControlArea->TeamData[GetTeam()]->spawnTeam->GetSpawnLocation();
 
-			for (auto loop : AvailableSpawnPoints) {
-				if (CalculateMinimalDistance(this->GetActorLocation(), loop->GetActorLocation(), OptimalSpawn->GetActorLocation())) {
-					OptimalSpawn = loop;
-				}
+	// Find the nearest spawn point
+	auto AvailableSpawnPoints = GetTeam()->GetUsableSpawnPoints();
+	if (AvailableSpawnPoints.Num() > 0) {
+		ASoldierSpawn* OptimalSpawn = AvailableSpawnPoints[0];
+		auto CalculateMinimalDistance = [](FVector PlayerPos, FVector FirstPoint, FVector SecondPoint) {  // return true if the first point is closest
+			const float dist1 = FVector::Dist(PlayerPos, FirstPoint);
+			const float dist2 = FVector::Dist(PlayerPos, SecondPoint);
+			return dist1 < dist2;
+		};
+
+		for (auto loop : AvailableSpawnPoints) {
+			if (CalculateMinimalDistance(this->GetActorLocation(), loop->GetActorLocation(), OptimalSpawn->GetActorLocation())) {
+				OptimalSpawn = loop;
 			}
-
-			return OptimalSpawn->GetSpawnLocation();
 		}
+
+		return OptimalSpawn->GetSpawnLocation();
 	}
-	return FVector(200.f, 200.f, 1500.f); // else return default
+	return DefaultPosition;
 }
 
 void ASoldierPlayer::OnSquadChanged(const TArray<FSoldierAIData>& newValue)

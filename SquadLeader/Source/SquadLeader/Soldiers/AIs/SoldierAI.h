@@ -162,7 +162,7 @@ protected:
 public:
 	virtual void Respawn() override;
 	virtual void OnReceiveDamage(const FVector& _ImpactPoint, const FVector& _SourcePoint) override;
-	virtual FVector GetRespawnPoint() override;
+	virtual FVector GetRespawnPoint(AControlArea* _ControlArea = nullptr) override;
 	//Effect
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Animation|Particles")

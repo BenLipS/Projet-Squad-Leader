@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "Core.h"
@@ -13,6 +11,8 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FControlAreaIntChanged, int, newInt);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FControlAreaFloatChanged, float, newFloat);
 
+class ACameraActor;
+
 UCLASS()
 class SQUADLEADER_API AControlArea : public AActor, public IPreInitable
 {
@@ -24,7 +24,6 @@ public:
 	FControlAreaFloatChanged OnPercentageChanged;
 	
 public:	
-	// Sets default values for this actor's properties
 	AControlArea();
 
 public:	
@@ -34,6 +33,10 @@ public:
 	// Pre init launch by the gameMode before the BeginPlay() function
 	virtual void PreInitialisation() override;
 	virtual int GetPriority() const override;
+
+//////////////// Camera
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera", meta = (ExposeOnSpawn = "true"))
+	ACameraActor* CameraActor;
 
 public:
 	/** Zone Collide */
@@ -108,7 +111,7 @@ protected:  // time value for calculation frequency
 		void calculateControlValue();
 
 public:
-	UPROPERTY(EditInstanceOnly, Category = "ControlData")
+	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = "ControlData")
 		TMap<ASoldierTeam*, AControlAreaTeamStat*> TeamData;
 
 protected:

@@ -90,7 +90,13 @@ void ASoldierPlayerController::NotifySoldierHit(const float _Damage, const bool 
 {
 	if (auto HUD = GetHUD<IHitMarkerInterface>(); HUD)
 		HUD->OnDamageReceived(_Damage, _bIsHeadShot);
+}
 
+void ASoldierPlayerController::ClientDisplayRespawnWidget_Implementation()
+{
+	APlayerHUD* HUD = GetHUD<APlayerHUD>();
+	if (HUD)
+		HUD->DisplayRespawnWidget();
 }
 
 // Server only

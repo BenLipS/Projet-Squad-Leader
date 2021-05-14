@@ -6,6 +6,7 @@
 #include "../UI/HUD/SL_HUD.h"
 #include "../AI/AIBasicManager.h"
 #include "ControlAreaManager.h"
+#include "Camera/CameraActor.h"
 
 AControlArea::AControlArea()
 {
@@ -14,6 +15,8 @@ AControlArea::AControlArea()
 	PrimaryActorTick.bCanEverTick = false;
 	bReplicates = true;
 	bAlwaysRelevant = true;
+
+	CameraActor = CreateDefaultSubobject<ACameraActor>(TEXT("Camera Actor"));
 }
 
 // used when initialising the control area
@@ -28,7 +31,6 @@ void AControlArea::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	DOREPLIFETIME_CONDITION_NOTIFY(AControlArea, IsCapturedBy, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(AControlArea, PercentageCapture, COND_None, REPNOTIFY_Always);
 }
-
 
 void AControlArea::PreInitialisation()
 {
