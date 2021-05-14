@@ -371,18 +371,23 @@ void AInfluenceMapGrid::TimeFunction() {
 
 void AInfluenceMapGrid::UpdateTile(int index, float value, int team, Type type, uint32 actorID, uint16& ActorDataIndex) noexcept {
 
-	auto bool2 = Grid[index].ActorsID.Contains(actorID);
+	auto bool2 = Grid[index].InfluenceTeam[team].ActorsID.Contains(actorID);
 
 	if (!bool2) {
 
 		if (type == Type::ControlArea) {
-			Grid[index].InfluenceTeam[team].InfluenceValue = ControlAreaInfluenceValue + (0.1f * Grid[index].ActorsID.Num());
+			Grid[index].InfluenceTeam[team].InfluenceValue = ControlAreaInfluenceValue + (0.1f * Grid[index].InfluenceTeam[team].ActorsID.Num());
 			Grid[index].InfluenceTeam[team].Types.Add(type);
 		}
 		else {
 			const float ValueInfluenceTile = Grid[index].InfluenceTeam[team].InfluenceValue;
+
+
 			if (ValueInfluenceTile >= 0.3f)
-				Grid[index].InfluenceTeam[team].InfluenceValue += 0.1f;
+				if(ValueInfluenceTile + 0.1f > 1.0f)
+					Grid[index].InfluenceTeam[team].InfluenceValue = 1.f;
+				else
+					Grid[index].InfluenceTeam[team].InfluenceValue += 0.1f;
 			else
 				Grid[index].InfluenceTeam[team].InfluenceValue = 0.3f;
 
@@ -395,7 +400,7 @@ void AInfluenceMapGrid::UpdateTile(int index, float value, int team, Type type, 
 			AddUpdateTileTeam2(index);
 
 
-		Grid[index].ActorsID.Add(actorID);
+		Grid[index].InfluenceTeam[team].ActorsID.Add(actorID);
 
 		ActorsData[ActorDataIndex].AddIndexs(index);
 	}
@@ -507,9 +512,9 @@ void AInfluenceMapGrid::UpdateControlArea(const uint16 IndexControlArea, const u
 void AInfluenceMapGrid::UpdateSoldier(const uint16 IndexSoldier, const uint8 Team, const uint32 SoldierID) noexcept {
 	if (ActorsData[IndexSoldier].IndexInfluence.Num() > 0) {
 		for (uint32 index : ActorsData[IndexSoldier].IndexInfluence) {
-			Grid[index].ActorsID.Remove(SoldierID);
+			Grid[index].InfluenceTeam[Team].ActorsID.Remove(SoldierID);
 
-			if (Grid[index].ActorsID.Num() <= 0) {
+			if (Grid[index].InfluenceTeam[Team].ActorsID.Num() <= 0) {
 				Grid[index].InfluenceTeam[Team].InfluenceValue = 0.0f;
 				switch (Team) {
 				case 1:
@@ -527,6 +532,10 @@ void AInfluenceMapGrid::UpdateSoldier(const uint16 IndexSoldier, const uint8 Tea
 				if (Grid[index].InfluenceTeam[Team].Types.Contains(Type::ControlArea)) {
 					if (Grid[index].InfluenceTeam[Team].InfluenceValue < ControlAreaInfluenceValue)
 						Grid[index].InfluenceTeam[Team].InfluenceValue = ControlAreaInfluenceValue;
+				}
+				else if(Grid[index].InfluenceTeam[Team].Types.Contains(Type::Soldier)) {
+					if (Grid[index].InfluenceTeam[Team].InfluenceValue < CharacterInfluenceValue)
+						Grid[index].InfluenceTeam[Team].InfluenceValue = CharacterInfluenceValue;
 				}
 			}
 		}

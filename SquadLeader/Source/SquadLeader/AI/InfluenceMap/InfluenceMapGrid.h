@@ -64,6 +64,8 @@ struct SQUADLEADER_API FInfluenceTeamData {
 
 	//The list of the different type on the tile(Soldier, COntrolArea, Projectile, etc.)
 	TArray<TEnumAsByte<Type>> Types;
+
+	TArray<uint32> ActorsID;
 };
 
 /*
@@ -86,8 +88,6 @@ struct SQUADLEADER_API FTileBase {
 	TileState State;
 
 	TMap<uint8, FInfluenceTeamData> InfluenceTeam;
-
-	TArray<uint32> ActorsID;
 };
 
 USTRUCT()
