@@ -1,9 +1,12 @@
 #include "GA_FireWeapon.h"
 #include "../../../Soldiers/Soldier.h"
+#include "../../../Soldiers/Players/SoldierPlayer.h"
 #include "../AbilitySystemSoldier.h"
 #include "GA_FireWeaponInstant.h"
 #include "SquadLeader/Soldiers/Soldier.h"
 #include "Abilities/Tasks/AbilityTask_WaitDelay.h"
+#include "AkAudioEvent.h"
+#include "AkGameplayStatics.h"
 
 UGA_FireWeapon::UGA_FireWeapon()
 {
@@ -45,6 +48,11 @@ void UGA_FireWeapon::ActivateAbility(const FGameplayAbilitySpecHandle Handle, co
 		InstantAbilityHandle = ASC->FindAbilitySpecHandleForClass(GA_FireWeaponInstantClass, SourceWeapon);
 		HandleFire();
 		SourceSoldier->OnStartFiring();
+		if (SourceWeapon->GetFireMode() != FGameplayTag::RequestGameplayTag(FName("Weapon.FireMode.SemiAuto")) && SourceSoldier->IsA<ASoldierPlayer>() && Cast<ASoldierPlayer>(SourceSoldier)->GetClass() != SoldierClass::SUPPORT)
+		{
+			UAkGameplayStatics::PostEventByName("Rifle_Fire", SourceWeapon);
+		}
+
 	}
 	else
 		ReloadWeapon();
@@ -68,6 +76,12 @@ void UGA_FireWeapon::EndAbility(const FGameplayAbilitySpecHandle Handle, const F
 		GA_FireWeaponInstantInstance->CancelAbility(InstantAbilityHandle, ActorInfo, ActivationInfo, true);
 
 	SourceSoldier->OnStopFiring();
+
+	if (SourceWeapon->GetFireMode() != FGameplayTag::RequestGameplayTag(FName("Weapon.FireMode.SemiAuto")) && SourceSoldier->IsA<ASoldierPlayer>() && Cast<ASoldierPlayer>(SourceSoldier)->GetClass() != SoldierClass::SUPPORT)
+	{
+		UAkGameplayStatics::PostEventByName("Rifle_Break", SourceWeapon);
+	}
+
 
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }

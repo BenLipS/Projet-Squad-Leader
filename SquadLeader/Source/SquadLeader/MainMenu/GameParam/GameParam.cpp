@@ -34,3 +34,61 @@ void AGameParam::RandomiseParam(AGameParam* MinConfig, AGameParam* MaxConfig)
 	Weather = UKismetMathLibrary::RandomIntegerInRange(MinConfig->Weather, MaxConfig->Weather);
 	RespawnDuration = UKismetMathLibrary::RandomIntegerInRange(MinConfig->RespawnDuration, MaxConfig->RespawnDuration);
 }
+
+void AGameParam::GameParamCopy(AGameParam* TargetParam)
+{
+	NbAIBasicAssault = TargetParam->NbAIBasicAssault;
+	NbAIBasicHeavy = TargetParam->NbAIBasicHeavy;
+	LevelAIBasic = TargetParam->LevelAIBasic;
+	StartingNbAISquad = TargetParam->StartingNbAISquad;
+	LevelAISquad = TargetParam->LevelAISquad;
+	NbTickets = TargetParam->NbTickets;
+	Weather = TargetParam->Weather;
+	RespawnDuration = TargetParam->RespawnDuration;
+}
+
+TMap<FString, int> AGameParam::GetIntParams()
+{
+	TMap<FString, int> ret;
+
+	ret.Add("LevelTarget", LevelTarget);
+	ret.Add("LevelRange", LevelRange);
+	ret.Add("NbAIBasicAssault", NbAIBasicAssault);
+	ret.Add("NbAIBasicHeavy", NbAIBasicHeavy);
+	ret.Add("LevelAIBasic", LevelAIBasic);
+	ret.Add("StartingNbAISquad", StartingNbAISquad);
+	ret.Add("LevelAISquad", LevelAISquad);
+	ret.Add("NbTickets", NbTickets);
+	ret.Add("Weather", Weather);
+	ret.Add("RespawnDuration", RespawnDuration);
+
+	return ret;
+}
+
+void AGameParam::SetIntParams(TMap<FString, int> ImportedParam)
+{
+	if(ImportedParam.Contains("LevelTarget")) LevelTarget = ImportedParam["LevelTarget"];
+	if(ImportedParam.Contains("LevelRange")) LevelRange = ImportedParam["LevelRange"];
+	if(ImportedParam.Contains("NbAIBasicAssault")) NbAIBasicAssault = ImportedParam["NbAIBasicAssault"];
+	if(ImportedParam.Contains("NbAIBasicHeavy")) NbAIBasicHeavy = ImportedParam["NbAIBasicHeavy"];
+	if(ImportedParam.Contains("LevelAIBasic")) LevelAIBasic = ImportedParam["LevelAIBasic"];
+	if(ImportedParam.Contains("StartingNbAISquad")) StartingNbAISquad = ImportedParam["StartingNbAISquad"];
+	if(ImportedParam.Contains("LevelAISquad")) LevelAISquad = ImportedParam["LevelAISquad"];
+	if(ImportedParam.Contains("NbTickets")) NbTickets = ImportedParam["NbTickets"];
+	if(ImportedParam.Contains("Weather")) Weather = ImportedParam["Weather"];
+	if(ImportedParam.Contains("RespawnDuration")) RespawnDuration = ImportedParam["RespawnDuration"];
+}
+
+TMap<FString, FString> AGameParam::GetStringParams()
+{
+	TMap<FString, FString> ret;
+
+	ret.Add("Name", Name);
+
+	return ret;
+}
+
+void AGameParam::SetStringParams(TMap<FString, FString> ImportedParam)
+{
+	if (ImportedParam.Contains("Name")) Name = ImportedParam["Name"];
+}

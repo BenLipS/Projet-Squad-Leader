@@ -331,27 +331,81 @@ void AAIGeneralController::CheckIfNeedToStopCurrentBehavior()
 
 void AAIGeneralController::FocusEnemy() {
 	ClearFocus(EAIFocusPriority::Gameplay);
-	blackboard->ClearValue("FocusActor");
-	bool enemyDetected = false;
-	int i = 0;
-	if (SeenSoldier.Num() > 0) {
-		while (!enemyDetected && i < SeenSoldier.Num()) {
-			if (Cast<ASoldier>(SeenSoldier[i])->GetTeam() != Cast<ASoldier>(GetPawn())->GetTeam()) {
-				this->SetFocus(SeenSoldier[i]);
-				enemyDetected = true;
-				//TO-DO : if already in the state attacking don't do this line
+	//Avant de clear le focus Actor
+	//Si le Focus actor est en vie ET qu'on le voit toujours -> Tirer
+	//Si le Focus actor est en vie ET qu'on ne le voit plus ET que l'on ne voit personne d'autre -> Search sa derniere position connue
+	//Si le Focus actor est en vie ET qu'on ne le voit plus ET que l'on voit d'autre acteur -> Changer de focus Actor
+	//Si le Focus actor est mort ET qu'on ne voit plus personne -> Retourner a notre vie
+	//Si le Focus actor est mort ET qu'on voit de nouveau actor -> Trouver un nouveau Focus Actor.
+
+	ASoldier* _FocusEnemy = Cast<ASoldier>(blackboard->GetValueAsObject("FocusActor"));
+	if (_FocusEnemy) {
+		const bool SeeFocusEnemy = SeeFocusActor();
+		const bool FocusEnemyAlive = _FocusEnemy->IsAlive();
+
+		if (FocusEnemyAlive) {
+			if (SeeFocusEnemy) {
+				this->SetFocus(_FocusEnemy);
 				m_state = AIBasicState::Attacking;
-				blackboard->SetValueAsObject("FocusActor", SeenSoldier[i]);
-				blackboard->SetValueAsVector("EnemyLocation", SeenSoldier[i]->GetActorLocation());
+				blackboard->SetValueAsVector("EnemyLocation", _FocusEnemy->GetActorLocation());
+				return;
 			}
-			i++;
+			else if(SeenEnemySoldier.Num() > 0){
+				//Trouver un nouveau Focus ennemy				
+				blackboard->ClearValue("FocusActor");
+				m_state = AIBasicState::Attacking;
+				this->SetFocus(SeenEnemySoldier[0]);
+				blackboard->SetValueAsObject("FocusActor", SeenEnemySoldier[0]);
+				blackboard->SetValueAsVector("EnemyLocation", SeenEnemySoldier[0]->GetActorLocation());
+			}
+			else if(m_state != m_old_state){
+				m_state = AIBasicState::Search;
+			}
+			else {
+				m_state = m_old_state;
+			}
 		}
-		//TO-DO : the next four line are the basicly the same, see if we can find another way for doing this
-		if (!enemyDetected && m_state != m_old_state)
-			m_state = AIBasicState::Search;
-	}else if(m_state != m_old_state)
-		m_state = AIBasicState::Search;
+		else {
+			if (SeenEnemySoldier.Num() <= 0) {
+				m_state = m_old_state;
+			}
+			else {
+				//Trouver un nouveau Focus ennemy
+				blackboard->ClearValue("FocusActor");
+				m_state = AIBasicState::Attacking;
+				this->SetFocus(SeenEnemySoldier[0]);
+				blackboard->SetValueAsObject("FocusActor", SeenEnemySoldier[0]);
+				blackboard->SetValueAsVector("EnemyLocation", SeenEnemySoldier[0]->GetActorLocation());
+			}
+		}
+	}
+	else {
+		if (SeenEnemySoldier.Num() > 0) {
+			blackboard->ClearValue("FocusActor");
+			m_state = AIBasicState::Attacking;
+			this->SetFocus(SeenEnemySoldier[0]);
+			blackboard->SetValueAsObject("FocusActor", SeenEnemySoldier[0]);
+			blackboard->SetValueAsVector("EnemyLocation", SeenEnemySoldier[0]->GetActorLocation());
+		}
+		else {
+			m_state = m_old_state;
+		}
+	}
 }
+
+
+bool AAIGeneralController::SeeFocusActor() {
+	if (SeenEnemySoldier.Num() > 0) {
+		ASoldier* _FocusEnemy = Cast<ASoldier>(blackboard->GetValueAsObject("FocusActor"));
+		for (auto Soldier : SeenEnemySoldier) {
+			if (Soldier->GetUniqueID() == _FocusEnemy->GetUniqueID())
+				return true;
+		}
+		return false;
+	}
+	return false;
+}
+
 
 void AAIGeneralController::Run(ASoldierAI* _soldier, ASoldier* _soldier_enemy) {
 	if (_soldier) {
@@ -429,7 +483,7 @@ void AAIGeneralController::UpdateSeenEnemySoldier()
 {
 	SeenEnemySoldier.Empty();
 	for (auto& Elem : SeenSoldier) {
-		if (Cast<ASoldier>(Elem)->GetTeam() != GetTeam()) {
+		if (Cast<ASoldier>(Elem)->GetTeam() != GetTeam() && Cast<ASoldier>(Elem)->IsAlive()) {
 			SeenEnemySoldier.Add(Elem);
 		}
 	}
@@ -614,12 +668,13 @@ void AAIGeneralController::SetPatrolPoint()
 }
 
 ResultState AAIGeneralController::ArriveAtDestination() {
+	if (m_state == AIBasicState::Attacking)
+		return ResultState::Failed;
+
 	if ( GetPawn() && FVector::Dist(GetPawn()->GetActorLocation(), GetObjectifLocation()) < 300.f) {
 		m_missionList->StateChange();
 		return ResultState::Success;
 	}
-	if (m_state == AIBasicState::Attacking)
-		return ResultState::Failed;
 
 	return ResultState::InProgress;
 }

@@ -39,10 +39,11 @@ public:
 	virtual SoldierClass GetClass() override { return PlayerClass; }
 
 //////////////// Cameras
-protected:
+public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
 	UCameraComponent* FollowKillerCamera;
 
+protected:
 	FVector DeathLocation;
 
 protected:
@@ -66,6 +67,14 @@ public:
 	UFUNCTION(Client, Reliable)
 	void ClientSetSoldierKiller(ASoldier* _SoldierKiller);
 	void ClientSetSoldierKiller_Implementation(ASoldier* _SoldierKiller);
+
+	UFUNCTION(Client, Reliable)
+	void ClientNotifyControlAreaTaken(const bool _IsOwned);
+	void ClientNotifyControlAreaTaken_Implementation(const bool _IsOwned);
+
+	UFUNCTION(Client, Reliable)
+	void ClientNotifyEndGame(const bool _HasWin);
+	void ClientNotifyEndGame_Implementation(const bool _HasWin);
 
 //////////////// Controllers
 protected:
@@ -246,7 +255,7 @@ protected:
 	virtual void LevelUp() override;
 
 public:  // Respawn
-	virtual FVector GetRespawnPoint() override;
+	virtual FVector GetRespawnPoint(AControlArea* _ControlArea = nullptr) override;
 
 //////////////// SquadManager data callbacks
 

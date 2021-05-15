@@ -6,6 +6,7 @@
 
 
 void ASLMainMenuGameModeBase::StartPlay() {
+
 	for (auto PCIterator = GetWorld()->GetPlayerControllerIterator(); PCIterator; PCIterator++)
 	{
 		if (auto PC = PCIterator->Get(); PC)
