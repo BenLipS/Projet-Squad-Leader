@@ -6,7 +6,7 @@
 
 
 void ASL_HUBGameModeBase::TeleportAllPlayersToGame() {
-	GetWorld()->ServerTravel("Factory_V1");
+	GetWorld()->ServerTravel("Factory_V2");
 }
 
 void ASL_HUBGameModeBase::PreLogin(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage)
@@ -37,6 +37,12 @@ void ASL_HUBGameModeBase::PreLogin(const FString& Options, const FString& Addres
 	}
 
 	FGameModeEvents::GameModePreLoginEvent.Broadcast(this, UniqueId, ErrorMessage);
+}
+
+void ASL_HUBGameModeBase::PostLogin(APlayerController* NewPlayer)
+{
+	Super::PostLogin(NewPlayer);
+
 }
 
 void ASL_HUBGameModeBase::Logout(AController* Exiting)

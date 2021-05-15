@@ -15,8 +15,9 @@ class SQUADLEADER_API ASL_HUBGameModeBase : public AGameModeBase
 	GENERATED_BODY()
 	
 public:
-	void PreLogin(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage);
-	void Logout(AController* Exiting);
+	virtual void PreLogin(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage) override;
+	virtual void PostLogin(APlayerController* NewPlayer) override;
+	virtual void Logout(AController* Exiting) override;
 
 	UPROPERTY(BlueprintReadOnly, Category = "GameData")
 		int NbMaxPlayer = 6;
