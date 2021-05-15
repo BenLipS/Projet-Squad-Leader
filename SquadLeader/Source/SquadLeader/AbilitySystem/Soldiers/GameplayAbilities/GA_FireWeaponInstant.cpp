@@ -9,6 +9,8 @@
 #include "SquadLeader/AbilitySystem/Soldiers/AbilityTasks/SL_ServerWaitForClientTargetData.h"
 #include "SquadLeader/AbilitySystem/Soldiers/AbilityTasks/SL_WaitTargetDataUsingActor.h"
 #include "Abilities/Tasks/AbilityTask_WaitDelay.h"
+#include "AkAudioEvent.h"
+#include "AkGameplayStatics.h"
 
 UGA_FireWeaponInstant::UGA_FireWeaponInstant() :
 ServerWaitForClientTargetDataTask{ nullptr },
@@ -84,6 +86,7 @@ void UGA_FireWeaponInstant::FireBullet()
 	// Need to reload
 	if (!SourceWeapon->HasAmmo() && !SourceWeapon->HasInfiniteAmmo())
 	{
+		UAkGameplayStatics::PostEventByName("Rifle_Out_of_ammo", SourceWeapon);//maybe play cliking sound here
 		ReloadWeapon();
 		return;
 	}

@@ -54,6 +54,13 @@
 							</ReferenceList>
 						</Action>
 						<Action Name="" ID="{D0CCA366-AE31-4110-B58D-0A82EDA7A00A}" ShortID="118773624">
+							<PropertyList>
+								<Property Name="Inclusion" Type="bool">
+									<ValueList>
+										<Value>False</Value>
+									</ValueList>
+								</Property>
+							</PropertyList>
 							<ReferenceList>
 								<Reference Name="Target">
 									<ObjectRef Name="Rifle_Fire_Click" ID="{5AFB5C1F-1FEF-452E-A36D-CC7D3DDF4202}" WorkUnitID="{B1220508-C83C-4308-949D-0D02874B8A4B}"/>

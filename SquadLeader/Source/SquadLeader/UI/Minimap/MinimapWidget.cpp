@@ -339,7 +339,10 @@ void UMinimapWidget::OnUpdatePOIs()
 
 	for (UPointOfInterestWidget* POI : POIList)
 	{
-		if (!IsValid(POI->OwningActor) || !IsValid(POI->OwningActor->GetRootComponent()))
+		if (!IsValid(POI->OwningActor))
+			continue;
+
+		if (!IsValid(POI->OwningActor->GetRootComponent()))
 			continue;
 
 		const FVector2D ActorPosition = FVector2D{ POI->OwningActor->GetActorLocation().X, POI->OwningActor->GetActorLocation().Y };

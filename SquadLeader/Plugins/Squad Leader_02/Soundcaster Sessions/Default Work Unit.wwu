@@ -172,8 +172,8 @@
 					</ModuleList>
 					<RTPCValueList ShowAll="true"/>
 					<CurrentStateList ShowAll="true">
-						<CurrentStateRef Name="Boucle_02" ID="{7AB0078C-C250-422F-992E-F2FB4E8934AB}"/>
-						<CurrentStateRef Name="Intense" ID="{6441D4BD-D590-446F-B4E1-74DCDA48162D}"/>
+						<CurrentStateRef Name="None" ID="{7FD5B3F6-317F-40F7-80E4-8E41B133C2E6}"/>
+						<CurrentStateRef Name="None" ID="{5E178B99-6F7B-4A51-8CC6-F31199A6B9CD}"/>
 					</CurrentStateList>
 					<CurrentSwitchList ShowAll="true">
 						<CurrentSwitchRef Name="Indoors" ID="{6788ADFB-5691-44C8-8810-FC25B8BA949E}"/>
