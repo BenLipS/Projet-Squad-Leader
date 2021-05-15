@@ -16,7 +16,7 @@
 			<ShortName>Init</ShortName>
 			<Path>Init.bnk</Path>
 		</SoundBank>
-		<SoundBank Id="4056684167" Language="SFX" Hash="3506960582">
+		<SoundBank Id="4056684167" Language="SFX" Hash="790537516">
 			<ObjectPath>\SoundBanks\Default Work Unit\Master</ObjectPath>
 			<ShortName>Master</ShortName>
 			<Path>Master.bnk</Path>
@@ -361,10 +361,6 @@
 						<File Id="548212445" Language="SFX">
 							<ShortName>Rifle_Noise_Indoor_05.wav</ShortName>
 							<Path>SFX\Rifle_Noise_Indoor_05_10C4C929.wem</Path>
-						</File>
-						<File Id="596923229" Language="SFX">
-							<ShortName>Rifle_Fire_Click.wav</ShortName>
-							<Path>SFX\Rifle_Fire_Click_10C4C929.wem</Path>
 						</File>
 						<File Id="634404485" Language="SFX">
 							<ShortName>Rifle_Mech_07.wav</ShortName>
