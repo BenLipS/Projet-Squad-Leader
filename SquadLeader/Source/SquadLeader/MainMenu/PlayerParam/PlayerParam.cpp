@@ -8,10 +8,6 @@ APlayerParam::APlayerParam()
 void APlayerParam::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	DOREPLIFETIME(APlayerParam, TeamID);
-	DOREPLIFETIME(APlayerParam, PlayerClass);
-	DOREPLIFETIME(APlayerParam, AIClass);
 }
 
 TSubclassOf<ASoldierAI> APlayerParam::GetAIClass(int AINb)

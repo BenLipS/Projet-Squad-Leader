@@ -21,11 +21,11 @@ public:
 	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 
 protected:
-	UPROPERTY(EditDefaultsOnly, Replicated, Category = "Params")
+	UPROPERTY(EditDefaultsOnly, Category = "Params")
 	int TeamID = 0;  // 0 for null
-	UPROPERTY(EditDefaultsOnly, Replicated, Category = "Params")
+	UPROPERTY(EditDefaultsOnly, Category = "Params")
 	TSubclassOf<ASoldierPlayer> PlayerClass;
-	UPROPERTY(EditDefaultsOnly, Replicated, Category = "Params")
+	UPROPERTY(EditDefaultsOnly, Category = "Params")
 	TArray<TSubclassOf<ASoldierAI>> AIClass;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Reference")

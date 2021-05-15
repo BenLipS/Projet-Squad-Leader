@@ -189,9 +189,9 @@ protected:
 
 	/* Set Pawn Class On Server For This Controller */
 	UFUNCTION(Reliable, Server, WithValidation)
-	virtual void ServerSetPawn(APlayerParam* PlayerParam);
-	virtual void ServerSetPawn_Implementation(APlayerParam* PlayerParam);
-	virtual bool ServerSetPawn_Validate(APlayerParam* PlayerParam);
+	virtual void ServerSetPawn(int TeamID, TSubclassOf<ASoldierPlayer> PlayerClass, TSubclassOf<ASoldierAI> AIClass);
+	virtual void ServerSetPawn_Implementation(int TeamID, TSubclassOf<ASoldierPlayer> PlayerClass, TSubclassOf<ASoldierAI> AIClass);
+	virtual bool ServerSetPawn_Validate(int TeamID, TSubclassOf<ASoldierPlayer> PlayerClass, TSubclassOf<ASoldierAI> AIClass);
 
 //////////////// Cheat
 public:
