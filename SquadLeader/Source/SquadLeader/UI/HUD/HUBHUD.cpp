@@ -3,3 +3,8 @@
 
 #include "HUBHUD.h"
 
+void AHUBHUD::BeginPlay()
+{
+	Super::BeginPlay();
+	InitHUD();
+}

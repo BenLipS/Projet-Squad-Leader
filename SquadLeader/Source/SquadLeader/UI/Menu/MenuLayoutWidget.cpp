@@ -23,11 +23,30 @@ void UMenuLayoutWidget::SynchronizeAllMenuItem()
 {
 	if (MenuSlot)
 	{
-		SynchronizeAllMenuItem(MenuSlot->GetAllChildren());
+		SynchronizeAllMenuItem<UMenuItemWidget>(MenuSlot->GetAllChildren());
 	}
 }
 
+template<typename T>
 void UMenuLayoutWidget::SynchronizeAllMenuItem(TArray<UWidget*> ListChildren)
+{
+	for (UWidget* Widget : ListChildren)
+	{
+		if (T* MenuItem = Cast<T>(Widget); MenuItem)
+		{
+			MenuItems.AddUnique(MenuItem);
+			MenuItem->MenuLayout = this;
+			MenuItem->OnItemAddedToLayout();
+		}
+		else if (UPanelWidget* MenuGroup = Cast<UPanelWidget>(Widget); MenuGroup)
+		{
+			SynchronizeAllMenuItem<T>(MenuGroup->GetAllChildren());
+		}
+	}
+}
+
+
+/*void UMenuLayoutWidget::SynchronizeAllMenuItem(TArray<UWidget*> ListChildren)
 {
 	for (UWidget* Widget : ListChildren)
 	{
@@ -41,6 +60,68 @@ void UMenuLayoutWidget::SynchronizeAllMenuItem(TArray<UWidget*> ListChildren)
 		{
 			SynchronizeAllMenuItem(MenuGroup->GetAllChildren());
 		}
+	}
+}*/
+
+void UMenuLayoutWidget::OnItemSelected(UMenuItemWidget* newItem)
+{
+	if (IsValid(newItem))
+	{
+		if (MenuItems.Contains(newItem))
+		{
+			if (SelectedItem.Contains(newItem->SelectChannel))
+			{
+				if (IsValid(SelectedItem[newItem->SelectChannel]))
+				{
+					SelectedItem[newItem->SelectChannel]->OnItemDeselected();
+				}
+				SelectedItem[newItem->SelectChannel] = newItem;
+			}
+			else
+			{
+				SelectedItem.Add(newItem->SelectChannel, newItem);
+			}
+
+			SelectedItem[newItem->SelectChannel]->OnItemSelected();
+		}
+		else
+		{
+			//Should never be here but in case
+			return;
+		}
+	}
+}
+
+void UMenuLayoutWidget::DeselectChannel(FString ChannelIn)
+{
+	if (SelectedItem.Contains(ChannelIn))
+	{
+		if (IsValid(SelectedItem[ChannelIn]))
+		{
+			SelectedItem[ChannelIn]->OnItemDeselected();
+			SelectedItem[ChannelIn] = nullptr;
+		}
+	}
+}
+
+void UMenuLayoutWidget::DeselectItem(UMenuItemWidget* newItem)
+{
+	if (IsValid(newItem) && SelectedItem.Contains(newItem->SelectChannel) && SelectedItem[newItem->SelectChannel] == newItem)
+	{
+		newItem->OnItemDeselected();
+		SelectedItem[newItem->SelectChannel] = nullptr;
+	}
+}
+
+UMenuItemWidget* UMenuLayoutWidget::GetSelectedItem(FString ChannelIn)
+{
+	if (SelectedItem.Contains(ChannelIn))
+	{
+		return SelectedItem[ChannelIn];
+	}
+	else
+	{
+		return nullptr;
 	}
 }
 

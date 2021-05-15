@@ -3,6 +3,7 @@
 
 #include "MenuListClass.h"
 #include "MenuListClassItemWidget.h"
+#include "../../MenuLayoutWidget.h"
 
 #include "Blueprint/WidgetTree.h"
 
@@ -74,8 +75,40 @@ void UMenuListClass::SetAssetFromClass(SoldierClass SoldierClassIn)
 	}
 }
 
+void UMenuListClass::OnItemSelected()
+{
+	ListEntry->SetVisibility(ESlateVisibility::Visible);
+	bIsActive = true;
+}
+
+void UMenuListClass::OnItemDeselected()
+{
+	ListEntry->SetVisibility(ESlateVisibility::Collapsed);
+	bIsActive = false;
+}
+
 void UMenuListClass::OnClassButtonPressed()
 {
-	bIsActive = !bIsActive;
-	ListEntry->SetVisibility(bIsActive ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+	if (IsValid(MenuLayout))
+	{
+		if (MenuLayout->GetSelectedItem(SelectChannel) == this)
+		{
+			MenuLayout->DeselectChannel(SelectChannel);
+		}
+		else
+		{
+			MenuLayout->OnItemSelected(this);
+		}
+	}
+	else
+	{
+		if (bIsActive)
+		{
+			OnItemDeselected();
+		}
+		else
+		{
+			OnItemSelected();
+		}
+	}
 }

@@ -56,6 +56,9 @@ protected:
 	UFUNCTION()
 	void SetAssetFromClass(SoldierClass SoldierClassIn);
 
+	virtual void OnItemSelected() override;
+	virtual void OnItemDeselected() override;
+
 	//Button
 	UFUNCTION()
 	void OnClassButtonPressed();
