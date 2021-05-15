@@ -132,7 +132,6 @@ void ASoldierPlayerState::BroadCastAllDatas()
 void ASoldierPlayerState::SetPlayerParam(APlayerParam* _PlayerParam, AController* OwningController)
 {
 	PlayerParam = _PlayerParam;
-	PlayerParam->AdaptAllAIToTeam();
 
 	// recreate a new pawn and possess it
 	OwningController->Possess(OwningController->GetWorld()->GetAuthGameMode<ASquadLeaderGameModeBase>()->SpawnSoldier(PlayerParam, OwningController));

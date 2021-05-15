@@ -10,7 +10,12 @@ void APlayerParam::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 }
 
-TSubclassOf<ASoldierAI> APlayerParam::GetAIClass(int AINb)
+const TSubclassOf<ASoldierPlayer> APlayerParam::GetPlayerSoldier()
+{
+	return *ReferenceSoldier.Find(PlayerClass);
+}
+
+const SoldierClass APlayerParam::GetAIClass(int AINb)
 {
 	if (AINb < AIClass.Num()) {
 		return AIClass[AINb];
@@ -18,7 +23,7 @@ TSubclassOf<ASoldierAI> APlayerParam::GetAIClass(int AINb)
 	return AIClass[0];
 }
 
-void APlayerParam::SetAIClass(TSubclassOf<ASoldierAI> NewClass, int AINb)
+void APlayerParam::SetAIClass(SoldierClass NewClass, int AINb)
 {
 	if (AINb < AIClass.Num()) {
 		AIClass[AINb] = NewClass;
@@ -28,27 +33,11 @@ void APlayerParam::SetAIClass(TSubclassOf<ASoldierAI> NewClass, int AINb)
 	}
 }
 
-void APlayerParam::AdaptAllAIToTeam()
+const TSubclassOf<ASoldierAI> APlayerParam::GetAISoldier(int AINb)
 {
-	for (int loop = 0; loop < AIClass.Num(); loop++) {
-		AdaptAIToTeam(loop);
-	}
+	if (TeamID == 1)
+		return *ReferenceClassAITeam1.Find(GetAIClass(AINb));
+	else
+		return *ReferenceClassAITeam2.Find(GetAIClass(AINb));
 }
 
-void APlayerParam::AdaptAIToTeam(int AINb)
-{
-	if (AINb < AIClass.Num() && (TeamID == 1 || TeamID == 2)) {
-		if (TeamID == 1) {
-			if (auto index = ReferenceClassAITeam2.Find(AIClass[AINb]); index != INDEX_NONE) {
-				// we find the given archetype in the list of Team2 AI reference. We need to take the same element in Team1
-				AIClass[AINb] = ReferenceClassAITeam1[index];
-			}
-		}
-		else {
-			if (auto index = ReferenceClassAITeam1.Find(AIClass[AINb]); index != INDEX_NONE) {
-				// we find the given archetype in the list of Team1 AI reference. We need to take the same element in Team2
-				AIClass[AINb] = ReferenceClassAITeam2[index];
-			}
-		}
-	}
-}

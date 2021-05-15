@@ -43,6 +43,7 @@ void AAISquadManager::Init(ASoldierTeam* _Team, ASoldierPlayer* _Player)
 		else
 			StartNumberOfSoldiers = OverrideStartNumberOfSoldiers;
 	}
+	else StartNumberOfSoldiers = 0;
 
 	const FTransform PlayerTransform = Leader->GetTransform();
 	FActorSpawnParameters SpawnInfo;
@@ -56,7 +57,7 @@ void AAISquadManager::Init(ASoldierTeam* _Team, ASoldierPlayer* _Player)
 
 		TransformAI.SetScale3D(FVector::OneVector);
 
-		ASoldierAI* SquadAI = GetWorld()->SpawnActorDeferred<ASoldierAI>(Leader->GetPlayerState<ASoldierPlayerState>()->GetPlayerParam()->GetAIClass(i),
+		ASoldierAI* SquadAI = GetWorld()->SpawnActorDeferred<ASoldierAI>(Leader->GetPlayerState<ASoldierPlayerState>()->GetPlayerParam()->GetAISoldier(i),
 			TransformAI, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 		if (SquadAI)
 		{
@@ -135,7 +136,7 @@ void AAISquadManager::AddAnAIToSquad_Implementation()
 
 	//if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("AAAAAAAAAAAAAAAAAAAAAAAAA"));
 	TSubclassOf<ASoldierAI> ClassAI;
-	ClassAI = Leader->GetPlayerState<ASoldierPlayerState>()->GetPlayerParam()->GetAIClass(AISquadControllerList.Num());
+	ClassAI = Leader->GetPlayerState<ASoldierPlayerState>()->GetPlayerParam()->GetAISoldier(AISquadControllerList.Num());
 
 	FTransform PlayerTransform = Leader->GetTransform();
 	FTransform LocationAI;

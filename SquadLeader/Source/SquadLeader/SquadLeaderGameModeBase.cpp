@@ -51,7 +51,7 @@ APawn* ASquadLeaderGameModeBase::SpawnSoldier(APlayerParam* PlayerParam, AContro
 				ASoldierSpawn* SpawnPoint = SpawnList[UKismetMathLibrary::RandomIntegerInRange(0, SpawnList.Num() - 1)];
 				
 				FTransform SpawnPosition = { SpawnPoint->GetActorRotation(), SpawnPoint->GetActorLocation() };
-				APawn* NewPawn = GetWorld()->SpawnActorDeferred<APawn>(PlayerParam->GetPlayerClass(),
+				APawn* NewPawn = GetWorld()->SpawnActorDeferred<APawn>(PlayerParam->GetPlayerSoldier(),
 					SpawnPosition, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 				
 				if (NewPawn) {

@@ -451,23 +451,25 @@ void ASoldierPlayerController::ClientDeterminePlayerParams_Implementation()
 	if (IsLocalController()) //Only Do This Locally (NOT Client-Only, since Server wants this too!)
 	{
 		APlayerParam* ClientParam = GetGameInstance<USquadLeaderGameInstance>()->PlayerParam.GetDefaultObject();
-		ServerSetPawn(ClientParam->GetTeam(), ClientParam->GetPlayerClass(), ClientParam->GetAIClass(1));
+		ServerSetPawn(ClientParam->GetTeam(), ClientParam->GetPlayerClass(), ClientParam->GetAllAIClass());
 	}
 }
 
-bool ASoldierPlayerController::ServerSetPawn_Validate(int TeamID, TSubclassOf<ASoldierPlayer> PlayerClass, TSubclassOf<ASoldierAI> AIClass)
+bool ASoldierPlayerController::ServerSetPawn_Validate(const int TeamID, const SoldierClass PlayerClass, const TArray<SoldierClass>& AIClass)
 {
 	return true;
 }
 
-void ASoldierPlayerController::ServerSetPawn_Implementation(int TeamID, TSubclassOf<ASoldierPlayer> PlayerClass, TSubclassOf<ASoldierAI> AIClass)
+void ASoldierPlayerController::ServerSetPawn_Implementation(const int TeamID, const SoldierClass PlayerClass, const TArray<SoldierClass>& AIClass)
 {
 	// spawn actor based on the one in the local game instance to keep reference
 	if (APlayerParam* PlayerParam = Cast<APlayerParam>(GetWorld()->SpawnActor(GetGameInstance<USquadLeaderGameInstance>()->PlayerParam)); PlayerParam) {
 		// make needed changes for this version (team, player class and AI class)
 		PlayerParam->SetTeam(TeamID);
 		PlayerParam->SetPlayerClass(PlayerClass);
-		PlayerParam->SetAIClass(AIClass, 1);
+		for (int counter = 0; counter < AIClass.Num(); counter++) {
+			PlayerParam->SetAIClass(AIClass[counter], counter);
+		}
 
 		// give the new actor to the player state
 		GetPlayerState<ASoldierPlayerState>()->SetPlayerParam(PlayerParam, this);
