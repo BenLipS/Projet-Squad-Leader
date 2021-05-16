@@ -171,4 +171,7 @@ protected:
 
 	UFUNCTION()
 		void FinalDefens();
+
+	float DistanceSoldierControlArea(const AAIBasicController* Soldier, const AControlArea* ControlArea);
+
 };

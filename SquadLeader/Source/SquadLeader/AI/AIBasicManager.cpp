@@ -165,28 +165,65 @@ void AAIBasicManager::InitValue() {
 }
 
 void AAIBasicManager::ChooseControlArea() {
-	int _index_player = 0;
-	int _index_control_area = 0;
 
-	int nbr_unit_per_controlArea = nbr_unite / nbr_controlArea;
-	while (_index_player < nbr_unite) {
-		if (_index_control_area >= nbr_controlArea)
-			_index_control_area = 0;
-		for (int i = 0; i != nbr_unit_per_controlArea && _index_player < nbr_unite; ++i) {
-			UPatrolControlAreaMission* MissionPatrol = Cast<UPatrolControlAreaMission>(NewObject<UPatrolControlAreaMission>(this, UPatrolControlAreaMission::StaticClass()));
-			MissionPatrol->InitPatrolControlAreaMission(-1, MissionPriority::eBASIC, m_controlAreaManager->GetControlArea()[_index_control_area]);
-			AIBasicList[_index_player]->SetMission<UPatrolControlAreaMission*>(MissionPatrol);
+	const uint8 NbrControlArea = (m_controlAreaManager->GetControlArea().Num() / 2) + 1;
+	//GEngine->AddOnScreenDebugMessage(10 + Team->Id, 5.f, FColor::Blue, FString::Printf(TEXT("Nombre de control area au départ = %i"), NbrControlArea));
+	const uint16 NbrUnite = AIBasicList.Num() / NbrControlArea;
+	//GEngine->AddOnScreenDebugMessage(10 + Team->Id, 5.f, FColor::Blue, FString::Printf(TEXT("Nombre unite au départ = %i"), NbrUnite));
 
-			UCaptureMission* _mission = Cast<UCaptureMission>(NewObject<UCaptureMission>(this, UCaptureMission::StaticClass()));
-			_mission->InitCaptureMission(-1, MissionPriority::eMIDDLE, m_controlAreaManager->GetControlArea()[_index_control_area]);
-			AIBasicList[_index_player]->SetMission<UCaptureMission*>(_mission);
+	TArray<AControlArea*> ControlAreas;
+	ControlAreas.Init(nullptr, NbrControlArea);
+	//GEngine->AddOnScreenDebugMessage(10 + Team->Id, 5.f, FColor::Blue, FString::Printf(TEXT("Taille de la liste : %i"), ControlAreas.Num()));
+	FVector LocalPosition;
+	if (Team->GetUsableSpawnPoints().Num() > 0)
+		LocalPosition = Team->GetUsableSpawnPoints()[0]->GetActorLocation();
+	else
+		LocalPosition = FVector();
 
-			ListSoldierOnControlArea.Find(_index_control_area)->SoldierIndex.Add(_index_player);
-			_index_player++;
+	auto Minimum = [&](const AControlArea* ControlArea1, const AControlArea* ControlArea2) {
+		const float distance1 = FVector::Dist2D(LocalPosition, ControlArea1->GetActorLocation());
+		const float distance2 = FVector::Dist2D(LocalPosition, ControlArea2->GetActorLocation());
+
+		return distance1 < distance2;
+	};
+
+	TArray<AControlArea*> AllControlAreaBis = m_controlAreaManager->GetControlArea();
+	size_t IndexControlArea = 0;
+
+	while (IndexControlArea != NbrControlArea) {
+		AControlArea* ControlArea = AllControlAreaBis[0];
+		size_t IndexCotrolAreaMinim = 0;
+		for (size_t index = 1; index != AllControlAreaBis.Num(); ++index) {
+			if (!Minimum(ControlArea, AllControlAreaBis[index])) {
+				ControlArea = AllControlAreaBis[index];
+				IndexCotrolAreaMinim = index;
+			}
 		}
-		_index_control_area++;
-
+		ControlAreas[IndexControlArea] = ControlArea;
+		++IndexControlArea;
+		AllControlAreaBis.RemoveAt(IndexCotrolAreaMinim);
 	}
+
+	IndexControlArea = 0;
+
+	for (size_t Indexsoldier = 0; Indexsoldier != AIBasicList.Num(); ++Indexsoldier) {
+		if (Indexsoldier == NbrUnite * (IndexControlArea + 1))
+			++IndexControlArea;
+
+		if (IndexControlArea >= ControlAreas.Num())
+			--IndexControlArea;
+
+		UPatrolControlAreaMission* MissionPatrol = Cast<UPatrolControlAreaMission>(NewObject<UPatrolControlAreaMission>(this, UPatrolControlAreaMission::StaticClass()));
+		MissionPatrol->InitPatrolControlAreaMission(-1, MissionPriority::eBASIC, ControlAreas[IndexControlArea]);
+		AIBasicList[Indexsoldier]->SetMission<UPatrolControlAreaMission*>(MissionPatrol);
+
+		UCaptureMission* _mission = Cast<UCaptureMission>(NewObject<UCaptureMission>(this, UCaptureMission::StaticClass()));
+		_mission->InitCaptureMission(-1, MissionPriority::eMIDDLE, ControlAreas[IndexControlArea]);
+		AIBasicList[Indexsoldier]->SetMission<UCaptureMission*>(_mission);
+
+		//ListSoldierOnControlArea.Find(_index_control_area)->SoldierIndex.Add(Indexsoldier);
+
+	}	
 }
 
 void AAIBasicManager::ChangeAIStatus(const AIAvaibility status, const uint32 IndexSoldier) {
@@ -400,4 +437,11 @@ void AAIBasicManager::FinalAttack() {
 }
 
 void AAIBasicManager::FinalDefens() {
+}
+
+float AAIBasicManager::DistanceSoldierControlArea(const AAIBasicController* Soldier, const AControlArea* ControlArea) {
+	const FVector SoldierPosition = Soldier->GetPawn()->GetActorLocation();
+	const FVector ControlAreaPosition = ControlArea->GetActorLocation();
+
+	return FVector::Dist2D(SoldierPosition, ControlAreaPosition);
 }
