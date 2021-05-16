@@ -38,7 +38,7 @@ void ASoldierPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 	CreateHUD();
-	DeterminePlayerParams();
+	ClientDeterminePlayerParams();
 }
 
 void ASoldierPlayerController::CreateHUD_Implementation()
@@ -446,22 +446,38 @@ void ASoldierPlayerController::OnWallVisionDeactivate_Implementation()
 
 
 // Pawn Class
-void ASoldierPlayerController::DeterminePlayerParams_Implementation()
+void ASoldierPlayerController::ClientDeterminePlayerParams_Implementation()
 {
 	if (IsLocalController()) //Only Do This Locally (NOT Client-Only, since Server wants this too!)
 	{
-		ServerSetPawn(GetGameInstance<USquadLeaderGameInstance>()->PlayerParam);
+		APlayerParam* ClientParam = GetGameInstance<USquadLeaderGameInstance>()->PlayerParam.GetDefaultObject();
+		ServerSetPawn(ClientParam->GetTeam(), ClientParam->GetPlayerClass(), ClientParam->GetAllAIClass());
 	}
 }
 
-bool ASoldierPlayerController::ServerSetPawn_Validate(TSubclassOf<APlayerParam> PlayerParam)
+bool ASoldierPlayerController::ServerSetPawn_Validate(const int TeamID, const SoldierClass PlayerClass, const TArray<SoldierClass>& AIClass)
 {
 	return true;
 }
 
-void ASoldierPlayerController::ServerSetPawn_Implementation(TSubclassOf<APlayerParam> PlayerParam)
+void ASoldierPlayerController::ServerSetPawn_Implementation(const int TeamID, const SoldierClass PlayerClass, const TArray<SoldierClass>& AIClass)
 {
-	GetPlayerState<ASoldierPlayerState>()->SetPlayerParam(PlayerParam, this);
+	// spawn actor based on the one in the local game instance to keep reference
+	if (APlayerParam* PlayerParam = Cast<APlayerParam>(GetWorld()->SpawnActor(GetGameInstance<USquadLeaderGameInstance>()->PlayerParam)); PlayerParam) {
+		// make needed changes for this version (team, player class and AI class)
+		PlayerParam->SetTeam(TeamID);
+		PlayerParam->SetPlayerClass(PlayerClass);
+		for (int counter = 0; counter < AIClass.Num(); counter++) {
+			PlayerParam->SetAIClass(AIClass[counter], counter);
+		}
+
+		// give the new actor to the player state
+		GetPlayerState<ASoldierPlayerState>()->SetPlayerParam(PlayerParam, this);
+	}
+	else {
+		// if the player param does not spawn, use the local param of the host
+		GetPlayerState<ASoldierPlayerState>()->SetPlayerParam(GetGameInstance<USquadLeaderGameInstance>()->PlayerParam.GetDefaultObject(), this);
+	}
 }
 
 

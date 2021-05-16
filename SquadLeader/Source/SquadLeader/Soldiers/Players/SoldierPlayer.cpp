@@ -473,10 +473,19 @@ FVector ASoldierPlayer::GetRespawnPoint(AControlArea* _ControlArea)
 	if (!GetTeam())
 		return DefaultPosition;
 
-	if (_ControlArea)
+	if (_ControlArea && _ControlArea->GetIsTakenBy() == GetTeam())
 		return _ControlArea->TeamData[GetTeam()]->spawnTeam->GetSpawnLocation();
 
-	// Find the nearest spawn point
+	// Get first real primary spawn (exclude derived class)
+	for (ASoldierSpawn* SoldierSpawn : GetTeam()->GetUsableSpawnPoints())
+	{
+		if (SoldierSpawn && !SoldierSpawn->IsA<ASoldierSecondarySpawn>() && SoldierSpawn->IsA<ASoldierPrimarySpawn>())
+			return SoldierSpawn->GetSpawnLocation();
+	}
+
+	return DefaultPosition;
+
+	/*// Find the nearest spawn point
 	auto AvailableSpawnPoints = GetTeam()->GetUsableSpawnPoints();
 	if (AvailableSpawnPoints.Num() > 0) {
 		ASoldierSpawn* OptimalSpawn = AvailableSpawnPoints[0];
@@ -493,8 +502,7 @@ FVector ASoldierPlayer::GetRespawnPoint(AControlArea* _ControlArea)
 		}
 
 		return OptimalSpawn->GetSpawnLocation();
-	}
-	return DefaultPosition;
+	}*/
 }
 
 void ASoldierPlayer::OnSquadChanged(const TArray<FSoldierAIData>& newValue)

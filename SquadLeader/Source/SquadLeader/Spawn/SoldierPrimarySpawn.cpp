@@ -1,10 +1,12 @@
 #include "SoldierPrimarySpawn.h"
-
+#include "Camera/CameraActor.h"
 
 ASoldierPrimarySpawn::ASoldierPrimarySpawn() {
 	PrimaryActorTick.bCanEverTick = false;
 	bReplicates = true;
 	canBeUsed = true;
+
+	CameraActor = CreateDefaultSubobject<ACameraActor>(TEXT("Camera Actor"));
 }
 
 
