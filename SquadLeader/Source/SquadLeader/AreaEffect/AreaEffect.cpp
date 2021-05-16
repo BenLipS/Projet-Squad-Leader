@@ -70,6 +70,8 @@ void AAreaEffect::OnReadyToApplyEffects()
 
 	GetWorld()->SweepMultiByProfile(HitActors, StartTrace, EndTrace, FQuat::FQuat(), ProfileAreaEffectCollisionName, CollisionShape, QueryParams);
 
+	const ASoldierTeam* SourceTeam = SourceSoldier->GetTeam();
+
 	for (int32 i = 0; i < HitActors.Num(); ++i)
 	{
 		AActor* TargetActor = HitActors[i].GetActor();
@@ -82,6 +84,14 @@ void AAreaEffect::OnReadyToApplyEffects()
 		{
 			// Never apply effects on dead soldiers
 			if (!TargetSoldier->IsAlive())
+				continue;
+
+			// Ignore allies if asked
+			if (bIgnoreAllies && SourceTeam == TargetSoldier->GetTeam())
+				continue;
+
+			// Ignore ennemies if asked
+			if (bIgnoreEnnemies && SourceTeam != TargetSoldier->GetTeam())
 				continue;
 
 			// Make sure there is no object blocking the effect

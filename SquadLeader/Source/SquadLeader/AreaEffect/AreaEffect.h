@@ -49,6 +49,14 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Effects")
 	TArray<TSubclassOf<class UGameplayEffect>> ExplosionEffects;
 
+	// Whether this effect should ignore allies
+	UPROPERTY(EditDefaultsOnly, Category = "Effects")
+	bool bIgnoreAllies = false;
+
+	// Whether this effect should ignore ennemies
+	UPROPERTY(EditDefaultsOnly, Category = "Effects")
+	bool bIgnoreEnnemies = false;
+
 //////////////// Stats
 protected:
 	// We can specifically define an execution GE for the damages. It will be combinated with the properties BaseDamage and CurveDamage so we can easily interpolate the damage. This is meant to be used with Soldier ASC
