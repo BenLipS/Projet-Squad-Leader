@@ -536,10 +536,16 @@ void AAIGeneralController::ResetBlackBoard()
 }
 
 void AAIGeneralController::SetControlAreaBB(AControlArea* _controlArea) {
-	blackboard->SetValueAsObject("ControlArea", _controlArea);
-	ObjectifLocation = _controlArea->GetActorLocation();
-	blackboard->SetValueAsVector("VectorLocation", ObjectifLocation);
-	SetState(AIBasicState::Moving);
+	if (_controlArea != nullptr) {
+		blackboard->SetValueAsObject("ControlArea", _controlArea);
+		ObjectifLocation = _controlArea->GetActorLocation();
+		blackboard->SetValueAsVector("VectorLocation", ObjectifLocation);
+		SetState(AIBasicState::Moving);
+	}
+	else {
+		//GEngine->AddOnScreenDebugMessage(30, 5.f, FColor::Red, TEXT("Erreur la control area n'existe pas !"));
+	}
+
 }
 
 void AAIGeneralController::SetObjectifLocation(FVector _location) noexcept 

@@ -108,17 +108,12 @@ void AAIBasicManager::Tick(float DeltaSeconds) {
 
 	double startTime = FPlatformTime::Seconds();
 
-	if (ControlAreaAllies.Num() == 1 && ControlAreaNeutral.Num() == 0) {
-		//envoyer toutes les IAs défendre le point de contrôle et envoyer une seule IA sur les autres point de contrôle
-		//FinalDefens();
-		//GEngine->AddOnScreenDebugMessage(10, 5.f, FColor::Cyan, TEXT("Tout le monde en defense !!!!"));
-	}
-	else if (ControlAreaEnnemies.Num() == 1 && ControlAreaNeutral.Num() == 0) {
+	if (ControlAreaEnnemies.Num() == 1 && ControlAreaNeutral.Num() == 0) {
 		//envoyer toutes les IAs attaquer le point de contrôle et laisser une IA défendre sur les autres point de contrôle
-		//FinalAttack();
+		FinalAttack();
 		//GEngine->AddOnScreenDebugMessage(20, 5.f, FColor::Cyan, TEXT("Tout le monde en Attaque !!!!"));
 	}
-	else if ((ControlAreasBeenUpdate || NewSoldierAvailable) && AIBasicAvailable.Num() >= 2) {
+	else if ((ControlAreasBeenUpdate || AIBasicAvailable.Num() > 10)) {
 		Strategy();
 	}
 
@@ -209,6 +204,8 @@ void AAIBasicManager::ChooseControlArea() {
 		if (IndexControlArea >= ControlAreas.Num())
 			--IndexControlArea;
 
+		AIBasicList[Indexsoldier]->EmptyMissionList();
+
 		UPatrolControlAreaMission* MissionPatrol = Cast<UPatrolControlAreaMission>(NewObject<UPatrolControlAreaMission>(this, UPatrolControlAreaMission::StaticClass()));
 		MissionPatrol->InitPatrolControlAreaMission(-1, MissionPriority::eBASIC, ControlAreas[IndexControlArea]);
 		AIBasicList[Indexsoldier]->SetMission<UPatrolControlAreaMission*>(MissionPatrol);
@@ -294,13 +291,14 @@ void AAIBasicManager::LostControlArea(const uint8 IndexContolArea) {
 	if (AIBasicAvailable.Num() > 0) {
 		const double Danger = m_controlAreaManager->GetControlArea()[IndexContolArea]->GetEnnemiInfluenceAverage();
 		const float SoldierValue = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode())->InfluenceMap->CharacterInfluenceValue;
-		const int Maximum = StaticCast<int>(Danger / SoldierValue) + 2;
+		const int Maximum = StaticCast<int>(Danger / 0.1f) * 2;
 
 		auto Elem = ListSoldierOnControlArea.Find(IndexContolArea);
 		uint32 IndexSoldier = 0;
 		while (Elem->SoldierIndex.Num() <= Maximum && FindAvailableSoldier(IndexSoldier, IndexContolArea)) {
 			uint32 IndexCA = 0;
 			if (AIBasicList[IndexSoldier]->GetIndexControlArea(IndexCA)) {
+				//GEngine->AddOnScreenDebugMessage(50, 1.f, FColor::Blue, TEXT("Part defendre une zone de controle"));
 				UCaptureMission* CaptureMission = Cast<UCaptureMission>(NewObject<UCaptureMission>(this, UCaptureMission::StaticClass()));
 				CaptureMission->InitCaptureMission(-1, MissionPriority::eMIDDLE, m_controlAreaManager->GetControlArea()[IndexContolArea]);
 				AIBasicList[IndexSoldier]->SetMission<UCaptureMission*>(CaptureMission);
@@ -339,6 +337,13 @@ void AAIBasicManager::Strategy() {
 				while (Elem->SoldierIndex.Num() <= Maximum && FindAvailableSoldier(IndexSoldier, IndexControlAreaEnnemi)) {
 					uint32 IndexCA = 0;
 					if (AIBasicList[IndexSoldier]->GetIndexControlArea(IndexCA)) {
+
+						AIBasicList[IndexSoldier]->EmptyMissionList();
+
+						UPatrolControlAreaMission* MissionPatrol = Cast<UPatrolControlAreaMission>(NewObject<UPatrolControlAreaMission>(this, UPatrolControlAreaMission::StaticClass()));
+						MissionPatrol->InitPatrolControlAreaMission(-1, MissionPriority::eBASIC, m_controlAreaManager->GetControlArea()[IndexControlAreaEnnemi]);
+						AIBasicList[IndexSoldier]->SetMission<UPatrolControlAreaMission*>(MissionPatrol);
+
 						UCaptureMission* CaptureMission = Cast<UCaptureMission>(NewObject<UCaptureMission>(this, UCaptureMission::StaticClass()));
 						CaptureMission->InitCaptureMission(-1, MissionPriority::eMIDDLE, m_controlAreaManager->GetControlArea()[IndexControlAreaEnnemi]);
 						AIBasicList[IndexSoldier]->SetMission<UCaptureMission*>(CaptureMission);
@@ -407,20 +412,19 @@ bool AAIBasicManager::FindAvailableSoldier(uint32& IndexSoldier, const uint32 In
 }
 
 void AAIBasicManager::FinalAttack() {
-	const uint32 IndexCA = ControlAreaEnnemies[0];
-	auto LastEnnemieControlArea = ListSoldierOnControlArea.Find(IndexCA);
+	const uint32 IndexControlAreaEnnemi = ControlAreaEnnemies[0];
+	auto LastEnnemieControlArea = ListSoldierOnControlArea.Find(IndexControlAreaEnnemi);
 
-	uint32 IndexSoldier = 0;
-	while (FindAvailableSoldier(IndexSoldier, IndexCA))
-	{
-		uint32 IndexCASoldierOn = 0;
-		if (AIBasicList[IndexSoldier]->GetIndexControlArea(IndexCASoldierOn) && !LastEnnemieControlArea->SoldierIndex.Contains(IndexSoldier)) {
+	
+	for (size_t IndexSoldier = 0; IndexSoldier != AIBasicAvailable.Num(); ++IndexSoldier) {
+		uint32 IndexCA = 0;
+		if (AIBasicList[IndexSoldier]->GetIndexControlArea(IndexCA)) {
 			UCaptureMission* CaptureMission = Cast<UCaptureMission>(NewObject<UCaptureMission>(this, UCaptureMission::StaticClass()));
-			CaptureMission->InitCaptureMission(-1, MissionPriority::eMIDDLE, m_controlAreaManager->GetControlArea()[IndexCA]);
+			CaptureMission->InitCaptureMission(-1, MissionPriority::eMIDDLE, m_controlAreaManager->GetControlArea()[IndexControlAreaEnnemi]);
 			AIBasicList[IndexSoldier]->SetMission<UCaptureMission*>(CaptureMission);
 
 			LastEnnemieControlArea->SoldierIndex.Add(IndexSoldier);
-			ListSoldierOnControlArea.Find(IndexCASoldierOn)->SoldierIndex.Remove(IndexSoldier);
+			ListSoldierOnControlArea.Find(IndexCA)->SoldierIndex.Remove(IndexSoldier);
 		}
 	}
 }
