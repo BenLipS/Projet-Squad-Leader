@@ -69,7 +69,7 @@ void AAreaEffect::OnReadyToApplyEffects()
 	QueryParams.AddIgnoredActor(this);
 
 	GetWorld()->SweepMultiByProfile(HitActors, StartTrace, EndTrace, FQuat::FQuat(), ProfileAreaEffectCollisionName, CollisionShape, QueryParams);
-	
+
 	for (int32 i = 0; i < HitActors.Num(); ++i)
 	{
 		AActor* TargetActor = HitActors[i].GetActor();
@@ -80,6 +80,10 @@ void AAreaEffect::OnReadyToApplyEffects()
 
 		if (ASoldier* TargetSoldier = Cast<ASoldier>(TargetActor); TargetSoldier && TargetSoldier->GetAbilitySystemComponent())
 		{
+			// Never apply effects on dead soldiers
+			if (!TargetSoldier->IsAlive())
+				continue;
+
 			// Make sure there is no object blocking the effect
 			TArray<FHitResult> HitActorsBeforeSoldier = HitActors;
 			HitActorsBeforeSoldier.RemoveAt(i, HitActors.Num() - i);
