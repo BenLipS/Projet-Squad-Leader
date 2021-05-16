@@ -16,7 +16,6 @@ class SQUADLEADER_API ASL_HUBGameModeBase : public AGameModeBase
 	
 public:
 	virtual void PreLogin(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage) override;
-	virtual void PostLogin(APlayerController* NewPlayer) override;
 	virtual void Logout(AController* Exiting) override;
 
 	UPROPERTY(BlueprintReadOnly, Category = "GameData")

@@ -30,12 +30,22 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	UFUNCTION(NetMulticast, unreliable)
+	UFUNCTION(NetMulticast, reliable)
 	void RefreshPlayerInfo();
 	void RefreshPlayerInfo_Implementation();
-	TMap<FString, FString> GetInfoAsStringPairs();
+	
+	TMap<FString, FString> GetInfoAsStringPair();
 
+	
+	UFUNCTION(NetMulticast, reliable)
 	void SetNewArrival(AHUBPlayerParam* NewPlayer);
-	void RemovePlayer(FString PlayerID);
-	void UpdatePlayer(AHUBPlayerParam PlayerParam);  // PlayerID need to fit with an existing one
+	void SetNewArrival_Implementation(AHUBPlayerParam* NewPlayer);
+	
+	UFUNCTION(NetMulticast, reliable)
+	void RemovePlayer(const FString& PlayerID);
+	void RemovePlayer_Implementation(const FString& PlayerID);
+
+	UFUNCTION(NetMulticast, reliable)
+	void UpdatePlayer(AHUBPlayerParam* PlayerParam);  // PlayerID need to fit with an existing one
+	void UpdatePlayer_Implementation(AHUBPlayerParam* PlayerParam);
 };

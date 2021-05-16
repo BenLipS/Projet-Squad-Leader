@@ -24,7 +24,7 @@ void ASL_HUBGameStateBase::RefreshPlayerInfo_Implementation()
 {
 	if (auto PC = GetWorld()->GetFirstPlayerController(); PC) {
 		if (auto HUD = PC->GetHUD<IStatInfoInterface>(); HUD) {
-			TMap<FString, FString> contentToPrint= GetInfoAsStringPairs();
+			TMap<FString, FString> contentToPrint= GetInfoAsStringPair();
 
 			HUD->OnStatsInfoCleanOrder();
 			HUD->OnStatsInfoReceived(contentToPrint);
@@ -32,41 +32,46 @@ void ASL_HUBGameStateBase::RefreshPlayerInfo_Implementation()
 	}
 }
 
-TMap<FString, FString> ASL_HUBGameStateBase::GetInfoAsStringPairs()
+TMap<FString, FString> ASL_HUBGameStateBase::GetInfoAsStringPair()
 {
 	TMap<FString, FString> Infos;
 	for (auto& player : PlayersInfo) {
-		Infos.Add(FString::FromInt(player->IsReady) + " " +player->PlayerName, FString::FromInt(player->ChoosenTeam));
+		Infos.Add(FString::FromInt(player->GetIsReady()) + " " +player->GetPlayerName(), FString::FromInt(player->GetChoosenTeam()));
 	}
 	return Infos;
 }
 
-void ASL_HUBGameStateBase::SetNewArrival(AHUBPlayerParam* NewPlayer)
+void ASL_HUBGameStateBase::SetNewArrival_Implementation(AHUBPlayerParam* NewPlayer)
 {
 	for (auto player : PlayersInfo) {
-		if (player->PlayerID == NewPlayer->PlayerID) {
+		if (player->GetPlayerID() == NewPlayer->GetPlayerID()) {
 			return;
 		}
 	}
-	PlayersInfo.Add(NewPlayer);
+	AHUBPlayerParam* NewEntry = NewObject<AHUBPlayerParam>();
+	NewEntry->SetPlayerId(NewPlayer->GetPlayerID());
+	NewEntry->SetPlayerName(NewPlayer->GetPlayerName());
+	NewEntry->SetIsReady(NewPlayer->GetIsReady());
+	NewEntry->SetChoosenTeam(NewPlayer->GetChoosenTeam());
+	PlayersInfo.Add(NewEntry);
 	RefreshPlayerInfo();
 }
 
-void ASL_HUBGameStateBase::RemovePlayer(FString PlayerID)
+void ASL_HUBGameStateBase::RemovePlayer_Implementation(const FString& PlayerID)
 {
 	PlayersInfo.RemoveAll([PlayerID](AHUBPlayerParam* player) {
-		return player->PlayerID == PlayerID;
+		return player->GetPlayerID() == PlayerID;
 		});
 	RefreshPlayerInfo();
 }
 
-void ASL_HUBGameStateBase::UpdatePlayer(AHUBPlayerParam PlayerParam)
+void ASL_HUBGameStateBase::UpdatePlayer_Implementation(AHUBPlayerParam* PlayerParam)
 {
 	for (auto player : PlayersInfo) {
-		if (player->PlayerID == PlayerParam.PlayerID) {
-			player->PlayerName = PlayerParam.PlayerName;
-			player->IsReady = PlayerParam.IsReady;
-			player->ChoosenTeam = PlayerParam.ChoosenTeam;
+		if (player->GetPlayerID() == PlayerParam->GetPlayerID()) {
+			player->SetPlayerName(PlayerParam->GetPlayerName());
+			player->SetIsReady(PlayerParam->GetIsReady());
+			player->SetChoosenTeam(PlayerParam->GetChoosenTeam());
 
 			RefreshPlayerInfo();
 		}

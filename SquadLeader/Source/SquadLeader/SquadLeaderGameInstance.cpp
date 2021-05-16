@@ -113,6 +113,13 @@ void USquadLeaderGameInstance::ChangeNetworkState(int NewState)
     }
 }
 
+void USquadLeaderGameInstance::CloseMatchMaking()
+{
+    if (OnlineStatus && GameID != "") {
+        HttpCallDeleteGame();
+    }
+}
+
 bool USquadLeaderGameInstance::UpdateNetworkStatus(const int MatchResult, float GameDuration, int XP, int NbKillAI, int NbKillPlayer, int NbDeathByAI, int NbDeathByPlayer)
 {
     if (OnlineStatus) {

@@ -2,10 +2,17 @@
 #include "Engine/World.h"
 #include "GameFramework/GameStateBase.h"
 #include "GameFramework/GameSession.h"
+#include "SLHUBPlayerController.h"
+#include "../SquadLeaderGameInstance.h"
 #include "Net/OnlineEngineInterface.h"
 
 
 void ASL_HUBGameModeBase::TeleportAllPlayersToGame() {
+	// close the matchmaking by calling it on the local gameInstance
+	if (auto GI = GetGameInstance<USquadLeaderGameInstance>(); GI) {
+		GI->CloseMatchMaking();
+	}
+	
 	GetWorld()->ServerTravel("Factory_V2");
 }
 
@@ -39,17 +46,14 @@ void ASL_HUBGameModeBase::PreLogin(const FString& Options, const FString& Addres
 	FGameModeEvents::GameModePreLoginEvent.Broadcast(this, UniqueId, ErrorMessage);
 }
 
-void ASL_HUBGameModeBase::PostLogin(APlayerController* NewPlayer)
-{
-	Super::PostLogin(NewPlayer);
-
-}
-
 void ASL_HUBGameModeBase::Logout(AController* Exiting)
 {
 	// notifies that a player has left
 	if (GEngine)GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Black, TEXT("A player left the game."));  // message for the server only
 	// TODO: ensure that the player is correctly destroy
+	if (auto HUBController = Cast<ASLHUBPlayerController>(Exiting); HUBController) {
+		HUBController->ClientRemoveHUBPlayerParam();
+	}
 
 	// do the basic job
 	Super::Logout(Exiting);
