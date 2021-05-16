@@ -291,7 +291,7 @@ protected:
 
 	void DeleteInfluence(const uint16 IndexActor, const uint8 Team) noexcept;
 
-	void UpdateControlArea(const uint16 IndexControlArea, const uint8 Team) noexcept;
+	void UpdateControlArea(const uint16 IndexControlArea, const uint8 Team, const uint32 ControlAreID, uint16 IndexActor) noexcept;
 	void UpdateSoldier(const uint16 IndexSoldier, const uint8 Team, const uint32 SoldierID) noexcept;
 
 	void SoldierInfluence(FGridPackage Message, uint32 IndexTile, uint16 IndexActor);

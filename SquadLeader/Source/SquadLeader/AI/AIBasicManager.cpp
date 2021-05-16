@@ -330,7 +330,7 @@ void AAIBasicManager::Strategy() {
 				GEngine->AddOnScreenDebugMessage(10 + Team->Id, 5.f, FColor::Blue, FString::Printf(TEXT("Danger ennemie : %f."), Danger));
 			*/
 			const float SoldierValue = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode())->InfluenceMap->CharacterInfluenceValue;
-			const int Maximum = StaticCast<int>(Danger / 0.1f);
+			const int Maximum = StaticCast<int>(Danger / 0.1f) * 2;
 			//GEngine->AddOnScreenDebugMessage(10 + Team->Id, 5.f, FColor::Blue, FString::Printf(TEXT("Nombre de Soldat suppose envoye  : %i."), Maximum));
 			
 			if (Maximum <= AIBasicAvailable.Num()) {
@@ -386,7 +386,7 @@ bool AAIBasicManager::FindAvailableSoldier(uint32& IndexSoldier, const uint32 In
 		uint32 _IndexControlArea = 0;
 
 		if (AIBasicList[IndexSoldier]->GetIndexControlArea(_IndexControlArea))
-			if (ListSoldierOnControlArea.Find(IndexControlArea)->SoldierIndex.Num() > 2)
+			if (ListSoldierOnControlArea.Find(_IndexControlArea)->SoldierIndex.Num() > 2)
 				result = true;
 
 		for (size_t index = 1; index != AIBasicAvailable.Num(); ++index) {

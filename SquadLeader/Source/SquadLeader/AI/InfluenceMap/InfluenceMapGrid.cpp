@@ -331,7 +331,9 @@ void AInfluenceMapGrid::ReceivedMessage(FGridPackage _message) {
 				CalculateSoldierInfluence(Index, Index, Index, 1, _message.ActorID, _message.team_value, IndexActor);
 				break;
 			case Type::ControlArea:
-				UpdateControlArea(IndexActor, _message.team_value);
+				UpdateControlArea(IndexActor, _message.team_value, _message.ActorID, IndexActor);
+				UpdateTile(Index, CharacterInfluenceValue, _message.team_value, _message.m_type, _message.ActorID, IndexActor);
+				CalculateControlAreaInfluence(Index, Index, Index, 1, _message.ActorID, _message.team_value, IndexActor);
 				break;
 			case Type::Projectile:
 				DeleteInfluence(IndexActor, _message.team_value);
@@ -484,29 +486,26 @@ void AInfluenceMapGrid::DeleteInfluence(const uint16 IndexActor, const uint8 Tea
 	//ActorsData.Remove(ActorsData[IndexActor]);
 }
 
-void AInfluenceMapGrid::UpdateControlArea(const uint16 IndexControlArea, const uint8 Team) noexcept {
+void AInfluenceMapGrid::UpdateControlArea(const uint16 IndexControlArea, const uint8 Team, const uint32 ControlAreID, uint16 IndexActor) noexcept {
 
 	switch (Team) {
 	case 1:
 		for (uint32 index : ActorsData[IndexControlArea].IndexInfluence) {
+			Grid[index].InfluenceTeam[2].ActorsID.Remove(ControlAreID);
 			m_index_team2.Remove(index);
-			m_index_team1.Add(index);
-			Grid[index].InfluenceTeam[2].InfluenceValue -= ControlAreaInfluenceValue;
-			Grid[index].InfluenceTeam[1].InfluenceValue += ControlAreaInfluenceValue;
+			Grid[index].InfluenceTeam[2].InfluenceValue = 0.f;
 		}
 		break;
 	case 2:
 		for (uint32 index : ActorsData[IndexControlArea].IndexInfluence) {
+			Grid[index].InfluenceTeam[1].ActorsID.Remove(ControlAreID);
 			m_index_team1.Remove(index);
-			m_index_team2.Add(index);
-			Grid[index].InfluenceTeam[1].InfluenceValue -= ControlAreaInfluenceValue;
-			Grid[index].InfluenceTeam[2].InfluenceValue += ControlAreaInfluenceValue;
+			Grid[index].InfluenceTeam[1].InfluenceValue = 0.f;
 		}
 		break;
 	default:
 		break;
 	}
-
 }
 
 void AInfluenceMapGrid::UpdateSoldier(const uint16 IndexSoldier, const uint8 Team, const uint32 SoldierID) noexcept {
