@@ -198,7 +198,7 @@ void UMinimapWidget::OnSoldierAddedToTeam(ASoldier* _Soldier)
 			OverlaySlot->SetVerticalAlignment(EVerticalAlignment::VAlign_Center);
 		}
 		
-		POI->OwningActor = _Soldier;
+		POI->OwningActor = TWeakObjectPtr<ASoldier>(_Soldier);
 		POI->SetVisibility(ESlateVisibility::Collapsed);
 		POIList.Add(POI);
 	}
@@ -337,13 +337,18 @@ void UMinimapWidget::OnUpdatePOIs()
 		}
 	}
 
-	for (UPointOfInterestWidget* POI : POIList)
+	for (int32 i = 0; i < POIList.Num();)
 	{
-		if (!IsValid(POI->OwningActor))
-			continue;
+		UPointOfInterestWidget* POI = POIList[i];
 
-		if (!IsValid(POI->OwningActor->GetRootComponent()))
+		if (!POI->OwningActor.IsValid())
+		{
+			POIList[i]->RemoveFromViewport();
+			POIList.RemoveAt(i);
 			continue;
+		}
+
+		++i;
 
 		const FVector2D ActorPosition = FVector2D{ POI->OwningActor->GetActorLocation().X, POI->OwningActor->GetActorLocation().Y };
 		// Diff position between soldier and player
