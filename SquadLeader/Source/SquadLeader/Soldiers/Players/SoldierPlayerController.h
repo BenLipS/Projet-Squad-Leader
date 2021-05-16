@@ -184,14 +184,14 @@ public:
 protected:
 	/* Return The Correct PlayerParams Class Client-Side */
 	UFUNCTION(Reliable, Client)
-	void DeterminePlayerParams();
-	virtual void DeterminePlayerParams_Implementation();
+	void ClientDeterminePlayerParams();
+	virtual void ClientDeterminePlayerParams_Implementation();
 
 	/* Set Pawn Class On Server For This Controller */
 	UFUNCTION(Reliable, Server, WithValidation)
-	virtual void ServerSetPawn(TSubclassOf<APlayerParam> PlayerParam);
-	virtual void ServerSetPawn_Implementation(TSubclassOf<APlayerParam> PlayerParam);
-	virtual bool ServerSetPawn_Validate(TSubclassOf<APlayerParam> PlayerParam);
+	virtual void ServerSetPawn(const int TeamID, const SoldierClass PlayerClass, const TArray<SoldierClass>& AIClass);
+	virtual void ServerSetPawn_Implementation(const int TeamID, const SoldierClass PlayerClass, const TArray<SoldierClass>& AIClass);
+	virtual bool ServerSetPawn_Validate(const int TeamID, const SoldierClass PlayerClass, const TArray<SoldierClass>& AIClass);
 
 //////////////// Cheat
 public:
