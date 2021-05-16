@@ -27,6 +27,7 @@ void AAreaEffect::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifet
 	DOREPLIFETIME(AAreaEffect, Interval);
 	DOREPLIFETIME(AAreaEffect, ImpulseStrenghBase);
 	DOREPLIFETIME(AAreaEffect, CurveImpulseStrengh);
+	DOREPLIFETIME(AAreaEffect, bIgnoreBlock);
 }
 
 void AAreaEffect::BeginPlay()
@@ -127,11 +128,12 @@ bool AAreaEffect::ValidateEffectOnSoldier(const FHitResult& _HitSoldier, const T
 		CollisionChannel = ECC_Projectile1;
 
 	const FVector StartTrace = GetActorLocation();
-	const FVector EndTrace = _HitSoldier.ImpactPoint;
-	GetWorld()->LineTraceMultiByChannel(HitResults, StartTrace, EndTrace + 10.f * (EndTrace - StartTrace), CollisionChannel, QueryParams);
+	const FVector EndTrace = _HitSoldier.ImpactPoint + 100.f * (_HitSoldier.ImpactPoint - StartTrace).GetSafeNormal();
 
+	GetWorld()->LineTraceMultiByChannel(HitResults, StartTrace, EndTrace, CollisionChannel, QueryParams);
 	FilterTraceWithShield(HitResults);
 
+	// This test might incorrect sometimes. Since we ignore overlaps, we should return true if the soldiers is found in HitResults
 	return HitResults.Num() > 0 && HitResults.Last().Actor == _HitSoldier.Actor;
 }
 

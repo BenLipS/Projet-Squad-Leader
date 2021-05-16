@@ -101,7 +101,7 @@ protected:
 //////////////// Collision
 public:
 	// Whether this area can apply its effect regardless the collisions
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Collision")
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Collision", Replicated)
 	bool bIgnoreBlock = true;
 
 public:
