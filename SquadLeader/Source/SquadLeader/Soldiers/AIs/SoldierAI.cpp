@@ -126,7 +126,7 @@ bool ASoldierAI::ActivateAbilityOverHeat()
 	return ActivateAbility(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.OverheatingWeapon")));
 }
 
-FVector ASoldierAI::GetRespawnPoint()
+FVector ASoldierAI::GetRespawnPoint(AControlArea* _ControlArea)
 {
 	if (auto AIController = Cast<AAIGeneralController>(GetController()); AIController) {
 		return AIController->GetRespawnPoint();

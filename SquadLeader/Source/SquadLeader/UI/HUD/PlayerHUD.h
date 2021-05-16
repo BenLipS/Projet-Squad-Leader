@@ -58,6 +58,9 @@ public:
 	void BindSoldierTeamChanges();
 	void BindControlAreas();
 
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
+	void DisplayRespawnWidget();
+
 	/*********************************
 *****INTERFACE IMPLEMENTATION*****
 *********************************/

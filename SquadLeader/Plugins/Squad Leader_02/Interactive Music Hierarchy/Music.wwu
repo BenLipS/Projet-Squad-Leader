@@ -1951,7 +1951,7 @@
 								<Property Name="EndPosition" Type="Real64" Value="6500"/>
 								<Property Name="Volume" Type="Real64">
 									<ValueList>
-										<Value>-4</Value>
+										<Value>-6</Value>
 									</ValueList>
 								</Property>
 							</PropertyList>
@@ -1965,6 +1965,13 @@
 							</ReferenceList>
 							<ChildrenList>
 								<MusicTrack Name="Stingner Neg" ID="{54B5A086-717F-4E28-8995-FEDF0C211C27}" ShortID="684284195">
+									<PropertyList>
+										<Property Name="Volume" Type="Real64">
+											<ValueList>
+												<Value>-2</Value>
+											</ValueList>
+										</Property>
+									</PropertyList>
 									<ReferenceList>
 										<Reference Name="OutputBus">
 											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}"/>
@@ -2116,7 +2123,7 @@
 									<PropertyList>
 										<Property Name="Volume" Type="Real64">
 											<ValueList>
-												<Value>2</Value>
+												<Value>-4</Value>
 											</ValueList>
 										</Property>
 									</PropertyList>

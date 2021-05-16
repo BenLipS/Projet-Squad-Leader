@@ -25,7 +25,7 @@ public:
 	// virtual void PreLogin(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage) override;
 	virtual void Logout(AController* Exiting) override;
 
-	APawn* SpawnSoldier(TSubclassOf<APlayerParam> PlayerParam, AController* OwningController);
+	APawn* SpawnSoldier(APlayerParam* PlayerParam, AController* OwningController);
 
 protected:
 	void ChangeGameState();
@@ -52,12 +52,26 @@ public:
 	int const GetBaseSquadAINumber() { return StartingAISquadNumber; }
 	
 public:
-	void RespawnSoldier(ASoldier* _Soldier);
+	UFUNCTION(BlueprintCallable)
+	void RespawnSoldier(ASoldier* _Soldier, AControlArea* _ControlArea = nullptr);
+
+	UFUNCTION(BlueprintCallable)
 	void CheckControlAreaVictoryCondition();
+
+	UFUNCTION(BlueprintCallable)
 	void CheckTeamTicketsVictoryCondition();
+
+	UFUNCTION(BlueprintCallable)
 	void EndGame(ASoldierTeam* WinningTeam);
+
+	UFUNCTION(BlueprintCallable)
 	void CloseGame();
 
+//////////////// Respawn
+	UFUNCTION()
+	void DisplayRespawnHUD(ASoldierPlayer* _SoldierPlayer);
+
+//////////////// AIs
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<AAIBasicManager> AIBasicManagerClass;
