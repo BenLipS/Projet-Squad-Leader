@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "../SL_UserWidget.h"
+#include "UObject/WeakObjectPtrTemplates.h"
 #include "PointOfInterestWidget.generated.h"
 
 UCLASS()
@@ -10,7 +11,7 @@ class SQUADLEADER_API UPointOfInterestWidget : public USL_UserWidget
 	GENERATED_BODY()
 
 public:
-	AActor* OwningActor = nullptr;
+	TWeakObjectPtr<AActor> OwningActor;
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Visibility")
 	bool bPersistant = false;

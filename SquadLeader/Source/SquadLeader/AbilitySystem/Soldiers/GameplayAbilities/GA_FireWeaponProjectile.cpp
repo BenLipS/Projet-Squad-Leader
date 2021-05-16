@@ -59,8 +59,10 @@ void UGA_FireWeaponProjectile::ActivateAbility(const FGameplayAbilitySpecHandle 
 
 bool UGA_FireWeaponProjectile::CanActivateAbility(const FGameplayAbilitySpecHandle _Handle, const FGameplayAbilityActorInfo* _ActorInfo, const FGameplayTagContainer* _SourceTags, const FGameplayTagContainer* _TargetTags, OUT FGameplayTagContainer* _OptionalRelevantTags) const
 {
-	ASoldier* Soldier = Cast<ASoldier>(_ActorInfo->AvatarActor);
-	return Soldier && Cast<ASL_Weapon>(Soldier->GetCurrentWeapon()) && Super::CanActivateAbility(_Handle, _ActorInfo, _SourceTags, _TargetTags, _OptionalRelevantTags);
+	const ASoldier* Soldier = Cast<ASoldier>(_ActorInfo->AvatarActor);
+	const ASL_Weapon* Weapon = Cast<ASL_Weapon>(Soldier->GetCurrentWeapon());
+
+	return Soldier && Weapon && Weapon->HasAmmo() && Super::CanActivateAbility(_Handle, _ActorInfo, _SourceTags, _TargetTags, _OptionalRelevantTags);
 }
 
 void UGA_FireWeaponProjectile::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
