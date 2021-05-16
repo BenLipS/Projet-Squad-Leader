@@ -38,7 +38,7 @@ protected:
 	void OnReadyToApplyEffects();
 
 	// Make sure there is no wall blocking the effect
-	bool ValidateEffectOnSoldier(const FHitResult& _HitSoldier, const TArray<FHitResult>& _HitActors);
+	bool ValidateEffectOnSoldier(const FHitResult& _HitSoldier);
 	void DestroyAreaEffect();
 
 	void ApplyGameplayEffects(UAbilitySystemComponent* _TargetASC);

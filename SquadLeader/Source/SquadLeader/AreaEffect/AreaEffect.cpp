@@ -105,7 +105,7 @@ void AAreaEffect::OnReadyToApplyEffects()
 			TArray<FHitResult> HitActorsBeforeSoldier = HitActors;
 			HitActorsBeforeSoldier.RemoveAt(i, HitActors.Num() - i);
 
-			if (!ValidateEffectOnSoldier(HitActors[i], HitActorsBeforeSoldier))
+			if (!ValidateEffectOnSoldier(HitActors[i]))
 				continue;
 
 			UAbilitySystemComponent* TargetASC = TargetSoldier->GetAbilitySystemComponent();
@@ -117,9 +117,9 @@ void AAreaEffect::OnReadyToApplyEffects()
 	}
 }
 
-bool AAreaEffect::ValidateEffectOnSoldier(const FHitResult& _HitSoldier, const TArray<FHitResult>& _HitActors)
+bool AAreaEffect::ValidateEffectOnSoldier(const FHitResult& _HitSoldier)
 {
-	if (bIgnoreBlock || _HitActors.Num() <= 0) // No object between the soldier and the area effect
+	if (bIgnoreBlock)
 		return true;
 
 	TArray<FHitResult> HitResults;
@@ -131,7 +131,7 @@ bool AAreaEffect::ValidateEffectOnSoldier(const FHitResult& _HitSoldier, const T
 		CollisionChannel = ECC_Projectile1;
 
 	const FVector StartTrace = GetActorLocation();
-	const FVector EndTrace = _HitSoldier.ImpactPoint + 100.f * (_HitSoldier.ImpactPoint - StartTrace).GetSafeNormal();
+	const FVector EndTrace = _HitSoldier.ImpactPoint + /*100.f **/ (_HitSoldier.ImpactPoint - StartTrace).GetSafeNormal();
 
 	GetWorld()->LineTraceMultiByChannel(HitResults, StartTrace, EndTrace, CollisionChannel, QueryParams);
 	FilterTraceWithShield(HitResults);
