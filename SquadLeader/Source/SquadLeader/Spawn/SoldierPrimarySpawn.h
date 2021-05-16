@@ -7,9 +7,8 @@
 #include "Net/UnrealNetwork.h"
 #include "SoldierPrimarySpawn.generated.h"
 
-/**
- * 
- */
+class ACameraActor;
+
 UCLASS()
 class SQUADLEADER_API ASoldierPrimarySpawn : public ASoldierSpawn, public IPreInitable
 {
@@ -29,6 +28,10 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	virtual void Destroyed() override;
+
+//////////////// Camera
+UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera", meta = (ExposeOnSpawn = "true"))
+ACameraActor* CameraActor;
 
 protected: // Owner part
 	// Server call
