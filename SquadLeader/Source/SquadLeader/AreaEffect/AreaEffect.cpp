@@ -58,6 +58,9 @@ void AAreaEffect::OnReadyToApplyEffects()
 	if (!SourceSoldier)
 		return;
 
+	if (GetLocalRole() < ENetRole::ROLE_Authority)
+		return;
+
 	FCollisionShape CollisionShape;
 	CollisionShape.ShapeType = ECollisionShape::Sphere;
 	CollisionShape.SetSphere(Radius);
@@ -218,13 +221,11 @@ FVector AAreaEffect::DetermineImpulse(AActor* _Actor, const float _DistActorArea
 
 void AAreaEffect::FilterTraceWithShield(TArray<FHitResult>& _HitResults)
 {
-	ASoldier* SoldierShooter = Cast<ASoldier>(GetInstigator());
-
 	for (int32 i = 0; i < _HitResults.Num(); ++i)
 	{
 		if (AShield* Shield = Cast<AShield>(_HitResults[i].Actor); Shield)
 		{
-			_HitResults.RemoveAt(FMath::Min(i + 1, _HitResults.Num() - 1), _HitResults.Num() - i - 1);
+			_HitResults.RemoveAt(i, _HitResults.Num() - i);
 			return;
 		}
 	}
