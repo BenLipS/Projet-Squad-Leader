@@ -361,6 +361,7 @@ void ASoldier::DeadTagChanged(const FGameplayTag _CallbackTag, int32 _NewCount)
 		// Start ragdoll to the next frame so we can catch all impulses from the capsule before the death - This is useful for the explosion
 		//HandleDeathMontage();
 		GetWorldTimerManager().SetTimerForNextTick(this, &ASoldier::StartRagdoll);
+		GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore); // Make sure alive soldiers aren't blocked
 	}
 	else // If dead tag is removed - Handle respawn
 	{
@@ -370,6 +371,7 @@ void ASoldier::DeadTagChanged(const FGameplayTag _CallbackTag, int32 _NewCount)
 
 		ResetWeapons();
 		StopRagdoll();
+		GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
 
 		if (RespawnMontage)
 		{
