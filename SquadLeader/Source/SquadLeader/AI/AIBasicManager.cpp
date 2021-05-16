@@ -119,9 +119,6 @@ void AAIBasicManager::Tick(float DeltaSeconds) {
 		//GEngine->AddOnScreenDebugMessage(20, 5.f, FColor::Cyan, TEXT("Tout le monde en Attaque !!!!"));
 	}
 	else if ((ControlAreasBeenUpdate || NewSoldierAvailable) && AIBasicAvailable.Num() >= 2) {
-		ControlAreasBeenUpdate = false;
-		NewSoldierAvailable = false;
-
 		Strategy();
 	}
 
@@ -150,7 +147,6 @@ void AAIBasicManager::Tick(float DeltaSeconds) {
 	}
 	double EndTime = FPlatformTime::Seconds();
 	double ElapsedTime = EndTime - StartTime;
-	//Petit soucis je pense, car le temps au total est plus petit que le temps de calcul d'une IA....
 	//GEngine->AddOnScreenDebugMessage(10, 1.f, FColor::Yellow, FString::Printf(TEXT("Temp total du tick du manager : %f ms"), ElapsedTime * 1000.0));
 
 }
@@ -221,7 +217,8 @@ void AAIBasicManager::ChooseControlArea() {
 		_mission->InitCaptureMission(-1, MissionPriority::eMIDDLE, ControlAreas[IndexControlArea]);
 		AIBasicList[Indexsoldier]->SetMission<UCaptureMission*>(_mission);
 
-		//ListSoldierOnControlArea.Find(_index_control_area)->SoldierIndex.Add(Indexsoldier);
+		const uint32 ControlAreaIndex = ControlAreas[IndexControlArea]->GetIndexControlArea();
+		ListSoldierOnControlArea.Find(ControlAreaIndex)->SoldierIndex.Add(Indexsoldier);
 
 	}	
 }
@@ -301,7 +298,7 @@ void AAIBasicManager::LostControlArea(const uint8 IndexContolArea) {
 
 		auto Elem = ListSoldierOnControlArea.Find(IndexContolArea);
 		uint32 IndexSoldier = 0;
-		while (Elem->SoldierIndex.Num() <= Maximum && FindAvailableSoldier(IndexSoldier)) {
+		while (Elem->SoldierIndex.Num() <= Maximum && FindAvailableSoldier(IndexSoldier, IndexContolArea)) {
 			uint32 IndexCA = 0;
 			if (AIBasicList[IndexSoldier]->GetIndexControlArea(IndexCA)) {
 				UCaptureMission* CaptureMission = Cast<UCaptureMission>(NewObject<UCaptureMission>(this, UCaptureMission::StaticClass()));
@@ -323,35 +320,6 @@ void AAIBasicManager::LostControlArea(const uint8 IndexContolArea) {
 void AAIBasicManager::Strategy() {
 	//GEngine->AddOnScreenDebugMessage(10, 5.f, FColor::Black, FString::Printf(TEXT("Nouvelle Stratégie")));
 
-	//Voir si on peut envoyer des IAs capturer un point de contrôle neutre
-	for (uint32 IndexNeutralControlArea : ControlAreaNeutral) {
-		auto Elem = ListSoldierOnControlArea.Find(IndexNeutralControlArea);
-		uint32 IndexSoldier = 0;
-		while (Elem->SoldierIndex.Num() <= 3 && FindAvailableSoldier(IndexSoldier)) {
-			uint32 IndexCA = 0;
-			if (AIBasicList[IndexSoldier]->GetIndexControlArea(IndexCA)) {
-				UCaptureMission* CaptureMission = Cast<UCaptureMission>(NewObject<UCaptureMission>(this, UCaptureMission::StaticClass()));
-				CaptureMission->InitCaptureMission(-1, MissionPriority::eMIDDLE, m_controlAreaManager->GetControlArea()[IndexNeutralControlArea]);
-				AIBasicList[IndexSoldier]->SetMission<UCaptureMission*>(CaptureMission);
-
-				Elem->SoldierIndex.Add(IndexSoldier);
-				ListSoldierOnControlArea.Find(IndexCA)->SoldierIndex.Remove(IndexSoldier);
-				AIUnavailable(IndexSoldier);
-
-				/*const float Timer = 10.f;
-				if (Team->Id == 1) {
-					GEngine->AddOnScreenDebugMessage(0, Timer, FColor::Purple, FString::Printf(TEXT("L'IA num %i, etait sur la zone de controle num %i"), IndexSoldier, IndexCA));
-					GEngine->AddOnScreenDebugMessage(1, Timer, FColor::Purple, FString::Printf(TEXT("L'IA num %i, va sur la zone de controle num %i"), IndexSoldier, IndexNeutralControlArea));
-				}
-				if (Team->Id == 2) {
-					GEngine->AddOnScreenDebugMessage(10, Timer, FColor::Turquoise, FString::Printf(TEXT("L'IA num %i, etait sur la zone de controle num %i"), IndexSoldier, IndexCA));
-					GEngine->AddOnScreenDebugMessage(11, Timer, FColor::Turquoise, FString::Printf(TEXT("L'IA num %i, va sur la zone de controle num %i"), IndexSoldier, IndexNeutralControlArea));
-				}*/
-			}
-
-		}
-	}
-
 	//Si possible envoyer les IAs sur des Zone de contrôle Ennemie
 	if (AIBasicAvailable.Num() > 0) {
 		for (uint32 IndexControlAreaEnnemi : ControlAreaEnnemies) {
@@ -362,36 +330,39 @@ void AAIBasicManager::Strategy() {
 				GEngine->AddOnScreenDebugMessage(10 + Team->Id, 5.f, FColor::Blue, FString::Printf(TEXT("Danger ennemie : %f."), Danger));
 			*/
 			const float SoldierValue = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode())->InfluenceMap->CharacterInfluenceValue;
-			const int Maximum = StaticCast<int>(Danger / SoldierValue)+ 2;
+			const int Maximum = StaticCast<int>(Danger / 0.1f);
 			//GEngine->AddOnScreenDebugMessage(10 + Team->Id, 5.f, FColor::Blue, FString::Printf(TEXT("Nombre de Soldat suppose envoye  : %i."), Maximum));
+			
+			if (Maximum <= AIBasicAvailable.Num()) {
+				auto Elem = ListSoldierOnControlArea.Find(IndexControlAreaEnnemi);
+				uint32 IndexSoldier = 0;
+				while (Elem->SoldierIndex.Num() <= Maximum && FindAvailableSoldier(IndexSoldier, IndexControlAreaEnnemi)) {
+					uint32 IndexCA = 0;
+					if (AIBasicList[IndexSoldier]->GetIndexControlArea(IndexCA)) {
+						UCaptureMission* CaptureMission = Cast<UCaptureMission>(NewObject<UCaptureMission>(this, UCaptureMission::StaticClass()));
+						CaptureMission->InitCaptureMission(-1, MissionPriority::eMIDDLE, m_controlAreaManager->GetControlArea()[IndexControlAreaEnnemi]);
+						AIBasicList[IndexSoldier]->SetMission<UCaptureMission*>(CaptureMission);
 
-			auto Elem = ListSoldierOnControlArea.Find(IndexControlAreaEnnemi);
-			uint32 IndexSoldier = 0;
-			while (Elem->SoldierIndex.Num() <= Maximum && FindAvailableSoldier(IndexSoldier)) {
-				uint32 IndexCA = 0;
-				if (AIBasicList[IndexSoldier]->GetIndexControlArea(IndexCA)) {
-					UCaptureMission* CaptureMission = Cast<UCaptureMission>(NewObject<UCaptureMission>(this, UCaptureMission::StaticClass()));
-					CaptureMission->InitCaptureMission(-1, MissionPriority::eMIDDLE, m_controlAreaManager->GetControlArea()[IndexControlAreaEnnemi]);
-					AIBasicList[IndexSoldier]->SetMission<UCaptureMission*>(CaptureMission);
+						Elem->SoldierIndex.Add(IndexSoldier);
+						ListSoldierOnControlArea.Find(IndexCA)->SoldierIndex.Remove(IndexSoldier);
+						AIUnavailable(IndexSoldier);
 
-					Elem->SoldierIndex.Add(IndexSoldier);
-					ListSoldierOnControlArea.Find(IndexCA)->SoldierIndex.Remove(IndexSoldier);
-					AIUnavailable(IndexSoldier);
-
-					/*const float Timer = 10.f;
-					if (Team->Id == 1) {
-						GEngine->AddOnScreenDebugMessage(0, Timer, FColor::Purple, FString::Printf(TEXT("L'IA num %i, etait sur la zone de controle num %i"), IndexSoldier, IndexCA));
-						GEngine->AddOnScreenDebugMessage(1, Timer, FColor::Purple, FString::Printf(TEXT("L'IA num %i, va sur la zone de controle ennemie num %i"), IndexSoldier, IndexControlAreaEnnemi));
+						/*const float Timer = 10.f;
+						if (Team->Id == 1) {
+							GEngine->AddOnScreenDebugMessage(0, Timer, FColor::Purple, FString::Printf(TEXT("L'IA num %i, etait sur la zone de controle num %i"), IndexSoldier, IndexCA));
+							GEngine->AddOnScreenDebugMessage(1, Timer, FColor::Purple, FString::Printf(TEXT("L'IA num %i, va sur la zone de controle ennemie num %i"), IndexSoldier, IndexControlAreaEnnemi));
+						}
+						if (Team->Id == 2) {
+							GEngine->AddOnScreenDebugMessage(10, Timer, FColor::Turquoise, FString::Printf(TEXT("L'IA num %i, etait sur la zone de controle num %i"), IndexSoldier, IndexCA));
+							GEngine->AddOnScreenDebugMessage(11, Timer, FColor::Turquoise, FString::Printf(TEXT("L'IA num %i, va sur la zone de controle ennemie num %i"), IndexSoldier, IndexControlAreaEnnemi));
+						}*/
 					}
-					if (Team->Id == 2) {
-						GEngine->AddOnScreenDebugMessage(10, Timer, FColor::Turquoise, FString::Printf(TEXT("L'IA num %i, etait sur la zone de controle num %i"), IndexSoldier, IndexCA));
-						GEngine->AddOnScreenDebugMessage(11, Timer, FColor::Turquoise, FString::Printf(TEXT("L'IA num %i, va sur la zone de controle ennemie num %i"), IndexSoldier, IndexControlAreaEnnemi));
-					}*/
+					ControlAreasBeenUpdate = false;
+					NewSoldierAvailable = false;
 				}
 			}
 		}
 	}
-
 }
 
 bool AAIBasicManager::FindControlAreaOn(const uint8 IndexSoldier, uint32& IndexControlArea) {
@@ -403,16 +374,34 @@ bool AAIBasicManager::FindControlAreaOn(const uint8 IndexSoldier, uint32& IndexC
 	return false;
 }
 
-bool AAIBasicManager::FindAvailableSoldier(uint32& IndexSoldier) {
-	for (size_t index = 0; index != AIBasicAvailable.Num(); ++index) {
-		const uint32 _IndexSoldier = AIBasicAvailable[index];
-		uint32 IndexControlArea = 0;
-		if (AIBasicList[_IndexSoldier]->GetIndexControlArea(IndexControlArea)) {
-			if (ListSoldierOnControlArea.Find(IndexControlArea)->SoldierIndex.Num() > 1) {
-				IndexSoldier = _IndexSoldier;
-				return true;
+bool AAIBasicManager::FindAvailableSoldier(uint32& IndexSoldier, const uint32 IndexControlArea) {
+
+	if (AIBasicAvailable.Num() > 0) {
+		const FVector ControlAreaLocation = m_controlAreaManager->GetControlArea()[IndexControlArea]->GetActorLocation();
+		IndexSoldier = AIBasicAvailable[0];
+		float DistanceMinimal = FVector::Dist2D(ControlAreaLocation, AIBasicList[IndexSoldier]->GetPawn()->GetActorLocation());
+
+
+		bool result = false;
+		uint32 _IndexControlArea = 0;
+
+		if (AIBasicList[IndexSoldier]->GetIndexControlArea(_IndexControlArea))
+			if (ListSoldierOnControlArea.Find(IndexControlArea)->SoldierIndex.Num() > 2)
+				result = true;
+
+		for (size_t index = 1; index != AIBasicAvailable.Num(); ++index) {
+			const uint32 IndexSoldierAvailable = AIBasicAvailable[index];
+			uint32 IndexControlArea = 0;
+			if (AIBasicList[IndexSoldierAvailable]->GetIndexControlArea(IndexControlArea)) {
+				const float dist = FVector::Dist2D(ControlAreaLocation, AIBasicList[IndexSoldierAvailable]->GetPawn()->GetActorLocation());
+				if (ListSoldierOnControlArea.Find(IndexControlArea)->SoldierIndex.Num() > 2 && dist <= DistanceMinimal) {
+					IndexSoldier = IndexSoldierAvailable;
+					DistanceMinimal = dist;
+					result = true;
+				}
 			}
 		}
+		return result;
 	}
 	return false;
 }
@@ -422,7 +411,7 @@ void AAIBasicManager::FinalAttack() {
 	auto LastEnnemieControlArea = ListSoldierOnControlArea.Find(IndexCA);
 
 	uint32 IndexSoldier = 0;
-	while (FindAvailableSoldier(IndexSoldier))
+	while (FindAvailableSoldier(IndexSoldier, IndexCA))
 	{
 		uint32 IndexCASoldierOn = 0;
 		if (AIBasicList[IndexSoldier]->GetIndexControlArea(IndexCASoldierOn) && !LastEnnemieControlArea->SoldierIndex.Contains(IndexSoldier)) {
