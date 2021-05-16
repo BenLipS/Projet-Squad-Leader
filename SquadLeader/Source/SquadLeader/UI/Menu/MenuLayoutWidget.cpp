@@ -23,24 +23,39 @@ void UMenuLayoutWidget::SynchronizeAllMenuItem()
 {
 	if (MenuSlot)
 	{
-		SynchronizeAllMenuItem<UMenuItemWidget>(MenuSlot->GetAllChildren());
+		for (auto childSlot : MenuSlot->GetAllChildren())
+		{
+			if (auto panelChild = Cast<UPanelWidget>(childSlot))
+			{
+				SynchronizeAllMenuItem<UMenuItemWidget>(panelChild);
+			}
+		}
+	}
+}
+
+void UMenuLayoutWidget::SetWidgetLayout(UMenuItemWidget* ItemIn)
+{
+	if (IsValid(ItemIn))
+	{
+		ItemIn->MenuLayout = this;
+		ItemIn->OnItemAddedToLayout();
 	}
 }
 
 template<typename T>
-void UMenuLayoutWidget::SynchronizeAllMenuItem(TArray<UWidget*> ListChildren)
+void UMenuLayoutWidget::SynchronizeAllMenuItem(UPanelWidget* PanelIn)
 {
+	auto ListChildren = PanelIn->GetAllChildren();
 	for (UWidget* Widget : ListChildren)
 	{
 		if (T* MenuItem = Cast<T>(Widget); MenuItem)
 		{
 			MenuItems.AddUnique(MenuItem);
-			MenuItem->MenuLayout = this;
-			MenuItem->OnItemAddedToLayout();
+			SetWidgetLayout(MenuItem);
 		}
 		else if (UPanelWidget* MenuGroup = Cast<UPanelWidget>(Widget); MenuGroup)
 		{
-			SynchronizeAllMenuItem<T>(MenuGroup->GetAllChildren());
+			SynchronizeAllMenuItem<T>(MenuGroup);
 		}
 	}
 }

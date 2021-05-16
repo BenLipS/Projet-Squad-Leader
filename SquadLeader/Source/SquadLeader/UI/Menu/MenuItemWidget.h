@@ -22,7 +22,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString SelectChannel = "Default";
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void SelectItem();
 
 	UFUNCTION()

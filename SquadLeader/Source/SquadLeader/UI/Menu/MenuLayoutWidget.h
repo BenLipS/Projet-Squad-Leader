@@ -10,6 +10,7 @@
 
 class UMenuWidget;
 class UMenuItemWidget;
+class UPanelWidget;
 
 UCLASS()
 class SQUADLEADER_API UMenuLayoutWidget : public USL_UserWidget
@@ -41,8 +42,11 @@ protected:
 protected:
 	virtual void SynchronizeAllMenuItem();
 
+	void SetWidgetLayout(UMenuItemWidget* ItemIn);
+
+private:
 	template <typename T>
-	void SynchronizeAllMenuItem(TArray<UWidget*> ListChildren);
+	void SynchronizeAllMenuItem(UPanelWidget* PanelIn);
 
 public:
 	virtual void OnItemSelected(UMenuItemWidget* newItem);
