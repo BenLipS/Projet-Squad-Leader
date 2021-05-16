@@ -4,6 +4,7 @@
 #include "GameFramework/GameSession.h"
 #include "SLHUBPlayerController.h"
 #include "../SquadLeaderGameInstance.h"
+#include "SL_HUBGameStateBase.h"
 #include "Net/OnlineEngineInterface.h"
 
 
@@ -19,7 +20,7 @@ void ASL_HUBGameModeBase::TeleportAllPlayersToGame() {
 void ASL_HUBGameModeBase::PreLogin(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage)
 {
 	// Test if the max number of player is reached
-	auto AlreadyConnectedPlayerNumber = GameState->PlayerArray.Num();
+	int AlreadyConnectedPlayerNumber = Cast<ASL_HUBGameStateBase>(GameState)->PlayerNum();
 	if (AlreadyConnectedPlayerNumber < NbMaxPlayer)
 	{
 		// Login unique id must match server expected unique id type OR No unique id could mean game doesn't use them

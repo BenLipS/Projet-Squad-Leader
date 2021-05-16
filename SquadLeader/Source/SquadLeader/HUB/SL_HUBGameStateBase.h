@@ -25,16 +25,21 @@ protected:
 	// We know that we will only have 6 players max
 	UPROPERTY(Replicated)
 	TArray<AHUBPlayerParam*> PlayersInfo;
+public:
+	const int PlayerNum() { return PlayersInfo.Num(); }
 
 protected:
 	virtual void BeginPlay() override;
 
 public:
+	UFUNCTION(Client, reliable)
+	void ClientAskArrayReplication();
+	void ClientAskArrayReplication_Implementation();
 	UFUNCTION(Server, reliable)
 	void ServerAskArrayReplication();
 	void ServerAskArrayReplication_Implementation();
 
-	UFUNCTION(Client, reliable)
+	UFUNCTION(NetMulticast, reliable)
 	void ClientSyncHUBParamArray(const TArray<AHUBPlayerParam*>& ServerPlayersInfo);
 	void ClientSyncHUBParamArray_Implementation(const TArray<AHUBPlayerParam*>& ServerPlayersInfo);
 
@@ -49,6 +54,9 @@ public:
 	UFUNCTION(NetMulticast, reliable)
 	void MulticastSetNewArrival(AHUBPlayerParam* NewPlayer);
 	void MulticastSetNewArrival_Implementation(AHUBPlayerParam* NewPlayer);
+	UFUNCTION(Server, reliable)
+	void ServerSetNewArrival(AHUBPlayerParam* NewPlayer);
+	void ServerSetNewArrival_Implementation(AHUBPlayerParam* NewPlayer);
 	
 	UFUNCTION(NetMulticast, reliable)
 	void MulticastRemovePlayer(const FString& PlayerID);
