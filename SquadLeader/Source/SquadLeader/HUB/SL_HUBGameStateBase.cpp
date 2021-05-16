@@ -21,6 +21,11 @@ void ASL_HUBGameStateBase::BeginPlay()
 	GetGameInstance<USquadLeaderGameInstance>()->ChangeNetworkState(2);
 
 	// ask the server for array content replication
+	ClientAskArrayReplication();
+}
+
+void ASL_HUBGameStateBase::ClientAskArrayReplication_Implementation()
+{
 	ServerAskArrayReplication();
 }
 
@@ -58,18 +63,27 @@ TMap<FString, FString> ASL_HUBGameStateBase::GetInfoAsStringPair()
 
 void ASL_HUBGameStateBase::MulticastSetNewArrival_Implementation(AHUBPlayerParam* NewPlayer)
 {
-	for (auto player : PlayersInfo) {
-		if (player && player->GetPlayerID() == NewPlayer->GetPlayerID()) {
-			return;
+	if (GetLocalRole() == ROLE_Authority) {
+		for (auto player : PlayersInfo) {
+			if (player && player->GetPlayerID() == NewPlayer->GetPlayerID()) {
+				return;
+			}
 		}
+		AHUBPlayerParam* NewEntry = NewObject<AHUBPlayerParam>();
+		NewEntry->SetPlayerId(NewPlayer->GetPlayerID());
+		NewEntry->SetPlayerName(NewPlayer->GetPlayerName());
+		NewEntry->SetIsReady(NewPlayer->GetIsReady());
+		NewEntry->SetChoosenTeam(NewPlayer->GetChoosenTeam());
+		PlayersInfo.Add(NewEntry);
+		ClientRefreshPlayerInfo();
 	}
-	AHUBPlayerParam* NewEntry = NewObject<AHUBPlayerParam>();
-	NewEntry->SetPlayerId(NewPlayer->GetPlayerID());
-	NewEntry->SetPlayerName(NewPlayer->GetPlayerName());
-	NewEntry->SetIsReady(NewPlayer->GetIsReady());
-	NewEntry->SetChoosenTeam(NewPlayer->GetChoosenTeam());
-	PlayersInfo.Add(NewEntry);
-	ClientRefreshPlayerInfo();
+	else {
+		ServerSetNewArrival(NewPlayer);
+	}
+}
+void ASL_HUBGameStateBase::ServerSetNewArrival_Implementation(AHUBPlayerParam* NewPlayer)
+{
+	MulticastSetNewArrival(NewPlayer);
 }
 
 void ASL_HUBGameStateBase::MulticastRemovePlayer_Implementation(const FString& PlayerID)
