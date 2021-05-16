@@ -57,6 +57,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Effects")
 	bool bIgnoreEnnemies = false;
 
+	// Whether this effect should ignore the instigator
+	UPROPERTY(EditDefaultsOnly, Category = "Effects")
+	bool bIgnoreInstigator = false;
+
 //////////////// Stats
 protected:
 	// We can specifically define an execution GE for the damages. It will be combinated with the properties BaseDamage and CurveDamage so we can easily interpolate the damage. This is meant to be used with Soldier ASC

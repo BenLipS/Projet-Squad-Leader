@@ -68,6 +68,9 @@ void AAreaEffect::OnReadyToApplyEffects()
 	FCollisionQueryParams QueryParams{};
 	QueryParams.AddIgnoredActor(this);
 
+	if (bIgnoreInstigator)
+		QueryParams.AddIgnoredActor(GetInstigator());
+
 	GetWorld()->SweepMultiByProfile(HitActors, StartTrace, EndTrace, FQuat::FQuat(), ProfileAreaEffectCollisionName, CollisionShape, QueryParams);
 
 	const ASoldierTeam* SourceTeam = SourceSoldier->GetTeam();
