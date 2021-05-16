@@ -21,6 +21,6 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "GameData")
 		int NbMaxPlayer = 6;
 
-private:
+public:
 	void TeleportAllPlayersToGame();  // non-seamless travel
 };

@@ -19,7 +19,7 @@ void ASLHUBPlayerController::BeginPlay()
 
 		// send it to HUB GameState
 		if (auto GS = GetWorld()->GetGameState<ASL_HUBGameStateBase>(); GS) {
-			GS->SetNewArrival(LocalHUBPlayerParam);
+			GS->MulticastSetNewArrival(LocalHUBPlayerParam);
 		}
 	}
 }
@@ -30,7 +30,7 @@ void ASLHUBPlayerController::ChangeTeam()
 	if (IsLocalPlayerController()) {  // send data to the LocalPlayerParam
 		LocalHUBPlayerParam->SetChoosenTeam(NewTeamId);
 		if (auto GS = GetWorld()->GetGameState<ASL_HUBGameStateBase>(); GS)
-			GS->UpdatePlayer(LocalHUBPlayerParam);
+			GS->MulticastUpdatePlayer(LocalHUBPlayerParam);
 
 		auto GI = GetGameInstance<USquadLeaderGameInstance>();
 		GI->PlayerParam.GetDefaultObject()->SetTeam(NewTeamId);
@@ -43,12 +43,12 @@ void ASLHUBPlayerController::ChangeReadyState()
 	if (IsLocalPlayerController()) {  // send data to the LocalPlayerParam
 		LocalHUBPlayerParam->SetChoosenTeam(NewReadyState);
 		if (auto GS = GetWorld()->GetGameState<ASL_HUBGameStateBase>(); GS)
-			GS->UpdatePlayer(LocalHUBPlayerParam);
+			GS->MulticastUpdatePlayer(LocalHUBPlayerParam);
 	}
 }
 
 void ASLHUBPlayerController::ClientRemoveHUBPlayerParam_Implementation()
 {
 	if (auto GS = GetWorld()->GetGameState<ASL_HUBGameStateBase>(); GS)
-		GS->RemovePlayer(LocalHUBPlayerParam->GetPlayerID());
+		GS->MulticastRemovePlayer(LocalHUBPlayerParam->GetPlayerID());
 }

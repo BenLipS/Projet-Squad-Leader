@@ -30,22 +30,36 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	UFUNCTION(NetMulticast, reliable)
-	void RefreshPlayerInfo();
-	void RefreshPlayerInfo_Implementation();
+	UFUNCTION(Server, reliable)
+	void ServerAskArrayReplication();
+	void ServerAskArrayReplication_Implementation();
+
+	UFUNCTION(Client, reliable)
+	void ClientSyncHUBParamArray(const TArray<AHUBPlayerParam*>& ServerPlayersInfo);
+	void ClientSyncHUBParamArray_Implementation(const TArray<AHUBPlayerParam*>& ServerPlayersInfo);
+
+public:
+	UFUNCTION(Client, unreliable)
+	void ClientRefreshPlayerInfo();
+	void ClientRefreshPlayerInfo_Implementation();
 	
 	TMap<FString, FString> GetInfoAsStringPair();
 
 	
 	UFUNCTION(NetMulticast, reliable)
-	void SetNewArrival(AHUBPlayerParam* NewPlayer);
-	void SetNewArrival_Implementation(AHUBPlayerParam* NewPlayer);
+	void MulticastSetNewArrival(AHUBPlayerParam* NewPlayer);
+	void MulticastSetNewArrival_Implementation(AHUBPlayerParam* NewPlayer);
 	
 	UFUNCTION(NetMulticast, reliable)
-	void RemovePlayer(const FString& PlayerID);
-	void RemovePlayer_Implementation(const FString& PlayerID);
+	void MulticastRemovePlayer(const FString& PlayerID);
+	void MulticastRemovePlayer_Implementation(const FString& PlayerID);
 
 	UFUNCTION(NetMulticast, reliable)
-	void UpdatePlayer(AHUBPlayerParam* PlayerParam);  // PlayerID need to fit with an existing one
-	void UpdatePlayer_Implementation(AHUBPlayerParam* PlayerParam);
+	void MulticastUpdatePlayer(AHUBPlayerParam* PlayerParam);  // PlayerID need to fit with an existing one
+	void MulticastUpdatePlayer_Implementation(AHUBPlayerParam* PlayerParam);
+
+protected:
+	FTimerHandle timerTestReadyness;
+	bool LastTestWasReady = false;
+	void TestReadyness();
 };
