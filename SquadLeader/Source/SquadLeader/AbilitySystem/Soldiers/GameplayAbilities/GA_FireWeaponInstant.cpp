@@ -165,7 +165,7 @@ void UGA_FireWeaponInstant::ApplyEffectsToSource()
 
 bool UGA_FireWeaponInstant::ApplyDamages(const FGameplayAbilityTargetDataHandle& _Data, ASoldier* _TargetSoldier, const float _Damage)
 {
-	if (SourceSoldier->GetTeam() != _TargetSoldier->GetTeam())
+	if (SourceSoldier->GetTeam() != _TargetSoldier->GetTeam() && _TargetSoldier->IsAlive())
 	{
 		float FinalDamage = _Damage;
 		bool bIsHeadShot = false;

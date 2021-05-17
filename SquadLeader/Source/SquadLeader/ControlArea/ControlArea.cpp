@@ -48,6 +48,44 @@ int AControlArea::GetPriority() const
 	return 2;
 }
 
+void AControlArea::AddSoldierPresence(ASoldier* _Soldier)
+{
+	if (TeamData.Contains(_Soldier->GetTeam()))
+	{
+		TeamData[_Soldier->GetTeam()]->presenceTeam++;
+
+		// Initiate the calculation of the control zone value if needed
+		if (!timerCalculationControlValue.IsValid())
+			GetWorldTimerManager().SetTimer(timerCalculationControlValue, this, &AControlArea::calculateControlValue, timeBetweenCalcuation, true, timeBetweenCalcuation);
+
+		_Soldier->OnSoldierDeath.AddDynamic(this, &AControlArea::OnSoldierDeath);
+	}
+	// else GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Yellow, TEXT("ControlArea : Player of an unknow team"));
+}
+
+void AControlArea::RemoveSoldierPresence(ASoldier* _Soldier)
+{
+	if (TeamData.Contains(_Soldier->GetTeam()))
+	{
+		if (TeamData[_Soldier->GetTeam()]->presenceTeam > 0)
+			TeamData[_Soldier->GetTeam()]->presenceTeam--;
+
+		// Begin the calculation if everybody of this team left and the calculation is not already working
+		if (TeamData[_Soldier->GetTeam()]->presenceTeam == 0) {
+			if (!timerCalculationControlValue.IsValid())
+				GetWorldTimerManager().SetTimer(timerCalculationControlValue, this,
+					&AControlArea::calculateControlValue, timeBetweenCalcuation, true, timeBetweenCalcuation);
+		}
+
+		_Soldier->OnSoldierDeath.RemoveDynamic(this, &AControlArea::OnSoldierDeath);
+	}
+}
+
+void AControlArea::OnSoldierDeath(ASoldier* _Soldier)
+{
+	RemoveSoldierPresence(_Soldier);
+}
+
 ASoldierTeam* AControlArea::GetIsTakenBy()
 {
 	return IsTakenBy;
@@ -136,40 +174,21 @@ void AControlArea::OnRepPercentage()
 void AControlArea::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);
-	if (GetLocalRole() == ROLE_Authority) 
-	{  // server only
-		if (ASoldier* soldier = Cast<ASoldier>(OtherActor); soldier) {
-			if (TeamData.Contains(soldier->GetTeam())) {
-				TeamData[soldier->GetTeam()]->presenceTeam++;
 
-				// initiate the calculation of the control zone value if needed
-				if (!timerCalculationControlValue.IsValid())
-					GetWorldTimerManager().SetTimer(timerCalculationControlValue, this,
-						&AControlArea::calculateControlValue, timeBetweenCalcuation, true, timeBetweenCalcuation);
-			}
-			// else GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Yellow, TEXT("ControlArea : Player of an unknow team"));
-		}
+	if (GetLocalRole() == ROLE_Authority) 
+	{
+		if (ASoldier* Soldier = Cast<ASoldier>(OtherActor); Soldier && Soldier->IsAlive())
+			AddSoldierPresence(Soldier);
 	}
 }
 
 void AControlArea::NotifyActorEndOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorEndOverlap(OtherActor);
-	if (GetLocalRole() == ROLE_Authority) {  // server only
-		if (ASoldier* soldier = Cast<ASoldier>(OtherActor); soldier) {
-			if (TeamData.Contains(soldier->GetTeam())) {
-				if (TeamData[soldier->GetTeam()]->presenceTeam > 0) {
-					TeamData[soldier->GetTeam()]->presenceTeam--;
-				}
-
-				// begin the calculation if everybody of this team left and the calculation is not already working
-				if (TeamData[soldier->GetTeam()]->presenceTeam == 0) {
-					if (!timerCalculationControlValue.IsValid())
-						GetWorldTimerManager().SetTimer(timerCalculationControlValue, this,
-							&AControlArea::calculateControlValue, timeBetweenCalcuation, true, timeBetweenCalcuation);
-				}
-			}
-		}
+	if (GetLocalRole() == ROLE_Authority)
+	{
+		if (ASoldier* Soldier = Cast<ASoldier>(OtherActor); Soldier && Soldier->IsAlive())
+			RemoveSoldierPresence(Soldier);
 	}
 }
 
@@ -333,4 +352,30 @@ double AControlArea::GetEnnemiInfluenceAverage() {
 	}
 
 	return Value;
+}
+
+void AControlArea::BroadcastDatas()
+{
+	if (ASoldierPlayerController* playerController = GetWorld()->GetFirstPlayerController<ASoldierPlayerController>(); playerController)
+	{
+		int AreaOwner = 0;
+		if (IsTakenBy) {
+			if (IsTakenBy == playerController->GetTeam()) {
+				AreaOwner = 1;
+			}
+			else AreaOwner = -1;
+		}
+		OnOwnerChanged.Broadcast(AreaOwner);
+
+		int AreaCapturer = 0;
+		if (IsCapturedBy) {
+			if (IsCapturedBy == playerController->GetTeam()) {
+				AreaCapturer = 1;
+			}
+			else AreaCapturer = -1;
+		}
+		OnCapturerChanged.Broadcast(AreaCapturer);
+	}
+
+	OnPercentageChanged.Broadcast(PercentageCapture);
 }

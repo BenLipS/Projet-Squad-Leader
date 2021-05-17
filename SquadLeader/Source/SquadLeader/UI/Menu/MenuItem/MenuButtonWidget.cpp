@@ -7,9 +7,13 @@ void UMenuButtonWidget::SynchronizeProperties()
 {
 	Super::SynchronizeProperties();
 
-	if (MainButton)
+	if (IsValid(MainButton))
 	{
 		MainButton->OnClicked.AddDynamic(this, &UMenuButtonWidget::OnButtonPressed);
+	}
+
+	if (IsValid(TextButton))
+	{
 		TextButton->SetText(FText::FromString(ButtonText));
 	}
 }

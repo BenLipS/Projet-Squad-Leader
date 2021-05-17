@@ -16,6 +16,11 @@ void UMenuListInfo::AddEntryToList(UMenuListInfoItemWidget* Entry)
 	Entry->OwnerList = this;
 }
 
+void UMenuListInfo::RemoveEntryFromList(UMenuListInfoItemWidget* Entry)
+{
+	ListEntry->RemoveChild(Entry);
+}
+
 UMenuListInfoItemWidget* UMenuListInfo::GetSelectedItem()
 {
 	return ItemSelected;

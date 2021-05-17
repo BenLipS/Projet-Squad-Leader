@@ -18,6 +18,36 @@
 #include "Camera/CameraShake.h"
 //#include "DrawDebugHelpers.h"
 
+TArray<SoldierClass> ASoldier::GetAllPlayableClass()
+{
+	auto ret = TArray<SoldierClass>();
+
+	ret.Add(SoldierClass::ASSAULT);
+	ret.Add(SoldierClass::HEAVY);
+	ret.Add(SoldierClass::SUPPORT);
+
+	return ret;
+}
+
+FString ASoldier::SoldierClassToStr(SoldierClass SoldierClassIn)
+{
+	switch (SoldierClassIn)
+	{
+	case SoldierClass::ASSAULT:
+		return "Assault";
+		break;
+	case SoldierClass::HEAVY:
+		return "Heavy";
+		break;
+	case SoldierClass::SUPPORT:
+		return "Support";
+		break;
+	default:
+		return "None";
+		break;
+	}
+}
+
 ASoldier::ASoldier(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer.SetDefaultSubobjectClass<USoldierMovementComponent>(ACharacter::CharacterMovementComponentName)),
 bAbilitiesInitialized{ false },
 WeaponAttachPointRightHand{ FName("WeaponSocketRightHand") },
@@ -361,6 +391,9 @@ void ASoldier::DeadTagChanged(const FGameplayTag _CallbackTag, int32 _NewCount)
 		// Start ragdoll to the next frame so we can catch all impulses from the capsule before the death - This is useful for the explosion
 		//HandleDeathMontage();
 		GetWorldTimerManager().SetTimerForNextTick(this, &ASoldier::StartRagdoll);
+		GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore); // Make sure alive soldiers aren't blocked
+
+		OnSoldierDeath.Broadcast(this);
 	}
 	else // If dead tag is removed - Handle respawn
 	{
@@ -370,6 +403,7 @@ void ASoldier::DeadTagChanged(const FGameplayTag _CallbackTag, int32 _NewCount)
 
 		ResetWeapons();
 		StopRagdoll();
+		GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
 
 		if (RespawnMontage)
 		{
@@ -544,6 +578,28 @@ void ASoldier::Landed(const FHitResult& _Hit)
 		EffectTagsToRemove.AddTag(FGameplayTag::RequestGameplayTag(FName("State.Movement.Jumping")));
 		AbilitySystemComponent->RemoveActiveEffectsWithGrantedTags(EffectTagsToRemove);
 	}
+}
+
+void ASoldier::OnStartCrouch(float HalfHeightAdjust, float ScaledHalfHeightAdjust)
+{
+	Super::OnStartCrouch(HalfHeightAdjust, ScaledHalfHeightAdjust);
+
+	const FVector FirstCameraLoc = FirstPersonCameraComponent->GetRelativeLocation();
+	const FVector ThirdCameraLoc = ThirdPersonCameraComponent->GetRelativeLocation();
+
+	FirstPersonCameraComponent->SetRelativeLocation(FVector{ FirstCameraLoc.X, FirstCameraLoc.Y, FirstCameraLoc.Z - HalfHeightAdjust });
+	ThirdPersonCameraComponent->SetRelativeLocation(FVector{ ThirdCameraLoc.X, ThirdCameraLoc.Y, ThirdCameraLoc.Z - HalfHeightAdjust });
+}
+
+void ASoldier::OnEndCrouch(float HalfHeightAdjust, float ScaledHalfHeightAdjust)
+{
+	Super::OnEndCrouch(HalfHeightAdjust, ScaledHalfHeightAdjust);
+
+	const FVector FirstCameraLoc = FirstPersonCameraComponent->GetRelativeLocation();
+	const FVector ThirdCameraLoc = ThirdPersonCameraComponent->GetRelativeLocation();
+
+	FirstPersonCameraComponent->SetRelativeLocation(FVector{ FirstCameraLoc.X, FirstCameraLoc.Y, FirstCameraLoc.Z + HalfHeightAdjust });
+	ThirdPersonCameraComponent->SetRelativeLocation(FVector{ ThirdCameraLoc.X, ThirdCameraLoc.Y, ThirdCameraLoc.Z + HalfHeightAdjust });
 }
 
 bool ASoldier::StartRunning()
@@ -998,6 +1054,21 @@ void ASoldier::Die()
 	FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
 	FGameplayEffectSpecHandle DeathHandle = AbilitySystemComponent->MakeOutgoingSpec(UGE_StateDead::StaticClass(), 1.f, EffectContext);
 	AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*DeathHandle.Data.Get());
+
+	ASquadLeaderGameModeBase* GM = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
+
+	if (GetTeam() && GM && GM->InfluenceMap) {
+		FGridPackage m_package;
+		m_package.m_location_on_map = CurrentPosition;
+
+		ASoldierTeam* team_ = GetTeam();
+		if (team_)
+			m_package.team_value = team_->Id;
+
+		m_package.m_type = Type::Soldier;
+		m_package.ActorID = this->GetUniqueID();
+		GM->InfluenceMap->EraseSoldierInfluence(m_package);
+	}
 }
 
 void ASoldier::Respawn()

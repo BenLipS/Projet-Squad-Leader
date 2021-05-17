@@ -151,7 +151,7 @@ protected:
 		bool FindControlAreaOn(const uint8 IndexSoldier, uint32& IndexControlArea);
 
 	UFUNCTION()
-		bool FindAvailableSoldier(uint32& IndexSoldier);
+		bool FindAvailableSoldier(uint32& IndexSoldier, const uint32 IndexControlArea);
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Time per Frame")
@@ -171,4 +171,7 @@ protected:
 
 	UFUNCTION()
 		void FinalDefens();
+
+	float DistanceSoldierControlArea(const AAIBasicController* Soldier, const AControlArea* ControlArea);
+
 };

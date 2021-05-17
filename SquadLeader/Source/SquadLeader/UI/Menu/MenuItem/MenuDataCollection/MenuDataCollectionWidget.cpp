@@ -8,30 +8,7 @@
 void UMenuDataCollectionWidget::SynchronizeProperties()
 {
 	Super::SynchronizeProperties();
-	if (IsValid(DataSlot))
-	{
-		if (auto Panel = Cast<UPanelWidget>(DataSlot->GetChildAt(0)); IsValid(Panel))
-		{
-			DataContainer = Panel;
-
-			for (auto PanelChild : Panel->GetAllChildren())
-			{
-				if (auto DataInt = Cast<UMenuCollectionDataInt>(PanelChild); DataInt)
-				{
-					DataInts.Add(DataInt->GetName(), DataInt);
-				}
-				else if (auto DataString = Cast<UMenuCollectionDataText>(PanelChild); DataString)
-				{
-					DataStrings.Add(DataString->GetName(), DataString);
-				}
-				else if (auto DataBool = Cast<UMenuCollectionDataBool>(PanelChild); DataBool)
-				{
-					DataBools.Add(DataBool->GetName(), DataBool);
-				}
-			}
-		}
-	}
-
+	InitDatas();
 	InitIntValues();
 }
 
@@ -76,6 +53,29 @@ void UMenuDataCollectionWidget::ResyncDefaultIntvalues() {
 	{
 		auto listInts = DefaultValues->GetDefaultObject<AGameParam>()->GetIntParams();
 
+		if (!IsValid(MinValues))
+		{
+			for (auto IntPairValue : listInts)
+			{
+				if (auto IntDataContainer = DataInts.Find(IntPairValue.Key); IntDataContainer)
+				{
+					(*IntDataContainer)->SetMinValue(IntPairValue.Value);
+				}
+			}
+		}
+
+		if (!IsValid(MaxValues))
+		{
+			for (auto IntPairValue : listInts)
+			{
+				if (auto IntDataContainer = DataInts.Find(IntPairValue.Key); IntDataContainer)
+				{
+					(*IntDataContainer)->SetMaxValue(IntPairValue.Value);
+				}
+			}
+		}
+
+
 		for (auto IntPairValue : listInts)
 		{
 			if (auto IntDataContainer = DataInts.Find(IntPairValue.Key); IntDataContainer)
@@ -86,8 +86,52 @@ void UMenuDataCollectionWidget::ResyncDefaultIntvalues() {
 	}
 }
 
+void UMenuDataCollectionWidget::SetDefaultGameParam(TSubclassOf<AGameParam> newDefaultValues, bool ShouldUpdate)
+{
+	DefaultValues = newDefaultValues;
+	if (ShouldUpdate)
+	{
+		InitDatas();
+	}
+}
+
 void UMenuDataCollectionWidget::RandomizeIntValues()
 {
+}
+
+void UMenuDataCollectionWidget::InitDatas()
+{
+	if (IsValid(DataSlot))
+	{
+		if (auto Panel = Cast<UPanelWidget>(DataSlot->GetChildAt(0)); IsValid(Panel))
+		{
+			DataContainer = Panel;
+			InitDatas(Panel->GetAllChildren());
+		}
+	}
+}
+
+void UMenuDataCollectionWidget::InitDatas(TArray<UWidget*> Childrens)
+{
+	for (auto PanelChild : Childrens)
+	{
+		if (auto DataInt = Cast<UMenuCollectionDataInt>(PanelChild); DataInt)
+		{
+			DataInts.Add(DataInt->GetName(), DataInt);
+		}
+		else if (auto DataString = Cast<UMenuCollectionDataText>(PanelChild); DataString)
+		{
+			DataStrings.Add(DataString->GetName(), DataString);
+		}
+		else if (auto DataBool = Cast<UMenuCollectionDataBool>(PanelChild); DataBool)
+		{
+			DataBools.Add(DataBool->GetName(), DataBool);
+		}
+		else if (auto MoreChildren = Cast<UPanelWidget>(PanelChild); MoreChildren)
+		{
+			InitDatas(MoreChildren->GetAllChildren());
+		}
+	}
 }
 
 

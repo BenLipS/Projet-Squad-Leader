@@ -38,7 +38,7 @@ protected:
 	void OnReadyToApplyEffects();
 
 	// Make sure there is no wall blocking the effect
-	bool ValidateEffectOnSoldier(const FHitResult& _HitSoldier, const TArray<FHitResult>& _HitActors);
+	bool ValidateEffectOnSoldier(const FHitResult& _HitSoldier);
 	void DestroyAreaEffect();
 
 	void ApplyGameplayEffects(UAbilitySystemComponent* _TargetASC);
@@ -48,6 +48,18 @@ protected:
 	// Define the effects to apply
 	UPROPERTY(EditDefaultsOnly, Category = "Effects")
 	TArray<TSubclassOf<class UGameplayEffect>> ExplosionEffects;
+
+	// Whether this effect should ignore allies
+	UPROPERTY(EditDefaultsOnly, Category = "Effects")
+	bool bIgnoreAllies = false;
+
+	// Whether this effect should ignore ennemies
+	UPROPERTY(EditDefaultsOnly, Category = "Effects")
+	bool bIgnoreEnnemies = false;
+
+	// Whether this effect should ignore the instigator
+	UPROPERTY(EditDefaultsOnly, Category = "Effects")
+	bool bIgnoreInstigator = false;
 
 //////////////// Stats
 protected:
@@ -89,7 +101,7 @@ protected:
 //////////////// Collision
 public:
 	// Whether this area can apply its effect regardless the collisions
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Collision")
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Collision", Replicated)
 	bool bIgnoreBlock = true;
 
 public:

@@ -61,9 +61,15 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void RandomizeIntValues();
 
+	void InitDatas();
+	void InitDatas(TArray<UWidget*> Childrens);
+
 public:
 	UFUNCTION(BlueprintCallable)
 	void ResyncDefaultIntvalues();
+
+	UFUNCTION(BlueprintCallable)
+	void SetDefaultGameParam(TSubclassOf<AGameParam> newDefaultValues, bool ShouldUpdate = true);
 
 public:
 	UFUNCTION(BlueprintCallable)

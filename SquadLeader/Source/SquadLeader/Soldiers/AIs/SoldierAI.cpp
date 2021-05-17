@@ -46,6 +46,9 @@ void ASoldierAI::BeginPlay()
 {
 	Super::BeginPlay();
 
+	FirstPersonCameraComponent->Deactivate();
+	ThirdPersonCameraComponent->Deactivate();
+
 	check(AbilitySystemComponent);
 
 	if (bUpdateTeamOnSpawn && GetTeam())
