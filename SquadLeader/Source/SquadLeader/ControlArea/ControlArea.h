@@ -152,4 +152,7 @@ public:
 
 	UFUNCTION()
 		double GetEnnemiInfluenceAverage();
+
+	UFUNCTION()
+	void BroadcastDatas();
 };

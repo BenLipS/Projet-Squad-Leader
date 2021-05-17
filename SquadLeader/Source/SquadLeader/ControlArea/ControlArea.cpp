@@ -353,3 +353,29 @@ double AControlArea::GetEnnemiInfluenceAverage() {
 
 	return Value;
 }
+
+void AControlArea::BroadcastDatas()
+{
+	if (ASoldierPlayerController* playerController = GetWorld()->GetFirstPlayerController<ASoldierPlayerController>(); playerController)
+	{
+		int AreaOwner = 0;
+		if (IsTakenBy) {
+			if (IsTakenBy == playerController->GetTeam()) {
+				AreaOwner = 1;
+			}
+			else AreaOwner = -1;
+		}
+		OnOwnerChanged.Broadcast(AreaOwner);
+
+		int AreaCapturer = 0;
+		if (IsCapturedBy) {
+			if (IsCapturedBy == playerController->GetTeam()) {
+				AreaCapturer = 1;
+			}
+			else AreaCapturer = -1;
+		}
+		OnCapturerChanged.Broadcast(AreaCapturer);
+	}
+
+	OnPercentageChanged.Broadcast(PercentageCapture);
+}
