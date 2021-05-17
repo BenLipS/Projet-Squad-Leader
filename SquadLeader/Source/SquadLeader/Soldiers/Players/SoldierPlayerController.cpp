@@ -21,6 +21,9 @@
 #include "SquadLeader/UI/Interface/GameEndInterface.h"
 #include "SquadLeader/UI/Interface/AbilityCooldownInterface.h"
 #include "SquadLeader/UI/Interface/HitMarkerInterface.h"
+#include "SquadLeader/UI/Interface/RespawnInterface.h"
+
+#include "SquadLeader/SquadLeaderGameModeBase.h"
 
 #include "SquadLeader/SquadLeader.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
@@ -38,7 +41,7 @@ void ASoldierPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 	CreateHUD();
-	DeterminePlayerParams();
+	ClientDeterminePlayerParams();
 }
 
 void ASoldierPlayerController::CreateHUD_Implementation()
@@ -90,7 +93,14 @@ void ASoldierPlayerController::NotifySoldierHit(const float _Damage, const bool 
 {
 	if (auto HUD = GetHUD<IHitMarkerInterface>(); HUD)
 		HUD->OnDamageReceived(_Damage, _bIsHeadShot);
+}
 
+void ASoldierPlayerController::ClientDisplayRespawnWidget_Implementation()
+{
+	if (auto HUD = GetHUD<IRespawnInterface>(); HUD)
+	{
+		HUD->OnRespawnScreenActivated();
+	}
 }
 
 // Server only
@@ -219,9 +229,9 @@ void ASoldierPlayerController::OnChangeTeam()
 }
 
 
-void ASoldierPlayerController::ClientSendCommand_Implementation(const FString& Cmd, bool bWriteToLog)
+void ASoldierPlayerController::ClientSendChangeMapCommand_Implementation(const FName& Cmd)
 {
-	ConsoleCommand(Cmd, bWriteToLog);
+	UGameplayStatics::OpenLevel(this, Cmd, true);
 }
 
 void ASoldierPlayerController::OnSquadChanged_Implementation(const TArray<FSoldierAIData>& newValue)
@@ -398,6 +408,16 @@ void ASoldierPlayerController::ServerAddAnAIToIndexSquad_Implementation()
 	AddAnAIToIndexSquad();
 }
 
+void ASoldierPlayerController::ServerRespawnSoldier_Implementation(AControlArea* ControlArea)
+{
+	ASquadLeaderGameModeBase* GM = GetWorld()->GetAuthGameMode<ASquadLeaderGameModeBase>();
+
+	if (auto Soldier = GetPawn<ASoldierPlayer>(); IsValid(Soldier))
+	{
+		GM->RespawnSoldier(Soldier, ControlArea);
+	}
+}
+
 void ASoldierPlayerController::BroadCastManagerData()
 {
 	if (auto CurrentHUD = GetHUD<ISquadInterface>(); CurrentHUD)
@@ -440,22 +460,38 @@ void ASoldierPlayerController::OnWallVisionDeactivate_Implementation()
 
 
 // Pawn Class
-void ASoldierPlayerController::DeterminePlayerParams_Implementation()
+void ASoldierPlayerController::ClientDeterminePlayerParams_Implementation()
 {
 	if (IsLocalController()) //Only Do This Locally (NOT Client-Only, since Server wants this too!)
 	{
-		ServerSetPawn(GetGameInstance<USquadLeaderGameInstance>()->PlayerParam);
+		APlayerParam* ClientParam = GetGameInstance<USquadLeaderGameInstance>()->PlayerParam.GetDefaultObject();
+		ServerSetPawn(ClientParam->GetTeam(), ClientParam->GetPlayerClass(), ClientParam->GetAllAIClass());
 	}
 }
 
-bool ASoldierPlayerController::ServerSetPawn_Validate(TSubclassOf<APlayerParam> PlayerParam)
+bool ASoldierPlayerController::ServerSetPawn_Validate(const int TeamID, const SoldierClass PlayerClass, const TArray<SoldierClass>& AIClass)
 {
 	return true;
 }
 
-void ASoldierPlayerController::ServerSetPawn_Implementation(TSubclassOf<APlayerParam> PlayerParam)
+void ASoldierPlayerController::ServerSetPawn_Implementation(const int TeamID, const SoldierClass PlayerClass, const TArray<SoldierClass>& AIClass)
 {
-	GetPlayerState<ASoldierPlayerState>()->SetPlayerParam(PlayerParam, this);
+	// spawn actor based on the one in the local game instance to keep reference
+	if (APlayerParam* PlayerParam = Cast<APlayerParam>(GetWorld()->SpawnActor(GetGameInstance<USquadLeaderGameInstance>()->PlayerParam)); PlayerParam) {
+		// make needed changes for this version (team, player class and AI class)
+		PlayerParam->SetTeam(TeamID);
+		PlayerParam->SetPlayerClass(PlayerClass);
+		for (int counter = 0; counter < AIClass.Num(); counter++) {
+			PlayerParam->SetAIClass(AIClass[counter], counter);
+		}
+
+		// give the new actor to the player state
+		GetPlayerState<ASoldierPlayerState>()->SetPlayerParam(PlayerParam, this);
+	}
+	else {
+		// if the player param does not spawn, use the local param of the host
+		GetPlayerState<ASoldierPlayerState>()->SetPlayerParam(GetGameInstance<USquadLeaderGameInstance>()->PlayerParam.GetDefaultObject(), this);
+	}
 }
 
 

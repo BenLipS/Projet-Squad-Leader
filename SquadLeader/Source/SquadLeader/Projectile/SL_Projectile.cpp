@@ -97,6 +97,7 @@ void ASL_Projectile::OnEndOfDelay()
 
 void ASL_Projectile::OnExplode()
 {
+	ExplodeSoundEvent();
 	for (auto AreaEffectClass : AreaEffectList)
 	{
 		AAreaEffect* AreaEffect = GetWorld()->SpawnActorDeferred<AAreaEffect>(AreaEffectClass, FTransform{ GetActorRotation(), GetActorLocation() }, this, GetInstigator(), ESpawnActorCollisionHandlingMethod::AlwaysSpawn);

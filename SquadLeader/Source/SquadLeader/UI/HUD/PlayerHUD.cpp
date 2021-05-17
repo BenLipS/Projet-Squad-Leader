@@ -80,7 +80,10 @@ void APlayerHUD::BindSoldierTeamChanges()
 		{
 			// Get current soldiers
 			for (ASoldier* Soldier : Team->GetSoldierList())
-				OnSoldierAddedToTeam(Soldier);
+				if (IsValid(Soldier))
+				{
+					OnSoldierAddedToTeam(Soldier);
+				}
 
 			// Bind future SoldierTeam changes
 			Team->OnSoldierAddedToList.AddDynamic(this, &APlayerHUD::OnSoldierAddedToTeam);
@@ -94,7 +97,11 @@ void APlayerHUD::BindControlAreas()
 	if (ASquadLeaderGameState* GS = GetWorld()->GetGameState<ASquadLeaderGameState>(); GS)
 	{
 		// Get current control areas - TODO: Bindfuture changes
-		for (AControlArea* ControlArea : GS->GetControlAreaManager()->GetControlArea())
+		auto ControlAreaList = GS->GetControlAreaManager()->GetControlArea();
+
+		ControlAreaList.Sort([](const AControlArea& Left, const AControlArea& Right) {return Left.ControlAreaName < Right.ControlAreaName; });
+
+		for (AControlArea* ControlArea : ControlAreaList)
 		{
 			OnControlAreaAdded(ControlArea);
 		}

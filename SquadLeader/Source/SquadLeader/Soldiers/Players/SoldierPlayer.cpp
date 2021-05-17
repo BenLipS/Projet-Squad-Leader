@@ -12,6 +12,11 @@
 #include "TimerManager.h"
 #include "SquadLeader/Weapons/SL_Weapon.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "AkAudioEvent.h"
+#include "AkGameplayStatics.h"
+
+#include "AkAudioEvent.h"
+#include "AkGameplayStatics.h"
 
 ASoldierPlayer::ASoldierPlayer(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer)
 {
@@ -34,11 +39,15 @@ void ASoldierPlayer::BeginPlay()
 {
 	Super::BeginPlay();
 
+	FollowKillerCamera->Deactivate();
+
 	if (GetTeam())
 		GetTeam()->AddSoldierList(this);
 
 	if (!IsLocallyControlled())
 		return;
+
+	UAkGameplayStatics::PostEventByName("Music_Gameplay", this);
 
 	ensure(MaterialGlitchInterface);
 	ensure(MaterialBrokenGlassRightInterface);
@@ -84,11 +93,18 @@ void ASoldierPlayer::Tick(float DeltaTime)
 	if (!IsLocallyControlled())
 		return;
 
-	if (SoldierKiller)
+	if (bFollowKiller && SoldierKiller)
 	{
 		const FRotator LookAtRotation = UKismetMathLibrary::FindLookAtRotation(DeathLocation, SoldierKiller->GetActorLocation());
 		FollowKillerCamera->SetWorldRotation(LookAtRotation.Quaternion());
 		FollowKillerCamera->SetWorldLocation(DeathLocation); // Force the camera to be to the same position regardless the soldier
+	}
+	else if (FollowKillerCamera->IsActive())
+	{
+		const FVector CameraLoc = ThirdPersonCameraComponent->GetComponentLocation();
+		const float ValidZLocation = FMath::Max(CameraLoc.Z, DeathLocation.Z - GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
+		FollowKillerCamera->SetWorldLocation(FVector{ CameraLoc.X, CameraLoc.Y, ValidZLocation });
+		FollowKillerCamera->SetWorldRotation(ThirdPersonCameraComponent->GetComponentRotation());
 	}
 }
 
@@ -139,8 +155,7 @@ void ASoldierPlayer::DeadTagChanged(const FGameplayTag CallbackTag, int32 NewCou
 	else
 	{
 		DeathLocation = CurrentCameraComponent->GetComponentLocation();
-		FTimerHandle Timer{};
-		GetWorldTimerManager().SetTimer(Timer, this, &ASoldierPlayer::ActivateFollowKillerCamera, 2.f, false);
+		ActivateFollowKillerCamera();
 	}
 }
 
@@ -212,15 +227,13 @@ UCameraComponent* ASoldierPlayer::GetFollowKillerCamera() const
 
 void ASoldierPlayer::ActivateFollowKillerCamera()
 {
-	if (!SoldierKiller)
-		return;
-
-	// Allow to see the killer through walls
-	SoldierKiller->GetMesh()->SetRenderCustomDepth(true);
-	
-	FollowKillerCamera->SetWorldLocation(DeathLocation);
 	CurrentCameraComponent->Deactivate();
+	FollowKillerCamera->SetWorldLocation(ThirdPersonCameraComponent->GetComponentLocation());
+	FollowKillerCamera->SetWorldRotation(ThirdPersonCameraComponent->GetComponentRotation());
 	FollowKillerCamera->Activate();
+
+	FTimerHandle Timer{};
+	GetWorldTimerManager().SetTimer(Timer, this, &ASoldierPlayer::FollowKiller, 2.f, false);
 }
 
 void ASoldierPlayer::DeactivateFollowKillerCamera()
@@ -230,6 +243,17 @@ void ASoldierPlayer::DeactivateFollowKillerCamera()
 
 	FollowKillerCamera->Deactivate();
 	CurrentCameraComponent->Activate();
+
+	bFollowKiller = false;
+}
+
+void ASoldierPlayer::FollowKiller()
+{
+	bFollowKiller = true;
+
+	// Allow to see the killer through walls
+	if (SoldierKiller)
+		SoldierKiller->GetMesh()->SetRenderCustomDepth(true);
 }
 
 void ASoldierPlayer::SetSoldierKiller(ASoldier* _SoldierKiller)
@@ -243,6 +267,19 @@ void ASoldierPlayer::SetSoldierKiller(ASoldier* _SoldierKiller)
 void ASoldierPlayer::ClientSetSoldierKiller_Implementation(ASoldier* _SoldierKiller)
 {
 	SetSoldierKiller(_SoldierKiller);
+}
+
+void ASoldierPlayer::ClientNotifyControlAreaTaken_Implementation(const bool _IsOwned)
+{
+	if(_IsOwned)UAkGameplayStatics::PostEventByName("Stinger_Gameplay_Positive", this);
+	else UAkGameplayStatics::PostEventByName("Stinger_Gameplay_Negative", this);
+}
+
+void ASoldierPlayer::ClientNotifyEndGame_Implementation(const bool _HasWin)
+{
+	UAkGameplayStatics::PostEventByName("Music_Gameplay_Stop", this);
+	if(_HasWin)UAkGameplayStatics::PostEventByName("Music_Cinematic_Victory", this);
+	else UAkGameplayStatics::PostEventByName("Music_Cinematic_Defeat", this);
 }
 
 void ASoldierPlayer::LockControls()
@@ -406,6 +443,7 @@ void ASoldierPlayer::SpawnPing(FVector PingLocation)
 			}
 		}
 		SpawnClientPing({ PingMesh->GetActorLocation().X, PingMesh->GetActorLocation().Y });
+		UAkGameplayStatics::PostEventByName("Ping_Notif_Good", this);
 	}
 }
 
@@ -446,29 +484,42 @@ void ASoldierPlayer::LevelUp()
 	}
 }
 
-FVector ASoldierPlayer::GetRespawnPoint()
+FVector ASoldierPlayer::GetRespawnPoint(AControlArea* _ControlArea)
 {
-	if (GetTeam()) {
-		auto AvailableSpawnPoints = GetTeam()->GetUsableSpawnPoints();
-		if (AvailableSpawnPoints.Num() > 0) {
+	const FVector DefaultPosition = FVector{ 200.f, 200.f, 1500.f };
+	if (!GetTeam())
+		return DefaultPosition;
 
-			ASoldierSpawn* OptimalSpawn = AvailableSpawnPoints[0];
-			auto CalculateMinimalDistance = [](FVector PlayerPos, FVector FirstPoint, FVector SecondPoint) {  // return true if the first point is closest
-				float dist1 = FVector::Dist(PlayerPos, FirstPoint);
-				float dist2 = FVector::Dist(PlayerPos, SecondPoint);
-				return dist1 < dist2;
-			};
+	if (_ControlArea && _ControlArea->GetIsTakenBy() == GetTeam())
+		return _ControlArea->TeamData[GetTeam()]->spawnTeam->GetSpawnLocation();
 
-			for (auto loop : AvailableSpawnPoints) {
-				if (CalculateMinimalDistance(this->GetActorLocation(), loop->GetActorLocation(), OptimalSpawn->GetActorLocation())) {
-					OptimalSpawn = loop;
-				}
-			}
-
-			return OptimalSpawn->GetSpawnLocation();
-		}
+	// Get first real primary spawn (exclude derived class)
+	for (ASoldierSpawn* SoldierSpawn : GetTeam()->GetUsableSpawnPoints())
+	{
+		if (SoldierSpawn && !SoldierSpawn->IsA<ASoldierSecondarySpawn>() && SoldierSpawn->IsA<ASoldierPrimarySpawn>())
+			return SoldierSpawn->GetSpawnLocation();
 	}
-	return FVector(200.f, 200.f, 1500.f); // else return default
+
+	return DefaultPosition;
+
+	/*// Find the nearest spawn point
+	auto AvailableSpawnPoints = GetTeam()->GetUsableSpawnPoints();
+	if (AvailableSpawnPoints.Num() > 0) {
+		ASoldierSpawn* OptimalSpawn = AvailableSpawnPoints[0];
+		auto CalculateMinimalDistance = [](FVector PlayerPos, FVector FirstPoint, FVector SecondPoint) {  // return true if the first point is closest
+			const float dist1 = FVector::Dist(PlayerPos, FirstPoint);
+			const float dist2 = FVector::Dist(PlayerPos, SecondPoint);
+			return dist1 < dist2;
+		};
+
+		for (auto loop : AvailableSpawnPoints) {
+			if (CalculateMinimalDistance(this->GetActorLocation(), loop->GetActorLocation(), OptimalSpawn->GetActorLocation())) {
+				OptimalSpawn = loop;
+			}
+		}
+
+		return OptimalSpawn->GetSpawnLocation();
+	}*/
 }
 
 void ASoldierPlayer::OnSquadChanged(const TArray<FSoldierAIData>& newValue)

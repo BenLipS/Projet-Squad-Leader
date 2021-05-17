@@ -8,6 +8,12 @@ AControlAreaManager::AControlAreaManager()
 {
 	bReplicates = true;
 }
+
+TArray<AControlArea*> AControlAreaManager::GetControlAreaList() const
+{
+	return ControlAreaList;
+}
+
 void AControlAreaManager::PreInitialisation()
 {
 	if (auto GS = GetWorld()->GetGameState<ASquadLeaderGameState>(); GS) {

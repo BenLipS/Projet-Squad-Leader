@@ -5,25 +5,41 @@
 #include "UI/Menu/MenuItem/MenuList/MenuListInfo.h"
 #include "UI/Menu/MenuItem/MenuList/MenuListGame.h"
 #include "UI/HUD/MainMenuHUD.h"
+#include "Kismet/GameplayStatics.h"
 
-#include "winsock.h"
+#include <istream>
+#include <string>
+#include <fstream>
 
 USquadLeaderGameInstance::USquadLeaderGameInstance() {
     //When the object is constructed, Get the HTTP module
     Http = &FHttpModule::Get();
 
-    /// -> deprecated method to find Local IPAdress
-    // Init WinSock
-    WSADATA wsa_Data;
-    int wsa_ReturnCode = WSAStartup(0x101, &wsa_Data);
+    // get IP adress
+    using namespace std;
+    string line;
+    ifstream IPFile;
+    int offset;
+    char* search0 = "Adresse IPv4. . . . . . . . . . . . . .:";      // search pattern
 
-    // Get the local hostname
-    char szHostName[255];
-    gethostname(szHostName, 255);
-    struct hostent* host_entry;
-    host_entry = gethostbyname(szHostName);
-    LocalIPAdress = inet_ntoa(*(struct in_addr*)*host_entry->h_addr_list);
-    WSACleanup();
+    system("ipconfig > ip.txt");
+
+    IPFile.open("ip.txt");
+    if (IPFile.is_open())
+    {
+        while (!IPFile.eof())
+        {
+            getline(IPFile, line);
+            if ((offset = line.find(search0, 0)) != string::npos)
+            {
+                //   Adresse IPv4. . . . . . . . . . . . . .: 1
+                //1234567890123456789012345678901234567890     
+                line.erase(0, 44);
+                LocalIPAdress = line.c_str();
+                IPFile.close();
+            }
+        }
+    }
 }
 
 
@@ -52,6 +68,7 @@ void USquadLeaderGameInstance::OnStart()
 
 void USquadLeaderGameInstance::LaunchGame()
 {
+
     if (OnlineStatus) {
         if (GameID != "") {
             HttpCallDeleteGame();
@@ -59,8 +76,8 @@ void USquadLeaderGameInstance::LaunchGame()
         HttpCallCreateNewGame();
         HttpCallChangeConnectedStatus(2); // notify that the client is joining a new game
     }
-    // GetFirstGamePlayer()->ConsoleCommand("open HUB_Level?listen", true);
-    GetFirstGamePlayer()->ConsoleCommand("open Factory_V2?listen", true);
+    //UGameplayStatics::OpenLevel({}, "HUB_Level", true, "?Listen");
+    UGameplayStatics::OpenLevel(this, "Factory_V2", true, "?Listen");
 }
 
 void USquadLeaderGameInstance::SetGameParamToDefault()
@@ -88,7 +105,7 @@ void USquadLeaderGameInstance::SaveGameParam(TMap<FString, int> IntData, TMap<FS
 
 void USquadLeaderGameInstance::JoinGame(FString IPAdress)
 {
-    GetFirstGamePlayer()->ConsoleCommand("open " + IPAdress, true);
+    UGameplayStatics::OpenLevel(this, *IPAdress, true);
 }
 
 bool USquadLeaderGameInstance::UpdateNetworkStatus(const int MatchResult, float GameDuration, int XP, int NbKillAI, int NbKillPlayer, int NbDeathByAI, int NbDeathByPlayer)

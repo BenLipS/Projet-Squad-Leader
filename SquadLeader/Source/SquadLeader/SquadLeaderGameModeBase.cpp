@@ -14,6 +14,7 @@
 #include "GameState/SquadLeaderCloseGameState.h"
 
 
+
 ASquadLeaderGameModeBase::ASquadLeaderGameModeBase()
 {
 	static ConstructorHelpers::FClassFinder<ASoldierPlayerController> PlayerControllerObject(TEXT("/Game/BluePrints/Soldiers/Players/BP_SoldierPlayerController"));
@@ -41,16 +42,16 @@ void ASquadLeaderGameModeBase::Logout(AController* Exiting)
 }
 
 
-APawn* ASquadLeaderGameModeBase::SpawnSoldier(TSubclassOf<APlayerParam> PlayerParam, AController* OwningController)
+APawn* ASquadLeaderGameModeBase::SpawnSoldier(APlayerParam* PlayerParam, AController* OwningController)
 {
 	if (auto SLInitGameState = Cast<ASquadLeaderInitGameState>(GameState); SLInitGameState) {
-		if (ASoldierTeam* NewSoldierTeam = SLInitGameState->GetSoldierTeamByID(PlayerParam->GetDefaultObject<APlayerParam>()->GetTeam()); NewSoldierTeam) {
+		if (ASoldierTeam* NewSoldierTeam = SLInitGameState->GetSoldierTeamByID(PlayerParam->GetTeam()); NewSoldierTeam) {
 			TArray<ASoldierSpawn*> SpawnList = NewSoldierTeam->GetUsableSpawnPoints();
 			if (SpawnList.Num() > 0) {
 				ASoldierSpawn* SpawnPoint = SpawnList[UKismetMathLibrary::RandomIntegerInRange(0, SpawnList.Num() - 1)];
 				
 				FTransform SpawnPosition = { SpawnPoint->GetActorRotation(), SpawnPoint->GetActorLocation() };
-				APawn* NewPawn = GetWorld()->SpawnActorDeferred<APawn>(PlayerParam->GetDefaultObject<APlayerParam>()->GetPlayerClass(),
+				APawn* NewPawn = GetWorld()->SpawnActorDeferred<APawn>(PlayerParam->GetPlayerSoldier(),
 					SpawnPosition, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 				
 				if (NewPawn) {
@@ -119,9 +120,10 @@ void ASquadLeaderGameModeBase::FetchGameParam()
 	BaseTicketsNumber = ImportedGameParam->NbTickets;
 	AIBasicAssaultNumber = ImportedGameParam->NbAIBasicAssault;
 	AIBasicHeavyNumber = ImportedGameParam->NbAIBasicHeavy;
+	AIBasicLevel = ImportedGameParam->LevelAIBasic;
 	StartingAISquadNumber = ImportedGameParam->StartingNbAISquad;
+	AISquadLevel = ImportedGameParam->LevelAISquad;
 }
-
 
 void ASquadLeaderGameModeBase::InitAIManagers()
 {
@@ -164,11 +166,11 @@ void ASquadLeaderGameModeBase::CheckControlAreaAdvantage()
 	}
 }
 
-void ASquadLeaderGameModeBase::RespawnSoldier(ASoldier* _Soldier)
+void ASquadLeaderGameModeBase::RespawnSoldier(ASoldier* _Soldier, AControlArea* _ControlArea)
 {
 	if (_Soldier)
 	{
-		_Soldier->SetActorLocation(_Soldier->GetRespawnPoint());
+		_Soldier->SetActorLocation(_Soldier->GetRespawnPoint(_ControlArea));
 		_Soldier->Respawn();
 	}
 }
@@ -205,11 +207,21 @@ void ASquadLeaderGameModeBase::EndGame(ASoldierTeam* WinningTeam)
 						PC->OnGameEnd(1, GetGameTimeSinceCreation(),
 							killRecord->NbKillAI, killRecord->NbKillPlayer,
 							killRecord->NbDeathByAI, killRecord->NbDeathByPlayer);
+						for (ASoldier* Soldier : PC->GetTeam()->GetSoldierList())
+						{
+							if (ASoldierPlayer* Player = Cast<ASoldierPlayer>(Soldier); Player)
+							Player->ClientNotifyEndGame(true);
+						}
 					}
 					else {
 						PC->OnGameEnd(-1, GetGameTimeSinceCreation(),
 							killRecord->NbKillAI, killRecord->NbKillPlayer,
 							killRecord->NbDeathByAI, killRecord->NbDeathByPlayer);
+						for (ASoldier* Soldier : PC->GetTeam()->GetSoldierList())
+						{
+							if (ASoldierPlayer* Player = Cast<ASoldierPlayer>(Soldier); Player)
+								Player->ClientNotifyEndGame(false);
+						}
 					}
 				}
 			}
@@ -229,29 +241,65 @@ void ASquadLeaderGameModeBase::CloseGame()
 	{
 		if (auto PC = Cast<ASoldierPlayerController>(PCIterator->Get()); PC)
 		{
-			PC->ClientSendCommand("open MapMainMenu", true);
+			PC->ClientSendChangeMapCommand("open MapMainMenu");
 		}
 	}
 	//FGenericPlatformMisc::RequestExit(false);
+}
+
+void ASquadLeaderGameModeBase::DisplayRespawnHUD(ASoldierPlayer* _SoldierPlayer)
+{
+	AControlAreaManager* ControlAreaManager = Cast<ASquadLeaderInitGameState>(GameState)->GetControlAreaManager();
+	if (ControlAreaManager)
+	{
+		ASoldierPlayerController* PC = _SoldierPlayer->GetController<ASoldierPlayerController>();
+		PC->ClientDisplayRespawnWidget();
+	}
 }
 
 void ASquadLeaderGameModeBase::NotifySoldierKilled(ASoldier* _DeadSoldier, ASoldier* _Killer)
 {
 	UpdateTicketsFromSoldierDeath(_DeadSoldier);
 	GrantEXPFromSoldierDeath(_DeadSoldier, _Killer);
-	StartRespawnTimerForDeadSoldier(_DeadSoldier);
 	NotifySoldierDeathToAllPlayers(_DeadSoldier, _Killer);
 	ManageKillingStreak(_DeadSoldier, _Killer);
+	StartRespawnTimerForDeadSoldier(_DeadSoldier);
 }
 
 void ASquadLeaderGameModeBase::NotifyControlAreaCaptured(AControlArea* _ControlArea)
 {
-	if (ASoldierTeam* Team = _ControlArea->GetIsTakenBy(); Team)
+	ASoldierTeam* TeamOwner = _ControlArea->GetIsTakenBy();
+
+	//TMap<ASoldierTeam*, AControlAreaTeamStat*> TeamData;
+	for (auto Pair : _ControlArea->TeamData)
 	{
-		for (ASoldier* Soldier : Team->GetSoldierList())
+		if (ASoldierTeam * SoldierTeam = Pair.Key; SoldierTeam == TeamOwner)
+		{
+			for (ASoldier* Soldier : SoldierTeam->GetSoldierList())
+			{
+				if (ASoldierPlayer* Player = Cast<ASoldierPlayer>(Soldier); Player)
+					Player->ClientNotifyControlAreaTaken(true);
+			}
+		}
+		else
+		{
+			for (ASoldier* Soldier : SoldierTeam->GetSoldierList())
+			{
+				if (ASoldierPlayer* Player = Cast<ASoldierPlayer>(Soldier); Player)
+					Player->ClientNotifyControlAreaTaken(false);
+			}
+		}
+	}
+
+
+
+	if (TeamOwner)
+	{
+		for (ASoldier* Soldier : TeamOwner->GetSoldierList())
 		{
 			if (Soldier->IsA<ASoldierPlayer>())
 				Soldier->GrantEXP(EXP_ControlAreaCaptured);
+			
 		}
 		CheckControlAreaVictoryCondition();
 	}
@@ -338,7 +386,11 @@ void ASquadLeaderGameModeBase::StartRespawnTimerForDeadSoldier(ASoldier* _DeadSo
 	FTimerHandle RespawnTimerHandle;
 	FTimerDelegate RespawnDelegate;
 
-	RespawnDelegate = FTimerDelegate::CreateUObject(this, &ASquadLeaderGameModeBase::RespawnSoldier, _DeadSoldier);
+	if (ASoldierPlayer* SoldierPlayer = Cast<ASoldierPlayer>(_DeadSoldier))
+		RespawnDelegate = FTimerDelegate::CreateUObject(this, &ASquadLeaderGameModeBase::DisplayRespawnHUD, SoldierPlayer);
+	else
+		RespawnDelegate = FTimerDelegate::CreateUObject(this, &ASquadLeaderGameModeBase::RespawnSoldier, _DeadSoldier, (AControlArea*)nullptr);
+	
 	GetWorldTimerManager().SetTimer(RespawnTimerHandle, RespawnDelegate, RespawnDelay, false);
 
 	/*if (ASoldierPlayerController* PC = Cast<ASoldierPlayerController>(_Controller); PC)

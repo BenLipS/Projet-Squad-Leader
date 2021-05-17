@@ -129,17 +129,15 @@ void ASoldierPlayerState::BroadCastAllDatas()
 	OnEXPLevelUpChanged.Broadcast(GetEXPLevelUp());
 }
 
-void ASoldierPlayerState::SetPlayerParam(TSubclassOf<APlayerParam> _PlayerParam, AController* OwningController)
+void ASoldierPlayerState::SetPlayerParam(APlayerParam* _PlayerParam, AController* OwningController)
 {
 	PlayerParam = _PlayerParam;
-	APlayerParam* PP = PlayerParam.GetDefaultObject();
-	PP->AdaptAllAIToTeam();
 
 	// recreate a new pawn and possess it
 	OwningController->Possess(OwningController->GetWorld()->GetAuthGameMode<ASquadLeaderGameModeBase>()->SpawnSoldier(PlayerParam, OwningController));
 }
 
-TSubclassOf<APlayerParam> ASoldierPlayerState::GetPlayerParam()
+APlayerParam* ASoldierPlayerState::GetPlayerParam()
 {
 	return PlayerParam;
 }

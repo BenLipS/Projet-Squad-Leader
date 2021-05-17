@@ -346,6 +346,7 @@ void AAIGeneralController::FocusEnemy() {
 		if (FocusEnemyAlive) {
 			if (SeeFocusEnemy) {
 				this->SetFocus(_FocusEnemy);
+				m_state = AIBasicState::Attacking;
 				blackboard->SetValueAsVector("EnemyLocation", _FocusEnemy->GetActorLocation());
 				return;
 			}
@@ -380,6 +381,7 @@ void AAIGeneralController::FocusEnemy() {
 	}
 	else {
 		if (SeenEnemySoldier.Num() > 0) {
+			blackboard->ClearValue("FocusActor");
 			m_state = AIBasicState::Attacking;
 			this->SetFocus(SeenEnemySoldier[0]);
 			blackboard->SetValueAsObject("FocusActor", SeenEnemySoldier[0]);
@@ -502,6 +504,7 @@ void AAIGeneralController::Die() {
 	SeenEnemySoldier.Empty();
 	PerceptionComponent->ForgetAll();
 	PerceptionComponent->SetSenseEnabled(UAISense_Sight::StaticClass(), false);
+
 }
 
 void AAIGeneralController::Respawn() 
@@ -533,10 +536,16 @@ void AAIGeneralController::ResetBlackBoard()
 }
 
 void AAIGeneralController::SetControlAreaBB(AControlArea* _controlArea) {
-	blackboard->SetValueAsObject("ControlArea", _controlArea);
-	ObjectifLocation = _controlArea->GetActorLocation();
-	blackboard->SetValueAsVector("VectorLocation", ObjectifLocation);
-	SetState(AIBasicState::Moving);
+	if (_controlArea != nullptr) {
+		blackboard->SetValueAsObject("ControlArea", _controlArea);
+		ObjectifLocation = _controlArea->GetActorLocation();
+		blackboard->SetValueAsVector("VectorLocation", ObjectifLocation);
+		SetState(AIBasicState::Moving);
+	}
+	else {
+		//GEngine->AddOnScreenDebugMessage(30, 5.f, FColor::Red, TEXT("Erreur la control area n'existe pas !"));
+	}
+
 }
 
 void AAIGeneralController::SetObjectifLocation(FVector _location) noexcept 
@@ -666,12 +675,13 @@ void AAIGeneralController::SetPatrolPoint()
 }
 
 ResultState AAIGeneralController::ArriveAtDestination() {
+	if (m_state == AIBasicState::Attacking)
+		return ResultState::Failed;
+
 	if ( GetPawn() && FVector::Dist(GetPawn()->GetActorLocation(), GetObjectifLocation()) < 300.f) {
 		m_missionList->StateChange();
 		return ResultState::Success;
 	}
-	if (m_state == AIBasicState::Attacking)
-		return ResultState::Failed;
 
 	return ResultState::InProgress;
 }

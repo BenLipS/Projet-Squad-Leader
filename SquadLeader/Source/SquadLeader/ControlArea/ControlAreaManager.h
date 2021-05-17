@@ -22,9 +22,12 @@ public:
 	AControlAreaManager();
 
 protected:
-
 	UPROPERTY(VisibleAnywhere, Replicated, Category = "ControlList")
-		TArray <AControlArea*> ControlAreaList;  // private because it must not be edited elsewhere
+	TArray <AControlArea*> ControlAreaList;  // private because it must not be edited elsewhere
+
+public:
+	UFUNCTION(BlueprintCallable)
+	TArray<AControlArea*> GetControlAreaList() const;
 
 public:
 	// Pre init launch by the gameMode before the BeginPlay() function

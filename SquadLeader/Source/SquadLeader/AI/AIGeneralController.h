@@ -371,7 +371,10 @@ public:
 	* Halfe Angle of shooting cone
 	*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shoot")
-		float HalfAngleShoot = 0.05f;
+		float HalfAngleShoot = .15f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shoot")
+	int AILevel = 1;
 
 	/*
 	* Radius of vision

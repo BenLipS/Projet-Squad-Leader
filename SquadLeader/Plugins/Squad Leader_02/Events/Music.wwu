@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{B7024EE1-B199-492F-BFF9-26DC74D54586}" SchemaVersion="103" RootDocumentID="{8EC5AB04-AFDD-43C3-A41A-DACB5E5BA730}" ParentDocumentID="{8EC5AB04-AFDD-43C3-A41A-DACB5E5BA730}">
+	<Events>
+		<WorkUnit Name="Music" ID="{B7024EE1-B199-492F-BFF9-26DC74D54586}" OwnerID="{8EC5AB04-AFDD-43C3-A41A-DACB5E5BA730}" PersistMode="Nested">
+			<PropertyList>
+				<Property Name="Color" Type="int16" Value="19"/>
+				<Property Name="OverrideColor" Type="bool" Value="True"/>
+			</PropertyList>
+			<ChildrenList>
+				<Event Name="Music_Menu" ID="{B8149EC5-4241-4694-A5B2-2556C6D1DE46}">
+					<ChildrenList>
+						<Action Name="" ID="{51E52817-EB11-4B6A-BFBA-132149D3C8AA}" ShortID="605999444">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Menu_Music_Intense" ID="{23D6C45C-F39F-4557-B293-0565F23C873C}" WorkUnitID="{8B83D110-378C-46D8-A889-78F45F5A58D5}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+						<Action Name="" ID="{DA46B4C0-FC03-4926-9EA5-2553338BFCCE}" ShortID="807493349">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Menu_Music_Smooth" ID="{4753791F-7754-4413-895A-B2ABD06FACED}" WorkUnitID="{8B83D110-378C-46D8-A889-78F45F5A58D5}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Music_Cinematic_Defeat" ID="{EF4C4763-01F6-4F22-A549-36EF47D96032}">
+					<ChildrenList>
+						<Action Name="" ID="{61F47557-0EA0-496A-AAD2-E332DBC4C23F}" ShortID="724594423">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Cinematic_Defeat" ID="{AD15E370-404E-4B6D-83CF-684BBF6178CA}" WorkUnitID="{8B83D110-378C-46D8-A889-78F45F5A58D5}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Music_Menu_Stop" ID="{F8C55871-4B15-4DA1-9A1B-BABBE81DFCF4}">
+					<ChildrenList>
+						<Action Name="" ID="{530048BE-8230-43C3-8175-EC209836622B}" ShortID="871859157">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="2"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Menu_Music_Intense" ID="{23D6C45C-F39F-4557-B293-0565F23C873C}" WorkUnitID="{8B83D110-378C-46D8-A889-78F45F5A58D5}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+						<Action Name="" ID="{430D6055-B67F-495F-AAEE-2C46F0234642}" ShortID="260061674">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="2"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Menu_Music_Smooth" ID="{4753791F-7754-4413-895A-B2ABD06FACED}" WorkUnitID="{8B83D110-378C-46D8-A889-78F45F5A58D5}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Music_Cinematic_Defeat_Stop" ID="{ED987E9C-1760-4A13-BABC-57AAC7B5340C}">
+					<ChildrenList>
+						<Action Name="" ID="{2CA74A71-4B7A-4D26-88F0-BCB62BAA696C}" ShortID="89977911">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="2"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Cinematic_Defeat" ID="{AD15E370-404E-4B6D-83CF-684BBF6178CA}" WorkUnitID="{8B83D110-378C-46D8-A889-78F45F5A58D5}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Music_Cinematic_Victory" ID="{49F6382B-D64A-4220-858D-28BCDEECBAB3}">
+					<ChildrenList>
+						<Action Name="" ID="{783FAACA-BA1B-4471-B0E5-EE6396DB22D6}" ShortID="376045722">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Cinematic Victory" ID="{E0FD6477-632D-48A3-8CA5-1125AA2E9808}" WorkUnitID="{8B83D110-378C-46D8-A889-78F45F5A58D5}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Music_Cinematic_Victory_Stop" ID="{52A2AFE4-AE08-429E-9642-C2C6CEF0F8EE}">
+					<ChildrenList>
+						<Action Name="" ID="{FDB43285-7970-4BFF-BBB2-403698B62B86}" ShortID="50374552">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="2"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Cinematic Victory" ID="{E0FD6477-632D-48A3-8CA5-1125AA2E9808}" WorkUnitID="{8B83D110-378C-46D8-A889-78F45F5A58D5}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Stinger_Gameplay_Positive" ID="{13A0794D-7A26-45ED-B419-B0A084A876B4}">
+					<ChildrenList>
+						<Action Name="" ID="{FBAF2985-DD05-496C-A2C5-B152D032B668}" ShortID="986778785">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Stingner Pos" ID="{925473E2-C23D-4FA3-A8EE-19AA9020DE1C}" WorkUnitID="{8B83D110-378C-46D8-A889-78F45F5A58D5}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Stinger_Gameplay_Negative" ID="{55B4D352-4AE2-4B60-8265-957F0BBE8CA1}">
+					<ChildrenList>
+						<Action Name="" ID="{CEE582CE-02D4-436F-BB8C-4D119910C0EC}" ShortID="522596649">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Stingner Neg" ID="{6DF07AD8-D436-47A5-878F-BEDADD900B86}" WorkUnitID="{8B83D110-378C-46D8-A889-78F45F5A58D5}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Music_Gameplay" ID="{EAC0F812-5ED0-468E-A7F9-5C1566ECDD00}">
+					<ChildrenList>
+						<Action Name="" ID="{DF388FBE-135C-4848-A1AB-9EC61191F8DA}" ShortID="347215705">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Music Gameplay" ID="{3126D292-74BB-423B-B59D-F736B6D33E24}" WorkUnitID="{8B83D110-378C-46D8-A889-78F45F5A58D5}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Music_Gameplay_Stop" ID="{6EE1A207-16F2-417E-83D0-801774B8EC36}">
+					<ChildrenList>
+						<Action Name="" ID="{CB20EFE7-2A0D-45A3-915F-7DC7C1D1A0FD}" ShortID="499788475">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="3"/>
+							</PropertyList>
+							<ReferenceList/>
+						</Action>
+						<Action Name="" ID="{8766455C-2F2C-4E71-8D64-574814B3CE9B}" ShortID="949979401">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="2"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Music Gameplay" ID="{3126D292-74BB-423B-B59D-F736B6D33E24}" WorkUnitID="{8B83D110-378C-46D8-A889-78F45F5A58D5}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+			</ChildrenList>
+		</WorkUnit>
+	</Events>
+</WwiseDocument>

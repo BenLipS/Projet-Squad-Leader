@@ -1,6 +1,8 @@
 #include "GA_QuickDash.h"
 #include "../../../Soldiers/Soldier.h"
 #include "Abilities/Tasks/AbilityTask_ApplyRootMotionConstantForce.h"
+#include "AkAudioEvent.h"
+#include "AkGameplayStatics.h"
 
 UGA_QuickDash::UGA_QuickDash()
 {
@@ -25,6 +27,8 @@ void UGA_QuickDash::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 
 			UAbilityTask_ApplyRootMotionConstantForce* Task = UAbilityTask_ApplyRootMotionConstantForce::ApplyRootMotionConstantForce(this, FName("Apply Root Motion Constant Force"), Direction, Strength, Duration, bIsAdditive, nullptr, ERootMotionFinishVelocityMode::SetVelocity, Soldier->GetVelocity(), 0.f, true);
 			
+			UAkGameplayStatics::PostEventByName("Player_Dash", Cast<ASoldier>(ActorInfo->AvatarActor));
+
 			Task->OnFinish.AddDynamic(this, &UGA_QuickDash::OnDashEnded);
 			Task->ReadyForActivation();
 		}

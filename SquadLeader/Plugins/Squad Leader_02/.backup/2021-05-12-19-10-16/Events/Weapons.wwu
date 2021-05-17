@@ -1,0 +1,569 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{9E871B55-D3FC-411A-B47C-48E3557C4D0E}" SchemaVersion="94" RootDocumentID="{8EC5AB04-AFDD-43C3-A41A-DACB5E5BA730}">
+	<Events>
+		<WorkUnit Name="Weapons" ID="{9E871B55-D3FC-411A-B47C-48E3557C4D0E}" OwnerID="{8EC5AB04-AFDD-43C3-A41A-DACB5E5BA730}" PersistMode="Nested">
+			<PropertyList>
+				<Property Name="Color" Type="int16" Value="10"/>
+				<Property Name="OverrideColor" Type="bool" Value="True"/>
+			</PropertyList>
+			<ChildrenList>
+				<Event Name="Rifle_Fire" ID="{0CB7732F-66BB-41EB-9D6D-1A4EFF69510F}">
+					<PropertyList>
+						<Property Name="Color" Type="int16" Value="9"/>
+						<Property Name="OverrideColor" Type="bool" Value="True"/>
+					</PropertyList>
+					<ChildrenList>
+						<Action Name="" ID="{852056AB-F2F2-4F3C-ABF8-B21D0D385B00}" ShortID="326146056">
+							<PropertyList>
+								<Property Name="Delay" Type="Real64" Value="0.03"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Rifle_Kick" ID="{D56F2649-3AA4-4F2F-B1AB-8D0B86CA2DCE}" WorkUnitID="{B1220508-C83C-4308-949D-0D02874B8A4B}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+						<Action Name="" ID="{66A88FA8-6CF7-4A2E-BBC4-66118800D81F}" ShortID="629390760">
+							<PropertyList>
+								<Property Name="Delay" Type="Real64" Value="0.03"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Rifle_Mech" ID="{8B8BD15D-6C26-448B-B529-A0414C74E118}" WorkUnitID="{B1220508-C83C-4308-949D-0D02874B8A4B}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+						<Action Name="" ID="{095A2045-6090-408D-B587-A4ADEF51F667}" ShortID="313780447">
+							<PropertyList>
+								<Property Name="Delay" Type="Real64" Value="0.03"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Rifle_Sub" ID="{C4522A78-AE99-4101-84F9-5FA0CD5B1F51}" WorkUnitID="{B1220508-C83C-4308-949D-0D02874B8A4B}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+						<Action Name="" ID="{6A6A971F-D1C8-40B5-8BFA-2B0114BB5A1A}" ShortID="467965173">
+							<PropertyList>
+								<Property Name="Delay" Type="Real64" Value="0.03"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Rifle_Noise" ID="{074C49B9-24AE-4CDB-94CA-D72AF7E1C2BD}" WorkUnitID="{B1220508-C83C-4308-949D-0D02874B8A4B}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+						<Action Name="" ID="{D0CCA366-AE31-4110-B58D-0A82EDA7A00A}" ShortID="118773624">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Rifle_Fire_Click" ID="{5AFB5C1F-1FEF-452E-A36D-CC7D3DDF4202}" WorkUnitID="{B1220508-C83C-4308-949D-0D02874B8A4B}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Rifle_Break" ID="{70BC0903-2715-4240-AE62-397D18D57A4D}">
+					<PropertyList>
+						<Property Name="Color" Type="int16" Value="9"/>
+						<Property Name="OverrideColor" Type="bool" Value="True"/>
+					</PropertyList>
+					<ChildrenList>
+						<Action Name="" ID="{043E4023-4F1A-44FC-9154-85C4642DD147}" ShortID="208099014">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="34"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Rifle_Kick" ID="{D56F2649-3AA4-4F2F-B1AB-8D0B86CA2DCE}" WorkUnitID="{B1220508-C83C-4308-949D-0D02874B8A4B}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+						<Action Name="" ID="{611624CB-B187-4C05-BC8C-159391EC0346}" ShortID="771115784">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="34"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Rifle_Mech" ID="{8B8BD15D-6C26-448B-B529-A0414C74E118}" WorkUnitID="{B1220508-C83C-4308-949D-0D02874B8A4B}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+						<Action Name="" ID="{484E9AA9-DE9B-4FD3-9D06-65FC02A5865E}" ShortID="281891690">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="34"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Rifle_Sub" ID="{C4522A78-AE99-4101-84F9-5FA0CD5B1F51}" WorkUnitID="{B1220508-C83C-4308-949D-0D02874B8A4B}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+						<Action Name="" ID="{0E6F497A-D92A-49EB-9E9E-13E58A16FACE}" ShortID="218644217">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="34"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Rifle_Noise" ID="{074C49B9-24AE-4CDB-94CA-D72AF7E1C2BD}" WorkUnitID="{B1220508-C83C-4308-949D-0D02874B8A4B}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+						<Action Name="" ID="{5E057A3B-B32F-405A-AB9C-7B9F41E956C0}" ShortID="42758648">
+							<PropertyList>
+								<Property Name="FadeInCurve" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Rifle_Break" ID="{D7BB8884-3BC4-4F90-9068-397586BD8962}" WorkUnitID="{B1220508-C83C-4308-949D-0D02874B8A4B}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Rifle_Break_Silencer" ID="{4106CC55-5289-418B-8C0A-6A8A1249AB60}">
+					<PropertyList>
+						<Property Name="Color" Type="int16" Value="9"/>
+						<Property Name="OverrideColor" Type="bool" Value="True"/>
+					</PropertyList>
+					<ChildrenList>
+						<Action Name="" ID="{608184B4-7131-4ECA-AFEA-8193CFBEE2A5}" ShortID="1019728462">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="34"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Rifle_Kick" ID="{D56F2649-3AA4-4F2F-B1AB-8D0B86CA2DCE}" WorkUnitID="{B1220508-C83C-4308-949D-0D02874B8A4B}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+						<Action Name="" ID="{9E06D4D6-C1CD-4AAB-B287-19F65154CD08}" ShortID="715378892">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="34"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Rifle_Mech" ID="{8B8BD15D-6C26-448B-B529-A0414C74E118}" WorkUnitID="{B1220508-C83C-4308-949D-0D02874B8A4B}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+						<Action Name="" ID="{EF0D9E99-A47E-4E28-8BDC-BA3319CBE610}" ShortID="306472481">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="34"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Rifle_Sub" ID="{C4522A78-AE99-4101-84F9-5FA0CD5B1F51}" WorkUnitID="{B1220508-C83C-4308-949D-0D02874B8A4B}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+						<Action Name="" ID="{2D71EFA5-853E-48D3-9582-E0BFCD0718CD}" ShortID="382035043">
+							<PropertyList>
+								<Property Name="FadeInCurve" Type="int16" Value="6"/>
+								<Property Name="FadeTime" Type="Real64" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Rifle_Break" ID="{D7BB8884-3BC4-4F90-9068-397586BD8962}" WorkUnitID="{B1220508-C83C-4308-949D-0D02874B8A4B}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Rifle_Out_of_ammo" ID="{65E0E89D-4F75-4359-91AD-3FA714424F7F}">
+					<PropertyList>
+						<Property Name="Color" Type="int16" Value="9"/>
+						<Property Name="OverrideColor" Type="bool" Value="True"/>
+					</PropertyList>
+					<ChildrenList>
+						<Action Name="" ID="{046FFEAB-C772-4094-B092-6465B514D20A}" ShortID="945155519">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="34"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Rifle_Kick" ID="{D56F2649-3AA4-4F2F-B1AB-8D0B86CA2DCE}" WorkUnitID="{B1220508-C83C-4308-949D-0D02874B8A4B}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+						<Action Name="" ID="{96DCE70A-41FF-4080-AE9E-8CE336B5A025}" ShortID="231230631">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="34"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Rifle_Mech" ID="{8B8BD15D-6C26-448B-B529-A0414C74E118}" WorkUnitID="{B1220508-C83C-4308-949D-0D02874B8A4B}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+						<Action Name="" ID="{615639E6-CACC-4CA3-ABFB-7262EB870DBC}" ShortID="269261942">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="34"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Rifle_Sub" ID="{C4522A78-AE99-4101-84F9-5FA0CD5B1F51}" WorkUnitID="{B1220508-C83C-4308-949D-0D02874B8A4B}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+						<Action Name="" ID="{9BA96796-64D0-4897-9942-5655D244EF5D}" ShortID="145101144">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="34"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Rifle_Noise" ID="{074C49B9-24AE-4CDB-94CA-D72AF7E1C2BD}" WorkUnitID="{B1220508-C83C-4308-949D-0D02874B8A4B}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+						<Action Name="" ID="{A09FAD67-F7B8-49B0-B0BD-E8785C61D6D9}" ShortID="549108966">
+							<PropertyList>
+								<Property Name="FadeInCurve" Type="int16" Value="7"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Rifle_Out of ammo" ID="{E74C2B65-E7B7-48EE-AB3F-02D74A7F5FC0}" WorkUnitID="{B1220508-C83C-4308-949D-0D02874B8A4B}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+						<Action Name="" ID="{38B578AF-529E-48A6-9579-D1D03BB46B34}" ShortID="269549036">
+							<PropertyList>
+								<Property Name="FadeInCurve" Type="int16" Value="7"/>
+								<Property Name="FadeTime" Type="Real64" Value="2"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Rifle_Break" ID="{D7BB8884-3BC4-4F90-9068-397586BD8962}" WorkUnitID="{B1220508-C83C-4308-949D-0D02874B8A4B}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Rifle_Reloading" ID="{F97AC0F1-1EEC-47EC-BECC-6DF45B9B6824}">
+					<PropertyList>
+						<Property Name="Color" Type="int16" Value="9"/>
+						<Property Name="OverrideColor" Type="bool" Value="True"/>
+					</PropertyList>
+					<ChildrenList>
+						<Action Name="" ID="{5A5CD1EB-F0D3-4619-9AFD-D483DB5603AA}" ShortID="97777623">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="34"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Rifle_Kick" ID="{D56F2649-3AA4-4F2F-B1AB-8D0B86CA2DCE}" WorkUnitID="{B1220508-C83C-4308-949D-0D02874B8A4B}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+						<Action Name="" ID="{99008F21-1356-4A19-A397-9EE3EA45E0D3}" ShortID="9910563">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="34"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Rifle_Mech" ID="{8B8BD15D-6C26-448B-B529-A0414C74E118}" WorkUnitID="{B1220508-C83C-4308-949D-0D02874B8A4B}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+						<Action Name="" ID="{7FF5AD20-B1CA-48A9-B34A-ADDBAB9B6ACB}" ShortID="427116271">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="34"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Rifle_Sub" ID="{C4522A78-AE99-4101-84F9-5FA0CD5B1F51}" WorkUnitID="{B1220508-C83C-4308-949D-0D02874B8A4B}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+						<Action Name="" ID="{3CBC329B-60C3-4F5D-B3C1-CE71DB8E8715}" ShortID="209300377">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="34"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Rifle_Noise" ID="{074C49B9-24AE-4CDB-94CA-D72AF7E1C2BD}" WorkUnitID="{B1220508-C83C-4308-949D-0D02874B8A4B}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+						<Action Name="" ID="{46CF8426-6C1B-4AFA-8C4C-B7150B76E0E0}" ShortID="255290843">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Rifle_Reloading" ID="{02D6DD91-44EC-4C4B-B2F9-8A6371476088}" WorkUnitID="{B1220508-C83C-4308-949D-0D02874B8A4B}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+						<Action Name="" ID="{9AA68DE1-59A1-406B-8CA7-D7694CBB89A1}" ShortID="32092548">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Rifle_Reloading_Clothes" ID="{5E47314A-386E-4E7F-B08B-2B7B90A364B0}" WorkUnitID="{B1220508-C83C-4308-949D-0D02874B8A4B}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Rifle_Fire_Silencer" ID="{4847BAB5-C634-4222-91A4-0E97B01EE8EE}">
+					<PropertyList>
+						<Property Name="Color" Type="int16" Value="9"/>
+						<Property Name="OverrideColor" Type="bool" Value="True"/>
+					</PropertyList>
+					<ChildrenList>
+						<Action Name="" ID="{776BBF36-2B33-49EF-B809-B7833275AAF3}" ShortID="1068685942">
+							<PropertyList>
+								<Property Name="Delay" Type="Real64" Value="0.03"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Rifle_Kick" ID="{D56F2649-3AA4-4F2F-B1AB-8D0B86CA2DCE}" WorkUnitID="{B1220508-C83C-4308-949D-0D02874B8A4B}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+						<Action Name="" ID="{EA9E6C22-738B-4E71-955B-18E00208972C}" ShortID="348604247">
+							<PropertyList>
+								<Property Name="Delay" Type="Real64" Value="0.03"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Rifle_Mech" ID="{8B8BD15D-6C26-448B-B529-A0414C74E118}" WorkUnitID="{B1220508-C83C-4308-949D-0D02874B8A4B}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+						<Action Name="" ID="{F0B7297F-BCA9-408D-B285-F484F88217A4}" ShortID="258347374">
+							<PropertyList>
+								<Property Name="Delay" Type="Real64" Value="0.03"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Rifle_Sub" ID="{C4522A78-AE99-4101-84F9-5FA0CD5B1F51}" WorkUnitID="{B1220508-C83C-4308-949D-0D02874B8A4B}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+						<Action Name="" ID="{BAE2B172-0D24-4CA2-BAA9-C1C44A98059D}" ShortID="611891054">
+							<PropertyList>
+								<Property Name="FadeInCurve" Type="int16" Value="6"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Rifle_Fire_Click" ID="{5AFB5C1F-1FEF-452E-A36D-CC7D3DDF4202}" WorkUnitID="{B1220508-C83C-4308-949D-0D02874B8A4B}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Rifle_Out_of_ammo_Silencer" ID="{B7833238-BC15-4246-80B3-0139D00C4247}">
+					<PropertyList>
+						<Property Name="Color" Type="int16" Value="9"/>
+						<Property Name="OverrideColor" Type="bool" Value="True"/>
+					</PropertyList>
+					<ChildrenList>
+						<Action Name="" ID="{2B2A1004-BD98-4F32-9A1D-D9DAB7241DAE}" ShortID="302695733">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="34"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Rifle_Kick" ID="{D56F2649-3AA4-4F2F-B1AB-8D0B86CA2DCE}" WorkUnitID="{B1220508-C83C-4308-949D-0D02874B8A4B}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+						<Action Name="" ID="{AB063DF3-D15E-498A-AF57-9203C2421844}" ShortID="1035685079">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="34"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Rifle_Mech" ID="{8B8BD15D-6C26-448B-B529-A0414C74E118}" WorkUnitID="{B1220508-C83C-4308-949D-0D02874B8A4B}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+						<Action Name="" ID="{F9EF839D-854D-45E9-8055-5251EF99FAFA}" ShortID="655152200">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="34"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Rifle_Sub" ID="{C4522A78-AE99-4101-84F9-5FA0CD5B1F51}" WorkUnitID="{B1220508-C83C-4308-949D-0D02874B8A4B}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+						<Action Name="" ID="{E854A52F-5C3A-4DA1-A261-63E8B8FCE706}" ShortID="106549311">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="34"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Rifle_Noise" ID="{074C49B9-24AE-4CDB-94CA-D72AF7E1C2BD}" WorkUnitID="{B1220508-C83C-4308-949D-0D02874B8A4B}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+						<Action Name="" ID="{9F18D7CB-886E-4F26-8473-3DA50353D4FE}" ShortID="897246585">
+							<PropertyList>
+								<Property Name="FadeInCurve" Type="int16" Value="7"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Rifle_Out of ammo" ID="{E74C2B65-E7B7-48EE-AB3F-02D74A7F5FC0}" WorkUnitID="{B1220508-C83C-4308-949D-0D02874B8A4B}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+						<Action Name="" ID="{2E6E0000-5A66-482D-BD42-E14FC5187695}" ShortID="71881676">
+							<PropertyList>
+								<Property Name="FadeInCurve" Type="int16" Value="7"/>
+								<Property Name="FadeTime" Type="Real64" Value="0.5"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Rifle_Break" ID="{D7BB8884-3BC4-4F90-9068-397586BD8962}" WorkUnitID="{B1220508-C83C-4308-949D-0D02874B8A4B}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Grenade_Standard_Explosion" ID="{EDA2951C-50D2-4036-A334-22EC038B2B93}">
+					<ChildrenList>
+						<Action Name="" ID="{0DAFD2B4-4B7B-434D-A911-5376FCD7835A}" ShortID="807822512">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Grenade_Explosion" ID="{D675DDB7-DF58-417A-82A7-ED5059A27C58}" WorkUnitID="{B1220508-C83C-4308-949D-0D02874B8A4B}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Rocket_Launch" ID="{4C2622EA-DA52-45DA-AE9B-6AC8D52B6274}">
+					<ChildrenList>
+						<Action Name="" ID="{49874EEB-1FF6-4F67-85C1-FE5B2F5E8A4B}" ShortID="209597993">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Rocket_Launch" ID="{578196AF-2935-4DC6-BCA0-85B750E4C701}" WorkUnitID="{B1220508-C83C-4308-949D-0D02874B8A4B}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+						<Action Name="" ID="{EB37D794-3109-4CEF-A439-4E53BBDCBCE2}" ShortID="689760576">
+							<PropertyList>
+								<Property Name="FadeInCurve" Type="int16" Value="1"/>
+								<Property Name="FadeTime" Type="Real64" Value="1.2"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Rocket_Trail" ID="{9B65AB7F-105C-4524-8928-8739E9A15DFC}" WorkUnitID="{B1220508-C83C-4308-949D-0D02874B8A4B}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Rocket_Explode" ID="{599F8745-1218-4D78-BE70-5AEFFD50654F}">
+					<ChildrenList>
+						<Action Name="" ID="{19CED6F2-1EA1-4276-A152-2BA6198773FF}" ShortID="581093789">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Rocket_Explosion_03" ID="{32E4E003-49D2-4E23-9F63-646B3FCBD0BB}" WorkUnitID="{B1220508-C83C-4308-949D-0D02874B8A4B}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+						<Action Name="" ID="{FBF5A79E-4785-4BBA-AFAE-D45121B4C613}" ShortID="479362119">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="2"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Rocket_Launch" ID="{578196AF-2935-4DC6-BCA0-85B750E4C701}" WorkUnitID="{B1220508-C83C-4308-949D-0D02874B8A4B}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+						<Action Name="" ID="{A32DF44F-7F8A-4621-A3E0-E344C6AC42D1}" ShortID="48754022">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="2"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Rocket_Trail" ID="{9B65AB7F-105C-4524-8928-8739E9A15DFC}" WorkUnitID="{B1220508-C83C-4308-949D-0D02874B8A4B}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Pistol_Fire_Laser" ID="{F806E7A4-088F-45F1-8B9E-804DDA52EBB8}">
+					<PropertyList>
+						<Property Name="Color" Type="int16" Value="9"/>
+						<Property Name="OverrideColor" Type="bool" Value="True"/>
+					</PropertyList>
+					<ChildrenList>
+						<Action Name="" ID="{F5CAADBA-F9F5-4846-9450-78661AF42FBD}" ShortID="949978184">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Tir" ID="{FE6970B6-C814-46EE-83B4-E2D93DD55443}" WorkUnitID="{B1220508-C83C-4308-949D-0D02874B8A4B}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Pistol_Reload_Laser" ID="{D90D1A40-9C11-4CCE-8BFC-07A17198CF32}">
+					<PropertyList>
+						<Property Name="Color" Type="int16" Value="9"/>
+						<Property Name="OverrideColor" Type="bool" Value="True"/>
+					</PropertyList>
+					<ChildrenList>
+						<Action Name="" ID="{A7BAC74A-EF84-4141-A0FA-77BAF6608E58}" ShortID="919255030">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Recharge" ID="{682FAF05-8388-4B89-A8FE-174C3EC68674}" WorkUnitID="{B1220508-C83C-4308-949D-0D02874B8A4B}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Rifle_Fire_Laser" ID="{4BA49270-2B8B-46A7-8D1F-C89C6443E251}">
+					<PropertyList>
+						<Property Name="Color" Type="int16" Value="9"/>
+						<Property Name="OverrideColor" Type="bool" Value="True"/>
+					</PropertyList>
+					<ChildrenList>
+						<Action Name="" ID="{DC2F814E-787C-4C02-874B-96169107F688}" ShortID="611269049">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Tir" ID="{EDAC4842-5891-441B-8CB7-84CD1D59B459}" WorkUnitID="{B1220508-C83C-4308-949D-0D02874B8A4B}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Rifle_Reloading_Laser" ID="{4B45BABD-6083-4E81-AA9A-8B31D30D5CD9}">
+					<PropertyList>
+						<Property Name="Color" Type="int16" Value="9"/>
+						<Property Name="OverrideColor" Type="bool" Value="True"/>
+					</PropertyList>
+					<ChildrenList>
+						<Action Name="" ID="{952407E2-3D6B-45E2-926F-4C66B32DD5E1}" ShortID="409063109">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Recharge" ID="{3F73797C-E74F-4969-8F80-034EF7716038}" WorkUnitID="{B1220508-C83C-4308-949D-0D02874B8A4B}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Grenade_Throw" ID="{BF6669A7-CD9C-4368-9519-927890E642F6}">
+					<ChildrenList>
+						<Action Name="" ID="{CB82EEBE-0D4C-4C92-9B2F-2FFA4645E987}" ShortID="501072257">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Grenade Lancé" ID="{EF9E2E1A-C111-4809-9CEA-5C5DB3AB06E2}" WorkUnitID="{B1220508-C83C-4308-949D-0D02874B8A4B}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Grenade_Glitch_Explosion" ID="{D2A5DF60-C62E-493A-A33A-DA12CE59A8C7}">
+					<ChildrenList>
+						<Action Name="" ID="{3EC4C767-12D7-4F26-A3C7-9EA84D52B984}" ShortID="549882358">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Glitch Grenade" ID="{89DD7039-57F2-41F2-9236-557CB4EC9537}" WorkUnitID="{B1220508-C83C-4308-949D-0D02874B8A4B}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+			</ChildrenList>
+		</WorkUnit>
+	</Events>
+</WwiseDocument>

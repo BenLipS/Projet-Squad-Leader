@@ -25,7 +25,7 @@ public:
 	// virtual void PreLogin(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage) override;
 	virtual void Logout(AController* Exiting) override;
 
-	APawn* SpawnSoldier(TSubclassOf<APlayerParam> PlayerParam, AController* OwningController);
+	APawn* SpawnSoldier(APlayerParam* PlayerParam, AController* OwningController);
 
 protected:
 	void ChangeGameState();
@@ -44,6 +44,10 @@ protected:
 	int AIBasicHeavyNumber = 6;
 	UPROPERTY(BlueprintReadOnly, Category = "GameData")
 	int StartingAISquadNumber = 3;
+	UPROPERTY(BlueprintReadOnly, Category = "GameData")
+		int AISquadLevel = 1;
+	UPROPERTY(BlueprintReadOnly, Category = "GameData")
+		int AIBasicLevel = 1;
 
 public:
 	int const GetBaseTicketForTeam() {return BaseTicketsNumber;}
@@ -52,12 +56,26 @@ public:
 	int const GetBaseSquadAINumber() { return StartingAISquadNumber; }
 	
 public:
-	void RespawnSoldier(ASoldier* _Soldier);
+	UFUNCTION(BlueprintCallable)
+	void RespawnSoldier(ASoldier* _Soldier, AControlArea* _ControlArea = nullptr);
+
+	UFUNCTION(BlueprintCallable)
 	void CheckControlAreaVictoryCondition();
+
+	UFUNCTION(BlueprintCallable)
 	void CheckTeamTicketsVictoryCondition();
+
+	UFUNCTION(BlueprintCallable)
 	void EndGame(ASoldierTeam* WinningTeam);
+
+	UFUNCTION(BlueprintCallable)
 	void CloseGame();
 
+//////////////// Respawn
+	UFUNCTION()
+	void DisplayRespawnHUD(ASoldierPlayer* _SoldierPlayer);
+
+//////////////// AIs
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<AAIBasicManager> AIBasicManagerClass;
@@ -84,6 +102,10 @@ public:
 	UFUNCTION()
 	TArray<AAISquadManager*> GetSquadManagers() { return ListAISquadManagers; }
 
+	UFUNCTION()
+		int GetAIBasicLevel() {return AIBasicLevel;}
+	UFUNCTION()
+		int GetAISquadLevel() { return AISquadLevel; }
 //////////////// Notifications
 public:
 	void NotifySoldierKilled(ASoldier* _DeadSoldier, ASoldier* _KillerSoldier);

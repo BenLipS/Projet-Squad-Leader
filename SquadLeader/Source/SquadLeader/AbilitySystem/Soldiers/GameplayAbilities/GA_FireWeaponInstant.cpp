@@ -9,6 +9,8 @@
 #include "SquadLeader/AbilitySystem/Soldiers/AbilityTasks/SL_ServerWaitForClientTargetData.h"
 #include "SquadLeader/AbilitySystem/Soldiers/AbilityTasks/SL_WaitTargetDataUsingActor.h"
 #include "Abilities/Tasks/AbilityTask_WaitDelay.h"
+#include "AkAudioEvent.h"
+#include "AkGameplayStatics.h"
 
 UGA_FireWeaponInstant::UGA_FireWeaponInstant() :
 ServerWaitForClientTargetDataTask{ nullptr },
@@ -71,7 +73,7 @@ void UGA_FireWeaponInstant::FireBullet()
 	// Too soon to shoot or is reloading
 	const constexpr float epsilon = 0.01; // Error tolerance
 
-	if (FMath::Abs(UGameplayStatics::GetTimeSeconds(GetWorld()) - TimeOfLastShoot) - epsilon < SourceWeapon->GetTimeBetweenShots()
+	if (FMath::Abs(UGameplayStatics::GetTimeSeconds(GetWorld()) - TimeOfLastShoot) + epsilon < SourceWeapon->GetTimeBetweenShots()
 		|| SourceSoldier->GetAbilitySystemComponent()->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("State.Weapon.Reloading"))))
 	{
 		// Wait for the next fire
@@ -84,9 +86,17 @@ void UGA_FireWeaponInstant::FireBullet()
 	// Need to reload
 	if (!SourceWeapon->HasAmmo() && !SourceWeapon->HasInfiniteAmmo())
 	{
+		UAkGameplayStatics::PostEventByName("Rifle_Out_of_ammo", SourceWeapon);//maybe play cliking sound here
 		ReloadWeapon();
 		return;
 	}
+
+	// Wait for the next fire
+	TaskWaitDelay = UAbilityTask_WaitDelay::WaitDelay(this, SourceWeapon->GetTimeBetweenShots());
+	TaskWaitDelay->OnFinish.AddDynamic(this, &UGA_FireWeaponInstant::FireBullet);
+	TaskWaitDelay->ReadyForActivation();
+
+	TimeOfLastShoot = UGameplayStatics::GetTimeSeconds(GetWorld());
 
 	// Update line tracing
 	FGameplayAbilityTargetingLocationInfo TraceStartLocation;
@@ -97,17 +107,24 @@ void UGA_FireWeaponInstant::FireBullet()
 	// Camera Shake
 	SourceSoldier->ShakeCamera(SourceSoldier->GetCameraShakeFireClass());
 
+	// Gameplay cue with predicted fire
+	UAbilitySystemSoldier* ASC = Cast<UAbilitySystemSoldier>(GetAbilitySystemComponentFromActorInfo());
+
+	FGameplayEffectContextHandle EffectContext = ASC->MakeEffectContext();
+	EffectContext.AddHitResult(PredictFireHitResult());
+
+	FGameplayCueParameters GC_Parameters;
+	GC_Parameters.Instigator = SourceSoldier;
+	GC_Parameters.SourceObject = SourceWeapon;
+	GC_Parameters.EffectContext = EffectContext;
+
+	DoAnimation(GC_Parameters);
+	//SourceSoldier->GetAbilitySystemComponent()->ExecuteGameplayCue(FGameplayTag::RequestGameplayTag(FName("GameplayCue.FireWeapon.Instant")), GC_Parameters);
+
 	// Wait target data
 	USL_WaitTargetDataUsingActor* TaskWaitTarget = USL_WaitTargetDataUsingActor::WaitTargetDataWithReusableActor(this, NAME_None, EGameplayTargetingConfirmation::Instant, LineTrace, true);
 	TaskWaitTarget->ValidData.AddDynamic(this, &UGA_FireWeaponInstant::HandleTargetData);
 	TaskWaitTarget->ReadyForActivation();
-
-	// Wait for the next fire
-	TaskWaitDelay = UAbilityTask_WaitDelay::WaitDelay(this, SourceWeapon->GetTimeBetweenShots());
-	TaskWaitDelay->OnFinish.AddDynamic(this, &UGA_FireWeaponInstant::FireBullet);
-	TaskWaitDelay->ReadyForActivation();
-
-	TimeOfLastShoot = UGameplayStatics::GetTimeSeconds(GetWorld());
 }
 
 void UGA_FireWeaponInstant::HandleTargetData(const FGameplayAbilityTargetDataHandle& _Data)
@@ -138,18 +155,6 @@ void UGA_FireWeaponInstant::HandleTargetData(const FGameplayAbilityTargetDataHan
 			ApplyDamages(Shield, BaseWeaponDamage);
 		}
 	}
-
-	// Gameplay cue
-	UAbilitySystemSoldier* ASC = Cast<UAbilitySystemSoldier>(GetAbilitySystemComponentFromActorInfo());
-
-	FGameplayEffectContextHandle EffectContext = ASC->MakeEffectContext();
-	EffectContext.AddHitResult(*Data->GetHitResult());
-
-	FGameplayCueParameters GC_Parameters;
-	GC_Parameters.Instigator = SourceSoldier;
-	GC_Parameters.SourceObject = SourceWeapon;
-	GC_Parameters.EffectContext = EffectContext;
-	SourceSoldier->GetAbilitySystemComponent()->ExecuteGameplayCue(FGameplayTag::RequestGameplayTag(FName("GameplayCue.FireWeapon.Instant")), GC_Parameters);
 }
 
 void UGA_FireWeaponInstant::ApplyEffectsToSource()
@@ -162,7 +167,7 @@ void UGA_FireWeaponInstant::ApplyEffectsToSource()
 
 bool UGA_FireWeaponInstant::ApplyDamages(const FGameplayAbilityTargetDataHandle& _Data, ASoldier* _TargetSoldier, const float _Damage)
 {
-	if (SourceSoldier->GetTeam() != _TargetSoldier->GetTeam())
+	if (SourceSoldier->GetTeam() != _TargetSoldier->GetTeam() && _TargetSoldier->IsAlive())
 	{
 		float FinalDamage = _Damage;
 		bool bIsHeadShot = false;
@@ -233,4 +238,50 @@ void UGA_FireWeaponInstant::ConfigLineTrace()
 #if UE_BUILD_DEBUG
 	LineTrace->bDebug = SourceWeapon->bDebugTrace;
 #endif
+}
+
+FHitResult UGA_FireWeaponInstant::PredictFireHitResult()
+{
+	FCollisionQueryParams Params(SCENE_QUERY_STAT(ASL_LineTrace), false);
+	Params.bReturnPhysicalMaterial = true;
+	Params.AddIgnoredActor(SourceSoldier);
+	Params.bIgnoreBlocks = false;
+
+	TArray<FHitResult> OutHitResults;
+
+	const FVector Start = LineTrace->GetStartLocation().GetTargetingTransform().GetLocation();
+	const FVector End = SourceSoldier->GetLookingAtPosition();
+
+	GetWorld()->LineTraceMultiByProfile(OutHitResults, Start, End, LineTrace->TraceProfile.Name, Params);
+	FilterTraceWithShield(OutHitResults);
+
+	if (OutHitResults.Num() <= 0)
+	{
+		// If there were no hits, add a default HitResult at the end of the trace
+		FHitResult HitResult;
+		HitResult.TraceStart = Start;
+		HitResult.TraceEnd = End;
+		HitResult.Location = End;
+		HitResult.ImpactPoint = End;
+		OutHitResults.Add(HitResult);
+	}
+	return OutHitResults.Last();
+}
+
+void UGA_FireWeaponInstant::FilterTraceWithShield(TArray<FHitResult>& _HitResults)
+{
+	for (int32 i = 0; i < _HitResults.Num(); ++i)
+	{
+		if (AShield* Shield = Cast<AShield>(_HitResults[i].Actor); Shield)
+		{
+			ASoldier* OwnerOfShield = Cast<ASoldier>(Shield->GetInstigator());
+
+			// Remove every data after the shield since it should block the trace
+			if (SourceSoldier && OwnerOfShield && SourceSoldier->GetTeam() != OwnerOfShield->GetTeam())
+			{
+				_HitResults.RemoveAt(FMath::Min(i + 1, _HitResults.Num() - 1), _HitResults.Num() - i - 1);
+				return;
+			}
+		}
+	}
 }

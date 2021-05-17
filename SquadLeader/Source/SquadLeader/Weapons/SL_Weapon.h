@@ -111,6 +111,9 @@ public:
 	FGameplayTag GetFireMode() const noexcept;
 	void Unequip();
 
+	UFUNCTION(BlueprintImplementableEvent,BlueprintCallable)
+		void FireSoundEvent();
+
 protected:
 	// Cache tags
 	FGameplayTag WeaponAbilityTag;

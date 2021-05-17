@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{4603296A-7743-4166-BFFD-51EB22151C12}" SchemaVersion="94" RootDocumentID="{8EC5AB04-AFDD-43C3-A41A-DACB5E5BA730}">
+	<Events>
+		<WorkUnit Name="Player" ID="{4603296A-7743-4166-BFFD-51EB22151C12}" OwnerID="{8EC5AB04-AFDD-43C3-A41A-DACB5E5BA730}" PersistMode="Nested">
+			<PropertyList>
+				<Property Name="Color" Type="int16" Value="12"/>
+				<Property Name="OverrideColor" Type="bool" Value="True"/>
+			</PropertyList>
+			<ChildrenList>
+				<Event Name="Player_Walk_Concrete" ID="{F27A2022-7C27-40EA-9686-49A303F9C7A5}">
+					<ChildrenList>
+						<Action Name="" ID="{92DA882B-D24A-4965-95E8-6A876A9A7A8B}" ShortID="113492413">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Fs_Concrete" ID="{B7BD797C-76B9-4812-9ED1-03AD482FA66D}" WorkUnitID="{924891FC-435B-4571-AB36-2CC6B60D907C}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Player_Run" ID="{96029052-C9BD-4739-9C95-EE1CBC1C9099}">
+					<ChildrenList>
+						<Action Name="" ID="{1D2B0E87-91A8-448F-B6D2-6DB22B6A0D46}" ShortID="172651068">
+							<PropertyList>
+								<Property Name="FadeInCurve" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="BackPack" ID="{3817480A-8395-41E0-8512-28CC515FB7E6}" WorkUnitID="{924891FC-435B-4571-AB36-2CC6B60D907C}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Player_Stop_Run" ID="{A3BE4D09-52CF-47C2-B03B-C9511323BE6F}">
+					<ChildrenList>
+						<Action Name="" ID="{D8191294-C9AE-450D-BE9C-216A6D488457}" ShortID="270709393">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="2"/>
+								<Property Name="FadeInCurve" Type="int16" Value="1"/>
+								<Property Name="FadeOutCurve" Type="int16" Value="7"/>
+								<Property Name="FadeTime" Type="Real64" Value="0.5"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="BackPack" ID="{3817480A-8395-41E0-8512-28CC515FB7E6}" WorkUnitID="{924891FC-435B-4571-AB36-2CC6B60D907C}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Player_Dash" ID="{798FD2E2-91B5-4C88-B49D-3FBE44DDB94C}">
+					<ChildrenList>
+						<Action Name="" ID="{DB9BC2E7-777F-43A1-A019-A0DC595B8DAD}" ShortID="670334901">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Player_Dash" ID="{E806447A-4E6E-446A-A819-D3D23BF99201}" WorkUnitID="{924891FC-435B-4571-AB36-2CC6B60D907C}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Player_Jump_Concrete" ID="{5FF8C57E-F333-4DEC-BD12-3EA90CAF4917}">
+					<ChildrenList>
+						<Action Name="" ID="{80071E6C-F05E-4161-99D3-A1748DEF426F}" ShortID="371977656">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Player_Jump_Concrete" ID="{37A25345-E17F-435A-8306-18A8B037BD52}" WorkUnitID="{924891FC-435B-4571-AB36-2CC6B60D907C}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Player_Walk_Dirt" ID="{D397BC73-A19C-4425-ACD0-5213B3B19138}">
+					<ChildrenList>
+						<Action Name="" ID="{E4D89AD3-C742-41FD-A553-638FBB286E5E}" ShortID="102942866">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Fs_Dirt" ID="{E9E451C7-80D7-4C05-949E-1FD0A9827E6A}" WorkUnitID="{924891FC-435B-4571-AB36-2CC6B60D907C}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Player_Hurt" ID="{32E583C8-F7A8-4E69-8F6C-E44009B14E25}">
+					<ChildrenList>
+						<Action Name="" ID="{19D3EC8F-16B0-482D-9321-C035B480C4FD}" ShortID="40929601">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Hurt" ID="{1BC9BD19-8E3E-49ED-972A-395E78FF230F}" WorkUnitID="{924891FC-435B-4571-AB36-2CC6B60D907C}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+			</ChildrenList>
+		</WorkUnit>
+	</Events>
+</WwiseDocument>

@@ -85,3 +85,6 @@ BattleFront/Saved/Config/Windows/Engine.ini
 
 # Individual data write on json files
 **/userData.json
+
+#Wwise
+!Plugins/Wwise/**/**.lib

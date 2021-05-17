@@ -95,8 +95,8 @@ public:
 	AKillStats* PersonalRecord;
 
 protected:
-	TSubclassOf<APlayerParam> PlayerParam;
+	APlayerParam* PlayerParam;
 public:
-	void SetPlayerParam(TSubclassOf<APlayerParam> _PlayerParam, AController* OwningController);
-	TSubclassOf<APlayerParam> GetPlayerParam();
+	void SetPlayerParam(APlayerParam* _PlayerParam, AController* OwningController);
+	APlayerParam* GetPlayerParam();
 };

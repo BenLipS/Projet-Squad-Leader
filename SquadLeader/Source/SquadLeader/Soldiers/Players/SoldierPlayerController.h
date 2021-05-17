@@ -62,6 +62,10 @@ public:
 	void BindMainAbilities();
 	void NotifyMainAbilityCooldown(const float _Cooldown, const ESoldierAbilityInputID _ID);
 	void NotifySoldierHit(const float _Damage, const bool _bIsHeadShot);
+	
+	UFUNCTION(BlueprintCallable, Reliable, Client, Category = "Respawn")
+	void ClientDisplayRespawnWidget();
+	void ClientDisplayRespawnWidget_Implementation();
 
 //////////////// Movements
 protected:
@@ -85,7 +89,8 @@ protected:
 public:
 ///////// Consoles Commands
 	UFUNCTION(Client, Reliable)
-	void ClientSendCommand(const FString& Cmd, bool bWriteToLog);
+	void ClientSendChangeMapCommand(const FName& Cmd);
+	void ClientSendChangeMapCommand_Implementation (const FName& Cmd);
 
 
 	//-----HUD SquadManager-----
@@ -157,6 +162,10 @@ public:
 	void ServerAddAnAIToIndexSquad();
 	void ServerAddAnAIToIndexSquad_Implementation();
 
+	UFUNCTION(Server, Reliable, BlueprintCallable)
+	void ServerRespawnSoldier(AControlArea* ControlArea);
+	void ServerRespawnSoldier_Implementation(AControlArea* ControlArea);
+
 	UFUNCTION()
 	void BroadCastManagerData();
 
@@ -180,14 +189,14 @@ public:
 protected:
 	/* Return The Correct PlayerParams Class Client-Side */
 	UFUNCTION(Reliable, Client)
-	void DeterminePlayerParams();
-	virtual void DeterminePlayerParams_Implementation();
+	void ClientDeterminePlayerParams();
+	virtual void ClientDeterminePlayerParams_Implementation();
 
 	/* Set Pawn Class On Server For This Controller */
 	UFUNCTION(Reliable, Server, WithValidation)
-	virtual void ServerSetPawn(TSubclassOf<APlayerParam> PlayerParam);
-	virtual void ServerSetPawn_Implementation(TSubclassOf<APlayerParam> PlayerParam);
-	virtual bool ServerSetPawn_Validate(TSubclassOf<APlayerParam> PlayerParam);
+	virtual void ServerSetPawn(const int TeamID, const SoldierClass PlayerClass, const TArray<SoldierClass>& AIClass);
+	virtual void ServerSetPawn_Implementation(const int TeamID, const SoldierClass PlayerClass, const TArray<SoldierClass>& AIClass);
+	virtual bool ServerSetPawn_Validate(const int TeamID, const SoldierClass PlayerClass, const TArray<SoldierClass>& AIClass);
 
 //////////////// Cheat
 public:
