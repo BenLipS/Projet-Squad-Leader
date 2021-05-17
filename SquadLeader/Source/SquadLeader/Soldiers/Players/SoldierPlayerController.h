@@ -89,7 +89,8 @@ protected:
 public:
 ///////// Consoles Commands
 	UFUNCTION(Client, Reliable)
-	void ClientSendCommand(const FString& Cmd, bool bWriteToLog);
+	void ClientSendChangeMapCommand(const FName& Cmd);
+	void ClientSendChangeMapCommand_Implementation (const FName& Cmd);
 
 
 	//-----HUD SquadManager-----
