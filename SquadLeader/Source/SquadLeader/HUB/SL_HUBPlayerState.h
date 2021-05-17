@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -24,9 +22,32 @@ public:
 		void ChangeReadyState();
 
 	UFUNCTION(Client, Reliable)
-		void ClientRemoveHUBPlayerParam();
+	void ClientRemoveHUBPlayerParam();
 	void ClientRemoveHUBPlayerParam_Implementation();
 
 protected:
 	AHUBPlayerParam* LocalHUBPlayerParam;
+	TArray<AHUBPlayerParam*> PlayerParamList;
+
+protected:
+	// function to call server
+	UFUNCTION(Server, reliable)
+	void ServerSetNewArrival(AHUBPlayerParam* NewPlayer);
+	void ServerSetNewArrival_Implementation(AHUBPlayerParam* NewPlayer);
+
+	UFUNCTION(Server, reliable)
+	void ServerUpdatePlayer(AHUBPlayerParam* PlayerParam);  // PlayerID need to fit with an existing one
+	void ServerUpdatePlayer_Implementation(AHUBPlayerParam* PlayerParam);
+
+	UFUNCTION(Server, reliable)
+	void ServerRemovePlayerParam(const FString& RemovePlayerID);
+	void ServerRemovePlayerParam_Implementation(const FString& RemovePlayerID);
+
+public:
+	// function called by the server
+	UFUNCTION(Client, reliable)
+	void ClientRefreshPlayerInfo(const TArray<AHUBPlayerParam*>& PlayerParam);
+	void ClientRefreshPlayerInfo_Implementation(const TArray<AHUBPlayerParam*>& PlayerParam);
+protected:
+	TMap<FString, FString> GetInfoAsStringPair();
 };

@@ -21,6 +21,19 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "GameData")
 		int NbMaxPlayer = 6;
 
-public:
+private:
 	void TeleportAllPlayersToGame();  // non-seamless travel
+
+public:
+	void SetNewArrival(class AHUBPlayerParam* NewPlayer);
+	void UpdatePlayer(class AHUBPlayerParam* PlayerParam);
+	void RemovePlayer(const FString& PlayerID);
+
+protected:
+	TArray<AHUBPlayerParam*> PlayersInfo;
+
+	FTimerHandle timerTestReadyness;
+	bool LastTestWasReady = false;
+	void TestReadyness();
+	void RefreshPlayerInfo();
 };

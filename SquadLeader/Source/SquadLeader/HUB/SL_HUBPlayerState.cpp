@@ -1,5 +1,7 @@
 #include "SL_HUBPlayerState.h"
-#include "SL_HUBGameStateBase.h"
+#include "SL_HUBGameModeBase.h"
+#include "GameFramework/HUD.h"
+#include "../UI/Interface/StatInfoInterface.h"
 #include "../SquadLeaderGameInstance.h"
 
 void ASL_HUBPlayerState::BeginPlay()
@@ -14,10 +16,7 @@ void ASL_HUBPlayerState::BeginPlay()
 		LocalHUBPlayerParam->SetChoosenTeam(1);
 		GI->PlayerParam.GetDefaultObject()->SetTeam(1);
 
-		// send it to HUB GameState
-		if (auto GS = GetWorld()->GetGameState<ASL_HUBGameStateBase>(); GS) {
-			GS->MulticastSetNewArrival(LocalHUBPlayerParam);
-		}
+		ServerSetNewArrival(LocalHUBPlayerParam);
 	}
 }
 
@@ -26,8 +25,7 @@ void ASL_HUBPlayerState::ChangeTeam()
 	int NewTeamId = (LocalHUBPlayerParam->GetChoosenTeam() % 2) + 1;
 	if (GetPawn()->IsLocallyControlled()) {  // send data to the LocalPlayerParam
 		LocalHUBPlayerParam->SetChoosenTeam(NewTeamId);
-		if (auto GS = GetWorld()->GetGameState<ASL_HUBGameStateBase>(); GS)
-			GS->MulticastUpdatePlayer(LocalHUBPlayerParam);
+		ServerUpdatePlayer(LocalHUBPlayerParam);
 
 		auto GI = GetGameInstance<USquadLeaderGameInstance>();
 		GI->PlayerParam.GetDefaultObject()->SetTeam(NewTeamId);
@@ -39,13 +37,51 @@ void ASL_HUBPlayerState::ChangeReadyState()
 	bool NewReadyState = !LocalHUBPlayerParam->GetIsReady();
 	if (GetPawn()->IsLocallyControlled()) {  // send data to the LocalPlayerParam
 		LocalHUBPlayerParam->SetChoosenTeam(NewReadyState);
-		if (auto GS = GetWorld()->GetGameState<ASL_HUBGameStateBase>(); GS)
-			GS->MulticastUpdatePlayer(LocalHUBPlayerParam);
+		ServerUpdatePlayer(LocalHUBPlayerParam);
 	}
 }
 
 void ASL_HUBPlayerState::ClientRemoveHUBPlayerParam_Implementation()
 {
-	if (auto GS = GetWorld()->GetGameState<ASL_HUBGameStateBase>(); GS)
-		GS->MulticastRemovePlayer(LocalHUBPlayerParam->GetPlayerID());
+	ServerRemovePlayerParam(LocalHUBPlayerParam->GetPlayerID());
+}
+
+void ASL_HUBPlayerState::ServerSetNewArrival_Implementation(AHUBPlayerParam* NewPlayer)
+{
+	if (auto GM = GetWorld()->GetAuthGameMode<ASL_HUBGameModeBase>(); GM)
+		GM->SetNewArrival(NewPlayer);
+}
+
+void ASL_HUBPlayerState::ServerUpdatePlayer_Implementation(AHUBPlayerParam* PlayerParam)
+{
+	if (auto GM = GetWorld()->GetAuthGameMode<ASL_HUBGameModeBase>(); GM)
+		GM->UpdatePlayer(PlayerParam);
+}
+
+void ASL_HUBPlayerState::ServerRemovePlayerParam_Implementation(const FString& RemovePlayerID)
+{
+	if (auto GM = GetWorld()->GetAuthGameMode<ASL_HUBGameModeBase>(); GM)
+		GM->RemovePlayer(RemovePlayerID);
+}
+
+void ASL_HUBPlayerState::ClientRefreshPlayerInfo_Implementation(const TArray<AHUBPlayerParam*>& PlayerParam)
+{
+	if (auto PC = GetWorld()->GetFirstPlayerController(); PC) {
+		if (auto HUD = PC->GetHUD<IStatInfoInterface>(); HUD) {
+			TMap<FString, FString> contentToPrint = GetInfoAsStringPair();
+
+			HUD->OnStatsInfoCleanOrder();
+			HUD->OnStatsInfoReceived(contentToPrint);
+		}
+	}
+}
+
+TMap<FString, FString> ASL_HUBPlayerState::GetInfoAsStringPair()
+{
+	TMap<FString, FString> Infos;
+	for (auto& player : PlayerParamList) {
+		if (player)
+			Infos.Add(FString::FromInt(player->GetIsReady()) + " " + player->GetPlayerName(), FString::FromInt(player->GetChoosenTeam()));
+	}
+	return Infos;
 }
