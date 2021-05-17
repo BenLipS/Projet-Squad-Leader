@@ -998,6 +998,21 @@ void ASoldier::Die()
 	FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
 	FGameplayEffectSpecHandle DeathHandle = AbilitySystemComponent->MakeOutgoingSpec(UGE_StateDead::StaticClass(), 1.f, EffectContext);
 	AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*DeathHandle.Data.Get());
+
+	ASquadLeaderGameModeBase* GM = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
+
+	if (GetTeam() && GM && GM->InfluenceMap) {
+		FGridPackage m_package;
+		m_package.m_location_on_map = CurrentPosition;
+
+		ASoldierTeam* team_ = GetTeam();
+		if (team_)
+			m_package.team_value = team_->Id;
+
+		m_package.m_type = Type::Soldier;
+		m_package.ActorID = this->GetUniqueID();
+		GM->InfluenceMap->EraseSoldierInfluence(m_package);
+	}
 }
 
 void ASoldier::Respawn()
