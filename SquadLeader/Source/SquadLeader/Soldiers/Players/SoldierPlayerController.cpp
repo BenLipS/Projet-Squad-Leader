@@ -21,6 +21,9 @@
 #include "SquadLeader/UI/Interface/GameEndInterface.h"
 #include "SquadLeader/UI/Interface/AbilityCooldownInterface.h"
 #include "SquadLeader/UI/Interface/HitMarkerInterface.h"
+#include "SquadLeader/UI/Interface/RespawnInterface.h"
+
+#include "SquadLeader/SquadLeaderGameModeBase.h"
 
 #include "SquadLeader/SquadLeader.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
@@ -94,9 +97,10 @@ void ASoldierPlayerController::NotifySoldierHit(const float _Damage, const bool 
 
 void ASoldierPlayerController::ClientDisplayRespawnWidget_Implementation()
 {
-	APlayerHUD* HUD = GetHUD<APlayerHUD>();
-	if (HUD)
-		HUD->DisplayRespawnWidget();
+	if (auto HUD = GetHUD<IRespawnInterface>(); HUD)
+	{
+		HUD->OnRespawnScreenActivated();
+	}
 }
 
 // Server only
@@ -402,6 +406,16 @@ void ASoldierPlayerController::AddAnAIToIndexSquad()
 void ASoldierPlayerController::ServerAddAnAIToIndexSquad_Implementation()
 {
 	AddAnAIToIndexSquad();
+}
+
+void ASoldierPlayerController::ServerRespawnSoldier_Implementation(AControlArea* ControlArea)
+{
+	ASquadLeaderGameModeBase* GM = GetWorld()->GetAuthGameMode<ASquadLeaderGameModeBase>();
+
+	if (auto Soldier = GetPawn<ASoldierPlayer>(); IsValid(Soldier))
+	{
+		GM->RespawnSoldier(Soldier, ControlArea);
+	}
 }
 
 void ASoldierPlayerController::BroadCastManagerData()

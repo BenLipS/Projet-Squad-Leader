@@ -35,6 +35,9 @@ protected:
 	void AddEntryToList(UMenuListInfoItemWidget* Entry);
 
 	UFUNCTION(BlueprintCallable)
+	void RemoveEntryFromList(UMenuListInfoItemWidget* Entry);
+
+	UFUNCTION(BlueprintCallable)
 	UMenuListInfoItemWidget* GetSelectedItem();
 
 	//-----UMenuItemWidget-----

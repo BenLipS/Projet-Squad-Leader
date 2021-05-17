@@ -28,7 +28,7 @@ void UMenuWidget::SynchronizeProperties()
 				}
 				else
 				{
-					CurrentLayout = MenuLayout;
+					CurrentLayout.Add(MenuLayout);
 				}
 			}
 		}
@@ -37,12 +37,20 @@ void UMenuWidget::SynchronizeProperties()
 
 void UMenuWidget::SetCurrentLayout(FString newlayoutID)
 {
-	if (int32 index = MenuLayouts.FindLastByPredicate([&newlayoutID](UMenuLayoutWidget* layout) {return layout->GetLayoutID() == newlayoutID; }); index != INDEX_NONE)
+	if (auto newLayouts = MenuLayouts.FilterByPredicate([&newlayoutID](UMenuLayoutWidget* layout) {return layout->GetLayoutID() == newlayoutID; }); newLayouts.Num() != 0)
 	{
-		if(CurrentLayout && !IsDesignTime())
-			CurrentLayout->SetVisibility(ESlateVisibility::Collapsed);
+		if (!IsDesignTime())
+		{
+			for (auto oldLayouts : CurrentLayout)
+			{
+				oldLayouts->SetVisibility(ESlateVisibility::Collapsed);
+			}
+		}
 
-		CurrentLayout = MenuLayouts[index];
-		CurrentLayout->SetVisibility(ESlateVisibility::Visible);
+		CurrentLayout = newLayouts;
+		for (auto Layouts : CurrentLayout)
+		{
+			Layouts->SetVisibility(ESlateVisibility::Visible);
+		}
 	}
 }

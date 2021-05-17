@@ -18,6 +18,7 @@
 #include "../Interface/AbilityCooldownDelegateInterface.h"
 #include "../Interface/HitMarkerInterfaceDelegate.h"
 #include "../Interface/ChatDelegateInterface.h"
+#include "../Interface/RespawnInterface.h"
 
 #include "PlayerHUD.generated.h"
 
@@ -38,7 +39,8 @@ class SQUADLEADER_API APlayerHUD : public ASL_HUD,
 	public IGameEndDelegateInterface,
 	public IAbilityCooldownDelegateInterface,
 	public IHitMarkerInterfaceDelegate,
-	public IChatDelegateInterface
+	public IChatDelegateInterface,
+	public IRespawnInterface
 {
 	GENERATED_BODY()
 
@@ -58,8 +60,8 @@ public:
 	void BindSoldierTeamChanges();
 	void BindControlAreas();
 
-	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
-	void DisplayRespawnWidget();
+	/*UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
+	void DisplayRespawnWidget();*/
 
 	/*********************************
 *****INTERFACE IMPLEMENTATION*****
