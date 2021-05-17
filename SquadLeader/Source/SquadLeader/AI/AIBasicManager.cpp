@@ -391,10 +391,10 @@ bool AAIBasicManager::FindAvailableSoldier(uint32& IndexSoldier, const uint32 In
 
 		for (size_t index = 1; index != AIBasicAvailable.Num(); ++index) {
 			const uint32 IndexSoldierAvailable = AIBasicAvailable[index];
-			uint32 IndexControlArea = 0;
-			if (AIBasicList[IndexSoldierAvailable]->GetIndexControlArea(IndexControlArea)) {
+			uint32 IndexControlArea__ = 0;
+			if (AIBasicList[IndexSoldierAvailable]->GetIndexControlArea(IndexControlArea__)) {
 				const float dist = FVector::Dist2D(ControlAreaLocation, AIBasicList[IndexSoldierAvailable]->GetPawn()->GetActorLocation());
-				if (ListSoldierOnControlArea.Find(IndexControlArea)->SoldierIndex.Num() > 2 && dist <= DistanceMinimal) {
+				if (ListSoldierOnControlArea.Find(IndexControlArea__)->SoldierIndex.Num() > 2 && dist <= DistanceMinimal) {
 					IndexSoldier = IndexSoldierAvailable;
 					DistanceMinimal = dist;
 					result = true;

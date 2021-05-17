@@ -152,7 +152,9 @@ void UGA_FireWeaponInstant::HandleTargetData(const FGameplayAbilityTargetDataHan
 	GC_Parameters.Instigator = SourceSoldier;
 	GC_Parameters.SourceObject = SourceWeapon;
 	GC_Parameters.EffectContext = EffectContext;
-	SourceSoldier->GetAbilitySystemComponent()->ExecuteGameplayCue(FGameplayTag::RequestGameplayTag(FName("GameplayCue.FireWeapon.Instant")), GC_Parameters);
+
+	DoAnimation(GC_Parameters);
+	//SourceSoldier->GetAbilitySystemComponent()->ExecuteGameplayCue(FGameplayTag::RequestGameplayTag(FName("GameplayCue.FireWeapon.Instant")), GC_Parameters);
 }
 
 void UGA_FireWeaponInstant::ApplyEffectsToSource()
