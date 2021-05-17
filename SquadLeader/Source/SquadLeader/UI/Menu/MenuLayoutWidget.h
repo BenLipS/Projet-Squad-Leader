@@ -8,40 +8,55 @@
 
 #include "MenuLayoutWidget.generated.h"
 
-/**
- * 
- */
+class UMenuWidget;
+class UMenuItemWidget;
+class UPanelWidget;
+
 UCLASS()
 class SQUADLEADER_API UMenuLayoutWidget : public USL_UserWidget
 {
 	friend class UMenuWidget;
+	friend class UMenuItemWidget;
 	GENERATED_BODY()
 
 protected:
-	class UMenuWidget* Menu;
+	UMenuWidget* Menu;
 
 public:
 	UFUNCTION(BlueprintCallable)
-	class UMenuWidget* GetMenu();
+	UMenuWidget* GetMenu();
 
 protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UNamedSlot* MenuSlot;
 
 	UPROPERTY(BlueprintReadOnly)
-	TArray<class UMenuItemWidget*> MenuItems;
+	TArray<UMenuItemWidget*> MenuItems;
 
-public:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	FString LayoutID;
+	UPROPERTY(BlueprintReadOnly)
+	TMap<FString, UMenuItemWidget*> SelectedItem;
 
 protected:
 	virtual void SynchronizeProperties() override;
 
+protected:
+	virtual void SynchronizeAllMenuItem();
+
+	void SetWidgetLayout(UMenuItemWidget* ItemIn);
+
 private:
-	void SynchronizeAllMenuItem();
-	void SynchronizeAllMenuItem(TArray<UWidget*> ListChildren);
+	template <typename T>
+	void SynchronizeAllMenuItem(UPanelWidget* PanelIn);
 
 public:
+	virtual void OnItemSelected(UMenuItemWidget* newItem);
+
+	virtual void DeselectChannel(FString ChannelIn);
+
+	virtual void DeselectItem(UMenuItemWidget* newItem);
+
+	UFUNCTION(BlueprintCallable)
+	UMenuItemWidget* GetSelectedItem(FString ChannelIn);
+
 	FString GetLayoutID();
 };
