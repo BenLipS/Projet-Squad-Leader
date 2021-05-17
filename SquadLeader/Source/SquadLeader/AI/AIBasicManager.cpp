@@ -108,12 +108,7 @@ void AAIBasicManager::Tick(float DeltaSeconds) {
 
 	double startTime = FPlatformTime::Seconds();
 
-	if (ControlAreaEnnemies.Num() == 1 && ControlAreaNeutral.Num() == 0) {
-		//envoyer toutes les IAs attaquer le point de contrôle et laisser une IA défendre sur les autres point de contrôle
-		FinalAttack();
-		//GEngine->AddOnScreenDebugMessage(20, 5.f, FColor::Cyan, TEXT("Tout le monde en Attaque !!!!"));
-	}
-	else if ((ControlAreasBeenUpdate || AIBasicAvailable.Num() > 10)) {
+	if ((ControlAreasBeenUpdate || AIBasicAvailable.Num() > 8)) {
 		Strategy();
 	}
 
