@@ -580,6 +580,28 @@ void ASoldier::Landed(const FHitResult& _Hit)
 	}
 }
 
+void ASoldier::OnStartCrouch(float HalfHeightAdjust, float ScaledHalfHeightAdjust)
+{
+	Super::OnStartCrouch(HalfHeightAdjust, ScaledHalfHeightAdjust);
+
+	const FVector FirstCameraLoc = FirstPersonCameraComponent->GetRelativeLocation();
+	const FVector ThirdCameraLoc = ThirdPersonCameraComponent->GetRelativeLocation();
+
+	FirstPersonCameraComponent->SetRelativeLocation(FVector{ FirstCameraLoc.X, FirstCameraLoc.Y, FirstCameraLoc.Z - HalfHeightAdjust });
+	ThirdPersonCameraComponent->SetRelativeLocation(FVector{ ThirdCameraLoc.X, ThirdCameraLoc.Y, ThirdCameraLoc.Z - HalfHeightAdjust });
+}
+
+void ASoldier::OnEndCrouch(float HalfHeightAdjust, float ScaledHalfHeightAdjust)
+{
+	Super::OnEndCrouch(HalfHeightAdjust, ScaledHalfHeightAdjust);
+
+	const FVector FirstCameraLoc = FirstPersonCameraComponent->GetRelativeLocation();
+	const FVector ThirdCameraLoc = ThirdPersonCameraComponent->GetRelativeLocation();
+
+	FirstPersonCameraComponent->SetRelativeLocation(FVector{ FirstCameraLoc.X, FirstCameraLoc.Y, FirstCameraLoc.Z + HalfHeightAdjust });
+	ThirdPersonCameraComponent->SetRelativeLocation(FVector{ ThirdCameraLoc.X, ThirdCameraLoc.Y, ThirdCameraLoc.Z + HalfHeightAdjust });
+}
+
 bool ASoldier::StartRunning()
 {
 	AttributeSet->SetMoveSpeedMultiplier(1.8f);

@@ -39,6 +39,8 @@ void ASoldierPlayer::BeginPlay()
 {
 	Super::BeginPlay();
 
+	FollowKillerCamera->Deactivate();
+
 	if (GetTeam())
 		GetTeam()->AddSoldierList(this);
 
@@ -91,11 +93,18 @@ void ASoldierPlayer::Tick(float DeltaTime)
 	if (!IsLocallyControlled())
 		return;
 
-	if (SoldierKiller)
+	if (bFollowKiller && SoldierKiller)
 	{
 		const FRotator LookAtRotation = UKismetMathLibrary::FindLookAtRotation(DeathLocation, SoldierKiller->GetActorLocation());
 		FollowKillerCamera->SetWorldRotation(LookAtRotation.Quaternion());
 		FollowKillerCamera->SetWorldLocation(DeathLocation); // Force the camera to be to the same position regardless the soldier
+	}
+	else if (FollowKillerCamera->IsActive())
+	{
+		const FVector CameraLoc = ThirdPersonCameraComponent->GetComponentLocation();
+		const float ValidZLocation = FMath::Max(CameraLoc.Z, DeathLocation.Z - GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
+		FollowKillerCamera->SetWorldLocation(FVector{ CameraLoc.X, CameraLoc.Y, ValidZLocation });
+		FollowKillerCamera->SetWorldRotation(ThirdPersonCameraComponent->GetComponentRotation());
 	}
 }
 
@@ -146,8 +155,7 @@ void ASoldierPlayer::DeadTagChanged(const FGameplayTag CallbackTag, int32 NewCou
 	else
 	{
 		DeathLocation = CurrentCameraComponent->GetComponentLocation();
-		FTimerHandle Timer{};
-		GetWorldTimerManager().SetTimer(Timer, this, &ASoldierPlayer::ActivateFollowKillerCamera, 2.f, false);
+		ActivateFollowKillerCamera();
 	}
 }
 
@@ -219,15 +227,13 @@ UCameraComponent* ASoldierPlayer::GetFollowKillerCamera() const
 
 void ASoldierPlayer::ActivateFollowKillerCamera()
 {
-	if (!SoldierKiller)
-		return;
-
-	// Allow to see the killer through walls
-	SoldierKiller->GetMesh()->SetRenderCustomDepth(true);
-	
-	FollowKillerCamera->SetWorldLocation(DeathLocation);
 	CurrentCameraComponent->Deactivate();
+	FollowKillerCamera->SetWorldLocation(ThirdPersonCameraComponent->GetComponentLocation());
+	FollowKillerCamera->SetWorldRotation(ThirdPersonCameraComponent->GetComponentRotation());
 	FollowKillerCamera->Activate();
+
+	FTimerHandle Timer{};
+	GetWorldTimerManager().SetTimer(Timer, this, &ASoldierPlayer::FollowKiller, 2.f, false);
 }
 
 void ASoldierPlayer::DeactivateFollowKillerCamera()
@@ -237,6 +243,17 @@ void ASoldierPlayer::DeactivateFollowKillerCamera()
 
 	FollowKillerCamera->Deactivate();
 	CurrentCameraComponent->Activate();
+
+	bFollowKiller = false;
+}
+
+void ASoldierPlayer::FollowKiller()
+{
+	bFollowKiller = true;
+
+	// Allow to see the killer through walls
+	if (SoldierKiller)
+		SoldierKiller->GetMesh()->SetRenderCustomDepth(true);
 }
 
 void ASoldierPlayer::SetSoldierKiller(ASoldier* _SoldierKiller)
