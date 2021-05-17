@@ -73,7 +73,7 @@ void AAISquadController::BeginPlay()
 {
 	Super::BeginPlay();
 	AILevel = GetWorld()->GetAuthGameMode<ASquadLeaderGameModeBase>()->GetAIBasicLevel();
-	HalfAngleShoot = HalfAngleShoot * (1.f / AILevel);
+	HalfAngleShoot = HalfAngleShoot * (1.f / (AILevel/1.3));
 	blackboard->SetValueAsBool("IsInFormation", true);
 	blackboard->SetValueAsBool("HasOrder", false);
 }
