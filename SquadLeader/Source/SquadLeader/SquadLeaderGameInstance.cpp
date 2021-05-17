@@ -5,6 +5,7 @@
 #include "UI/Menu/MenuItem/MenuList/MenuListInfo.h"
 #include "UI/Menu/MenuItem/MenuList/MenuListGame.h"
 #include "UI/HUD/MainMenuHUD.h"
+#include "Kismet/GameplayStatics.h"
 
 #include <istream>
 #include <string>
@@ -75,8 +76,8 @@ void USquadLeaderGameInstance::LaunchGame()
         HttpCallCreateNewGame();
         HttpCallChangeConnectedStatus(2); // notify that the client is joining a new game
     }
-    GetFirstGamePlayer()->ConsoleCommand("open HUB_Level?listen", true);
-    //GetFirstGamePlayer()->ConsoleCommand("open Factory_V2?listen", true);
+    //UGameplayStatics::OpenLevel({}, "HUB_Level", true, "?Listen");
+    UGameplayStatics::OpenLevel(this, "Factory_V2", true, "?Listen");
 }
 
 void USquadLeaderGameInstance::SetGameParamToDefault()
@@ -104,7 +105,7 @@ void USquadLeaderGameInstance::SaveGameParam(TMap<FString, int> IntData, TMap<FS
 
 void USquadLeaderGameInstance::JoinGame(FString IPAdress)
 {
-    GetFirstGamePlayer()->ConsoleCommand("open " + IPAdress, true);
+    UGameplayStatics::OpenLevel(this, *IPAdress, true);
 }
 
 bool USquadLeaderGameInstance::UpdateNetworkStatus(const int MatchResult, float GameDuration, int XP, int NbKillAI, int NbKillPlayer, int NbDeathByAI, int NbDeathByPlayer)

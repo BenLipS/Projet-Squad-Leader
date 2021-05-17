@@ -44,6 +44,7 @@ public:
 	float TargetingSpreadMax;
 
 	// Current spread from continuous targeting
+	UPROPERTY()
 	float CurrentTargetingSpread;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (ExposeOnSpawn = true), Category = "Trace")
@@ -67,10 +68,14 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual void ResetSpread();
 
+	UFUNCTION()
 	virtual float GetCurrentSpread() const;
 
 	UFUNCTION(BlueprintCallable)
 	void SetStartLocation(const FGameplayAbilityTargetingLocationInfo& InStartLocation);
+
+	UFUNCTION(BlueprintCallable)
+	FGameplayAbilityTargetingLocationInfo GetStartLocation() const;
 
 	UFUNCTION(BlueprintCallable)
 	virtual void SetShouldProduceTargetDataOnServer(bool bInShouldProduceTargetDataOnServer);
@@ -79,34 +84,43 @@ public:
 	void SetDestroyOnConfirmation(bool bInDestroyOnConfirmation = false);
 
 	virtual void StartTargeting(UGameplayAbility* Ability) override;
-
 	virtual void ConfirmTargetingAndContinue() override;
-
 	virtual void CancelTargeting() override;
 
 	// Traces as normal, but will manually filter all hit actors
 	virtual void LineTraceWithFilter(TArray<FHitResult>& OutHitResults, const UWorld* World, const FGameplayTargetDataFilterHandle FilterHandle, const FVector& Start, const FVector& End, FName ProfileName, const FCollisionQueryParams Params);
 
+	UFUNCTION()
 	virtual bool ClipCameraRayToAbilityRange(FVector CameraLocation, FVector CameraDirection, FVector AbilityCenter, float AbilityRange, FVector& ClippedPosition);
 
+	UFUNCTION()
 	virtual void StopTargeting();
 
 	FVector GenerateRandomFireTrajectory(const FVector& _Start, FVector&& _End) const;
 
 protected:
 	// Trace End point, useful for debug drawing
+	UPROPERTY()
 	FVector CurrentTraceEnd;
 	
+	UPROPERTY()
 	TArray<TWeakObjectPtr<AGameplayAbilityWorldReticle>> ReticleActors;
+
+	UPROPERTY()
 	TArray<FHitResult> PersistentHitResults;
 
+	UFUNCTION()
 	virtual FGameplayAbilityTargetDataHandle MakeTargetData(const TArray<FHitResult>& HitResults) const;
+
+	UFUNCTION()
 	virtual TArray<FHitResult> PerformTrace();
 
 	virtual void DoTrace(TArray<FHitResult>& HitResults, const UWorld* World, const FGameplayTargetDataFilterHandle FilterHandle, const FVector& Start, const FVector& End, FName ProfileName, const FCollisionQueryParams Params) PURE_VIRTUAL(ASL_Trace, return;);
 
 	// Remove trace data in case a soldier shot on a shield from an ennemy team
+	UFUNCTION(BlueprintCallable)
 	void FilterTraceWithShield(TArray<FHitResult>& _HitResults);
 
+	UFUNCTION()
 	virtual void ShowDebugTrace(TArray<FHitResult>& HitResults, EDrawDebugTrace::Type DrawDebugType, float Duration = 2.0f) PURE_VIRTUAL(ASL_Trace, return;);
 };

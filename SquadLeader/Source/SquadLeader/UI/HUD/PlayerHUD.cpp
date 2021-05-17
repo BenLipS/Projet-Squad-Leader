@@ -99,7 +99,7 @@ void APlayerHUD::BindControlAreas()
 		// Get current control areas - TODO: Bindfuture changes
 		auto ControlAreaList = GS->GetControlAreaManager()->GetControlArea();
 
-		ControlAreaList.Sort([](const AControlArea& Left, const AControlArea& Right) {return Left.GetName() > Right.GetName(); });
+		ControlAreaList.Sort([](const AControlArea& Left, const AControlArea& Right) {return Left.ControlAreaName < Right.ControlAreaName; });
 
 		for (AControlArea* ControlArea : ControlAreaList)
 		{

@@ -120,9 +120,10 @@ void ASquadLeaderGameModeBase::FetchGameParam()
 	BaseTicketsNumber = ImportedGameParam->NbTickets;
 	AIBasicAssaultNumber = ImportedGameParam->NbAIBasicAssault;
 	AIBasicHeavyNumber = ImportedGameParam->NbAIBasicHeavy;
+	AIBasicLevel = ImportedGameParam->LevelAIBasic;
 	StartingAISquadNumber = ImportedGameParam->StartingNbAISquad;
+	AISquadLevel = ImportedGameParam->LevelAISquad;
 }
-
 
 void ASquadLeaderGameModeBase::InitAIManagers()
 {
@@ -240,7 +241,7 @@ void ASquadLeaderGameModeBase::CloseGame()
 	{
 		if (auto PC = Cast<ASoldierPlayerController>(PCIterator->Get()); PC)
 		{
-			PC->ClientSendCommand("open MapMainMenu", true);
+			PC->ClientSendChangeMapCommand("open MapMainMenu");
 		}
 	}
 	//FGenericPlatformMisc::RequestExit(false);
