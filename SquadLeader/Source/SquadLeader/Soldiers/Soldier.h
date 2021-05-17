@@ -23,6 +23,8 @@ class UGameplayEffect;
 class UGE_UpdateStats;
 class UMatineeCameraShake;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSoldierDeath, class ASoldier*, _Soldier);
+
 UENUM()
 enum class SoldierClass : uint8 {
 	NONE,
@@ -189,6 +191,9 @@ public:
 protected:
 	virtual void DeadTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 	virtual void BlurredFromJammerTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
+
+public:
+	FOnSoldierDeath OnSoldierDeath;
 
 public:
 	UFUNCTION()
