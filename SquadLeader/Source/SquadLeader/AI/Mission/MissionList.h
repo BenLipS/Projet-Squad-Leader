@@ -59,11 +59,11 @@ struct SQUADLEADER_API FCompareMission {
 
 	FCompareMission() = default;
 
-	auto operator()(UCaptureMission* _mission_left, UDefendMission* _mission_right)const{ return _mission_left->GetPriority() >= _mission_right->GetPriority(); }
-	auto operator()(UCaptureMission* _mission_left, UPatrolMission* _mission_right)const { return _mission_left->GetPriority() >= _mission_right->GetPriority(); };
-	auto operator()(UCaptureMission* _mission_left, UCaptureMission* _mission_right)const { return _mission_left->GetPriority() >= _mission_right->GetPriority(); };
-	auto operator()(UCaptureMission* _mission_left, UFormationMission* _mission_right)const { return _mission_left->GetPriority() >= _mission_right->GetPriority(); };
-	auto operator()(UCaptureMission* _mission_left, UPatrolControlAreaMission* _mission_right)const { return _mission_left->GetPriority() >= _mission_right->GetPriority(); };
+	auto operator()(UCaptureMission* _mission_left, UDefendMission* _mission_right)const{ return _mission_left->GetPriority() > _mission_right->GetPriority(); }
+	auto operator()(UCaptureMission* _mission_left, UPatrolMission* _mission_right)const { return _mission_left->GetPriority() > _mission_right->GetPriority(); };
+	auto operator()(UCaptureMission* _mission_left, UCaptureMission* _mission_right)const { return _mission_left->GetPriority() > _mission_right->GetPriority(); };
+	auto operator()(UCaptureMission* _mission_left, UFormationMission* _mission_right)const { return _mission_left->GetPriority() > _mission_right->GetPriority(); };
+	auto operator()(UCaptureMission* _mission_left, UPatrolControlAreaMission* _mission_right)const { return _mission_left->GetPriority() > _mission_right->GetPriority(); };
 
 	auto operator()(UDefendMission* _mission_left, UDefendMission* _mission_right)const { return _mission_left->GetPriority() > _mission_right->GetPriority(); };
 	auto operator()(UDefendMission* _mission_left, UPatrolMission* _mission_right)const { return _mission_left->GetPriority() > _mission_right->GetPriority(); };

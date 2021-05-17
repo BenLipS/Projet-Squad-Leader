@@ -18,4 +18,6 @@ class SQUADLEADER_API AHUBHUD : public ASL_HUD
 {
 	GENERATED_BODY()
 	
+protected:
+	virtual void BeginPlay() override;
 };

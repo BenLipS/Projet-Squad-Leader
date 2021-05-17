@@ -9,6 +9,8 @@
 #include "SquadLeader/AbilitySystem/Soldiers/AbilityTasks/SL_ServerWaitForClientTargetData.h"
 #include "SquadLeader/AbilitySystem/Soldiers/AbilityTasks/SL_WaitTargetDataUsingActor.h"
 #include "Abilities/Tasks/AbilityTask_WaitDelay.h"
+#include "AkAudioEvent.h"
+#include "AkGameplayStatics.h"
 
 UGA_FireWeaponInstant::UGA_FireWeaponInstant() :
 ServerWaitForClientTargetDataTask{ nullptr },
@@ -17,7 +19,8 @@ SourceSoldier { nullptr },
 TimeOfLastShoot{ -9999.f }
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
-	ActivationBlockedTags.AddTag(FGameplayTag::RequestGameplayTag(FName("State.ReloadingWeapon")));
+	ActivationBlockedTags.AddTag(FGameplayTag::RequestGameplayTag(FName("State.Weapon.Reloading")));
+	ActivationBlockedTags.AddTag(FGameplayTag::RequestGameplayTag(FName("State.CastingSpell")));
 }
 
 bool UGA_FireWeaponInstant::CanActivateAbility(const FGameplayAbilitySpecHandle _Handle, const FGameplayAbilityActorInfo* _ActorInfo, const FGameplayTagContainer* _SourceTags, const FGameplayTagContainer* _TargetTags, OUT FGameplayTagContainer* _OptionalRelevantTags) const
@@ -71,7 +74,7 @@ void UGA_FireWeaponInstant::FireBullet()
 	const constexpr float epsilon = 0.01; // Error tolerance
 
 	if (FMath::Abs(UGameplayStatics::GetTimeSeconds(GetWorld()) - TimeOfLastShoot) - epsilon < SourceWeapon->GetTimeBetweenShots()
-		|| SourceSoldier->GetAbilitySystemComponent()->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("State.ReloadingWeapon"))))
+		|| SourceSoldier->GetAbilitySystemComponent()->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("State.Weapon.Reloading"))))
 	{
 		// Wait for the next fire
 		TaskWaitDelay = UAbilityTask_WaitDelay::WaitDelay(this, SourceWeapon->GetTimeBetweenShots());
@@ -83,6 +86,7 @@ void UGA_FireWeaponInstant::FireBullet()
 	// Need to reload
 	if (!SourceWeapon->HasAmmo() && !SourceWeapon->HasInfiniteAmmo())
 	{
+		UAkGameplayStatics::PostEventByName("Rifle_Out_of_ammo", SourceWeapon);//maybe play cliking sound here
 		ReloadWeapon();
 		return;
 	}
@@ -161,7 +165,7 @@ void UGA_FireWeaponInstant::ApplyEffectsToSource()
 
 bool UGA_FireWeaponInstant::ApplyDamages(const FGameplayAbilityTargetDataHandle& _Data, ASoldier* _TargetSoldier, const float _Damage)
 {
-	if (SourceSoldier->GetTeam() != _TargetSoldier->GetTeam())
+	if (SourceSoldier->GetTeam() != _TargetSoldier->GetTeam() && _TargetSoldier->IsAlive())
 	{
 		float FinalDamage = _Damage;
 		bool bIsHeadShot = false;

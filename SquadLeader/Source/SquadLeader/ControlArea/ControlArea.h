@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "Core.h"
@@ -13,6 +11,8 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FControlAreaIntChanged, int, newInt);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FControlAreaFloatChanged, float, newFloat);
 
+class ACameraActor;
+
 UCLASS()
 class SQUADLEADER_API AControlArea : public AActor, public IPreInitable
 {
@@ -24,7 +24,6 @@ public:
 	FControlAreaFloatChanged OnPercentageChanged;
 	
 public:	
-	// Sets default values for this actor's properties
 	AControlArea();
 
 public:	
@@ -35,6 +34,11 @@ public:
 	virtual void PreInitialisation() override;
 	virtual int GetPriority() const override;
 
+//////////////// Camera
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera", meta = (ExposeOnSpawn = "true"))
+	ACameraActor* CameraActor;
+
+//////////////// Control
 public:
 	/** Zone Collide */
 	virtual void initCollideElement();
@@ -42,15 +46,15 @@ public:
 	//	class UBoxComponent* BoxCollide;
 
 	UPROPERTY(EditInstanceOnly, Replicated, BlueprintReadWrite, Category = "ControlAreaData")
-		FString ControlAreaName = "";
+	FString ControlAreaName = "";
 
 	/** Control value variables */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ControlValue")
-		int MaxControlValue = 20;
+	int MaxControlValue = 20;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ControlValue")
-		int MinControlValueToControl = 0;
+	int MinControlValueToControl = 0;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ControlValue")
-		int ControlValueToTake = 20;
+	int ControlValueToTake = 20;
 
 protected:
 	UPROPERTY(VisibleAnywhere, ReplicatedUsing = OnRepOwner, Category = "IsTaken")
@@ -58,6 +62,15 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, ReplicatedUsing = OnRepCapturer, Category = "IsTaken")
 	ASoldierTeam* IsCapturedBy;
+
+	UFUNCTION(BlueprintCallable, Category = "Control")
+	void AddSoldierPresence(ASoldier* _Soldier);
+
+	UFUNCTION(BlueprintCallable, Category = "Control")
+	void RemoveSoldierPresence(ASoldier* _Soldier);
+
+	UFUNCTION(BlueprintCallable, Category = "Control")
+	void OnSoldierDeath(ASoldier* _Soldier);
 
 public:
 	UFUNCTION(BlueprintCallable)
@@ -108,7 +121,7 @@ protected:  // time value for calculation frequency
 		void calculateControlValue();
 
 public:
-	UPROPERTY(EditInstanceOnly, Category = "ControlData")
+	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = "ControlData")
 		TMap<ASoldierTeam*, AControlAreaTeamStat*> TeamData;
 
 protected:
@@ -133,4 +146,13 @@ public:
 		void SetIndexControlArea(const uint8 Index) noexcept { IndexControlArea = Index; }
 	UFUNCTION()
 		uint8 GetIndexControlArea() const noexcept { return IndexControlArea; }
+
+	UFUNCTION()
+		double GetInfluenceAverage();
+
+	UFUNCTION()
+		double GetEnnemiInfluenceAverage();
+
+	UFUNCTION()
+	void BroadcastDatas();
 };

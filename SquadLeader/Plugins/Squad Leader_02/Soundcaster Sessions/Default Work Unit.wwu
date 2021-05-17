@@ -1,0 +1,319 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{DCE53AFD-79F9-4BBF-BA15-FD95F1396557}" SchemaVersion="103">
+	<SoundcasterSessions>
+		<WorkUnit Name="Default Work Unit" ID="{DCE53AFD-79F9-4BBF-BA15-FD95F1396557}" PersistMode="Standalone">
+			<ChildrenList>
+				<SoundcasterSession Name="Full Session" ID="{AC39B9DF-6180-4456-9D1D-C1D1EEC98B23}">
+					<ModuleList>
+						<Module>
+							<ObjectRef Name="Rifle_Fire" ID="{0CB7732F-66BB-41EB-9D6D-1A4EFF69510F}" WorkUnitID="{9E871B55-D3FC-411A-B47C-48E3557C4D0E}"/>
+							<Position X="0" Y="0"/>
+						</Module>
+						<Module>
+							<ObjectRef Name="Rifle_Fire_Silencer" ID="{4847BAB5-C634-4222-91A4-0E97B01EE8EE}" WorkUnitID="{9E871B55-D3FC-411A-B47C-48E3557C4D0E}"/>
+							<Position X="0" Y="1"/>
+						</Module>
+						<Module>
+							<ObjectRef Name="Rifle_Reloading" ID="{F97AC0F1-1EEC-47EC-BECC-6DF45B9B6824}" WorkUnitID="{9E871B55-D3FC-411A-B47C-48E3557C4D0E}"/>
+							<Position X="0" Y="2"/>
+						</Module>
+						<Module>
+							<ObjectRef Name="Grenade_Standard_Explosion" ID="{EDA2951C-50D2-4036-A334-22EC038B2B93}" WorkUnitID="{9E871B55-D3FC-411A-B47C-48E3557C4D0E}"/>
+							<Position X="0" Y="3"/>
+						</Module>
+						<Module>
+							<ObjectRef Name="Player_Walk_Concrete" ID="{F27A2022-7C27-40EA-9686-49A303F9C7A5}" WorkUnitID="{4603296A-7743-4166-BFFD-51EB22151C12}"/>
+							<Position X="0" Y="4"/>
+						</Module>
+						<Module>
+							<ObjectRef Name="Player_Dash" ID="{798FD2E2-91B5-4C88-B49D-3FBE44DDB94C}" WorkUnitID="{4603296A-7743-4166-BFFD-51EB22151C12}"/>
+							<Position X="0" Y="5"/>
+						</Module>
+						<Module>
+							<ObjectRef Name="Knob_Menu" ID="{E33A37E2-F4DD-40A1-8D25-ABA763932081}" WorkUnitID="{7491FB6D-31F4-4D72-863B-7066B2148D21}"/>
+							<Position X="0" Y="6"/>
+						</Module>
+						<Module>
+							<ObjectRef Name="Music_Menu" ID="{B8149EC5-4241-4694-A5B2-2556C6D1DE46}" WorkUnitID="{B7024EE1-B199-492F-BFF9-26DC74D54586}"/>
+							<Position X="0" Y="7"/>
+						</Module>
+						<Module>
+							<ObjectRef Name="Music_Menu_Stop" ID="{F8C55871-4B15-4DA1-9A1B-BABBE81DFCF4}" WorkUnitID="{B7024EE1-B199-492F-BFF9-26DC74D54586}"/>
+							<Position X="0" Y="8"/>
+						</Module>
+						<Module>
+							<ObjectRef Name="Rifle_Break" ID="{70BC0903-2715-4240-AE62-397D18D57A4D}" WorkUnitID="{9E871B55-D3FC-411A-B47C-48E3557C4D0E}"/>
+							<Position X="1" Y="0"/>
+						</Module>
+						<Module>
+							<ObjectRef Name="Rifle_Break_Silencer" ID="{4106CC55-5289-418B-8C0A-6A8A1249AB60}" WorkUnitID="{9E871B55-D3FC-411A-B47C-48E3557C4D0E}"/>
+							<Position X="1" Y="1"/>
+						</Module>
+						<Module>
+							<ObjectRef Name="Grenade_Glitch_Explosion" ID="{D2A5DF60-C62E-493A-A33A-DA12CE59A8C7}" WorkUnitID="{9E871B55-D3FC-411A-B47C-48E3557C4D0E}"/>
+							<Position X="1" Y="3"/>
+						</Module>
+						<Module>
+							<ObjectRef Name="Player_Run" ID="{96029052-C9BD-4739-9C95-EE1CBC1C9099}" WorkUnitID="{4603296A-7743-4166-BFFD-51EB22151C12}"/>
+							<Position X="1" Y="4"/>
+						</Module>
+						<Module>
+							<ObjectRef Name="Player_Jump_Concrete" ID="{5FF8C57E-F333-4DEC-BD12-3EA90CAF4917}" WorkUnitID="{4603296A-7743-4166-BFFD-51EB22151C12}"/>
+							<Position X="1" Y="5"/>
+						</Module>
+						<Module>
+							<ObjectRef Name="Ping_Notif_Bad" ID="{8D9127CD-37B1-42BA-A1D2-1B7E992539FF}" WorkUnitID="{7491FB6D-31F4-4D72-863B-7066B2148D21}"/>
+							<Position X="1" Y="6"/>
+						</Module>
+						<Module>
+							<ObjectRef Name="Music_Cinematic_Defeat" ID="{EF4C4763-01F6-4F22-A549-36EF47D96032}" WorkUnitID="{B7024EE1-B199-492F-BFF9-26DC74D54586}"/>
+							<Position X="1" Y="7"/>
+						</Module>
+						<Module>
+							<ObjectRef Name="Music_Cinematic_Defeat_Stop" ID="{ED987E9C-1760-4A13-BABC-57AAC7B5340C}" WorkUnitID="{B7024EE1-B199-492F-BFF9-26DC74D54586}"/>
+							<Position X="1" Y="8"/>
+						</Module>
+						<Module>
+							<ObjectRef Name="Rifle_Out_of_ammo" ID="{65E0E89D-4F75-4359-91AD-3FA714424F7F}" WorkUnitID="{9E871B55-D3FC-411A-B47C-48E3557C4D0E}"/>
+							<Position X="2" Y="0"/>
+						</Module>
+						<Module>
+							<ObjectRef Name="Ability_Heal" ID="{31ABCD9D-6C5E-4D8E-817C-5C80BC34CACA}" WorkUnitID="{E62EFA09-FB1C-449E-8C9B-EDDDD49054C4}"/>
+							<Position X="2" Y="2"/>
+						</Module>
+						<Module>
+							<ObjectRef Name="Grenade_Throw" ID="{BF6669A7-CD9C-4368-9519-927890E642F6}" WorkUnitID="{9E871B55-D3FC-411A-B47C-48E3557C4D0E}"/>
+							<Position X="2" Y="3"/>
+						</Module>
+						<Module>
+							<ObjectRef Name="Player_Stop_Run" ID="{A3BE4D09-52CF-47C2-B03B-C9511323BE6F}" WorkUnitID="{4603296A-7743-4166-BFFD-51EB22151C12}"/>
+							<Position X="2" Y="4"/>
+						</Module>
+						<Module>
+							<ObjectRef Name="Ping_Notif_Bad_v2" ID="{56177412-A4F8-4422-ABA8-25E6FD5E6DE6}" WorkUnitID="{7491FB6D-31F4-4D72-863B-7066B2148D21}"/>
+							<Position X="2" Y="6"/>
+						</Module>
+						<Module>
+							<ObjectRef Name="Music_Cinematic_Victory" ID="{49F6382B-D64A-4220-858D-28BCDEECBAB3}" WorkUnitID="{B7024EE1-B199-492F-BFF9-26DC74D54586}"/>
+							<Position X="2" Y="7"/>
+						</Module>
+						<Module>
+							<ObjectRef Name="Music_Cinematic_Victory_Stop" ID="{52A2AFE4-AE08-429E-9642-C2C6CEF0F8EE}" WorkUnitID="{B7024EE1-B199-492F-BFF9-26DC74D54586}"/>
+							<Position X="2" Y="8"/>
+						</Module>
+						<Module>
+							<ObjectRef Name="Ability_Termal_Vision" ID="{F275C884-BE30-4E98-A8D0-C0FE6FCE55B3}" WorkUnitID="{E62EFA09-FB1C-449E-8C9B-EDDDD49054C4}"/>
+							<Position X="3" Y="2"/>
+						</Module>
+						<Module>
+							<ObjectRef Name="Player_Hurt" ID="{32E583C8-F7A8-4E69-8F6C-E44009B14E25}" WorkUnitID="{4603296A-7743-4166-BFFD-51EB22151C12}"/>
+							<Position X="3" Y="3"/>
+						</Module>
+						<Module>
+							<ObjectRef Name="Player_Walk_Dirt" ID="{D397BC73-A19C-4425-ACD0-5213B3B19138}" WorkUnitID="{4603296A-7743-4166-BFFD-51EB22151C12}"/>
+							<Position X="3" Y="5"/>
+						</Module>
+						<Module>
+							<ObjectRef Name="Ping_Notif_Good" ID="{89E1A0F4-EC0F-4100-912C-669F36553708}" WorkUnitID="{7491FB6D-31F4-4D72-863B-7066B2148D21}"/>
+							<Position X="3" Y="6"/>
+						</Module>
+						<Module>
+							<ObjectRef Name="Music_Gameplay" ID="{EAC0F812-5ED0-468E-A7F9-5C1566ECDD00}" WorkUnitID="{B7024EE1-B199-492F-BFF9-26DC74D54586}"/>
+							<Position X="3" Y="7"/>
+						</Module>
+						<Module>
+							<ObjectRef Name="Music_Gameplay_Stop" ID="{6EE1A207-16F2-417E-83D0-801774B8EC36}" WorkUnitID="{B7024EE1-B199-492F-BFF9-26DC74D54586}"/>
+							<Position X="3" Y="8"/>
+						</Module>
+						<Module>
+							<ObjectRef Name="Pistol_Fire_Laser" ID="{F806E7A4-088F-45F1-8B9E-804DDA52EBB8}" WorkUnitID="{9E871B55-D3FC-411A-B47C-48E3557C4D0E}"/>
+							<Position X="4" Y="0"/>
+						</Module>
+						<Module>
+							<ObjectRef Name="Rifle_Fire_Laser" ID="{4BA49270-2B8B-46A7-8D1F-C89C6443E251}" WorkUnitID="{9E871B55-D3FC-411A-B47C-48E3557C4D0E}"/>
+							<Position X="4" Y="1"/>
+						</Module>
+						<Module>
+							<ObjectRef Name="Rocket_Launch" ID="{4C2622EA-DA52-45DA-AE9B-6AC8D52B6274}" WorkUnitID="{9E871B55-D3FC-411A-B47C-48E3557C4D0E}"/>
+							<Position X="4" Y="3"/>
+						</Module>
+						<Module>
+							<ObjectRef Name="Ambience_Factory" ID="{A3D887EE-0C8A-46D1-AFAA-E0B126442254}" WorkUnitID="{7491FB6D-31F4-4D72-863B-7066B2148D21}"/>
+							<Position X="4" Y="6"/>
+						</Module>
+						<Module>
+							<ObjectRef Name="Stinger_Gameplay_Negative" ID="{55B4D352-4AE2-4B60-8265-957F0BBE8CA1}" WorkUnitID="{B7024EE1-B199-492F-BFF9-26DC74D54586}"/>
+							<Position X="4" Y="7"/>
+						</Module>
+						<Module>
+							<ObjectRef Name="Pistol_Reload_Laser" ID="{D90D1A40-9C11-4CCE-8BFC-07A17198CF32}" WorkUnitID="{9E871B55-D3FC-411A-B47C-48E3557C4D0E}"/>
+							<Position X="5" Y="0"/>
+						</Module>
+						<Module>
+							<ObjectRef Name="Rifle_Reloading_Laser" ID="{4B45BABD-6083-4E81-AA9A-8B31D30D5CD9}" WorkUnitID="{9E871B55-D3FC-411A-B47C-48E3557C4D0E}"/>
+							<Position X="5" Y="1"/>
+						</Module>
+						<Module>
+							<ObjectRef Name="Rocket_Explode" ID="{599F8745-1218-4D78-BE70-5AEFFD50654F}" WorkUnitID="{9E871B55-D3FC-411A-B47C-48E3557C4D0E}"/>
+							<Position X="5" Y="3"/>
+						</Module>
+						<Module>
+							<ObjectRef Name="Respawn" ID="{D55F8669-67B7-464E-9CA5-082F928BE833}" WorkUnitID="{7491FB6D-31F4-4D72-863B-7066B2148D21}"/>
+							<Position X="5" Y="6"/>
+						</Module>
+						<Module>
+							<ObjectRef Name="Stinger_Gameplay_Positive" ID="{13A0794D-7A26-45ED-B419-B0A084A876B4}" WorkUnitID="{B7024EE1-B199-492F-BFF9-26DC74D54586}"/>
+							<Position X="5" Y="7"/>
+						</Module>
+						<Module>
+							<ObjectRef Name="Ennemy_Hit" ID="{A47CCB6A-2762-411F-ADAB-5E24DA2C441D}" WorkUnitID="{0A3C2729-C9B9-45C8-BCE3-38E860BB3203}"/>
+							<Position X="6" Y="2"/>
+						</Module>
+					</ModuleList>
+					<RTPCValueList ShowAll="true"/>
+					<CurrentStateList ShowAll="true">
+						<CurrentStateRef Name="None" ID="{7FD5B3F6-317F-40F7-80E4-8E41B133C2E6}"/>
+						<CurrentStateRef Name="None" ID="{5E178B99-6F7B-4A51-8CC6-F31199A6B9CD}"/>
+					</CurrentStateList>
+					<CurrentSwitchList ShowAll="true">
+						<CurrentSwitchRef Name="Indoors" ID="{6788ADFB-5691-44C8-8810-FC25B8BA949E}"/>
+					</CurrentSwitchList>
+				</SoundcasterSession>
+				<SoundcasterSession Name="Music" ID="{417E1D07-2459-4B8F-881B-9A4CD4D94037}">
+					<ModuleList>
+						<Module>
+							<ObjectRef Name="Music_Menu" ID="{B8149EC5-4241-4694-A5B2-2556C6D1DE46}" WorkUnitID="{B7024EE1-B199-492F-BFF9-26DC74D54586}"/>
+							<Position X="0" Y="0"/>
+						</Module>
+						<Module>
+							<ObjectRef Name="Music_Menu_Stop" ID="{F8C55871-4B15-4DA1-9A1B-BABBE81DFCF4}" WorkUnitID="{B7024EE1-B199-492F-BFF9-26DC74D54586}"/>
+							<Position X="0" Y="1"/>
+						</Module>
+						<Module>
+							<ObjectRef Name="Knob_Menu" ID="{E33A37E2-F4DD-40A1-8D25-ABA763932081}" WorkUnitID="{7491FB6D-31F4-4D72-863B-7066B2148D21}"/>
+							<Position X="0" Y="2"/>
+						</Module>
+						<Module>
+							<ObjectRef Name="Music_Cinematic_Victory" ID="{49F6382B-D64A-4220-858D-28BCDEECBAB3}" WorkUnitID="{B7024EE1-B199-492F-BFF9-26DC74D54586}"/>
+							<Position X="1" Y="0"/>
+						</Module>
+						<Module>
+							<ObjectRef Name="Music_Cinematic_Victory_Stop" ID="{52A2AFE4-AE08-429E-9642-C2C6CEF0F8EE}" WorkUnitID="{B7024EE1-B199-492F-BFF9-26DC74D54586}"/>
+							<Position X="1" Y="1"/>
+						</Module>
+						<Module>
+							<ObjectRef Name="Music_Cinematic_Defeat" ID="{EF4C4763-01F6-4F22-A549-36EF47D96032}" WorkUnitID="{B7024EE1-B199-492F-BFF9-26DC74D54586}"/>
+							<Position X="2" Y="0"/>
+						</Module>
+						<Module>
+							<ObjectRef Name="Music_Cinematic_Defeat_Stop" ID="{ED987E9C-1760-4A13-BABC-57AAC7B5340C}" WorkUnitID="{B7024EE1-B199-492F-BFF9-26DC74D54586}"/>
+							<Position X="2" Y="1"/>
+						</Module>
+					</ModuleList>
+					<RTPCValueList ShowAll="true"/>
+					<CurrentStateList ShowAll="true">
+						<CurrentStateRef Name="Intense" ID="{6441D4BD-D590-446F-B4E1-74DCDA48162D}"/>
+					</CurrentStateList>
+					<CurrentSwitchList ShowAll="true">
+						<CurrentSwitchRef Name="Indoors" ID="{6788ADFB-5691-44C8-8810-FC25B8BA949E}"/>
+					</CurrentSwitchList>
+				</SoundcasterSession>
+				<SoundcasterSession Name="Sfx" ID="{8B856B90-4656-4DEE-AC29-CB022EB633A7}">
+					<ModuleList>
+						<Module>
+							<ObjectRef Name="Rifle_Fire" ID="{0CB7732F-66BB-41EB-9D6D-1A4EFF69510F}" WorkUnitID="{9E871B55-D3FC-411A-B47C-48E3557C4D0E}"/>
+							<Position X="0" Y="0"/>
+						</Module>
+						<Module>
+							<ObjectRef Name="Rifle_Reloading" ID="{F97AC0F1-1EEC-47EC-BECC-6DF45B9B6824}" WorkUnitID="{9E871B55-D3FC-411A-B47C-48E3557C4D0E}"/>
+							<Position X="0" Y="1"/>
+						</Module>
+						<Module>
+							<ObjectRef Name="Rifle_Fire_Silencer" ID="{4847BAB5-C634-4222-91A4-0E97B01EE8EE}" WorkUnitID="{9E871B55-D3FC-411A-B47C-48E3557C4D0E}"/>
+							<Position X="0" Y="2"/>
+						</Module>
+						<Module>
+							<ObjectRef Name="Player_Dash" ID="{798FD2E2-91B5-4C88-B49D-3FBE44DDB94C}" WorkUnitID="{4603296A-7743-4166-BFFD-51EB22151C12}"/>
+							<Position X="0" Y="3"/>
+						</Module>
+						<Module>
+							<ObjectRef Name="Grenade_Standard_Explosion" ID="{EDA2951C-50D2-4036-A334-22EC038B2B93}" WorkUnitID="{9E871B55-D3FC-411A-B47C-48E3557C4D0E}"/>
+							<Position X="0" Y="4"/>
+						</Module>
+						<Module>
+							<ObjectRef Name="Knob_Menu" ID="{E33A37E2-F4DD-40A1-8D25-ABA763932081}" WorkUnitID="{7491FB6D-31F4-4D72-863B-7066B2148D21}"/>
+							<Position X="0" Y="5"/>
+						</Module>
+						<Module>
+							<ObjectRef Name="Ambience_Factory" ID="{A3D887EE-0C8A-46D1-AFAA-E0B126442254}" WorkUnitID="{7491FB6D-31F4-4D72-863B-7066B2148D21}"/>
+							<Position X="0" Y="6"/>
+						</Module>
+						<Module>
+							<ObjectRef Name="Rifle_Break" ID="{70BC0903-2715-4240-AE62-397D18D57A4D}" WorkUnitID="{9E871B55-D3FC-411A-B47C-48E3557C4D0E}"/>
+							<Position X="1" Y="0"/>
+						</Module>
+						<Module>
+							<ObjectRef Name="Rifle_Break_Silencer" ID="{4106CC55-5289-418B-8C0A-6A8A1249AB60}" WorkUnitID="{9E871B55-D3FC-411A-B47C-48E3557C4D0E}"/>
+							<Position X="1" Y="2"/>
+						</Module>
+						<Module>
+							<ObjectRef Name="Player_Walk_Concrete" ID="{F27A2022-7C27-40EA-9686-49A303F9C7A5}" WorkUnitID="{4603296A-7743-4166-BFFD-51EB22151C12}"/>
+							<Position X="1" Y="3"/>
+						</Module>
+						<Module>
+							<ObjectRef Name="Rocket_Launch" ID="{4C2622EA-DA52-45DA-AE9B-6AC8D52B6274}" WorkUnitID="{9E871B55-D3FC-411A-B47C-48E3557C4D0E}"/>
+							<Position X="1" Y="4"/>
+						</Module>
+						<Module>
+							<ObjectRef Name="Ping_Notif_Bad" ID="{8D9127CD-37B1-42BA-A1D2-1B7E992539FF}" WorkUnitID="{7491FB6D-31F4-4D72-863B-7066B2148D21}"/>
+							<Position X="1" Y="6"/>
+						</Module>
+						<Module>
+							<ObjectRef Name="Rifle_Out_of_ammo" ID="{65E0E89D-4F75-4359-91AD-3FA714424F7F}" WorkUnitID="{9E871B55-D3FC-411A-B47C-48E3557C4D0E}"/>
+							<Position X="2" Y="0"/>
+						</Module>
+						<Module>
+							<ObjectRef Name="Rifle_Out_of_ammo_Silencer" ID="{B7833238-BC15-4246-80B3-0139D00C4247}" WorkUnitID="{9E871B55-D3FC-411A-B47C-48E3557C4D0E}"/>
+							<Position X="2" Y="2"/>
+						</Module>
+						<Module>
+							<ObjectRef Name="Player_Jump_Concrete" ID="{5FF8C57E-F333-4DEC-BD12-3EA90CAF4917}" WorkUnitID="{4603296A-7743-4166-BFFD-51EB22151C12}"/>
+							<Position X="2" Y="3"/>
+						</Module>
+						<Module>
+							<ObjectRef Name="Rocket_Explode" ID="{599F8745-1218-4D78-BE70-5AEFFD50654F}" WorkUnitID="{9E871B55-D3FC-411A-B47C-48E3557C4D0E}"/>
+							<Position X="2" Y="4"/>
+						</Module>
+						<Module>
+							<ObjectRef Name="Ping_Notif_Bad_v2" ID="{56177412-A4F8-4422-ABA8-25E6FD5E6DE6}" WorkUnitID="{7491FB6D-31F4-4D72-863B-7066B2148D21}"/>
+							<Position X="2" Y="6"/>
+						</Module>
+						<Module>
+							<ObjectRef Name="Ennemy_Hit" ID="{A47CCB6A-2762-411F-ADAB-5E24DA2C441D}" WorkUnitID="{0A3C2729-C9B9-45C8-BCE3-38E860BB3203}"/>
+							<Position X="3" Y="0"/>
+						</Module>
+						<Module>
+							<ObjectRef Name="Ability_Heal" ID="{31ABCD9D-6C5E-4D8E-817C-5C80BC34CACA}" WorkUnitID="{E62EFA09-FB1C-449E-8C9B-EDDDD49054C4}"/>
+							<Position X="3" Y="1"/>
+						</Module>
+						<Module>
+							<ObjectRef Name="Player_Run" ID="{96029052-C9BD-4739-9C95-EE1CBC1C9099}" WorkUnitID="{4603296A-7743-4166-BFFD-51EB22151C12}"/>
+							<Position X="3" Y="3"/>
+						</Module>
+						<Module>
+							<ObjectRef Name="Player_Stop_Run" ID="{A3BE4D09-52CF-47C2-B03B-C9511323BE6F}" WorkUnitID="{4603296A-7743-4166-BFFD-51EB22151C12}"/>
+							<Position X="4" Y="3"/>
+						</Module>
+					</ModuleList>
+					<RTPCValueList ShowAll="true"/>
+					<CurrentStateList ShowAll="true">
+						<CurrentStateRef Name="Intense" ID="{6441D4BD-D590-446F-B4E1-74DCDA48162D}"/>
+					</CurrentStateList>
+					<CurrentSwitchList ShowAll="true">
+						<CurrentSwitchRef Name="Indoors" ID="{6788ADFB-5691-44C8-8810-FC25B8BA949E}"/>
+					</CurrentSwitchList>
+				</SoundcasterSession>
+			</ChildrenList>
+		</WorkUnit>
+	</SoundcasterSessions>
+</WwiseDocument>

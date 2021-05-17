@@ -18,6 +18,36 @@
 #include "Camera/CameraShake.h"
 //#include "DrawDebugHelpers.h"
 
+TArray<SoldierClass> ASoldier::GetAllPlayableClass()
+{
+	auto ret = TArray<SoldierClass>();
+
+	ret.Add(SoldierClass::ASSAULT);
+	ret.Add(SoldierClass::HEAVY);
+	ret.Add(SoldierClass::SUPPORT);
+
+	return ret;
+}
+
+FString ASoldier::SoldierClassToStr(SoldierClass SoldierClassIn)
+{
+	switch (SoldierClassIn)
+	{
+	case SoldierClass::ASSAULT:
+		return "Assault";
+		break;
+	case SoldierClass::HEAVY:
+		return "Heavy";
+		break;
+	case SoldierClass::SUPPORT:
+		return "Support";
+		break;
+	default:
+		return "None";
+		break;
+	}
+}
+
 ASoldier::ASoldier(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer.SetDefaultSubobjectClass<USoldierMovementComponent>(ACharacter::CharacterMovementComponentName)),
 bAbilitiesInitialized{ false },
 WeaponAttachPointRightHand{ FName("WeaponSocketRightHand") },
@@ -68,17 +98,6 @@ void ASoldier::BeginPlay()
 
 	CacheRelativeTransformMeshInCapsule = GetMesh()->GetRelativeTransform();
 
-	// Teams
-	// TODO: Clients must be aware of their team. If we really want a security with the server, we should call this function
-	// from the server only, have a test to determine wheter we can change the team, then use a ClientSetTeam to replicate the change
-	//if (GetLocalRole() == ROLE_Authority)
-	{
-		// Add this to the team data or use the default team
-		if (GetTeam())
-			GetTeam()->AddSoldierList(this);
-		else if (InitialTeam)
-			SetTeam(InitialTeam);
-	}
 
 	if (StartGameMontage)
 	{
@@ -118,7 +137,7 @@ void ASoldier::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	CurrentPosition = this->GetActorLocation();
 
-	if (FVector::Dist(LastPosition, CurrentPosition) >= 500.f) {
+	if (FVector::Dist(LastPosition, CurrentPosition) >= 1000.f) {
 		LastPosition = CurrentPosition;
 		ASquadLeaderGameModeBase* GM = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
 
@@ -372,6 +391,9 @@ void ASoldier::DeadTagChanged(const FGameplayTag _CallbackTag, int32 _NewCount)
 		// Start ragdoll to the next frame so we can catch all impulses from the capsule before the death - This is useful for the explosion
 		//HandleDeathMontage();
 		GetWorldTimerManager().SetTimerForNextTick(this, &ASoldier::StartRagdoll);
+		GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore); // Make sure alive soldiers aren't blocked
+
+		OnSoldierDeath.Broadcast(this);
 	}
 	else // If dead tag is removed - Handle respawn
 	{
@@ -381,6 +403,7 @@ void ASoldier::DeadTagChanged(const FGameplayTag _CallbackTag, int32 _NewCount)
 
 		ResetWeapons();
 		StopRagdoll();
+		GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
 
 		if (RespawnMontage)
 		{
@@ -552,7 +575,7 @@ void ASoldier::Landed(const FHitResult& _Hit)
 	if (AbilitySystemComponent)
 	{
 		FGameplayTagContainer EffectTagsToRemove;
-		EffectTagsToRemove.AddTag(FGameplayTag::RequestGameplayTag(FName("State.Jumping")));
+		EffectTagsToRemove.AddTag(FGameplayTag::RequestGameplayTag(FName("State.Movement.Jumping")));
 		AbilitySystemComponent->RemoveActiveEffectsWithGrantedTags(EffectTagsToRemove);
 	}
 }
@@ -1009,6 +1032,21 @@ void ASoldier::Die()
 	FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
 	FGameplayEffectSpecHandle DeathHandle = AbilitySystemComponent->MakeOutgoingSpec(UGE_StateDead::StaticClass(), 1.f, EffectContext);
 	AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*DeathHandle.Data.Get());
+
+	ASquadLeaderGameModeBase* GM = Cast<ASquadLeaderGameModeBase>(GetWorld()->GetAuthGameMode());
+
+	if (GetTeam() && GM && GM->InfluenceMap) {
+		FGridPackage m_package;
+		m_package.m_location_on_map = CurrentPosition;
+
+		ASoldierTeam* team_ = GetTeam();
+		if (team_)
+			m_package.team_value = team_->Id;
+
+		m_package.m_type = Type::Soldier;
+		m_package.ActorID = this->GetUniqueID();
+		GM->InfluenceMap->EraseSoldierInfluence(m_package);
+	}
 }
 
 void ASoldier::Respawn()
@@ -1094,6 +1132,15 @@ void ASoldier::StopRagdoll()
 	GetMesh()->SetRelativeTransform(CacheRelativeTransformMeshInCapsule);
 }
 
+void ASoldier::RefreshTeam()
+{
+	if (GetTeam())
+	{
+		GetTeam()->RemoveSoldierList(this);
+		GetTeam()->AddSoldierList(this);
+	}
+}
+
 // network for debug team change
 void ASoldier::ServerCycleBetweenTeam_Implementation() {
 	cycleBetweenTeam();
@@ -1125,7 +1172,7 @@ void ASoldier::cycleBetweenTeam()
 					message = GetTeam()->TeamName;  // Log
 				}
 			}
-			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, message);
+			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, "Team changed to " + message);
 		}
 	}
 	else ServerCycleBetweenTeam();
@@ -1138,14 +1185,15 @@ ASoldierTeam* ASoldier::GetTeam()
 
 bool ASoldier::SetTeam(ASoldierTeam* _Team)
 {
-	// TODO: Clients must be aware of their team. If we really want a security with the server, we should call this function
-	// from the server only, have a test to determine wheter we can change the team, then use a ClientSetTeam to replicate the change
-	//if (GetLocalRole() == ROLE_Authority)
-	{
-		Team = _Team;
-		return true;
-	}
-	return false;
+	if (Team)
+		Team->RemoveSoldierList(this);
+
+	Team = _Team;
+
+	if (Team)
+		Team->AddSoldierList(this);
+
+	return true;
 }
 
 void ASoldier::setup_stimulus() {

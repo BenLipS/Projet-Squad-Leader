@@ -9,6 +9,8 @@
 #include "../Soldiers/Players/SoldierPlayerController.h"
 #include "SquadLeader/UI/Interface/WeaponInterface.h"
 #include "GameFramework/HUD.h"
+#include "AkAudioEvent.h"
+#include "AkGameplayStatics.h"
 
 ASL_Weapon::ASL_Weapon()
 {
@@ -23,7 +25,6 @@ ASL_Weapon::ASL_Weapon()
 
 	// Tags
 	WeaponAbilityTag = FGameplayTag::RequestGameplayTag("Ability.Skill.FireWeapon");
-	WeaponIsFiringTag = FGameplayTag::RequestGameplayTag("Weapon.IsFiring");
 	FireMode = FGameplayTag::RequestGameplayTag("Weapon.FireMode.Automatic");
 }
 
@@ -32,6 +33,10 @@ void ASL_Weapon::BeginPlay()
 	Super::BeginPlay();
 
 	ForceUpdateAmmo();
+	
+	//AkGameplayStatics::
+
+	//SetSwitch("Environment", "Outdoors", this);
 }
 
 void ASL_Weapon::EndPlay(EEndPlayReason::Type _EndPlayReason)

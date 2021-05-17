@@ -47,6 +47,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void SetGameParamToRandom();
 	UFUNCTION(BlueprintCallable)
+		void SaveGameParam(TMap<FString, int> IntData, TMap<FString, FString> StringData);
+	
+	UFUNCTION(BlueprintCallable)
 		void JoinGame(FString IPAdress);
 	UFUNCTION(BlueprintCallable)
 		void ProfileInfo();
@@ -89,11 +92,11 @@ private:
 	void OnResponseDoNothing(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 
 public:
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TSubclassOf <AGameParam> GameParam;
 
-	UPROPERTY(EditDefaultsOnly)
-		TSubclassOf <APlayerParam> PlayerParam;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TSubclassOf <APlayerParam> PlayerParam;
 
 private:
 	FString GameID = "";  // only define if a game is create

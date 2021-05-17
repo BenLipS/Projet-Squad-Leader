@@ -21,12 +21,14 @@
 #include "SquadLeader/UI/Interface/GameEndInterface.h"
 #include "SquadLeader/UI/Interface/AbilityCooldownInterface.h"
 #include "SquadLeader/UI/Interface/HitMarkerInterface.h"
+#include "SquadLeader/UI/Interface/RespawnInterface.h"
+
+#include "SquadLeader/SquadLeaderGameModeBase.h"
 
 #include "SquadLeader/SquadLeader.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
+#include "GameFramework/GameModeBase.h"
 
-//TODO: rmove next include -> only use for the team init -> only use on temporary debug
-#include "../../GameState/SquadLeaderGameState.h"
 
 ASoldierPlayerController::ASoldierPlayerController()
 {
@@ -35,15 +37,11 @@ ASoldierPlayerController::ASoldierPlayerController()
 	SquadManagerData = FAISquadManagerData();
 }
 
-UClass* ASoldierPlayerController::GetPlayerPawnClass()
-{
-	return GetPlayerState<ASoldierPlayerState>()->PlayerParam.GetDefaultObject()->GetPlayerClass();
-}
-
 void ASoldierPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 	CreateHUD();
+	ClientDeterminePlayerParams();
 }
 
 void ASoldierPlayerController::CreateHUD_Implementation()
@@ -95,7 +93,14 @@ void ASoldierPlayerController::NotifySoldierHit(const float _Damage, const bool 
 {
 	if (auto HUD = GetHUD<IHitMarkerInterface>(); HUD)
 		HUD->OnDamageReceived(_Damage, _bIsHeadShot);
+}
 
+void ASoldierPlayerController::ClientDisplayRespawnWidget_Implementation()
+{
+	if (auto HUD = GetHUD<IRespawnInterface>(); HUD)
+	{
+		HUD->OnRespawnScreenActivated();
+	}
 }
 
 // Server only
@@ -103,35 +108,31 @@ void ASoldierPlayerController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 
-	if (ASoldierPlayerState* PS = GetPlayerState<ASoldierPlayerState>(); PS)
+	if (ASoldierPlayerState* PS = GetPlayerState<ASoldierPlayerState>(); PS) {
 		PS->GetAbilitySystemComponent()->InitAbilityActorInfo(PS, InPawn);
 
-	//TODO: remove the team init -> only use on temporary debug
-	if (auto GS = GetWorld()->GetGameState<ASquadLeaderGameState>(); GS) {
-
-		if (GS->GetSoldierTeamCollection().Num() == 0) {  // no team obtainable for now, we need to find one (used when playing as server or if no teams in the map)
-			ASoldierTeam* LastTeamObtainable = nullptr;
-			for (auto SceneActors : GetWorld()->PersistentLevel->Actors) {
-				if (auto SoldierTeam = Cast<ASoldierTeam>(SceneActors); SoldierTeam) {
-					LastTeamObtainable = SoldierTeam;
-				}
-			}
-			ensure(LastTeamObtainable);  // if trigger, please place a team in the map
-			SetTeam(LastTeamObtainable);
-		}
-		else SetTeam(GS->GetSoldierTeamCollection()[0]);
-		
-		if (auto soldier = Cast<ASoldierPlayer>(InPawn); soldier->GetSquadManager()) {
-			soldier->GetSquadManager()->UpdateSquadTeam(GetTeam());
+		// re-bind HUD on possess
+		CreateHUD();
+		if (auto CurrentHUD = GetHUD<APlayerHUD>())
+		{
+			CurrentHUD->SetPlayerStateLink();
+			CurrentHUD->SetAIStateLink();
 		}
 	}
-	Cast<ASoldierPlayer>(InPawn)->GetSquadManager()->OnSquadChanged.AddDynamic(this, &ASoldierPlayerController::OnSquadChanged);
-	Cast<ASoldierPlayer>(InPawn)->GetSquadManager()->OnMemberHealthChanged.AddDynamic(this, &ASoldierPlayerController::OnSquadMemberHealthChanged);
-	Cast<ASoldierPlayer>(InPawn)->GetSquadManager()->OnMemberMaxHealthChanged.AddDynamic(this, &ASoldierPlayerController::OnSquadMemberMaxHealthChanged);
-	Cast<ASoldierPlayer>(InPawn)->GetSquadManager()->OnMemberShieldChanged.AddDynamic(this, &ASoldierPlayerController::OnSquadMemberShieldChanged);
-	Cast<ASoldierPlayer>(InPawn)->GetSquadManager()->OnMemberMaxShieldChanged.AddDynamic(this, &ASoldierPlayerController::OnSquadMemberMaxShieldChanged);
-	Cast<ASoldierPlayer>(InPawn)->GetSquadManager()->OnMemberStateChanged.AddDynamic(this, &ASoldierPlayerController::OnSquadMemberMissionChanged);
-	Cast<ASoldierPlayer>(InPawn)->GetSquadManager()->BroadCastSquadData();
+
+	ASoldierPlayer* SoldierPlayer = Cast<ASoldierPlayer>(InPawn);
+	AAISquadManager* SM = SoldierPlayer->GetSquadManager();
+	ensure(SM);
+
+	SM->OnSquadChanged.AddDynamic(this, &ASoldierPlayerController::OnSquadChanged);
+	SM->OnMemberHealthChanged.AddDynamic(this, &ASoldierPlayerController::OnSquadMemberHealthChanged);
+	SM->OnMemberMaxHealthChanged.AddDynamic(this, &ASoldierPlayerController::OnSquadMemberMaxHealthChanged);
+	SM->OnMemberShieldChanged.AddDynamic(this, &ASoldierPlayerController::OnSquadMemberShieldChanged);
+	SM->OnMemberMaxShieldChanged.AddDynamic(this, &ASoldierPlayerController::OnSquadMemberMaxShieldChanged);
+	SM->OnMemberStateChanged.AddDynamic(this, &ASoldierPlayerController::OnSquadMemberMissionChanged);
+	SM->BroadCastSquadData();
+
+	SoldierPlayer->OnRep_SquadManager();
 }
 
 void ASoldierPlayerController::OnRep_PlayerState()
@@ -407,6 +408,16 @@ void ASoldierPlayerController::ServerAddAnAIToIndexSquad_Implementation()
 	AddAnAIToIndexSquad();
 }
 
+void ASoldierPlayerController::ServerRespawnSoldier_Implementation(AControlArea* ControlArea)
+{
+	ASquadLeaderGameModeBase* GM = GetWorld()->GetAuthGameMode<ASquadLeaderGameModeBase>();
+
+	if (auto Soldier = GetPawn<ASoldierPlayer>(); IsValid(Soldier))
+	{
+		GM->RespawnSoldier(Soldier, ControlArea);
+	}
+}
+
 void ASoldierPlayerController::BroadCastManagerData()
 {
 	if (auto CurrentHUD = GetHUD<ISquadInterface>(); CurrentHUD)
@@ -446,6 +457,43 @@ void ASoldierPlayerController::OnWallVisionDeactivate_Implementation()
 //{
 //
 //}
+
+
+// Pawn Class
+void ASoldierPlayerController::ClientDeterminePlayerParams_Implementation()
+{
+	if (IsLocalController()) //Only Do This Locally (NOT Client-Only, since Server wants this too!)
+	{
+		APlayerParam* ClientParam = GetGameInstance<USquadLeaderGameInstance>()->PlayerParam.GetDefaultObject();
+		ServerSetPawn(ClientParam->GetTeam(), ClientParam->GetPlayerClass(), ClientParam->GetAllAIClass());
+	}
+}
+
+bool ASoldierPlayerController::ServerSetPawn_Validate(const int TeamID, const SoldierClass PlayerClass, const TArray<SoldierClass>& AIClass)
+{
+	return true;
+}
+
+void ASoldierPlayerController::ServerSetPawn_Implementation(const int TeamID, const SoldierClass PlayerClass, const TArray<SoldierClass>& AIClass)
+{
+	// spawn actor based on the one in the local game instance to keep reference
+	if (APlayerParam* PlayerParam = Cast<APlayerParam>(GetWorld()->SpawnActor(GetGameInstance<USquadLeaderGameInstance>()->PlayerParam)); PlayerParam) {
+		// make needed changes for this version (team, player class and AI class)
+		PlayerParam->SetTeam(TeamID);
+		PlayerParam->SetPlayerClass(PlayerClass);
+		for (int counter = 0; counter < AIClass.Num(); counter++) {
+			PlayerParam->SetAIClass(AIClass[counter], counter);
+		}
+
+		// give the new actor to the player state
+		GetPlayerState<ASoldierPlayerState>()->SetPlayerParam(PlayerParam, this);
+	}
+	else {
+		// if the player param does not spawn, use the local param of the host
+		GetPlayerState<ASoldierPlayerState>()->SetPlayerParam(GetGameInstance<USquadLeaderGameInstance>()->PlayerParam.GetDefaultObject(), this);
+	}
+}
+
 
 void ASoldierPlayerController::Cheat_AddAISquad()
 {

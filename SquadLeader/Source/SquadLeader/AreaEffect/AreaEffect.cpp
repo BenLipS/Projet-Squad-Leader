@@ -27,6 +27,7 @@ void AAreaEffect::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifet
 	DOREPLIFETIME(AAreaEffect, Interval);
 	DOREPLIFETIME(AAreaEffect, ImpulseStrenghBase);
 	DOREPLIFETIME(AAreaEffect, CurveImpulseStrengh);
+	DOREPLIFETIME(AAreaEffect, bIgnoreBlock);
 }
 
 void AAreaEffect::BeginPlay()
@@ -57,6 +58,9 @@ void AAreaEffect::OnReadyToApplyEffects()
 	if (!SourceSoldier)
 		return;
 
+	if (GetLocalRole() < ENetRole::ROLE_Authority)
+		return;
+
 	FCollisionShape CollisionShape;
 	CollisionShape.ShapeType = ECollisionShape::Sphere;
 	CollisionShape.SetSphere(Radius);
@@ -68,38 +72,54 @@ void AAreaEffect::OnReadyToApplyEffects()
 	FCollisionQueryParams QueryParams{};
 	QueryParams.AddIgnoredActor(this);
 
-	if (GetWorld()->SweepMultiByProfile(HitActors, StartTrace, EndTrace, FQuat::FQuat(), ProfileAreaEffectCollisionName, CollisionShape, QueryParams))
+	if (bIgnoreInstigator)
+		QueryParams.AddIgnoredActor(GetInstigator());
+
+	GetWorld()->SweepMultiByProfile(HitActors, StartTrace, EndTrace, FQuat::FQuat(), ProfileAreaEffectCollisionName, CollisionShape, QueryParams);
+
+	const ASoldierTeam* SourceTeam = SourceSoldier->GetTeam();
+
+	for (int32 i = 0; i < HitActors.Num(); ++i)
 	{
-		for (int32 i = 0; i < HitActors.Num(); ++i)
+		AActor* TargetActor = HitActors[i].GetActor();
+		if (TargetActor == nullptr)
+			continue;
+
+		const float DistActorArea = FVector::Dist(TargetActor->GetActorLocation(), GetActorLocation());
+
+		if (ASoldier* TargetSoldier = Cast<ASoldier>(TargetActor); TargetSoldier && TargetSoldier->GetAbilitySystemComponent())
 		{
-			AActor* TargetActor = HitActors[i].GetActor();
-			if (TargetActor == nullptr)
+			// Never apply effects on dead soldiers
+			if (!TargetSoldier->IsAlive())
 				continue;
 
-			const float DistActorArea = FVector::Dist(TargetActor->GetActorLocation(), GetActorLocation());
+			// Ignore allies if asked
+			if (bIgnoreAllies && SourceTeam == TargetSoldier->GetTeam())
+				continue;
 
-			if (ASoldier* TargetSoldier = Cast<ASoldier>(TargetActor); TargetSoldier && TargetSoldier->GetAbilitySystemComponent())
-			{
-				// Make sure there is no object blocking the effect
-				TArray<FHitResult> HitActorsBeforeSoldier = HitActors;
-				HitActorsBeforeSoldier.RemoveAt(i, HitActors.Num() - i);
+			// Ignore ennemies if asked
+			if (bIgnoreEnnemies && SourceTeam != TargetSoldier->GetTeam())
+				continue;
 
-				if (!ValidateEffectOnSoldier(HitActors[i], HitActorsBeforeSoldier))
-					continue;
+			// Make sure there is no object blocking the effect
+			TArray<FHitResult> HitActorsBeforeSoldier = HitActors;
+			HitActorsBeforeSoldier.RemoveAt(i, HitActors.Num() - i);
 
-				UAbilitySystemComponent* TargetASC = TargetSoldier->GetAbilitySystemComponent();
-				ApplyDamages(TargetASC, DistActorArea);
-				ApplyGameplayEffects(TargetASC);
-			}
+			if (!ValidateEffectOnSoldier(HitActors[i]))
+				continue;
 
-			ApplyImpulse(TargetActor, DistActorArea);
+			UAbilitySystemComponent* TargetASC = TargetSoldier->GetAbilitySystemComponent();
+			ApplyDamages(TargetASC, DistActorArea);
+			ApplyGameplayEffects(TargetASC);
 		}
+
+		ApplyImpulse(TargetActor, DistActorArea);
 	}
 }
 
-bool AAreaEffect::ValidateEffectOnSoldier(const FHitResult& _HitSoldier, const TArray<FHitResult>& _HitActors)
+bool AAreaEffect::ValidateEffectOnSoldier(const FHitResult& _HitSoldier)
 {
-	if (bIgnoreBlock || _HitActors.Num() <= 0) // No object between the soldier and the area effect
+	if (bIgnoreBlock)
 		return true;
 
 	TArray<FHitResult> HitResults;
@@ -111,11 +131,12 @@ bool AAreaEffect::ValidateEffectOnSoldier(const FHitResult& _HitSoldier, const T
 		CollisionChannel = ECC_Projectile1;
 
 	const FVector StartTrace = GetActorLocation();
-	const FVector EndTrace = _HitSoldier.ImpactPoint;
-	GetWorld()->LineTraceMultiByChannel(HitResults, StartTrace, EndTrace + 10.f * (EndTrace - StartTrace), CollisionChannel, QueryParams);
+	const FVector EndTrace = _HitSoldier.ImpactPoint + /*100.f **/ (_HitSoldier.ImpactPoint - StartTrace).GetSafeNormal();
 
+	GetWorld()->LineTraceMultiByChannel(HitResults, StartTrace, EndTrace, CollisionChannel, QueryParams);
 	FilterTraceWithShield(HitResults);
 
+	// This test might incorrect sometimes. Since we ignore overlaps, we should return true if the soldiers is found in HitResults
 	return HitResults.Num() > 0 && HitResults.Last().Actor == _HitSoldier.Actor;
 }
 
@@ -200,13 +221,11 @@ FVector AAreaEffect::DetermineImpulse(AActor* _Actor, const float _DistActorArea
 
 void AAreaEffect::FilterTraceWithShield(TArray<FHitResult>& _HitResults)
 {
-	ASoldier* SoldierShooter = Cast<ASoldier>(GetInstigator());
-
 	for (int32 i = 0; i < _HitResults.Num(); ++i)
 	{
 		if (AShield* Shield = Cast<AShield>(_HitResults[i].Actor); Shield)
 		{
-			_HitResults.RemoveAt(FMath::Min(i + 1, _HitResults.Num() - 1), _HitResults.Num() - i - 1);
+			_HitResults.RemoveAt(i, _HitResults.Num() - i);
 			return;
 		}
 	}

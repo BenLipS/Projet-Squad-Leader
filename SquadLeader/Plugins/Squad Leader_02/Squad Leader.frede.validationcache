@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ValidationCache Version="1" SchemaVersion="94">
+	<ValidationCacheItem File="D:\APPLICATION\WWISE\Video Games\Squad Leader\Actor-Mixer Hierarchy\Ability.wwu" DateLow="1620579009" DateHigh="0"/>
+	<ValidationCacheItem File="D:\APPLICATION\WWISE\Video Games\Squad Leader\Actor-Mixer Hierarchy\Default Work Unit.wwu" DateLow="1620515738" DateHigh="0"/>
+	<ValidationCacheItem File="D:\APPLICATION\WWISE\Video Games\Squad Leader\Actor-Mixer Hierarchy\Ennemy.wwu" DateLow="1619126959" DateHigh="0"/>
+	<ValidationCacheItem File="D:\APPLICATION\WWISE\Video Games\Squad Leader\Actor-Mixer Hierarchy\Environment.wwu" DateLow="1620603191" DateHigh="0"/>
+	<ValidationCacheItem File="D:\APPLICATION\WWISE\Video Games\Squad Leader\Actor-Mixer Hierarchy\Player.wwu" DateLow="1620595989" DateHigh="0"/>
+	<ValidationCacheItem File="D:\APPLICATION\WWISE\Video Games\Squad Leader\Actor-Mixer Hierarchy\Weapons.wwu" DateLow="1620603191" DateHigh="0"/>
+	<ValidationCacheItem File="D:\APPLICATION\WWISE\Video Games\Squad Leader\Attenuations\Default Work Unit.wwu" DateLow="1620595989" DateHigh="0"/>
+	<ValidationCacheItem File="D:\APPLICATION\WWISE\Video Games\Squad Leader\Audio Devices\Default Work Unit.wwu" DateLow="1618953582" DateHigh="0"/>
+	<ValidationCacheItem File="D:\APPLICATION\WWISE\Video Games\Squad Leader\Control Surface Sessions\Default Work Unit.wwu" DateLow="1618953582" DateHigh="0"/>
+	<ValidationCacheItem File="D:\APPLICATION\WWISE\Video Games\Squad Leader\Conversion Settings\Default Work Unit.wwu" DateLow="1618953582" DateHigh="0"/>
+	<ValidationCacheItem File="D:\APPLICATION\WWISE\Video Games\Squad Leader\Conversion Settings\Factory Conversion Settings.wwu" DateLow="1603410942" DateHigh="0"/>
+	<ValidationCacheItem File="D:\APPLICATION\WWISE\Video Games\Squad Leader\Dynamic Dialogue\Default Work Unit.wwu" DateLow="1618953582" DateHigh="0"/>
+	<ValidationCacheItem File="D:\APPLICATION\WWISE\Video Games\Squad Leader\Effects\Default Work Unit.wwu" DateLow="1619459783" DateHigh="0"/>
+	<ValidationCacheItem File="D:\APPLICATION\WWISE\Video Games\Squad Leader\Effects\Factory Effects.wwu" DateLow="1619474261" DateHigh="0"/>
+	<ValidationCacheItem File="D:\APPLICATION\WWISE\Video Games\Squad Leader\Events\Ability.wwu" DateLow="1620579009" DateHigh="0"/>
+	<ValidationCacheItem File="D:\APPLICATION\WWISE\Video Games\Squad Leader\Events\Default Work Unit.wwu" DateLow="1620578161" DateHigh="0"/>
+	<ValidationCacheItem File="D:\APPLICATION\WWISE\Video Games\Squad Leader\Events\Ennemy.wwu" DateLow="1620514493" DateHigh="0"/>
+	<ValidationCacheItem File="D:\APPLICATION\WWISE\Video Games\Squad Leader\Events\Environment.wwu" DateLow="1620578793" DateHigh="0"/>
+	<ValidationCacheItem File="D:\APPLICATION\WWISE\Video Games\Squad Leader\Events\Music.wwu" DateLow="1620582101" DateHigh="0"/>
+	<ValidationCacheItem File="D:\APPLICATION\WWISE\Video Games\Squad Leader\Events\Player.wwu" DateLow="1620513339" DateHigh="0"/>
+	<ValidationCacheItem File="D:\APPLICATION\WWISE\Video Games\Squad Leader\Events\Weapons.wwu" DateLow="1620603191" DateHigh="0"/>
+	<ValidationCacheItem File="D:\APPLICATION\WWISE\Video Games\Squad Leader\Game Parameters\Default Work Unit.wwu" DateLow="1618953582" DateHigh="0"/>
+	<ValidationCacheItem File="D:\APPLICATION\WWISE\Video Games\Squad Leader\Interactive Music Hierarchy\Default Work Unit.wwu" DateLow="1620508162" DateHigh="0"/>
+	<ValidationCacheItem File="D:\APPLICATION\WWISE\Video Games\Squad Leader\Interactive Music Hierarchy\Music.wwu" DateLow="1620603191" DateHigh="0"/>
+	<ValidationCacheItem File="D:\APPLICATION\WWISE\Video Games\Squad Leader\Master-Mixer Hierarchy\Default Work Unit.wwu" DateLow="1619483275" DateHigh="0"/>
+	<ValidationCacheItem File="D:\APPLICATION\WWISE\Video Games\Squad Leader\Mixing Sessions\Default Work Unit.wwu" DateLow="1618953582" DateHigh="0"/>
+	<ValidationCacheItem File="D:\APPLICATION\WWISE\Video Games\Squad Leader\Modulators\Default Work Unit.wwu" DateLow="1620514729" DateHigh="0"/>
+	<ValidationCacheItem File="D:\APPLICATION\WWISE\Video Games\Squad Leader\Presets\Default Work Unit.wwu" DateLow="1618953582" DateHigh="0"/>
+	<ValidationCacheItem File="D:\APPLICATION\WWISE\Video Games\Squad Leader\Queries\Default Work Unit.wwu" DateLow="1618953582" DateHigh="0"/>
+	<ValidationCacheItem File="D:\APPLICATION\WWISE\Video Games\Squad Leader\Queries\Factory Queries.wwu" DateLow="1603410943" DateHigh="0"/>
+	<ValidationCacheItem File="D:\APPLICATION\WWISE\Video Games\Squad Leader\SoundBanks\Default Work Unit.wwu" DateLow="1618953582" DateHigh="0"/>
+	<ValidationCacheItem File="D:\APPLICATION\WWISE\Video Games\Squad Leader\Soundcaster Sessions\Default Work Unit.wwu" DateLow="1620603191" DateHigh="0"/>
+	<ValidationCacheItem File="D:\APPLICATION\WWISE\Video Games\Squad Leader\Squad Leader.frede.wsettings" DateLow="1620603294" DateHigh="0"/>
+	<ValidationCacheItem File="D:\APPLICATION\WWISE\Video Games\Squad Leader\Squad Leader.wproj" DateLow="1618953582" DateHigh="0"/>
+	<ValidationCacheItem File="D:\APPLICATION\WWISE\Video Games\Squad Leader\States\Default Work Unit.wwu" DateLow="1620578161" DateHigh="0"/>
+	<ValidationCacheItem File="D:\APPLICATION\WWISE\Video Games\Squad Leader\Switches\Default Work Unit.wwu" DateLow="1618961048" DateHigh="0"/>
+	<ValidationCacheItem File="D:\APPLICATION\WWISE\Video Games\Squad Leader\Triggers\Default Work Unit.wwu" DateLow="1618953582" DateHigh="0"/>
+	<ValidationCacheItem File="D:\APPLICATION\WWISE\Video Games\Squad Leader\Virtual Acoustics\Default Work Unit.wwu" DateLow="1618953582" DateHigh="0"/>
+</ValidationCache>

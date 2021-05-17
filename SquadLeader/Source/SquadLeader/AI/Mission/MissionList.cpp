@@ -11,7 +11,7 @@ auto FMissionAction::operator()(UCaptureMission* _mission)const
 	_mission->SetState(MissionState::eRUNNING);
 	m_ai_controller->SetControlAreaBB(_mission->GetControlArea());
 
-	m_ai_controller->BecomeUnavailable();
+	//m_ai_controller->BecomeUnavailable();
 }
 auto FMissionAction::operator()(UDefendMission* _mission)const
 {
@@ -42,6 +42,7 @@ auto FAIState::operator()(UCaptureMission* _mission) const {
 }
 auto FAIState::operator()(UPatrolMission* _mission) const {
 	m_ai_controller->SetState(AIBasicState::Patroling);
+	//GEngine->AddOnScreenDebugMessage(40, 1.f, FColor::Yellow, TEXT("Passe en patrouille sur une control area"));
 }
 auto FAIState::operator()(UDefendMission* _mission) const {
 	m_ai_controller->SetState(AIBasicState::Defend);
@@ -52,6 +53,7 @@ auto FAIState::operator()(UFormationMission* _mission) const {
 auto FAIState::operator()(UPatrolControlAreaMission* _mission) const {
 	//GEngine->AddOnScreenDebugMessage(10, 1.f, FColor::Black, TEXT("Changement d'état pour partir en patrouille !"));
 	m_ai_controller->SetState(AIBasicState::Patroling);
+	//GEngine->AddOnScreenDebugMessage(40, 1.f, FColor::Yellow, TEXT("Passe en patrouille de controle area sur une control area"));
 }
 
 
@@ -94,6 +96,8 @@ void UMissionList::EndMission() {
 	if (m_missions.Num() > 1) {
 		m_missions.RemoveAt(m_index_current_mission);
 	}
+
+	m_index_current_mission = m_missions.Num() - 1;
 	StateChange();
 }
 

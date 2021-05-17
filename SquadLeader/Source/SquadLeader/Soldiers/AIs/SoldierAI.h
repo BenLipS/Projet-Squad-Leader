@@ -59,6 +59,8 @@ class SQUADLEADER_API ASoldierAI : public ASoldier
 public:
 	ASoldierAI(const FObjectInitializer& _ObjectInitializer);
 
+	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
+
 //////////////// Controllers
 protected:
 	virtual void LockControls() override;
@@ -84,6 +86,11 @@ protected:
 public:
 	virtual FVector GetLookingAtPosition(const float _MaxRange = 99999.f) const override;
 
+//////////////// Team
+public:
+	// This is usually true except for the squad AI who wait for squadManager replication - for the minimap
+	UPROPERTY(Replicated)
+	bool bUpdateTeamOnSpawn = true;
 
 //////////////// Abilities
 public:
@@ -103,27 +110,27 @@ public:
 
 	// LaunchGrenade
 	UFUNCTION(BlueprintCallable, Category = "Abilities")
-		bool ActivateAbilityLaunchGrenade();
+	bool ActivateAbilityLaunchGrenade();
 
 	// LaunchHeal
 	UFUNCTION(BlueprintCallable, Category = "Abilities")
-		bool ActivateAbilityLaunchHeal();
+	bool ActivateAbilityLaunchHeal();
 
 	// LaunchShield
 	UFUNCTION(BlueprintCallable, Category = "Abilities")
-		bool ActivateAbilityLaunchShield();
+	bool ActivateAbilityLaunchShield();
 
 	// LaunchShield
 	UFUNCTION(BlueprintCallable, Category = "Abilities")
-		bool ActivateAbilityRegenShield();
+	bool ActivateAbilityRegenShield();
 
 	// LaunchShield
 	UFUNCTION(BlueprintCallable, Category = "Abilities")
-		bool ActivateAbilityLaunchMine();
+	bool ActivateAbilityLaunchMine();
 
 	// LaunchShield
 	UFUNCTION(BlueprintCallable, Category = "Abilities")
-		bool ActivateAbilityOverHeat();
+	bool ActivateAbilityOverHeat();
 
 	UFUNCTION(BlueprintCallable, Category = "Shoot")
 	void SetLookingAtPosition(const FVector& _LookingAtPosition);
@@ -155,12 +162,12 @@ protected:
 public:
 	virtual void Respawn() override;
 	virtual void OnReceiveDamage(const FVector& _ImpactPoint, const FVector& _SourcePoint) override;
-	virtual FVector GetRespawnPoint() override;
+	virtual FVector GetRespawnPoint(AControlArea* _ControlArea = nullptr) override;
 	//Effect
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Animation|Particles")
-		TSubclassOf<AActor> StunFXClass;
+	TSubclassOf<AActor> StunFXClass;
 
 	UPROPERTY()
-		AActor* StunFX;
+	AActor* StunFX;
 };

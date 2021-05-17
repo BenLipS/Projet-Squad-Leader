@@ -1,0 +1,559 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SoundBanksInfo Platform="Windows" BasePlatform="Windows" SchemaVersion="12" SoundbankVersion="140">
+	<RootPaths>
+		<ProjectRoot>E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\</ProjectRoot>
+		<SourceFilesRoot>E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\</SourceFilesRoot>
+		<SoundBanksRoot>E:\repo\projet-squad-leader\SquadLeader\Content\WwiseAudio\Windows\</SoundBanksRoot>
+		<ExternalSourcesInputFile></ExternalSourcesInputFile>
+		<ExternalSourcesOutputRoot>E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\GeneratedSoundBanks\Windows</ExternalSourcesOutputRoot>
+	</RootPaths>
+	<DialogueEvents/>
+	<StreamedFiles/>
+	<MediaFilesNotInAnyBank/>
+	<SoundBanks>
+		<SoundBank Id="1355168291" Language="SFX" Hash="2602756462">
+			<ObjectPath>Init</ObjectPath>
+			<ShortName>Init</ShortName>
+			<Path>Init.bnk</Path>
+		</SoundBank>
+		<SoundBank Id="4056684167" Language="SFX" Hash="790537516">
+			<ObjectPath>\SoundBanks\Default Work Unit\Master</ObjectPath>
+			<ShortName>Master</ShortName>
+			<Path>Master.bnk</Path>
+			<IncludedEvents>
+				<Event Id="3652742826" Name="Ability_Heal" ObjectPath="\Events\Default Work Unit\Ability\Ability_Heal">
+					<IncludedMemoryFiles>
+						<File Id="685890808" Language="SFX">
+							<ShortName>Healing.wav</ShortName>
+							<Path>SFX\Healing_B4A49850.wem</Path>
+						</File>
+					</IncludedMemoryFiles>
+				</Event>
+				<Event Id="3271497644" Name="Ability_Termal_Vision" ObjectPath="\Events\Default Work Unit\Ability\Ability_Termal_Vision">
+					<IncludedMemoryFiles>
+						<File Id="428661140" Language="SFX">
+							<ShortName>Vision Themique Activation.wav</ShortName>
+							<Path>SFX\Vision Themique Activation_10C4C929.wem</Path>
+						</File>
+					</IncludedMemoryFiles>
+				</Event>
+				<Event Id="3972200603" Name="Ennemy_Hit" ObjectPath="\Events\Default Work Unit\Ennemy\Ennemy_Hit">
+					<IncludedMemoryFiles>
+						<File Id="57055349" Language="SFX">
+							<ShortName>Ennemy_Rifle_Hit.wav</ShortName>
+							<Path>SFX\Ennemy_Rifle_Hit_10C4C929.wem</Path>
+						</File>
+					</IncludedMemoryFiles>
+				</Event>
+				<Event Id="2606610459" Name="Grenade_Glitch_Explosion" ObjectPath="\Events\Default Work Unit\Weapons\Grenade_Glitch_Explosion">
+					<IncludedMemoryFiles>
+						<File Id="339035994" Language="SFX">
+							<ShortName>Glitch Grenade.wav</ShortName>
+							<Path>SFX\Glitch Grenade_10C4C929.wem</Path>
+						</File>
+					</IncludedMemoryFiles>
+				</Event>
+				<Event Id="212046171" Name="Grenade_Standard_Explosion" ObjectPath="\Events\Default Work Unit\Weapons\Grenade_Standard_Explosion">
+					<IncludedMemoryFiles>
+						<File Id="953873261" Language="SFX">
+							<ShortName>Grenade_Explosion.wav</ShortName>
+							<Path>SFX\Grenade_Explosion_0A1229C8.wem</Path>
+						</File>
+					</IncludedMemoryFiles>
+				</Event>
+				<Event Id="2064847921" Name="Knob_Menu" ObjectPath="\Events\Default Work Unit\Environment\Knob_Menu">
+					<IncludedMemoryFiles>
+						<File Id="576272166" Language="SFX">
+							<ShortName>Knob_menu.wav</ShortName>
+							<Path>SFX\Knob_menu_C1F6DFA0.wem</Path>
+						</File>
+					</IncludedMemoryFiles>
+				</Event>
+				<Event Id="352040410" Name="Music_Cinematic_Defeat" ObjectPath="\Events\Default Work Unit\Music\Music_Cinematic_Defeat">
+					<IncludedMemoryFiles>
+						<File Id="20044209" Language="SFX">
+							<ShortName>SL_Defeat_Loop_160bpm_4-4_28m_P0_v2.wav</ShortName>
+							<Path>SFX\SL_Defeat_Loop_160bpm_4-4_28m_P0_v2_D79FB2B7.wem</Path>
+						</File>
+						<File Id="624004163" Language="SFX">
+							<ShortName>SL_Defeat_160bpm_5-4_13m_P0.wav</ShortName>
+							<Path>SFX\SL_Defeat_160bpm_5-4_13m_P0_D79FB2B7.wem</Path>
+						</File>
+					</IncludedMemoryFiles>
+				</Event>
+				<Event Id="3998970921" Name="Music_Cinematic_Defeat_Stop" ObjectPath="\Events\Default Work Unit\Music\Music_Cinematic_Defeat_Stop"/>
+				<Event Id="2478077287" Name="Music_Cinematic_Victory" ObjectPath="\Events\Default Work Unit\Music\Music_Cinematic_Victory">
+					<IncludedMemoryFiles>
+						<File Id="126587482" Language="SFX">
+							<ShortName>SL_Victory_Loop_131bpm_4-4_16m_P0_v2.wav</ShortName>
+							<Path>SFX\SL_Victory_Loop_131bpm_4-4_16m_P0_v2_D79FB2B7.wem</Path>
+						</File>
+						<File Id="152678438" Language="SFX">
+							<ShortName>SL_Victoryt_Intro_131bpm_4-4_16m_P0_v2.wav</ShortName>
+							<Path>SFX\SL_Victoryt_Intro_131bpm_4-4_16m_P0_v2_D79FB2B7.wem</Path>
+						</File>
+					</IncludedMemoryFiles>
+				</Event>
+				<Event Id="415032610" Name="Music_Cinematic_Victory_Stop" ObjectPath="\Events\Default Work Unit\Music\Music_Cinematic_Victory_Stop"/>
+				<Event Id="620878633" Name="Music_Gameplay" ObjectPath="\Events\Default Work Unit\Music\Music_Gameplay">
+					<IncludedMemoryFiles>
+						<File Id="181366782" Language="SFX">
+							<ShortName>Gameplay_Squad as Leader_Boucle 2_4-4_105BPM_107m_P4b.wav</ShortName>
+							<Path>SFX\Gameplay_Squad as Leader_Boucle 2_4-4_105BPM_107m_P4b_D79FB2B7.wem</Path>
+						</File>
+						<File Id="564386817" Language="SFX">
+							<ShortName>Gameplay_Squad as Leader_Boucle 1_4-4_105BPM_107m_P4b.wav</ShortName>
+							<Path>SFX\Gameplay_Squad as Leader_Boucle 1_4-4_105BPM_107m_P4b_D79FB2B7.wem</Path>
+						</File>
+						<File Id="567887608" Language="SFX">
+							<ShortName>Gameplay_Squad as Leader_Boucle 3_4-4_105BPM_107m_P4b.wav</ShortName>
+							<Path>SFX\Gameplay_Squad as Leader_Boucle 3_4-4_105BPM_107m_P4b_D79FB2B7.wem</Path>
+						</File>
+					</IncludedMemoryFiles>
+				</Event>
+				<Event Id="1598298728" Name="Music_Menu" ObjectPath="\Events\Default Work Unit\Music\Music_Menu">
+					<IncludedMemoryFiles>
+						<File Id="509478330" Language="SFX">
+							<ShortName>SL_Menu_Intense_142bpm_4-4_67m_P1 Sketch_16.wav</ShortName>
+							<Path>SFX\SL_Menu_Intense_142bpm_4-4_67m_P1 Sketch_16_D79FB2B7.wem</Path>
+						</File>
+						<File Id="533883570" Language="SFX">
+							<ShortName>SL_Menu_Intro_Smooth_142bpm_4-4_67m_P1.wav</ShortName>
+							<Path>SFX\SL_Menu_Intro_Smooth_142bpm_4-4_67m_P1_D79FB2B7.wem</Path>
+						</File>
+						<File Id="856534177" Language="SFX">
+							<ShortName>SL_Menu_Intro_Intense_142bpm_4-4_67m_P1 Sketch_16.wav</ShortName>
+							<Path>SFX\SL_Menu_Intro_Intense_142bpm_4-4_67m_P1 Sketch_16_D79FB2B7.wem</Path>
+						</File>
+						<File Id="864600641" Language="SFX">
+							<ShortName>SL_Menu_Smooth_142bpm_4-4_67m_P1.wav</ShortName>
+							<Path>SFX\SL_Menu_Smooth_142bpm_4-4_67m_P1_D79FB2B7.wem</Path>
+						</File>
+					</IncludedMemoryFiles>
+				</Event>
+				<Event Id="3567402573" Name="Ping_Notif_Bad_v2" ObjectPath="\Events\Default Work Unit\Environment\Ping_Notif_Bad_v2">
+					<IncludedMemoryFiles>
+						<File Id="181715303" Language="SFX">
+							<ShortName>Ping Notif_v2.wav</ShortName>
+							<Path>SFX\Ping Notif_v2_10C4C929.wem</Path>
+						</File>
+					</IncludedMemoryFiles>
+				</Event>
+				<Event Id="3085463790" Name="Ping_Notif_Good" ObjectPath="\Events\Default Work Unit\Environment\Ping_Notif_Good">
+					<IncludedMemoryFiles>
+						<File Id="24728605" Language="SFX">
+							<ShortName>Ping Positif.wav</ShortName>
+							<Path>SFX\Ping Positif_E9981748.wem</Path>
+						</File>
+					</IncludedMemoryFiles>
+				</Event>
+				<Event Id="225471203" Name="Pistol_Fire_Laser" ObjectPath="\Events\Default Work Unit\Weapons\Pistol_Fire_Laser">
+					<IncludedMemoryFiles>
+						<File Id="526131352" Language="SFX">
+							<ShortName>Pistolet tir 1.wav</ShortName>
+							<Path>SFX\Pistolet tir 1_10C4C929.wem</Path>
+						</File>
+						<File Id="720802401" Language="SFX">
+							<ShortName>Pistolet tir 2.wav</ShortName>
+							<Path>SFX\Pistolet tir 2_10C4C929.wem</Path>
+						</File>
+						<File Id="773706597" Language="SFX">
+							<ShortName>Pistolet tir 4.wav</ShortName>
+							<Path>SFX\Pistolet tir 4_10C4C929.wem</Path>
+						</File>
+						<File Id="874485063" Language="SFX">
+							<ShortName>Pistolet tir 3.wav</ShortName>
+							<Path>SFX\Pistolet tir 3_10C4C929.wem</Path>
+						</File>
+					</IncludedMemoryFiles>
+				</Event>
+				<Event Id="2394582229" Name="Player_Dash" ObjectPath="\Events\Default Work Unit\Player\Player_Dash">
+					<IncludedMemoryFiles>
+						<File Id="634926199" Language="SFX">
+							<ShortName>Player_Dash.wav</ShortName>
+							<Path>SFX\Player_Dash_46FE6E04.wem</Path>
+						</File>
+					</IncludedMemoryFiles>
+				</Event>
+				<Event Id="3185701113" Name="Player_Jump_Concrete" ObjectPath="\Events\Default Work Unit\Player\Player_Jump_Concrete">
+					<IncludedMemoryFiles>
+						<File Id="1035804576" Language="SFX">
+							<ShortName>Jump_Concrete_01.wav</ShortName>
+							<Path>SFX\Jump_Concrete_01_10C4C929.wem</Path>
+						</File>
+					</IncludedMemoryFiles>
+				</Event>
+				<Event Id="3613905552" Name="Player_Walk_Concrete" ObjectPath="\Events\Default Work Unit\Player\Player_Walk_Concrete">
+					<IncludedMemoryFiles>
+						<File Id="236679741" Language="SFX">
+							<ShortName>Fs_Concrete_04.wav</ShortName>
+							<Path>SFX\Fs_Concrete_04_10C4C929.wem</Path>
+						</File>
+						<File Id="327549304" Language="SFX">
+							<ShortName>Fs_Concrete_02.wav</ShortName>
+							<Path>SFX\Fs_Concrete_02_10C4C929.wem</Path>
+						</File>
+						<File Id="471182755" Language="SFX">
+							<ShortName>Fs_Concrete_05.wav</ShortName>
+							<Path>SFX\Fs_Concrete_05_10C4C929.wem</Path>
+						</File>
+						<File Id="486997837" Language="SFX">
+							<ShortName>Fs_Concrete_07.wav</ShortName>
+							<Path>SFX\Fs_Concrete_07_10C4C929.wem</Path>
+						</File>
+						<File Id="782901620" Language="SFX">
+							<ShortName>Fs_Concrete_03.wav</ShortName>
+							<Path>SFX\Fs_Concrete_03_10C4C929.wem</Path>
+						</File>
+						<File Id="976450647" Language="SFX">
+							<ShortName>Fs_Concrete_06.wav</ShortName>
+							<Path>SFX\Fs_Concrete_06_10C4C929.wem</Path>
+						</File>
+						<File Id="1027164728" Language="SFX">
+							<ShortName>Fs_Concrete_01.wav</ShortName>
+							<Path>SFX\Fs_Concrete_01_10C4C929.wem</Path>
+						</File>
+					</IncludedMemoryFiles>
+				</Event>
+				<Event Id="864948550" Name="Player_Walk_Dirt" ObjectPath="\Events\Default Work Unit\Player\Player_Walk_Dirt">
+					<IncludedMemoryFiles>
+						<File Id="269043868" Language="SFX">
+							<ShortName>Fs_Dirt_1.wav</ShortName>
+							<Path>SFX\Fs_Dirt_1_10C4C929.wem</Path>
+						</File>
+						<File Id="812984617" Language="SFX">
+							<ShortName>Fs_Dirt_4.wav</ShortName>
+							<Path>SFX\Fs_Dirt_4_10C4C929.wem</Path>
+						</File>
+						<File Id="843039296" Language="SFX">
+							<ShortName>Fs_Dirt_5.wav</ShortName>
+							<Path>SFX\Fs_Dirt_5_10C4C929.wem</Path>
+						</File>
+						<File Id="876675882" Language="SFX">
+							<ShortName>Fs_Dirt_9.wav</ShortName>
+							<Path>SFX\Fs_Dirt_9_10C4C929.wem</Path>
+						</File>
+						<File Id="888522232" Language="SFX">
+							<ShortName>Fs_Dirt_2.wav</ShortName>
+							<Path>SFX\Fs_Dirt_2_10C4C929.wem</Path>
+						</File>
+					</IncludedMemoryFiles>
+				</Event>
+				<Event Id="4279841335" Name="Respawn" ObjectPath="\Events\Default Work Unit\Environment\Respawn">
+					<IncludedMemoryFiles>
+						<File Id="985193590" Language="SFX">
+							<ShortName>Teleportation.wav</ShortName>
+							<Path>SFX\Teleportation_93F1374A.wem</Path>
+						</File>
+					</IncludedMemoryFiles>
+				</Event>
+				<Event Id="1011371181" Name="Rifle_Break" ObjectPath="\Events\Default Work Unit\Weapons\Rifle_Break">
+					<IncludedMemoryFiles>
+						<File Id="128573212" Language="SFX">
+							<ShortName>Rifle_Break_Outdoor.wav</ShortName>
+							<Path>SFX\Rifle_Break_Outdoor_05305CC7.wem</Path>
+						</File>
+						<File Id="742403516" Language="SFX">
+							<ShortName>Rifle_Break_Indoors.wav</ShortName>
+							<Path>SFX\Rifle_Break_Indoors_6ABA6BE0.wem</Path>
+						</File>
+					</IncludedMemoryFiles>
+					<DefaultSwitchValue>{13976289-5AC8-4837-98E0-6CD8084694A5}</DefaultSwitchValue>
+					<SwitchContainers>
+						<SwitchContainer SwitchValue="{6788ADFB-5691-44C8-8810-FC25B8BA949E}">
+							<Media>
+								<File Id="742403516"/>
+							</Media>
+						</SwitchContainer>
+						<SwitchContainer SwitchValue="{13976289-5AC8-4837-98E0-6CD8084694A5}">
+							<Media>
+								<File Id="128573212"/>
+							</Media>
+						</SwitchContainer>
+					</SwitchContainers>
+				</Event>
+				<Event Id="737959300" Name="Rifle_Fire" ObjectPath="\Events\Default Work Unit\Weapons\Rifle_Fire">
+					<IncludedMemoryFiles>
+						<File Id="38262662" Language="SFX">
+							<ShortName>Rifle_Noise_Indoor_06.wav</ShortName>
+							<Path>SFX\Rifle_Noise_Indoor_06_10C4C929.wem</Path>
+						</File>
+						<File Id="38953370" Language="SFX">
+							<ShortName>Rifle_Noise_Indoor_09.wav</ShortName>
+							<Path>SFX\Rifle_Noise_Indoor_09_10C4C929.wem</Path>
+						</File>
+						<File Id="69188623" Language="SFX">
+							<ShortName>Rifle_Noise_Outdoor_06.wav</ShortName>
+							<Path>SFX\Rifle_Noise_Outdoor_06_7262C52E.wem</Path>
+						</File>
+						<File Id="76129885" Language="SFX">
+							<ShortName>Rifle_Mech_03.wav</ShortName>
+							<Path>SFX\Rifle_Mech_03_10C4C929.wem</Path>
+						</File>
+						<File Id="122202214" Language="SFX">
+							<ShortName>Rifle_Noise_Indoor_07.wav</ShortName>
+							<Path>SFX\Rifle_Noise_Indoor_07_10C4C929.wem</Path>
+						</File>
+						<File Id="170623293" Language="SFX">
+							<ShortName>Rifle_Noise_Outdoor_05.wav</ShortName>
+							<Path>SFX\Rifle_Noise_Outdoor_05_3C344241.wem</Path>
+						</File>
+						<File Id="196001769" Language="SFX">
+							<ShortName>Rifle_Noise_Outdoor_03.wav</ShortName>
+							<Path>SFX\Rifle_Noise_Outdoor_03_00A291E2.wem</Path>
+						</File>
+						<File Id="204496951" Language="SFX">
+							<ShortName>Rifle_Kick_09.wav</ShortName>
+							<Path>SFX\Rifle_Kick_09_10C4C929.wem</Path>
+						</File>
+						<File Id="213076344" Language="SFX">
+							<ShortName>Rifle_Sub_06.wav</ShortName>
+							<Path>SFX\Rifle_Sub_06_10C4C929.wem</Path>
+						</File>
+						<File Id="223925318" Language="SFX">
+							<ShortName>Rifle_Kick_02.wav</ShortName>
+							<Path>SFX\Rifle_Kick_02_10C4C929.wem</Path>
+						</File>
+						<File Id="227183882" Language="SFX">
+							<ShortName>Rifle_Noise_Indoor_03.wav</ShortName>
+							<Path>SFX\Rifle_Noise_Indoor_03_10C4C929.wem</Path>
+						</File>
+						<File Id="255233995" Language="SFX">
+							<ShortName>Rifle_Sub_04.wav</ShortName>
+							<Path>SFX\Rifle_Sub_04_10C4C929.wem</Path>
+						</File>
+						<File Id="275112532" Language="SFX">
+							<ShortName>Rifle_Mech_02.wav</ShortName>
+							<Path>SFX\Rifle_Mech_02_10C4C929.wem</Path>
+						</File>
+						<File Id="296015639" Language="SFX">
+							<ShortName>Rifle_Noise_Outdoor_04.wav</ShortName>
+							<Path>SFX\Rifle_Noise_Outdoor_04_4077E293.wem</Path>
+						</File>
+						<File Id="317687095" Language="SFX">
+							<ShortName>Rifle_Sub_07.wav</ShortName>
+							<Path>SFX\Rifle_Sub_07_10C4C929.wem</Path>
+						</File>
+						<File Id="405945141" Language="SFX">
+							<ShortName>Rifle_Kick_05.wav</ShortName>
+							<Path>SFX\Rifle_Kick_05_10C4C929.wem</Path>
+						</File>
+						<File Id="433765704" Language="SFX">
+							<ShortName>Rifle_Mech_04.wav</ShortName>
+							<Path>SFX\Rifle_Mech_04_10C4C929.wem</Path>
+						</File>
+						<File Id="483328097" Language="SFX">
+							<ShortName>Rifle_Mech_08.wav</ShortName>
+							<Path>SFX\Rifle_Mech_08_10C4C929.wem</Path>
+						</File>
+						<File Id="488527879" Language="SFX">
+							<ShortName>Rifle_Sub_02.wav</ShortName>
+							<Path>SFX\Rifle_Sub_02_10C4C929.wem</Path>
+						</File>
+						<File Id="520814987" Language="SFX">
+							<ShortName>Rifle_Sub_03.wav</ShortName>
+							<Path>SFX\Rifle_Sub_03_10C4C929.wem</Path>
+						</File>
+						<File Id="524220479" Language="SFX">
+							<ShortName>Rifle_Noise_Outdoor_08.wav</ShortName>
+							<Path>SFX\Rifle_Noise_Outdoor_08_FB654794.wem</Path>
+						</File>
+						<File Id="548212445" Language="SFX">
+							<ShortName>Rifle_Noise_Indoor_05.wav</ShortName>
+							<Path>SFX\Rifle_Noise_Indoor_05_10C4C929.wem</Path>
+						</File>
+						<File Id="634404485" Language="SFX">
+							<ShortName>Rifle_Mech_07.wav</ShortName>
+							<Path>SFX\Rifle_Mech_07_10C4C929.wem</Path>
+						</File>
+						<File Id="660540436" Language="SFX">
+							<ShortName>Rifle_Sub_09.wav</ShortName>
+							<Path>SFX\Rifle_Sub_09_10C4C929.wem</Path>
+						</File>
+						<File Id="702000156" Language="SFX">
+							<ShortName>Rifle_Noise_Outdoor_09.wav</ShortName>
+							<Path>SFX\Rifle_Noise_Outdoor_09_61176CF4.wem</Path>
+						</File>
+						<File Id="737452584" Language="SFX">
+							<ShortName>Rifle_Kick_06.wav</ShortName>
+							<Path>SFX\Rifle_Kick_06_10C4C929.wem</Path>
+						</File>
+						<File Id="740374785" Language="SFX">
+							<ShortName>Rifle_Noise_Outdoor_07.wav</ShortName>
+							<Path>SFX\Rifle_Noise_Outdoor_07_C2D26919.wem</Path>
+						</File>
+						<File Id="747833201" Language="SFX">
+							<ShortName>Rifle_Mech_06.wav</ShortName>
+							<Path>SFX\Rifle_Mech_06_10C4C929.wem</Path>
+						</File>
+						<File Id="754211678" Language="SFX">
+							<ShortName>Rifle_Mech_05.wav</ShortName>
+							<Path>SFX\Rifle_Mech_05_10C4C929.wem</Path>
+						</File>
+						<File Id="798581257" Language="SFX">
+							<ShortName>Rifle_Kick_03.wav</ShortName>
+							<Path>SFX\Rifle_Kick_03_10C4C929.wem</Path>
+						</File>
+						<File Id="899760190" Language="SFX">
+							<ShortName>Rifle_Noise_Indoor_08.wav</ShortName>
+							<Path>SFX\Rifle_Noise_Indoor_08_10C4C929.wem</Path>
+						</File>
+						<File Id="909078294" Language="SFX">
+							<ShortName>Rifle_Sub_08.wav</ShortName>
+							<Path>SFX\Rifle_Sub_08_10C4C929.wem</Path>
+						</File>
+						<File Id="912326113" Language="SFX">
+							<ShortName>Rifle_Kick_04.wav</ShortName>
+							<Path>SFX\Rifle_Kick_04_10C4C929.wem</Path>
+						</File>
+						<File Id="919581035" Language="SFX">
+							<ShortName>Rifle_Kick_08.wav</ShortName>
+							<Path>SFX\Rifle_Kick_08_10C4C929.wem</Path>
+						</File>
+						<File Id="919970010" Language="SFX">
+							<ShortName>Rifle_Noise_Indoor_04.wav</ShortName>
+							<Path>SFX\Rifle_Noise_Indoor_04_10C4C929.wem</Path>
+						</File>
+						<File Id="943172253" Language="SFX">
+							<ShortName>Rifle_Sub_05.wav</ShortName>
+							<Path>SFX\Rifle_Sub_05_10C4C929.wem</Path>
+						</File>
+						<File Id="979556673" Language="SFX">
+							<ShortName>Rifle_Kick_07.wav</ShortName>
+							<Path>SFX\Rifle_Kick_07_10C4C929.wem</Path>
+						</File>
+						<File Id="1010860481" Language="SFX">
+							<ShortName>Rifle_Mech_09.wav</ShortName>
+							<Path>SFX\Rifle_Mech_09_10C4C929.wem</Path>
+						</File>
+					</IncludedMemoryFiles>
+					<DefaultSwitchValue>{13976289-5AC8-4837-98E0-6CD8084694A5}</DefaultSwitchValue>
+					<SwitchContainers>
+						<SwitchContainer SwitchValue="{13976289-5AC8-4837-98E0-6CD8084694A5}">
+							<Media>
+								<File Id="69188623"/>
+								<File Id="170623293"/>
+								<File Id="196001769"/>
+								<File Id="296015639"/>
+								<File Id="524220479"/>
+								<File Id="702000156"/>
+								<File Id="740374785"/>
+							</Media>
+						</SwitchContainer>
+						<SwitchContainer SwitchValue="{6788ADFB-5691-44C8-8810-FC25B8BA949E}">
+							<Media>
+								<File Id="38262662"/>
+								<File Id="38953370"/>
+								<File Id="122202214"/>
+								<File Id="227183882"/>
+								<File Id="548212445"/>
+								<File Id="899760190"/>
+								<File Id="919970010"/>
+							</Media>
+						</SwitchContainer>
+					</SwitchContainers>
+				</Event>
+				<Event Id="3104059416" Name="Rifle_Fire_Laser" ObjectPath="\Events\Default Work Unit\Weapons\Rifle_Fire_Laser">
+					<IncludedMemoryFiles>
+						<File Id="257882592" Language="SFX">
+							<ShortName>Fusil d'assault Laser Tir long 3.wav</ShortName>
+							<Path>SFX\Fusil d'assault Laser Tir long 3_10C4C929.wem</Path>
+						</File>
+						<File Id="478025488" Language="SFX">
+							<ShortName>Fusil d'assault Laser Tir long 1 .wav</ShortName>
+							<Path>SFX\Fusil d'assault Laser Tir long 1 _10C4C929.wem</Path>
+						</File>
+						<File Id="1027473740" Language="SFX">
+							<ShortName>Fusil d'assault Laser Tir long 4.wav</ShortName>
+							<Path>SFX\Fusil d'assault Laser Tir long 4_10C4C929.wem</Path>
+						</File>
+						<File Id="1031786759" Language="SFX">
+							<ShortName>Fusil d'assault Laser Tir long 2.wav</ShortName>
+							<Path>SFX\Fusil d'assault Laser Tir long 2_10C4C929.wem</Path>
+						</File>
+					</IncludedMemoryFiles>
+				</Event>
+				<Event Id="3183022569" Name="Rifle_Out_of_ammo" ObjectPath="\Events\Default Work Unit\Weapons\Rifle_Out_of_ammo">
+					<IncludedMemoryFiles>
+						<File Id="128573212" Language="SFX">
+							<ShortName>Rifle_Break_Outdoor.wav</ShortName>
+							<Path>SFX\Rifle_Break_Outdoor_05305CC7.wem</Path>
+						</File>
+						<File Id="561351686" Language="SFX">
+							<ShortName>Rifle_Clonk.wav</ShortName>
+							<Path>SFX\Rifle_Clonk_F18937B3.wem</Path>
+						</File>
+						<File Id="742403516" Language="SFX">
+							<ShortName>Rifle_Break_Indoors.wav</ShortName>
+							<Path>SFX\Rifle_Break_Indoors_6ABA6BE0.wem</Path>
+						</File>
+					</IncludedMemoryFiles>
+				</Event>
+				<Event Id="3995863025" Name="Rifle_Reloading" ObjectPath="\Events\Default Work Unit\Weapons\Rifle_Reloading">
+					<IncludedMemoryFiles>
+						<File Id="193618871" Language="SFX">
+							<ShortName>Rifle_Reloading.wav</ShortName>
+							<Path>SFX\Rifle_Reloading_10C4C929.wem</Path>
+						</File>
+						<File Id="274132836" Language="SFX">
+							<ShortName>Rifle_Reloading_Clothes_02.wav</ShortName>
+							<Path>SFX\Rifle_Reloading_Clothes_02_10C4C929.wem</Path>
+						</File>
+						<File Id="777929252" Language="SFX">
+							<ShortName>Rifle_Reloading_Clothes_01.wav</ShortName>
+							<Path>SFX\Rifle_Reloading_Clothes_01_10C4C929.wem</Path>
+						</File>
+						<File Id="848243290" Language="SFX">
+							<ShortName>Rifle_Reloading_Clothes_03.wav</ShortName>
+							<Path>SFX\Rifle_Reloading_Clothes_03_10C4C929.wem</Path>
+						</File>
+					</IncludedMemoryFiles>
+				</Event>
+				<Event Id="3745517719" Name="Rocket_Explode" ObjectPath="\Events\Default Work Unit\Weapons\Rocket_Explode">
+					<IncludedMemoryFiles>
+						<File Id="1073710769" Language="SFX">
+							<ShortName>Rocket_Explosion_03.wav</ShortName>
+							<Path>SFX\Rocket_Explosion_03_10C4C929.wem</Path>
+						</File>
+					</IncludedMemoryFiles>
+				</Event>
+				<Event Id="2984764225" Name="Rocket_Launch" ObjectPath="\Events\Default Work Unit\Weapons\Rocket_Launch">
+					<IncludedMemoryFiles>
+						<File Id="226443609" Language="SFX">
+							<ShortName>Rocket_Trail.wav</ShortName>
+							<Path>SFX\Rocket_Trail_2FCB0210.wem</Path>
+						</File>
+						<File Id="447359387" Language="SFX">
+							<ShortName>Rocket_Launch.wav</ShortName>
+							<Path>SFX\Rocket_Launch_10C4C929.wem</Path>
+						</File>
+					</IncludedMemoryFiles>
+				</Event>
+				<Event Id="3441377354" Name="Stinger_Gameplay_Negative" ObjectPath="\Events\Default Work Unit\Music\Stinger_Gameplay_Negative">
+					<IncludedMemoryFiles>
+						<File Id="744608046" Language="SFX">
+							<ShortName>Stingner Neg.wav</ShortName>
+							<Path>SFX\Stingner Neg_D79FB2B7.wem</Path>
+						</File>
+					</IncludedMemoryFiles>
+				</Event>
+				<Event Id="1242808314" Name="Stinger_Gameplay_Positive" ObjectPath="\Events\Default Work Unit\Music\Stinger_Gameplay_Positive">
+					<IncludedMemoryFiles>
+						<File Id="997277729" Language="SFX">
+							<ShortName>Stingner Pos.wav</ShortName>
+							<Path>SFX\Stingner Pos_D79FB2B7.wem</Path>
+						</File>
+					</IncludedMemoryFiles>
+				</Event>
+			</IncludedEvents>
+			<SwitchGroups>
+				<SwitchGroup Id="1229948536" Name="Environment" ObjectPath="\Switches\Default Work Unit\Environment">
+					<Switches>
+						<Switch Id="2730119150" Name="Outdoors" ObjectPath="\Switches\Default Work Unit\Environment\Outdoors"/>
+						<Switch Id="4103860031" Name="Indoors" ObjectPath="\Switches\Default Work Unit\Environment\Indoors"/>
+					</Switches>
+				</SwitchGroup>
+			</SwitchGroups>
+		</SoundBank>
+	</SoundBanks>
+</SoundBanksInfo>

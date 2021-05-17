@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "Core.h"
+#include "Slate/SlateBrushAsset.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "camera/cameracomponent.h"
@@ -9,6 +10,7 @@
 #include "../AbilitySystem/Soldiers/AbilitySystemSoldier.h"
 #include "SquadLeader/SquadLeader.h"
 #include "Interface/Teamable.h"
+#include "SquadLeader/ControlArea/ControlArea.h"
 //
 #include "SoldierTeam.h"
 //
@@ -20,6 +22,8 @@ class UGameplayAbilitySoldier;
 class UGameplayEffect;
 class UGE_UpdateStats;
 class UMatineeCameraShake;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSoldierDeath, class ASoldier*, _Soldier);
 
 UENUM()
 enum class SoldierClass : uint8 {
@@ -43,10 +47,32 @@ struct SQUADLEADER_API FSoldier_Inventory
 	// Grenade ?
 };
 
+USTRUCT()
+struct SQUADLEADER_API FSoldierIconAsset
+{
+	GENERATED_USTRUCT_BODY()
+
+	FSoldierIconAsset() = default;
+
+	UPROPERTY(EditAnywhere)
+	USlateBrushAsset* Icon;
+
+	UPROPERTY(EditAnywhere)
+	USlateBrushAsset* Background;
+};
+
 UCLASS()
 class SQUADLEADER_API ASoldier : public ACharacter, public IAbilitySystemInterface, public ITeamable
 {
 	GENERATED_BODY()
+
+public:
+	UFUNCTION(BlueprintCallable)
+	static TArray<SoldierClass> GetAllPlayableClass();
+
+	UFUNCTION(BlueprintCallable)
+	static FString SoldierClassToStr(SoldierClass SoldierClassIn);
+
 
 public:
 	ASoldier(const FObjectInitializer& _ObjectInitializer);
@@ -167,6 +193,9 @@ protected:
 	virtual void BlurredFromJammerTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 
 public:
+	FOnSoldierDeath OnSoldierDeath;
+
+public:
 	UFUNCTION()
 	virtual void OnBlurredVisionFromJammer(const bool _IsBlurred);
 
@@ -228,10 +257,9 @@ public:
 	// Class Name:
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
 	virtual SoldierClass GetClass() { return SoldierClass::NONE; }
-	
+
 	UPROPERTY(EditDefaultsOnly, Category = "Player class")
 	FString ClassName = "Soldier";
-
 
 	// Attribute changed callbacks
 	FDelegateHandle HealthChangedDelegateHandle;
@@ -514,8 +542,8 @@ protected:
 
 //////////////// Soldier team
 public:
-	UPROPERTY(BlueprintReadOnly, Category = "PlayerTeam")
-	ASoldierTeam* InitialTeam;  // for debug use
+	UFUNCTION()
+	void RefreshTeam();
 
 	UFUNCTION(Reliable, Server, WithValidation)
 	void ServerCycleBetweenTeam();
@@ -525,7 +553,7 @@ public:
 
 //////////////// Teamable
 protected:
-	UPROPERTY(replicated)
+	UPROPERTY(Replicated)
 	ASoldierTeam* Team;
 
 public:
@@ -534,8 +562,8 @@ public:
 
 /////////////// Respawn
 public:
-	UFUNCTION()
-	virtual FVector GetRespawnPoint() { return FVector(0.f, 0.f, 1500.f); }  // function overide in SoldierPlayer and Soldier AI
+	UFUNCTION(BlueprintCallable)
+	virtual FVector GetRespawnPoint(AControlArea* _ControlArea = nullptr) { return FVector(0.f, 0.f, 1500.f); }
 
 //////////////// For AIPerception
 private:

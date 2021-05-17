@@ -18,8 +18,6 @@ class SQUADLEADER_API ASoldierPlayerController : public APlayerController, publi
 public:
 	ASoldierPlayerController();
 
-	UClass* GetPlayerPawnClass();
-
 protected:
 	virtual void BeginPlay() override;
 	virtual void OnPossess(APawn* InPawn) override;
@@ -64,6 +62,10 @@ public:
 	void BindMainAbilities();
 	void NotifyMainAbilityCooldown(const float _Cooldown, const ESoldierAbilityInputID _ID);
 	void NotifySoldierHit(const float _Damage, const bool _bIsHeadShot);
+	
+	UFUNCTION(BlueprintCallable, Reliable, Client, Category = "Respawn")
+	void ClientDisplayRespawnWidget();
+	void ClientDisplayRespawnWidget_Implementation();
 
 //////////////// Movements
 protected:
@@ -159,6 +161,10 @@ public:
 	void ServerAddAnAIToIndexSquad();
 	void ServerAddAnAIToIndexSquad_Implementation();
 
+	UFUNCTION(Server, Reliable, BlueprintCallable)
+	void ServerRespawnSoldier(AControlArea* ControlArea);
+	void ServerRespawnSoldier_Implementation(AControlArea* ControlArea);
+
 	UFUNCTION()
 	void BroadCastManagerData();
 
@@ -178,7 +184,21 @@ public:
 	/*UFUNCTION()
 	float GetCooldown(const ESoldierAbilityInputID _AbilityID);*/
 
+
+protected:
+	/* Return The Correct PlayerParams Class Client-Side */
+	UFUNCTION(Reliable, Client)
+	void ClientDeterminePlayerParams();
+	virtual void ClientDeterminePlayerParams_Implementation();
+
+	/* Set Pawn Class On Server For This Controller */
+	UFUNCTION(Reliable, Server, WithValidation)
+	virtual void ServerSetPawn(const int TeamID, const SoldierClass PlayerClass, const TArray<SoldierClass>& AIClass);
+	virtual void ServerSetPawn_Implementation(const int TeamID, const SoldierClass PlayerClass, const TArray<SoldierClass>& AIClass);
+	virtual bool ServerSetPawn_Validate(const int TeamID, const SoldierClass PlayerClass, const TArray<SoldierClass>& AIClass);
+
 //////////////// Cheat
+public:
 	UFUNCTION(Exec)
 	void Cheat_AddAISquad();
 

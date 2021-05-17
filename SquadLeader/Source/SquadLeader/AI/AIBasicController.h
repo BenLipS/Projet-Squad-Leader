@@ -18,6 +18,8 @@ class SQUADLEADER_API AAIBasicController : public AAIGeneralController
 public:
 	AAIBasicController();
 
+	virtual void HomeTick(float DeltaSeconds) override { Super::HomeTick(DeltaSeconds); }
+
 protected:
 
 	UPROPERTY()
@@ -66,4 +68,11 @@ public:
 	UFUNCTION()
 		bool GetIndexControlArea(uint32& ndexControlArea) const noexcept;
 
+private:
+	UPROPERTY()
+		bool CanTickNow = false;
+
+public:
+	UFUNCTION()
+		void CanTick() noexcept { CanTickNow = true; }
 };

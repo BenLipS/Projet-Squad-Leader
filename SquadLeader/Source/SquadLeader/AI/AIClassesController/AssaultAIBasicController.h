@@ -18,6 +18,10 @@ public:
 
 	virtual void Tick(float DeltaSeconds) override;
 
+	virtual void HomeTick(float DeltaSeconds) override;
+
+
+
 	virtual void setup_BehaviorTree() override;
 
 	UPROPERTY(BlueprintReadWrite, Category = "Grenade")

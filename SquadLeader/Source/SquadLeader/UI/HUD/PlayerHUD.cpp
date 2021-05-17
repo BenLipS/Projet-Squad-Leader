@@ -14,6 +14,7 @@ void APlayerHUD::BeginPlay()
 {
 	Super::BeginPlay();
 	BindControlAreas();
+	BindSoldierTeamChanges();
 	//TODO : Init Tickets
 }
 
@@ -21,7 +22,7 @@ void APlayerHUD::OnInitHUD()
 {
 	SetPlayerStateLink();
 	SetAIStateLink();
-	BindSoldierTeamChanges();
+	//BindSoldierTeamChanges();
 	BindControlAreas();
 }
 
@@ -79,7 +80,10 @@ void APlayerHUD::BindSoldierTeamChanges()
 		{
 			// Get current soldiers
 			for (ASoldier* Soldier : Team->GetSoldierList())
-				OnSoldierAddedToTeam(Soldier);
+				if (IsValid(Soldier))
+				{
+					OnSoldierAddedToTeam(Soldier);
+				}
 
 			// Bind future SoldierTeam changes
 			Team->OnSoldierAddedToList.AddDynamic(this, &APlayerHUD::OnSoldierAddedToTeam);

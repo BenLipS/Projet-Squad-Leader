@@ -8,6 +8,7 @@
 #include "AI/AISquadManager.h"
 #include "AI/AIBasicController.h"
 #include "AI/InfluenceMap/InfluenceMapGrid.h"
+#include "MainMenu/PlayerParam/PlayerParam.h"
 #include "SquadLeaderGameModeBase.generated.h"
 
 class ASoldier;
@@ -24,9 +25,7 @@ public:
 	// virtual void PreLogin(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage) override;
 	virtual void Logout(AController* Exiting) override;
 
-
-	/* Override To Read In Pawn From Custom Controller */
-	UClass* GetDefaultPawnClassForController(AController* InController); //override;  // help
+	APawn* SpawnSoldier(APlayerParam* PlayerParam, AController* OwningController);
 
 protected:
 	void ChangeGameState();
@@ -53,12 +52,26 @@ public:
 	int const GetBaseSquadAINumber() { return StartingAISquadNumber; }
 	
 public:
-	void RespawnSoldier(ASoldier* _Soldier);
+	UFUNCTION(BlueprintCallable)
+	void RespawnSoldier(ASoldier* _Soldier, AControlArea* _ControlArea = nullptr);
+
+	UFUNCTION(BlueprintCallable)
 	void CheckControlAreaVictoryCondition();
+
+	UFUNCTION(BlueprintCallable)
 	void CheckTeamTicketsVictoryCondition();
+
+	UFUNCTION(BlueprintCallable)
 	void EndGame(ASoldierTeam* WinningTeam);
+
+	UFUNCTION(BlueprintCallable)
 	void CloseGame();
 
+//////////////// Respawn
+	UFUNCTION()
+	void DisplayRespawnHUD(ASoldierPlayer* _SoldierPlayer);
+
+//////////////// AIs
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<AAIBasicManager> AIBasicManagerClass;
@@ -81,12 +94,6 @@ public:
 	AInfluenceMapGrid* InfluenceMap;
 	UFUNCTION()
 	void InitInfluenceMap();
-
-	/*
-	* For AI placed via drag and drop
-	*/
-	UFUNCTION()
-	void AddAIBasicToManager(AAIBasicController* AIBasic);
 
 	UFUNCTION()
 	TArray<AAISquadManager*> GetSquadManagers() { return ListAISquadManagers; }

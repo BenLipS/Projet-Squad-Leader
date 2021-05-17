@@ -8,7 +8,7 @@ public class SquadLeader : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "Http", "Json", "JsonUtilities", "AIModule", "UMG", "GameplayTasks", "GameplayAbilities", "GameplayTags", "NavigationSystem", "Navmesh" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "Http", "Json", "JsonUtilities", "AIModule", "UMG", "GameplayTasks", "GameplayAbilities", "GameplayTags", "NavigationSystem", "Navmesh", "AkAudio" });
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 
 		CppStandard = CppStandardVersion.Cpp17;

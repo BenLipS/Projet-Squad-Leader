@@ -8,6 +8,8 @@
 
 #include "MenuWidget.generated.h"
 
+class UMenuLayoutWidget;
+
 UCLASS()
 class SQUADLEADER_API UMenuWidget : public USL_UserWidget
 {
@@ -21,13 +23,13 @@ protected:
 	class UCanvasPanel* MainPanel;
 
 	UPROPERTY(BlueprintReadOnly)
-	TArray<class UMenuLayoutWidget*> MenuLayouts;
+	TArray<UMenuLayoutWidget*> MenuLayouts;
 
 	UPROPERTY(BlueprintReadWrite, meta = (ExposeOnSpawn = true), EditAnywhere, Category = "Menu")
 	FString DefaultLayout = "";
 
 	UPROPERTY(BlueprintReadOnly)
-	class UMenuLayoutWidget* CurrentLayout;
+	TArray<UMenuLayoutWidget*> CurrentLayout;
 
 protected:
 	virtual void SynchronizeProperties() override;

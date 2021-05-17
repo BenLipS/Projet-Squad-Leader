@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}" SchemaVersion="103">
+	<Busses>
+		<WorkUnit Name="Default Work Unit" ID="{9666CEFA-4ED9-4581-BF1A-C857BF7B100C}" PersistMode="Standalone">
+			<ChildrenList>
+				<Bus Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}">
+					<ReferenceList>
+						<Reference Name="AudioDevice">
+							<ObjectRef Name="System" ID="{71F42BA3-62BF-4706-9482-C9D3EFCE40CF}" WorkUnitID="{197F0FC3-79A0-41D2-8977-F63954658522}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<Bus Name="Player_Movement" ID="{585830B3-65E5-46FF-AA10-B00FA63A878B}">
+							<ObjectLists/>
+						</Bus>
+						<Bus Name="Rifle" ID="{16DBA8EF-66A8-4FEB-90D8-2BF06CDAD6EC}">
+							<PropertyList>
+								<Property Name="RecoveryTime" Type="Real64" Value="0"/>
+							</PropertyList>
+							<ObjectLists/>
+							<DuckingList>
+								<DuckItem>
+									<BusRef Name="Player_Movement" ID="{585830B3-65E5-46FF-AA10-B00FA63A878B}"/>
+									<DuckingParam>
+										<Volume>-12</Volume>
+										<FadeInTime>1</FadeInTime>
+										<FadeOutTime>0</FadeOutTime>
+										<FadeCurve>FadeInvSCurve</FadeCurve>
+									</DuckingParam>
+								</DuckItem>
+								<DuckItem>
+									<BusRef Name="Environment" ID="{CFF2ED0F-2CE6-4DB9-9D57-BDAD9F80561F}"/>
+									<DuckingParam>
+										<Volume>-4</Volume>
+										<FadeInTime>1</FadeInTime>
+										<FadeOutTime>0</FadeOutTime>
+										<FadeCurve>FadeInvSCurve</FadeCurve>
+									</DuckingParam>
+								</DuckItem>
+							</DuckingList>
+						</Bus>
+						<Bus Name="Weapons_Sfx" ID="{2567D8A9-864F-40E5-A8FC-BD305C7F6F4D}">
+							<PropertyList>
+								<Property Name="RecoveryTime" Type="Real64" Value="0"/>
+							</PropertyList>
+							<ObjectLists/>
+							<DuckingList>
+								<DuckItem>
+									<BusRef Name="Rifle" ID="{16DBA8EF-66A8-4FEB-90D8-2BF06CDAD6EC}"/>
+									<DuckingParam>
+										<Volume>-3</Volume>
+										<FadeInTime>0.5</FadeInTime>
+										<FadeOutTime>0.5</FadeOutTime>
+										<FadeCurve>FadeLog3</FadeCurve>
+									</DuckingParam>
+								</DuckItem>
+								<DuckItem>
+									<BusRef Name="Player_Movement" ID="{585830B3-65E5-46FF-AA10-B00FA63A878B}"/>
+									<DuckingParam>
+										<Volume>-2</Volume>
+										<FadeInTime>0.5</FadeInTime>
+										<FadeOutTime>0.5</FadeOutTime>
+										<FadeCurve>FadeLog3</FadeCurve>
+									</DuckingParam>
+								</DuckItem>
+								<DuckItem>
+									<BusRef Name="Environment" ID="{CFF2ED0F-2CE6-4DB9-9D57-BDAD9F80561F}"/>
+									<DuckingParam>
+										<Volume>-4</Volume>
+										<FadeInTime>1</FadeInTime>
+										<FadeOutTime>0</FadeOutTime>
+										<FadeCurve>FadeLinear</FadeCurve>
+									</DuckingParam>
+								</DuckItem>
+							</DuckingList>
+						</Bus>
+						<Bus Name="Player_Ability" ID="{358320B3-3649-4995-A063-A5C2DBEC63EE}">
+							<PropertyList>
+								<Property Name="RecoveryTime" Type="Real64" Value="0"/>
+							</PropertyList>
+							<ObjectLists/>
+							<DuckingList>
+								<DuckItem>
+									<BusRef Name="Player_Movement" ID="{585830B3-65E5-46FF-AA10-B00FA63A878B}"/>
+									<DuckingParam>
+										<Volume>-3</Volume>
+										<FadeInTime>0.100000001490116</FadeInTime>
+										<FadeOutTime>0.100000001490116</FadeOutTime>
+										<FadeCurve>FadeLog1</FadeCurve>
+									</DuckingParam>
+								</DuckItem>
+								<DuckItem>
+									<BusRef Name="Rifle" ID="{16DBA8EF-66A8-4FEB-90D8-2BF06CDAD6EC}"/>
+									<DuckingParam>
+										<Volume>-2</Volume>
+										<FadeInTime>0.100000001490116</FadeInTime>
+										<FadeOutTime>0.100000001490116</FadeOutTime>
+										<FadeCurve>FadeLog1</FadeCurve>
+									</DuckingParam>
+								</DuckItem>
+								<DuckItem>
+									<BusRef Name="Weapons_Sfx" ID="{2567D8A9-864F-40E5-A8FC-BD305C7F6F4D}"/>
+									<DuckingParam>
+										<Volume>-3</Volume>
+										<FadeInTime>0.100000001490116</FadeInTime>
+										<FadeOutTime>0.100000001490116</FadeOutTime>
+										<FadeCurve>FadeLog1</FadeCurve>
+									</DuckingParam>
+								</DuckItem>
+								<DuckItem>
+									<BusRef Name="Environment" ID="{CFF2ED0F-2CE6-4DB9-9D57-BDAD9F80561F}"/>
+									<DuckingParam>
+										<Volume>-6</Volume>
+										<FadeInTime>1</FadeInTime>
+										<FadeOutTime>1</FadeOutTime>
+										<FadeCurve>FadeLinear</FadeCurve>
+									</DuckingParam>
+								</DuckItem>
+							</DuckingList>
+						</Bus>
+						<Bus Name="Environment" ID="{CFF2ED0F-2CE6-4DB9-9D57-BDAD9F80561F}">
+							<ObjectLists/>
+						</Bus>
+					</ChildrenList>
+					<ObjectLists/>
+				</Bus>
+			</ChildrenList>
+		</WorkUnit>
+	</Busses>
+</WwiseDocument>

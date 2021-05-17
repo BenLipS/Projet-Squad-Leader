@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{8EC5AB04-AFDD-43C3-A41A-DACB5E5BA730}" SchemaVersion="103">
+	<Events>
+		<WorkUnit Name="Default Work Unit" ID="{8EC5AB04-AFDD-43C3-A41A-DACB5E5BA730}" PersistMode="Standalone">
+			<ChildrenList>
+				<WorkUnit Name="Weapons" ID="{9E871B55-D3FC-411A-B47C-48E3557C4D0E}" PersistMode="Reference"/>
+				<WorkUnit Name="Ennemy" ID="{0A3C2729-C9B9-45C8-BCE3-38E860BB3203}" PersistMode="Reference"/>
+				<WorkUnit Name="Player" ID="{4603296A-7743-4166-BFFD-51EB22151C12}" PersistMode="Reference"/>
+				<WorkUnit Name="Environment" ID="{7491FB6D-31F4-4D72-863B-7066B2148D21}" PersistMode="Reference"/>
+				<WorkUnit Name="Ability" ID="{E62EFA09-FB1C-449E-8C9B-EDDDD49054C4}" PersistMode="Reference"/>
+				<WorkUnit Name="Music" ID="{B7024EE1-B199-492F-BFF9-26DC74D54586}" PersistMode="Reference"/>
+			</ChildrenList>
+		</WorkUnit>
+	</Events>
+</WwiseDocument>
