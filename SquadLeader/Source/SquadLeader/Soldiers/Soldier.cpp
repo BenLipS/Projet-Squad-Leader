@@ -362,6 +362,8 @@ void ASoldier::DeadTagChanged(const FGameplayTag _CallbackTag, int32 _NewCount)
 		//HandleDeathMontage();
 		GetWorldTimerManager().SetTimerForNextTick(this, &ASoldier::StartRagdoll);
 		GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore); // Make sure alive soldiers aren't blocked
+
+		OnSoldierDeath.Broadcast(this);
 	}
 	else // If dead tag is removed - Handle respawn
 	{
