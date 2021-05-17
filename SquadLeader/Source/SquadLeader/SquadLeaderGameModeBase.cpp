@@ -120,9 +120,10 @@ void ASquadLeaderGameModeBase::FetchGameParam()
 	BaseTicketsNumber = ImportedGameParam->NbTickets;
 	AIBasicAssaultNumber = ImportedGameParam->NbAIBasicAssault;
 	AIBasicHeavyNumber = ImportedGameParam->NbAIBasicHeavy;
+	AIBasicLevel = ImportedGameParam->LevelAIBasic;
 	StartingAISquadNumber = ImportedGameParam->StartingNbAISquad;
+	AISquadLevel = ImportedGameParam->LevelAISquad;
 }
-
 
 void ASquadLeaderGameModeBase::InitAIManagers()
 {

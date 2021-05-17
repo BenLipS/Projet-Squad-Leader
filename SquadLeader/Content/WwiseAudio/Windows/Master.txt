@@ -6,6 +6,7 @@ Event	ID	Name			Wwise Object Path	Notes
 	620878633	Music_Gameplay			\Default Work Unit\Music\Music_Gameplay	
 	737959300	Rifle_Fire			\Default Work Unit\Weapons\Rifle_Fire	
 	864948550	Player_Walk_Dirt			\Default Work Unit\Player\Player_Walk_Dirt	
+	985628862	Ambience_Factory			\Default Work Unit\Environment\Ambience_Factory	
 	1011371181	Rifle_Break			\Default Work Unit\Weapons\Rifle_Break	
 	1242808314	Stinger_Gameplay_Positive			\Default Work Unit\Music\Stinger_Gameplay_Positive	
 	1598298728	Music_Menu			\Default Work Unit\Music\Music_Menu	
@@ -64,6 +65,7 @@ Modulator Time	ID	Name			Wwise Object Path	Notes
 
 In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size
 	20044209	SL_Defeat_Loop_160bpm_4-4_28m_P0_v2	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\SL_Defeat_Loop_160bpm_4-4_28m_P0_v2_D79FB2B7.wem		\Interactive Music Hierarchy\Default Work Unit\Music\Cinematic_Defeat\SL_Defeat_Loop_160bpm_4-4_28m_P0_v2\SL_Defeat_Loop_160bpm_4-4_28m_P0_v2		8064064
+	20234757	Factory Ambience	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Factory Ambience_D79FB2B7.wem		\Actor-Mixer Hierarchy\Default Work Unit\Environment\Factory Ambience		6049996
 	24728605	Ping Positif	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Ping Positif_E9981748.wem		\Actor-Mixer Hierarchy\Default Work Unit\Environment\Ping\Ping Positif		270064
 	38262662	Rifle_Noise_Indoor_06	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Noise_Indoor_06_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Noise\Rifle_Noise_Indoor\Rifle_Noise_Indoor_06		17344
 	38953370	Rifle_Noise_Indoor_09	E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\SFX\Rifle_Noise_Indoor_09_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Weapons\Rifle_Fire\Rifle_Noise\Rifle_Noise_Indoor\Rifle_Noise_Indoor_09		17240

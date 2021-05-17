@@ -8,6 +8,7 @@
 #include "DrawDebugHelpers.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "NavigationSystem.h"
+#include "../SquadLeaderGameModeBase.h"
 
 bool AAISquadController::GetValidFormationPos()
 {
@@ -71,6 +72,8 @@ FVector AAISquadController::GetRespawnPoint()  // TODO : Change this function to
 void AAISquadController::BeginPlay()
 {
 	Super::BeginPlay();
+	AILevel = GetWorld()->GetAuthGameMode<ASquadLeaderGameModeBase>()->GetAIBasicLevel();
+	HalfAngleShoot = HalfAngleShoot * (1.f / AILevel);
 	blackboard->SetValueAsBool("IsInFormation", true);
 	blackboard->SetValueAsBool("HasOrder", false);
 }
