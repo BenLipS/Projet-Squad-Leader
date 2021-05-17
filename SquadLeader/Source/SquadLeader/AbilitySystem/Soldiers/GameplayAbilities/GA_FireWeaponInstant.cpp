@@ -117,7 +117,9 @@ void UGA_FireWeaponInstant::FireBullet()
 	GC_Parameters.Instigator = SourceSoldier;
 	GC_Parameters.SourceObject = SourceWeapon;
 	GC_Parameters.EffectContext = EffectContext;
-	SourceSoldier->GetAbilitySystemComponent()->ExecuteGameplayCue(FGameplayTag::RequestGameplayTag(FName("GameplayCue.FireWeapon.Instant")), GC_Parameters);
+
+	DoAnimation(GC_Parameters);
+	//SourceSoldier->GetAbilitySystemComponent()->ExecuteGameplayCue(FGameplayTag::RequestGameplayTag(FName("GameplayCue.FireWeapon.Instant")), GC_Parameters);
 
 	// Wait target data
 	USL_WaitTargetDataUsingActor* TaskWaitTarget = USL_WaitTargetDataUsingActor::WaitTargetDataWithReusableActor(this, NAME_None, EGameplayTargetingConfirmation::Instant, LineTrace, true);

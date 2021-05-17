@@ -23,6 +23,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void HandleTargetData(const FGameplayAbilityTargetDataHandle& _Data);
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void DoAnimation(const FGameplayCueParameters _Parameters);
+
 protected:
 	UFUNCTION()
 	void ApplyEffectsToSource();
