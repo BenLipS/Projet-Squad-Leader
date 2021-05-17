@@ -331,7 +331,9 @@ void AInfluenceMapGrid::ReceivedMessage(FGridPackage _message) {
 				CalculateSoldierInfluence(Index, Index, Index, 1, _message.ActorID, _message.team_value, IndexActor);
 				break;
 			case Type::ControlArea:
-				UpdateControlArea(IndexActor, _message.team_value);
+				UpdateControlArea(IndexActor, _message.team_value, _message.ActorID, IndexActor);
+				UpdateTile(Index, CharacterInfluenceValue, _message.team_value, _message.m_type, _message.ActorID, IndexActor);
+				CalculateControlAreaInfluence(Index, Index, Index, 1, _message.ActorID, _message.team_value, IndexActor);
 				break;
 			case Type::Projectile:
 				DeleteInfluence(IndexActor, _message.team_value);
@@ -371,18 +373,23 @@ void AInfluenceMapGrid::TimeFunction() {
 
 void AInfluenceMapGrid::UpdateTile(int index, float value, int team, Type type, uint32 actorID, uint16& ActorDataIndex) noexcept {
 
-	auto bool2 = Grid[index].ActorsID.Contains(actorID);
+	auto bool2 = Grid[index].InfluenceTeam[team].ActorsID.Contains(actorID);
 
 	if (!bool2) {
 
 		if (type == Type::ControlArea) {
-			Grid[index].InfluenceTeam[team].InfluenceValue = ControlAreaInfluenceValue + (0.1f * Grid[index].ActorsID.Num());
+			Grid[index].InfluenceTeam[team].InfluenceValue = ControlAreaInfluenceValue + (0.1f * Grid[index].InfluenceTeam[team].ActorsID.Num());
 			Grid[index].InfluenceTeam[team].Types.Add(type);
 		}
 		else {
 			const float ValueInfluenceTile = Grid[index].InfluenceTeam[team].InfluenceValue;
+
+
 			if (ValueInfluenceTile >= 0.3f)
-				Grid[index].InfluenceTeam[team].InfluenceValue += 0.1f;
+				if(ValueInfluenceTile + 0.1f > 1.0f)
+					Grid[index].InfluenceTeam[team].InfluenceValue = 1.f;
+				else
+					Grid[index].InfluenceTeam[team].InfluenceValue += 0.1f;
 			else
 				Grid[index].InfluenceTeam[team].InfluenceValue = 0.3f;
 
@@ -395,7 +402,7 @@ void AInfluenceMapGrid::UpdateTile(int index, float value, int team, Type type, 
 			AddUpdateTileTeam2(index);
 
 
-		Grid[index].ActorsID.Add(actorID);
+		Grid[index].InfluenceTeam[team].ActorsID.Add(actorID);
 
 		ActorsData[ActorDataIndex].AddIndexs(index);
 	}
@@ -479,37 +486,34 @@ void AInfluenceMapGrid::DeleteInfluence(const uint16 IndexActor, const uint8 Tea
 	//ActorsData.Remove(ActorsData[IndexActor]);
 }
 
-void AInfluenceMapGrid::UpdateControlArea(const uint16 IndexControlArea, const uint8 Team) noexcept {
+void AInfluenceMapGrid::UpdateControlArea(const uint16 IndexControlArea, const uint8 Team, const uint32 ControlAreID, uint16 IndexActor) noexcept {
 
 	switch (Team) {
 	case 1:
 		for (uint32 index : ActorsData[IndexControlArea].IndexInfluence) {
+			Grid[index].InfluenceTeam[2].ActorsID.Remove(ControlAreID);
 			m_index_team2.Remove(index);
-			m_index_team1.Add(index);
-			Grid[index].InfluenceTeam[2].InfluenceValue -= ControlAreaInfluenceValue;
-			Grid[index].InfluenceTeam[1].InfluenceValue += ControlAreaInfluenceValue;
+			Grid[index].InfluenceTeam[2].InfluenceValue = 0.f;
 		}
 		break;
 	case 2:
 		for (uint32 index : ActorsData[IndexControlArea].IndexInfluence) {
+			Grid[index].InfluenceTeam[1].ActorsID.Remove(ControlAreID);
 			m_index_team1.Remove(index);
-			m_index_team2.Add(index);
-			Grid[index].InfluenceTeam[1].InfluenceValue -= ControlAreaInfluenceValue;
-			Grid[index].InfluenceTeam[2].InfluenceValue += ControlAreaInfluenceValue;
+			Grid[index].InfluenceTeam[1].InfluenceValue = 0.f;
 		}
 		break;
 	default:
 		break;
 	}
-
 }
 
 void AInfluenceMapGrid::UpdateSoldier(const uint16 IndexSoldier, const uint8 Team, const uint32 SoldierID) noexcept {
 	if (ActorsData[IndexSoldier].IndexInfluence.Num() > 0) {
 		for (uint32 index : ActorsData[IndexSoldier].IndexInfluence) {
-			Grid[index].ActorsID.Remove(SoldierID);
+			Grid[index].InfluenceTeam[Team].ActorsID.Remove(SoldierID);
 
-			if (Grid[index].ActorsID.Num() <= 0) {
+			if (Grid[index].InfluenceTeam[Team].ActorsID.Num() <= 0) {
 				Grid[index].InfluenceTeam[Team].InfluenceValue = 0.0f;
 				switch (Team) {
 				case 1:
@@ -527,6 +531,10 @@ void AInfluenceMapGrid::UpdateSoldier(const uint16 IndexSoldier, const uint8 Tea
 				if (Grid[index].InfluenceTeam[Team].Types.Contains(Type::ControlArea)) {
 					if (Grid[index].InfluenceTeam[Team].InfluenceValue < ControlAreaInfluenceValue)
 						Grid[index].InfluenceTeam[Team].InfluenceValue = ControlAreaInfluenceValue;
+				}
+				else if(Grid[index].InfluenceTeam[Team].Types.Contains(Type::Soldier)) {
+					if (Grid[index].InfluenceTeam[Team].InfluenceValue < CharacterInfluenceValue)
+						Grid[index].InfluenceTeam[Team].InfluenceValue = CharacterInfluenceValue;
 				}
 			}
 		}
@@ -570,6 +578,12 @@ void AInfluenceMapGrid::EraseObstacleInfluence(FGridPackageObstacle Message) {
 	if (ActorAlreadyExist(Message.ActorID, IndexActor)) {
 		for (uint32 Index : ActorsData[IndexActor].IndexInfluence)
 			Grid[Index].State = TileState::Free;
+	}
+}
+void AInfluenceMapGrid::EraseSoldierInfluence(FGridPackage Message) {
+	uint16 Indexactor = 0;
+	if (ActorAlreadyExist(Message.ActorID, Indexactor)) {
+		UpdateSoldier(Indexactor, Message.team_value, Message.ActorID);
 	}
 }
 

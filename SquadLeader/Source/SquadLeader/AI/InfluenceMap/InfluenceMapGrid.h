@@ -64,6 +64,8 @@ struct SQUADLEADER_API FInfluenceTeamData {
 
 	//The list of the different type on the tile(Soldier, COntrolArea, Projectile, etc.)
 	TArray<TEnumAsByte<Type>> Types;
+
+	TArray<uint32> ActorsID;
 };
 
 /*
@@ -86,8 +88,6 @@ struct SQUADLEADER_API FTileBase {
 	TileState State;
 
 	TMap<uint8, FInfluenceTeamData> InfluenceTeam;
-
-	TArray<uint32> ActorsID;
 };
 
 USTRUCT()
@@ -291,7 +291,7 @@ protected:
 
 	void DeleteInfluence(const uint16 IndexActor, const uint8 Team) noexcept;
 
-	void UpdateControlArea(const uint16 IndexControlArea, const uint8 Team) noexcept;
+	void UpdateControlArea(const uint16 IndexControlArea, const uint8 Team, const uint32 ControlAreID, uint16 IndexActor) noexcept;
 	void UpdateSoldier(const uint16 IndexSoldier, const uint8 Team, const uint32 SoldierID) noexcept;
 
 	void SoldierInfluence(FGridPackage Message, uint32 IndexTile, uint16 IndexActor);
@@ -301,6 +301,9 @@ protected:
 
 public:
 	void EraseObstacleInfluence(FGridPackageObstacle Message);
+	void EraseSoldierInfluence(FGridPackage Message);
 
 	double GetInfluenceAverage(const uint32 ActorID, const uint8 Team);
+
+
 };
