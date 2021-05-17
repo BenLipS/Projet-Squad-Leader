@@ -36,6 +36,9 @@ protected:
 protected:
 	virtual void SynchronizeProperties();
 
+	UFUNCTION(BlueprintCallable)
+	virtual void OnRespawnScreenDeactivated();
+
 	//-----USL_UserWidget-----
 
 	virtual void SetupDelegateToObject_Implementation(UObject* _ObjectIn) override;
@@ -50,4 +53,8 @@ public:
 	virtual void OnFullMapDisplayBegin() override {}
 	virtual void OnFullMapDisplayEnd() override {}
 	virtual void OnPingDestroyed() override {}
+
+	//-----IRespawnInterface-----
+public:
+	virtual void OnRespawnScreenActivated() override;
 };

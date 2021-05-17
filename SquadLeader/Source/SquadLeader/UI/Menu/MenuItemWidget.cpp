@@ -14,6 +14,8 @@ void UMenuItemWidget::SelectItem()
 
 void UMenuItemWidget::OnItemSelected()
 {
+	OnItemSelectedEvent.Broadcast();
+	BlueprintOnItemSelected();
 }
 
 void UMenuItemWidget::OnItemDeselected()

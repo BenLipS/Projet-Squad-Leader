@@ -5,6 +5,7 @@
 
 #include "SquadLeader/ControlArea/ControlArea.h"
 #include "SquadLeader/UI/ControlArea/ControlAreaInfoWidget.h"
+#include "../MenuLayoutWidget.h"
 
 #include "Components/Image.h"
 
@@ -13,25 +14,27 @@ void UMenuButtonControlAreaWidget::SetControlAreaOwner(int newOwner)
 	if (ControlAreaOwner != newOwner)
 	{
 		ControlAreaOwner = newOwner;
-
 		if (ControlAreaOwner > 0)
 		{
-			MainButton->SetIsEnabled(true);
+			bIsSelectGlobal = true;
 		}
 		else
 		{
-			MainButton->SetIsEnabled(false);
+			bIsSelectGlobal = false;
+			MenuLayout->DeselectItem(this);
 		}
 	}
 }
 
 void UMenuButtonControlAreaWidget::OnItemSelected()
 {
+	UMenuButtonWidget::OnItemSelected();
 	Background->SetVisibility(ESlateVisibility::Visible);
 }
 
 void UMenuButtonControlAreaWidget::OnItemDeselected()
 {
+	UMenuButtonWidget::OnItemDeselected();
 	Background->SetVisibility(ESlateVisibility::Hidden);
 }
 
@@ -48,8 +51,12 @@ void UMenuButtonControlAreaWidget::SetControlArealink(AControlArea* ControlAreaI
 		ControlAreaIn->OnCapturerChanged.AddDynamic(ControlAreaWidget, &UControlAreaInfoWidget::OnControlAreaCapturerChange);
 		ControlAreaIn->OnPercentageChanged.AddDynamic(ControlAreaWidget, &UControlAreaInfoWidget::OnControlAreaPercentageChange);
 	}
-
+	if (ControlAreaOwner <= 0)
+	{
+		bIsSelectGlobal = false;
+	}
 	ControlAreaIn->OnOwnerChanged.AddDynamic(this, &UMenuButtonControlAreaWidget::SetControlAreaOwner);
+	ControlAreaIn->BroadcastDatas();
 	ControlArea = ControlAreaIn;
 }
 

@@ -161,6 +161,10 @@ public:
 	void ServerAddAnAIToIndexSquad();
 	void ServerAddAnAIToIndexSquad_Implementation();
 
+	UFUNCTION(Server, Reliable, BlueprintCallable)
+	void ServerRespawnSoldier(AControlArea* ControlArea);
+	void ServerRespawnSoldier_Implementation(AControlArea* ControlArea);
+
 	UFUNCTION()
 	void BroadCastManagerData();
 

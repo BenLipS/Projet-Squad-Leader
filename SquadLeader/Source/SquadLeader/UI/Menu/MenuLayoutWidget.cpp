@@ -37,6 +37,7 @@ void UMenuLayoutWidget::SetWidgetLayout(UMenuItemWidget* ItemIn)
 {
 	if (IsValid(ItemIn))
 	{
+		MenuItems.AddUnique(ItemIn);
 		ItemIn->MenuLayout = this;
 		ItemIn->OnItemAddedToLayout();
 	}
@@ -50,7 +51,6 @@ void UMenuLayoutWidget::SynchronizeAllMenuItem(UPanelWidget* PanelIn)
 	{
 		if (T* MenuItem = Cast<T>(Widget); MenuItem)
 		{
-			MenuItems.AddUnique(MenuItem);
 			SetWidgetLayout(MenuItem);
 		}
 		else if (UPanelWidget* MenuGroup = Cast<UPanelWidget>(Widget); MenuGroup)

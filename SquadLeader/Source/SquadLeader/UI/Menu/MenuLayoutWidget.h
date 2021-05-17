@@ -55,6 +55,7 @@ public:
 
 	virtual void DeselectItem(UMenuItemWidget* newItem);
 
+	UFUNCTION(BlueprintCallable)
 	UMenuItemWidget* GetSelectedItem(FString ChannelIn);
 
 	FString GetLayoutID();

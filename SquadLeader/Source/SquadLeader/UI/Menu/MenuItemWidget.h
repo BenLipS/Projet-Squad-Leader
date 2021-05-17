@@ -8,6 +8,8 @@
 
 class UMenuLayoutWidget;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FEventNoParam);
+
 UCLASS()
 class SQUADLEADER_API UMenuItemWidget : public USL_UserWidget
 {
@@ -28,12 +30,23 @@ protected:
 	UFUNCTION()
 	virtual void OnItemSelected();
 
+	UFUNCTION(BlueprintNativeEvent)
+	void BlueprintOnItemSelected();
+	void BlueprintOnItemSelected_Implementation() {}
+
+
 	UFUNCTION()
 	virtual void OnItemDeselected();
 
 public:
 	UFUNCTION(BlueprintCallable)
 	UMenuLayoutWidget* GetMenuLayout();
+
+public:
+	UPROPERTY(BlueprintAssignable, Category = "Appearance|Event")
+	FEventNoParam OnItemSelectedEvent;
+	DECLARE_EVENT(UMenuItemWidget, FNativeEventNoParam);
+	FNativeEventNoParam OnNativeItemSelectedEvent;
 
 protected:
 	/*Called after a MenuLayout is binded*/

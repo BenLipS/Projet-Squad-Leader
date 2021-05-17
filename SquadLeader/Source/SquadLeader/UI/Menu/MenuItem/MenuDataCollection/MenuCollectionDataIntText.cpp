@@ -20,7 +20,7 @@ void UMenuCollectionDataIntText::SynchronizeProperties()
 
 bool UMenuCollectionDataIntText::SetDataValue(int newValue, bool fireEvent)
 {
-	if (SetDataValue(newValue, fireEvent))
+	if (UMenuCollectionDataInt::SetDataValue(newValue, fireEvent))
 	{
 		TextInt->SetText(FText::FromString(FString::FromInt(DataValue)));
 		return true;
