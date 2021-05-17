@@ -415,16 +415,17 @@ void AAIBasicManager::FinalAttack() {
 	const uint32 IndexControlAreaEnnemi = ControlAreaEnnemies[0];
 	auto LastEnnemieControlArea = ListSoldierOnControlArea.Find(IndexControlAreaEnnemi);
 
-	
-	for (size_t IndexSoldier = 0; IndexSoldier != AIBasicAvailable.Num(); ++IndexSoldier) {
-		uint32 IndexCA = 0;
-		if (AIBasicList[IndexSoldier]->GetIndexControlArea(IndexCA)) {
-			UCaptureMission* CaptureMission = Cast<UCaptureMission>(NewObject<UCaptureMission>(this, UCaptureMission::StaticClass()));
-			CaptureMission->InitCaptureMission(-1, MissionPriority::eMIDDLE, m_controlAreaManager->GetControlArea()[IndexControlAreaEnnemi]);
-			AIBasicList[IndexSoldier]->SetMission<UCaptureMission*>(CaptureMission);
+	if (m_controlAreaManager->GetControlArea()[IndexControlAreaEnnemi] != nullptr) {
+		for (size_t IndexSoldier = 0; IndexSoldier != AIBasicAvailable.Num(); ++IndexSoldier) {
+			uint32 IndexCA = 0;
+			if (AIBasicList[IndexSoldier]->GetIndexControlArea(IndexCA)) {
+				UCaptureMission* CaptureMission = Cast<UCaptureMission>(NewObject<UCaptureMission>(this, UCaptureMission::StaticClass()));
+				CaptureMission->InitCaptureMission(-1, MissionPriority::eMIDDLE, m_controlAreaManager->GetControlArea()[IndexControlAreaEnnemi]);
+				AIBasicList[IndexSoldier]->SetMission<UCaptureMission*>(CaptureMission);
 
-			LastEnnemieControlArea->SoldierIndex.Add(IndexSoldier);
-			ListSoldierOnControlArea.Find(IndexCA)->SoldierIndex.Remove(IndexSoldier);
+				LastEnnemieControlArea->SoldierIndex.Add(IndexSoldier);
+				ListSoldierOnControlArea.Find(IndexCA)->SoldierIndex.Remove(IndexSoldier);
+			}
 		}
 	}
 }
