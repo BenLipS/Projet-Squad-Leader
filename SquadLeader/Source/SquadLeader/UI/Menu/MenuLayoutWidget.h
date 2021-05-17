@@ -51,8 +51,10 @@ private:
 public:
 	virtual void OnItemSelected(UMenuItemWidget* newItem);
 
+	UFUNCTION(BlueprintCallable)
 	virtual void DeselectChannel(FString ChannelIn);
 
+	UFUNCTION(BlueprintCallable)
 	virtual void DeselectItem(UMenuItemWidget* newItem);
 
 	UFUNCTION(BlueprintCallable)

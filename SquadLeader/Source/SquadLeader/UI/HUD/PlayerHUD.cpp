@@ -97,7 +97,11 @@ void APlayerHUD::BindControlAreas()
 	if (ASquadLeaderGameState* GS = GetWorld()->GetGameState<ASquadLeaderGameState>(); GS)
 	{
 		// Get current control areas - TODO: Bindfuture changes
-		for (AControlArea* ControlArea : GS->GetControlAreaManager()->GetControlArea())
+		auto ControlAreaList = GS->GetControlAreaManager()->GetControlArea();
+
+		ControlAreaList.Sort([](const AControlArea& Left, const AControlArea& Right) {return Left.GetName() > Right.GetName(); });
+
+		for (AControlArea* ControlArea : ControlAreaList)
 		{
 			OnControlAreaAdded(ControlArea);
 		}

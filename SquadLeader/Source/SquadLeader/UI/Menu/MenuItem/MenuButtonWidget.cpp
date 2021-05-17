@@ -18,6 +18,14 @@ void UMenuButtonWidget::SynchronizeProperties()
 	}
 }
 
+void UMenuButtonWidget::SetButtonText(FString newText)
+{
+	if (IsValid(TextButton))
+	{
+		TextButton->SetText(FText::FromString(newText));
+	}
+}
+
 void UMenuButtonWidget::OnButtonPressed()
 {
 	OnButtonPressedEvent.Broadcast();
