@@ -229,9 +229,9 @@ void ASoldierPlayerController::OnChangeTeam()
 }
 
 
-void ASoldierPlayerController::ClientSendCommand_Implementation(const FString& Cmd, bool bWriteToLog)
+void ASoldierPlayerController::ClientSendChangeMapCommand_Implementation(const FName& Cmd)
 {
-	ConsoleCommand(Cmd, bWriteToLog);
+	UGameplayStatics::OpenLevel(this, Cmd, true);
 }
 
 void ASoldierPlayerController::OnSquadChanged_Implementation(const TArray<FSoldierAIData>& newValue)
