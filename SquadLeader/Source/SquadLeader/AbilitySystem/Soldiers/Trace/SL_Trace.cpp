@@ -49,6 +49,11 @@ void ASL_Trace::SetStartLocation(const FGameplayAbilityTargetingLocationInfo& In
 	StartLocation = InStartLocation;
 }
 
+FGameplayAbilityTargetingLocationInfo ASL_Trace::GetStartLocation() const
+{
+	return StartLocation;
+}
+
 void ASL_Trace::SetShouldProduceTargetDataOnServer(bool bInShouldProduceTargetDataOnServer)
 {
 	ShouldProduceTargetDataOnServer = bInShouldProduceTargetDataOnServer;
@@ -214,11 +219,11 @@ TArray<FHitResult> ASL_Trace::PerformTrace()
 	ensure(Soldier);
 
 	FVector TraceStart = StartLocation.GetTargetingTransform().GetLocation();
-	FVector TraceEnd = TraceEnd = Soldier->GetLookingAtPosition();
+	FVector TraceEnd = Soldier->GetLookingAtPosition();
 
 	// ClipCameraRayToAbilityRange(ViewStart, ViewDir, TraceStart, MaxRange, ViewEnd);
 
-	FCollisionQueryParams Params(SCENE_QUERY_STAT(AGSGATA_LineTrace), false);
+	FCollisionQueryParams Params(SCENE_QUERY_STAT(ASL_LineTrace), false);
 	Params.bReturnPhysicalMaterial = true;
 	Params.AddIgnoredActor(SourceActor);
 	Params.bIgnoreBlocks = false;
