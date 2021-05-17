@@ -44,6 +44,10 @@ protected:
 	int AIBasicHeavyNumber = 6;
 	UPROPERTY(BlueprintReadOnly, Category = "GameData")
 	int StartingAISquadNumber = 3;
+	UPROPERTY(BlueprintReadOnly, Category = "GameData")
+		int AISquadLevel = 1;
+	UPROPERTY(BlueprintReadOnly, Category = "GameData")
+		int AIBasicLevel = 1;
 
 public:
 	int const GetBaseTicketForTeam() {return BaseTicketsNumber;}
@@ -98,6 +102,10 @@ public:
 	UFUNCTION()
 	TArray<AAISquadManager*> GetSquadManagers() { return ListAISquadManagers; }
 
+	UFUNCTION()
+		int GetAIBasicLevel() {return AIBasicLevel;}
+	UFUNCTION()
+		int GetAISquadLevel() { return AISquadLevel; }
 //////////////// Notifications
 public:
 	void NotifySoldierKilled(ASoldier* _DeadSoldier, ASoldier* _KillerSoldier);

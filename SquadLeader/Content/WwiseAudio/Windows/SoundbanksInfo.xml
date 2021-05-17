@@ -16,7 +16,7 @@
 			<ShortName>Init</ShortName>
 			<Path>Init.bnk</Path>
 		</SoundBank>
-		<SoundBank Id="4056684167" Language="SFX" Hash="790537516">
+		<SoundBank Id="4056684167" Language="SFX" Hash="1006066188">
 			<ObjectPath>\SoundBanks\Default Work Unit\Master</ObjectPath>
 			<ShortName>Master</ShortName>
 			<Path>Master.bnk</Path>
@@ -34,6 +34,14 @@
 						<File Id="428661140" Language="SFX">
 							<ShortName>Vision Themique Activation.wav</ShortName>
 							<Path>SFX\Vision Themique Activation_10C4C929.wem</Path>
+						</File>
+					</IncludedMemoryFiles>
+				</Event>
+				<Event Id="985628862" Name="Ambience_Factory" ObjectPath="\Events\Default Work Unit\Environment\Ambience_Factory">
+					<IncludedMemoryFiles>
+						<File Id="20234757" Language="SFX">
+							<ShortName>Factory Ambience.wav</ShortName>
+							<Path>SFX\Factory Ambience_D79FB2B7.wem</Path>
 						</File>
 					</IncludedMemoryFiles>
 				</Event>
