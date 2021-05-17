@@ -27,14 +27,28 @@ public:
 	void DoAnimation(const FGameplayCueParameters _Parameters);
 
 protected:
+	UFUNCTION()
 	void ApplyEffectsToSource();
+	
+	UFUNCTION()
 	bool ApplyDamages(const FGameplayAbilityTargetDataHandle& _Data, ASoldier* _TargetSoldier, const float _Damage);
+	
 	bool ApplyDamages(class AShield* _Shield, const float _Damage);
 
+	UFUNCTION()
 	bool IsHeadShot(const FHitResult& _HitResult) const;
 
+	UFUNCTION()
 	void ReloadWeapon();
+
+	UFUNCTION()
 	void ConfigLineTrace();
+
+	UFUNCTION()
+	FHitResult PredictFireHitResult();
+
+	UFUNCTION()
+	void FilterTraceWithShield(TArray<FHitResult>& _HitResults);
 
 	virtual bool CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags = nullptr, const FGameplayTagContainer* TargetTags = nullptr, OUT FGameplayTagContainer* OptionalRelevantTags = nullptr) const override;
 
