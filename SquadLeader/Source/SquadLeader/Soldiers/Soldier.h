@@ -392,6 +392,8 @@ public:
 	bool Walk();
 
 	virtual void Landed(const FHitResult& _Hit) override;
+	virtual void OnStartCrouch(float HalfHeightAdjust, float ScaledHalfHeightAdjust) override;
+	virtual void OnEndCrouch(float HalfHeightAdjust, float ScaledHalfHeightAdjust) override;
 
 // Field of view
 public:
