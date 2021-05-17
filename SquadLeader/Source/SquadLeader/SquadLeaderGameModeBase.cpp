@@ -241,7 +241,7 @@ void ASquadLeaderGameModeBase::CloseGame()
 	{
 		if (auto PC = Cast<ASoldierPlayerController>(PCIterator->Get()); PC)
 		{
-			PC->ClientSendCommand("open MapMainMenu", true);
+			PC->ClientSendChangeMapCommand("open MapMainMenu");
 		}
 	}
 	//FGenericPlatformMisc::RequestExit(false);

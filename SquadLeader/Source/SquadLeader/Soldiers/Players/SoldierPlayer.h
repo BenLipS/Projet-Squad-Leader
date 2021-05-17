@@ -53,6 +53,11 @@ protected:
 	UFUNCTION()
 	void DeactivateFollowKillerCamera();
 
+	UPROPERTY()
+	bool bFollowKiller = false;
+
+	UFUNCTION()
+	void FollowKiller();
 public:
 	UCameraComponent* GetFollowKillerCamera() const;
 

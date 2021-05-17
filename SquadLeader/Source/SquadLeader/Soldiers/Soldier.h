@@ -23,6 +23,8 @@ class UGameplayEffect;
 class UGE_UpdateStats;
 class UMatineeCameraShake;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSoldierDeath, class ASoldier*, _Soldier);
+
 UENUM()
 enum class SoldierClass : uint8 {
 	NONE,
@@ -189,6 +191,9 @@ public:
 protected:
 	virtual void DeadTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 	virtual void BlurredFromJammerTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
+
+public:
+	FOnSoldierDeath OnSoldierDeath;
 
 public:
 	UFUNCTION()
@@ -392,6 +397,8 @@ public:
 	bool Walk();
 
 	virtual void Landed(const FHitResult& _Hit) override;
+	virtual void OnStartCrouch(float HalfHeightAdjust, float ScaledHalfHeightAdjust) override;
+	virtual void OnEndCrouch(float HalfHeightAdjust, float ScaledHalfHeightAdjust) override;
 
 // Field of view
 public:

@@ -38,6 +38,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera", meta = (ExposeOnSpawn = "true"))
 	ACameraActor* CameraActor;
 
+//////////////// Control
 public:
 	/** Zone Collide */
 	virtual void initCollideElement();
@@ -45,15 +46,15 @@ public:
 	//	class UBoxComponent* BoxCollide;
 
 	UPROPERTY(EditInstanceOnly, Replicated, BlueprintReadWrite, Category = "ControlAreaData")
-		FString ControlAreaName = "";
+	FString ControlAreaName = "";
 
 	/** Control value variables */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ControlValue")
-		int MaxControlValue = 20;
+	int MaxControlValue = 20;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ControlValue")
-		int MinControlValueToControl = 0;
+	int MinControlValueToControl = 0;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ControlValue")
-		int ControlValueToTake = 20;
+	int ControlValueToTake = 20;
 
 protected:
 	UPROPERTY(VisibleAnywhere, ReplicatedUsing = OnRepOwner, Category = "IsTaken")
@@ -61,6 +62,15 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, ReplicatedUsing = OnRepCapturer, Category = "IsTaken")
 	ASoldierTeam* IsCapturedBy;
+
+	UFUNCTION(BlueprintCallable, Category = "Control")
+	void AddSoldierPresence(ASoldier* _Soldier);
+
+	UFUNCTION(BlueprintCallable, Category = "Control")
+	void RemoveSoldierPresence(ASoldier* _Soldier);
+
+	UFUNCTION(BlueprintCallable, Category = "Control")
+	void OnSoldierDeath(ASoldier* _Soldier);
 
 public:
 	UFUNCTION(BlueprintCallable)
