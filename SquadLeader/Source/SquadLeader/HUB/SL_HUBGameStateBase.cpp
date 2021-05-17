@@ -29,11 +29,6 @@ void ASL_HUBGameStateBase::ClientAskArrayReplication_Implementation()
 	ServerAskArrayReplication();
 }
 
-void ASL_HUBGameStateBase::ClientAskArrayReplication_Implementation()
-{
-	ServerAskArrayReplication();
-}
-
 void ASL_HUBGameStateBase::ServerAskArrayReplication_Implementation()
 {
 	ClientSyncHUBParamArray(PlayersInfo);

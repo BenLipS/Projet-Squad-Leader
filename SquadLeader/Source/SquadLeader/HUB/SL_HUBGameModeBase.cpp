@@ -2,7 +2,7 @@
 #include "Engine/World.h"
 #include "GameFramework/GameStateBase.h"
 #include "GameFramework/GameSession.h"
-#include "SLHUBPlayerController.h"
+#include "SL_HUBPlayerState.h"
 #include "../SquadLeaderGameInstance.h"
 #include "SL_HUBGameStateBase.h"
 #include "Net/OnlineEngineInterface.h"
@@ -52,8 +52,8 @@ void ASL_HUBGameModeBase::Logout(AController* Exiting)
 	// notifies that a player has left
 	if (GEngine)GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Black, TEXT("A player left the game."));  // message for the server only
 	// TODO: ensure that the player is correctly destroy
-	if (auto HUBController = Cast<ASLHUBPlayerController>(Exiting); HUBController) {
-		HUBController->ClientRemoveHUBPlayerParam();
+	if (auto HUBPlayerState = Exiting->GetPlayerState<ASL_HUBPlayerState>(); HUBPlayerState) {
+		HUBPlayerState->ClientRemoveHUBPlayerParam();
 	}
 
 	// do the basic job

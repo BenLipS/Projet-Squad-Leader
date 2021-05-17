@@ -1,15 +1,12 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
-#include "SLHUBPlayerController.h"
+#include "SL_HUBPlayerState.h"
 #include "SL_HUBGameStateBase.h"
 #include "../SquadLeaderGameInstance.h"
 
-void ASLHUBPlayerController::BeginPlay()
+void ASL_HUBPlayerState::BeginPlay()
 { // begin play for each player wanting to join a new game
 	// create HUBPlayer Param and give it information if available
 	LocalHUBPlayerParam = NewObject<AHUBPlayerParam>();
-	if (IsLocalPlayerController()) {
+	if (GetPawn()->IsLocallyControlled()) {
 		auto GI = GetGameInstance<USquadLeaderGameInstance>();
 		LocalHUBPlayerParam->SetPlayerId(GI->GetPlayerId());
 		LocalHUBPlayerParam->SetPlayerName(GI->GetPlayerName());
@@ -24,10 +21,10 @@ void ASLHUBPlayerController::BeginPlay()
 	}
 }
 
-void ASLHUBPlayerController::ChangeTeam()
+void ASL_HUBPlayerState::ChangeTeam()
 {
 	int NewTeamId = (LocalHUBPlayerParam->GetChoosenTeam() % 2) + 1;
-	if (IsLocalPlayerController()) {  // send data to the LocalPlayerParam
+	if (GetPawn()->IsLocallyControlled()) {  // send data to the LocalPlayerParam
 		LocalHUBPlayerParam->SetChoosenTeam(NewTeamId);
 		if (auto GS = GetWorld()->GetGameState<ASL_HUBGameStateBase>(); GS)
 			GS->MulticastUpdatePlayer(LocalHUBPlayerParam);
@@ -37,17 +34,17 @@ void ASLHUBPlayerController::ChangeTeam()
 	}
 }
 
-void ASLHUBPlayerController::ChangeReadyState()
+void ASL_HUBPlayerState::ChangeReadyState()
 {
 	bool NewReadyState = !LocalHUBPlayerParam->GetIsReady();
-	if (IsLocalPlayerController()) {  // send data to the LocalPlayerParam
+	if (GetPawn()->IsLocallyControlled()) {  // send data to the LocalPlayerParam
 		LocalHUBPlayerParam->SetChoosenTeam(NewReadyState);
 		if (auto GS = GetWorld()->GetGameState<ASL_HUBGameStateBase>(); GS)
 			GS->MulticastUpdatePlayer(LocalHUBPlayerParam);
 	}
 }
 
-void ASLHUBPlayerController::ClientRemoveHUBPlayerParam_Implementation()
+void ASL_HUBPlayerState::ClientRemoveHUBPlayerParam_Implementation()
 {
 	if (auto GS = GetWorld()->GetGameState<ASL_HUBGameStateBase>(); GS)
 		GS->MulticastRemovePlayer(LocalHUBPlayerParam->GetPlayerID());

@@ -3,28 +3,28 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/PlayerController.h"
+#include "GameFramework/PlayerState.h"
 #include "HUBPlayerParam.h"
-#include "SLHUBPlayerController.generated.h"
+#include "SL_HUBPlayerState.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class SQUADLEADER_API ASLHUBPlayerController : public APlayerController
+class SQUADLEADER_API ASL_HUBPlayerState : public APlayerState
 {
 	GENERATED_BODY()
-
+	
 public:
 	virtual void BeginPlay() override;
 
 	UFUNCTION(BlueprintCallable)
-	void ChangeTeam();
+		void ChangeTeam();
 	UFUNCTION(BlueprintCallable)
-	void ChangeReadyState();
+		void ChangeReadyState();
 
 	UFUNCTION(Client, Reliable)
-	void ClientRemoveHUBPlayerParam();
+		void ClientRemoveHUBPlayerParam();
 	void ClientRemoveHUBPlayerParam_Implementation();
 
 protected:
