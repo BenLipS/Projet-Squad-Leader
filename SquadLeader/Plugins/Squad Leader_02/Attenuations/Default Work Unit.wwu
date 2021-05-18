@@ -332,7 +332,7 @@
 				</Attenuation>
 				<Attenuation Name="ambience" ID="{B4A1D526-D0E6-4900-9B0B-7F05278C0194}" ShortID="972053740">
 					<PropertyList>
-						<Property Name="RadiusMax" Type="Real64" Value="20000"/>
+						<Property Name="RadiusMax" Type="Real64" Value="3800"/>
 					</PropertyList>
 					<CurveUsageInfoList>
 						<VolumeDryUsage>
@@ -348,7 +348,7 @@
 											<Flags>5</Flags>
 										</Point>
 										<Point>
-											<XPos>20000</XPos>
+											<XPos>3800</XPos>
 											<YPos>-200</YPos>
 											<Flags>37</Flags>
 										</Point>
@@ -375,12 +375,12 @@
 											<Flags>5</Flags>
 										</Point>
 										<Point>
-											<XPos>16645.16128</XPos>
+											<XPos>3162.5806432</XPos>
 											<YPos>34</YPos>
 											<Flags>0</Flags>
 										</Point>
 										<Point>
-											<XPos>20000</XPos>
+											<XPos>3800</XPos>
 											<YPos>100</YPos>
 											<Flags>37</Flags>
 										</Point>

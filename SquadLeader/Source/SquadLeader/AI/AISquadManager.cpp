@@ -165,6 +165,9 @@ void AAISquadManager::AddAnAIToSquad_Implementation()
 			AISquadControllerList.Add(AC);
 			AISoldierList.Add(SquadAI);
 			AC->SquadManager = this;
+
+			if (Leader)
+				Leader->OnRep_SquadManager();
 		}
 		SquadAI->FinishSpawning(LocationAI);
 		SquadAI->BroadCastDatas();
