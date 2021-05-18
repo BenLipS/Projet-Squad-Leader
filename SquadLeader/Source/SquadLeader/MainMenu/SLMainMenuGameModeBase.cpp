@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "SLMainMenuGameModeBase.h"
+#include "../SquadLeaderGameInstance.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
 
 
@@ -18,6 +19,8 @@ void ASLMainMenuGameModeBase::StartPlay() {
 			PC->SetMouseLocation(Center.X, Center.Y);
 		}
 	}
+
+	GetGameInstance<USquadLeaderGameInstance>()->ChangeNetworkState(1);
 
 	Super::StartPlay();
 }

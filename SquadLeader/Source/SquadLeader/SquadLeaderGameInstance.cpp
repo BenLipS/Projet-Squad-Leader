@@ -74,10 +74,9 @@ void USquadLeaderGameInstance::LaunchGame()
             HttpCallDeleteGame();
         }
         HttpCallCreateNewGame();
-        HttpCallChangeConnectedStatus(2); // notify that the client is joining a new game
     }
-    //UGameplayStatics::OpenLevel({}, "HUB_Level", true, "?Listen");
-    UGameplayStatics::OpenLevel(this, "Factory_V2", true, "?Listen");
+    //UGameplayStatics::OpenLevel(this, "HUB_Level", true, "?listen");
+    UGameplayStatics::OpenLevel(this, "Factory_V2", true, "?listen");
 }
 
 void USquadLeaderGameInstance::SetGameParamToDefault()
@@ -106,6 +105,20 @@ void USquadLeaderGameInstance::SaveGameParam(TMap<FString, int> IntData, TMap<FS
 void USquadLeaderGameInstance::JoinGame(FString IPAdress)
 {
     UGameplayStatics::OpenLevel(this, *IPAdress, true);
+}
+
+void USquadLeaderGameInstance::ChangeNetworkState(int NewState)
+{
+    if (OnlineStatus) {
+        HttpCallChangeConnectedStatus(NewState);
+    }
+}
+
+void USquadLeaderGameInstance::CloseMatchMaking()
+{
+    if (OnlineStatus && GameID != "") {
+        HttpCallDeleteGame();
+    }
 }
 
 bool USquadLeaderGameInstance::UpdateNetworkStatus(const int MatchResult, float GameDuration, int XP, int NbKillAI, int NbKillPlayer, int NbDeathByAI, int NbDeathByPlayer)
@@ -235,7 +248,7 @@ void USquadLeaderGameInstance::HttpCallSendSyncData()
     Request->SetHeader("Content-Type", "application/x-www-form-urlencoded");
     FString authHeader = FString("Bearer ") + AuthToken;
     Request->SetHeader("Authorization", authHeader);
-    Request->SetURL(BaseServerDataAdress + UserData.Id + "/?name=" + UserData.Name + "&ipAdress=" + UserData.IpAdress + "&isInGame=" + FString::FromInt(1));  // isInGame = 1 for presence
+    Request->SetURL(BaseServerDataAdress + UserData.Id + "/?name=" + UserData.Name + "&ipAdress=" + UserData.IpAdress);
     Request->SetVerb("PATCH");
     Request->ProcessRequest();
 }
@@ -354,8 +367,7 @@ void USquadLeaderGameInstance::HttpCallUpdatePlayerAfterGame()
         "&nbVictory=" + FString::FromInt(UserData.NbVictory) +
         "&nbLoss=" + FString::FromInt(UserData.NbLoss) +
         "&score=" + FString::FromInt(UserData.Score) +
-        "&playTime=" + FString::FromInt(UserData.PlayTime) +
-        "&isInGame=" + FString::FromInt(1));
+        "&playTime=" + FString::FromInt(UserData.PlayTime));
     Request->SetVerb("PATCH");
     Request->ProcessRequest();
 }
@@ -406,6 +418,7 @@ void USquadLeaderGameInstance::OnResponseReceivedConnectUser(FHttpRequestPtr Req
 
         // change the name, the IPAdress and the IsInGame status on server, and download scores
         HttpCallSendSyncData();
+        HttpCallChangeConnectedStatus(1);  // isInGame = 1 for presence
         HttpCallReceiveSyncData();
     }
     else {  // connection problems
