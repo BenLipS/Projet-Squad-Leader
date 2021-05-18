@@ -446,7 +446,7 @@ void ASquadLeaderGameModeBase::NotifySoldierDeathToAllPlayers(ASoldier* _DeadSol
 			// Text notification
 			if (bIsSuicide)
 			{
-				PC->OnTextNotification_Received(FString::Printf(TEXT("%s is dead..."), *_DeadSoldier->GetName()));
+				PC->OnTextNotification_Received(FString::Printf(TEXT("%s is dead..."), *DeadName));
 			}
 			else if (bPlayerInvolved)
 			{
