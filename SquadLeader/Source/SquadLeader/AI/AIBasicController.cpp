@@ -18,6 +18,7 @@
 #include "../Spawn/SoldierSpawn.h"
 #include "Mission.h"
 #include "AIBasicManager.h"
+#include "../SquadLeaderGameModeBase.h"
 
 AAIBasicController::AAIBasicController()
 {
@@ -26,6 +27,8 @@ AAIBasicController::AAIBasicController()
 
 void AAIBasicController::BeginPlay() {
 	Super::BeginPlay();
+	AILevel = GetWorld()->GetAuthGameMode<ASquadLeaderGameModeBase>()->GetAIBasicLevel();
+	HalfAngleShoot = HalfAngleShoot * (1.f / AILevel/1.3);
 }
 
 void AAIBasicController::Init() {
