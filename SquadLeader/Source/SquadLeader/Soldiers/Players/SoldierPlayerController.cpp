@@ -40,6 +40,11 @@ ASoldierPlayerController::ASoldierPlayerController()
 void ASoldierPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
+
+	FInputModeGameOnly InputMode;
+	InputMode.SetConsumeCaptureMouseDown(false);
+	SetInputMode(InputMode);
+
 	CreateHUD();
 	ClientDeterminePlayerParams();
 }
