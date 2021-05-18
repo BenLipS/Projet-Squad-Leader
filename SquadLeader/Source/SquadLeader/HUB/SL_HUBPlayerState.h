@@ -19,13 +19,16 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void ChangeTeam();
 	UFUNCTION(BlueprintCallable)
-		void ChangeReadyState();
+		void ChangeReadyState(bool NewReadyState);
+	UFUNCTION(BlueprintCallable)
+		FString GetCurrentTeamAsText();
 
 	UFUNCTION(Client, Reliable)
 	void ClientRemoveHUBPlayerParam();
 	void ClientRemoveHUBPlayerParam_Implementation();
 
 protected:
+	UPROPERTY()
 	AHUBPlayerParam* LocalHUBPlayerParam;
 
 protected:

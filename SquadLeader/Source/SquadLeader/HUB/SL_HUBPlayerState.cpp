@@ -17,6 +17,10 @@ void ASL_HUBPlayerState::BeginPlay()
 	GI->PlayerParam.GetDefaultObject()->SetTeam(1);
 
 	ServerSetNewArrival(LocalHUBPlayerParam->GetPlayerID(), LocalHUBPlayerParam->GetPlayerName(), LocalHUBPlayerParam->GetIsReady(), LocalHUBPlayerParam->GetChoosenTeam());
+
+	// set IsInGame state to 2
+	auto GI = GetGameInstance<USquadLeaderGameInstance>();
+	GI->ChangeNetworkState(2);
 }
 
 void ASL_HUBPlayerState::ChangeTeam()
@@ -31,11 +35,15 @@ void ASL_HUBPlayerState::ChangeTeam()
 	}
 }
 
-void ASL_HUBPlayerState::ChangeReadyState()
+FString ASL_HUBPlayerState::GetCurrentTeamAsText()
 {
-	bool NewReadyState = !LocalHUBPlayerParam->GetIsReady();
+	return FString("Team ") + FString::FromInt(LocalHUBPlayerParam->GetChoosenTeam());
+}
+
+void ASL_HUBPlayerState::ChangeReadyState(bool NewReadyState)
+{
 	if (auto PC = GetWorld()->GetFirstPlayerController(); PC && PC->GetPlayerState<ASL_HUBPlayerState>() == this) {  // send data to the LocalPlayerParam
-		LocalHUBPlayerParam->SetChoosenTeam(NewReadyState);
+		LocalHUBPlayerParam->SetIsReady(NewReadyState);
 		ServerUpdatePlayer(LocalHUBPlayerParam->GetPlayerID(), LocalHUBPlayerParam->GetPlayerName(), LocalHUBPlayerParam->GetIsReady(), LocalHUBPlayerParam->GetChoosenTeam());
 	}
 }
