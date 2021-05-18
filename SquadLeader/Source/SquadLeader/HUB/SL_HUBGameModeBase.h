@@ -25,12 +25,12 @@ private:
 	void TeleportAllPlayersToGame();  // non-seamless travel
 
 public:
-	void SetNewArrival(class AHUBPlayerParam* NewPlayer);
-	void UpdatePlayer(class AHUBPlayerParam* PlayerParam);
+	void SetNewArrival(const FString& PlayerID, const FString& PlayerName, const bool IsReady, const int ChoosenTeam);
+	void UpdatePlayer(const FString& PlayerID, const FString& PlayerName, const bool IsReady, const int ChoosenTeam);
 	void RemovePlayer(const FString& PlayerID);
 
 protected:
-	TArray<AHUBPlayerParam*> PlayersInfo;
+	TArray<class AHUBPlayerParam*> PlayersInfo;
 
 	FTimerHandle timerTestReadyness;
 	bool LastTestWasReady = false;

@@ -31,12 +31,12 @@ protected:
 protected:
 	// function to call server
 	UFUNCTION(Server, reliable)
-	void ServerSetNewArrival(AHUBPlayerParam* NewPlayer);
-	void ServerSetNewArrival_Implementation(AHUBPlayerParam* NewPlayer);
+	void ServerSetNewArrival(const FString& PlayerParamID, const FString& PlayerName, const bool IsReady, const int ChoosenTeam);
+	void ServerSetNewArrival_Implementation(const FString& PlayerParamID, const FString& PlayerName, const bool IsReady, const int ChoosenTeam);
 
 	UFUNCTION(Server, reliable)
-	void ServerUpdatePlayer(AHUBPlayerParam* PlayerParam);  // PlayerID need to fit with an existing one
-	void ServerUpdatePlayer_Implementation(AHUBPlayerParam* PlayerParam);
+	void ServerUpdatePlayer(const FString& PlayerParamID, const FString& PlayerName, const bool IsReady, const int ChoosenTeam);  // PlayerID need to fit with an existing one
+	void ServerUpdatePlayer_Implementation(const FString& PlayerParamID, const FString& PlayerName, const bool IsReady, const int ChoosenTeam);
 
 	UFUNCTION(Server, reliable)
 	void ServerRemovePlayerParam(const FString& RemovePlayerID);

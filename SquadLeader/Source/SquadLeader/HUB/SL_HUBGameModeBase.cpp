@@ -28,29 +28,29 @@ void ASL_HUBGameModeBase::RefreshPlayerInfo()
 	}
 }
 
-void ASL_HUBGameModeBase::SetNewArrival(AHUBPlayerParam* NewPlayer)
+void ASL_HUBGameModeBase::SetNewArrival(const FString& PlayerID, const FString& PlayerName, const bool IsReady, const int ChoosenTeam)
 {
 	for (auto player : PlayersInfo) {
-		if (player && player->GetPlayerID() == NewPlayer->GetPlayerID()) {
+		if (player && player->GetPlayerID() == PlayerID) {
 			return;
 		}
 	}
 	AHUBPlayerParam* NewEntry = NewObject<AHUBPlayerParam>();
-	NewEntry->SetPlayerId(NewPlayer->GetPlayerID());
-	NewEntry->SetPlayerName(NewPlayer->GetPlayerName());
-	NewEntry->SetIsReady(NewPlayer->GetIsReady());
-	NewEntry->SetChoosenTeam(NewPlayer->GetChoosenTeam());
+	NewEntry->SetPlayerId(PlayerID);
+	NewEntry->SetPlayerName(PlayerName);
+	NewEntry->SetIsReady(IsReady);
+	NewEntry->SetChoosenTeam(ChoosenTeam);
 	PlayersInfo.Add(NewEntry);
 	RefreshPlayerInfo();
 }
 
-void ASL_HUBGameModeBase::UpdatePlayer(AHUBPlayerParam* PlayerParam)
+void ASL_HUBGameModeBase::UpdatePlayer(const FString& PlayerID, const FString& PlayerName, const bool IsReady, const int ChoosenTeam)
 {
 	for (auto player : PlayersInfo) {
-		if (player && player->GetPlayerID() == PlayerParam->GetPlayerID()) {
-			player->SetPlayerName(PlayerParam->GetPlayerName());
-			player->SetIsReady(PlayerParam->GetIsReady());
-			player->SetChoosenTeam(PlayerParam->GetChoosenTeam());
+		if (player && player->GetPlayerID() == PlayerID) {
+			player->SetPlayerName(PlayerName);
+			player->SetIsReady(IsReady);
+			player->SetChoosenTeam(ChoosenTeam);
 
 			RefreshPlayerInfo();
 		}
