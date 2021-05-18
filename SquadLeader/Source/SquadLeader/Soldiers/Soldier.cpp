@@ -228,6 +228,11 @@ void ASoldier::UnLockControls()
 {
 }
 
+FString ASoldier::GetSoldierName() const
+{
+	return FString{ "" };
+}
+
 UAbilitySystemSoldier* ASoldier::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent;

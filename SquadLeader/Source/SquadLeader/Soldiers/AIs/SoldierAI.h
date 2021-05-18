@@ -68,6 +68,13 @@ protected:
 
 	AController* LastUnpossessedController = nullptr;
 
+	FString AISoldierName;
+	static int32 SoldierNum;
+
+public:
+	virtual FString GetSoldierName() const override;
+
+//////////////// Data replications
 public:
 	void BroadCastDatas();
 

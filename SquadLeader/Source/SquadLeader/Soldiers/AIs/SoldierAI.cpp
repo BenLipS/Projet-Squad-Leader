@@ -3,6 +3,8 @@
 #include "../../AI/AISquadController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
+int32 ASoldierAI::SoldierNum = 1;
+
 ASoldierAI::ASoldierAI(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer)
 {
 	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemSoldier>(TEXT("Ability System Component"));
@@ -34,6 +36,11 @@ void ASoldierAI::UnLockControls()
 	}
 }
 
+FString ASoldierAI::GetSoldierName() const
+{
+	return AISoldierName;
+}
+
 void ASoldierAI::BroadCastDatas()
 {
 	OnHealthChanged.Broadcast(AttributeSet->GetHealth(), GetController<AAISquadController>());
@@ -61,6 +68,22 @@ void ASoldierAI::BeginPlay()
 	InitializeAttributes();
 	InitializeAbilities();
 	AddStartupEffects();
+
+	auto ToRomanNumber = [](const int32 _Num) -> FString
+	{
+		const FString M[] = { "","M","MM","MMM" };
+		const FString C[] = { "","C","CC","CCC","CD","D","DC","DCC","DCCC","CM" };
+		const FString X[] = { "","X","XX","XXX","XL","L","LX","LXX","LXXX","XC" };
+		const FString I[] = { "","I","II","III","IV","V","VI","VII","VIII","IX" };
+		const FString val = M[_Num / 1000] + C[(_Num % 1000) / 100] + X[(_Num % 100) / 10] + I[(_Num % 10)];
+		return M[_Num / 1000] + C[(_Num % 1000) / 100] + X[(_Num % 100) / 10] + I[(_Num % 10)];
+	};
+
+	if (GetLocalRole() == ENetRole::ROLE_Authority)
+	{
+		AISoldierName = FString::Printf(TEXT("%s %s"), *ClassName, *ToRomanNumber(SoldierNum));
+		++SoldierNum;
+	}
 }
 
 FVector ASoldierAI::GetLookingAtPosition(const float _MaxRange) const

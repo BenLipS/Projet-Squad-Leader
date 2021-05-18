@@ -37,6 +37,7 @@ public:
 	SoldierClass PlayerClass = SoldierClass::NONE;
 
 	virtual SoldierClass GetClass() override { return PlayerClass; }
+	virtual FString GetSoldierName() const override;
 
 //////////////// Cameras
 public:

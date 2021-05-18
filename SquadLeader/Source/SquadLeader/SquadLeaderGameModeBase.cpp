@@ -408,8 +408,8 @@ void ASquadLeaderGameModeBase::StartRespawnTimerForDeadSoldier(ASoldier* _DeadSo
 
 void ASquadLeaderGameModeBase::NotifySoldierDeathToAllPlayers(ASoldier* _DeadSoldier, ASoldier* _KillerSoldier)
 {
-	const ASoldierTeam* DeadSoldierTeam = _DeadSoldier->GetTeam();
-	const ASoldierTeam* KillerSoldierTeam = _KillerSoldier->GetTeam();
+	const ASoldierTeam* DeadSoldierTeam = _DeadSoldier ? _DeadSoldier->GetTeam() : nullptr;
+	const ASoldierTeam* KillerSoldierTeam = _KillerSoldier ? _KillerSoldier->GetTeam() : nullptr;
 
 	const ASoldierPlayer* DeadSoldierPlayer = Cast<ASoldierPlayer>(_DeadSoldier);
 	const ASoldierPlayer* KillerSoldierPlayer = Cast<ASoldierPlayer>(_KillerSoldier);
@@ -418,10 +418,13 @@ void ASquadLeaderGameModeBase::NotifySoldierDeathToAllPlayers(ASoldier* _DeadSol
 	const bool bKillerIsPlayer = !!KillerSoldierPlayer;
 	const bool bPlayerInvolved = bDeadIsPlayer || bKillerIsPlayer;
 	const bool bIsSuicide = bKillerIsPlayer && (_DeadSoldier == _KillerSoldier);
-	const bool bKillerIsSquadAI = _KillerSoldier->GetController()->IsA<AAISquadController>();
+	const bool bKillerIsSquadAI = _KillerSoldier && _KillerSoldier->GetController()->IsA<AAISquadController>();
 
 	// Leader of the killer - for AIs
 	const ASoldier* SoldierLeader = nullptr;
+
+	const FString DeadName = _DeadSoldier ? _DeadSoldier->GetSoldierName() : FString{"Soldier"};
+	const FString KillerName = _KillerSoldier ? _KillerSoldier->GetSoldierName() : FString{"Soldier"};
 
 	if (bKillerIsSquadAI)
 	{
@@ -448,9 +451,9 @@ void ASquadLeaderGameModeBase::NotifySoldierDeathToAllPlayers(ASoldier* _DeadSol
 			else if (bPlayerInvolved)
 			{
 				if (bKillerIsSquadAI && SoldierLeader)
-					PC->OnTextNotification_Received(FString::Printf(TEXT(/*"%s from */"Squad of %s killed %s"), *_DeadSoldier->GetName(), *SoldierLeader->GetName()));
+					PC->OnTextNotification_Received(FString::Printf(TEXT("%s killed %s"), *KillerName, *DeadName));
 				else
-					PC->OnTextNotification_Received(FString::Printf(TEXT("%s killed %s"), *_KillerSoldier->GetName(), *_DeadSoldier->GetName()));
+					PC->OnTextNotification_Received(FString::Printf(TEXT("%s killed %s"), *KillerName, *DeadName));
 			}
 		}
 	}
