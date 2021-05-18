@@ -14,19 +14,33 @@ UCLASS()
 class SQUADLEADER_API AHUBPlayerParam : public AInfo
 {
 	GENERATED_BODY()
-	
+
 public:
 	// Sets default values for this actor's properties
 	AHUBPlayerParam();
 	// for replication purpose
 	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 
+protected:
 	UPROPERTY(Replicated)
-	FString PlayerID;
+		FString PlayerID;
 	UPROPERTY(Replicated)
-	FString PlayerName;
+		FString PlayerName;
 	UPROPERTY(Replicated)
-	bool IsReady;
+		bool IsReady;
 	UPROPERTY(Replicated)
-	int ChoosenTeam;
+		int ChoosenTeam;
+
+public:
+	void SetPlayerId(FString NewId);
+	const FString GetPlayerID() { return PlayerID; }
+
+	void SetPlayerName(FString NewName);
+	const FString GetPlayerName() { return PlayerName; }
+
+	void SetIsReady(bool Readyness);
+	const bool GetIsReady() { return IsReady; }
+
+	void SetChoosenTeam(int TeamId);  // local player need to save this information in his localPlayerParam too
+	const int GetChoosenTeam() { return ChoosenTeam; }
 };
