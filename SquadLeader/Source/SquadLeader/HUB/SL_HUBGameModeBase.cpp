@@ -29,12 +29,14 @@ void ASL_HUBGameModeBase::RefreshPlayerInfo()
 	}
 }
 
-TMap<FString, FString> ASL_HUBGameModeBase::GetInfoAsStringPair(const TArray<AHUBPlayerParam*>& PlayerParam)
+TArray<FString> ASL_HUBGameModeBase::GetInfoAsStringPair(const TArray<AHUBPlayerParam*>& PlayerParam)
 {
-	TMap<FString, FString> Infos;
+	TArray<FString> Infos;
 	for (auto& player : PlayerParam) {
-		if (player)
-			Infos.Add(FString::FromInt(player->GetIsReady()) + " " + player->GetPlayerName(), FString::FromInt(player->GetChoosenTeam()));
+		if (player) {
+			Infos.Add(FString::FromInt(player->GetIsReady()) + " " + player->GetPlayerName());
+			Infos.Add(FString::FromInt(player->GetChoosenTeam()));
+		}
 	}
 	return Infos;
 }

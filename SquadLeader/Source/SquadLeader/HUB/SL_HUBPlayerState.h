@@ -45,6 +45,6 @@ protected:
 public:
 	// function called by the server
 	UFUNCTION(Client, reliable)
-	void ClientRefreshPlayerInfo(const TMap<FString, FString>& PlayerMessage);
-	void ClientRefreshPlayerInfo_Implementation(const TMap<FString, FString>& PlayerMessage);
+	void ClientRefreshPlayerInfo(const TArray<FString>& PlayerMessage);
+	void ClientRefreshPlayerInfo_Implementation(const TArray<FString>& PlayerMessage);
 };

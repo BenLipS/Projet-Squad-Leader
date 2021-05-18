@@ -63,12 +63,18 @@ void ASL_HUBPlayerState::ServerRemovePlayerParam_Implementation(const FString& R
 		GM->RemovePlayer(RemovePlayerID);
 }
 
-void ASL_HUBPlayerState::ClientRefreshPlayerInfo_Implementation(const TMap<FString, FString>& PlayerMessage)
+void ASL_HUBPlayerState::ClientRefreshPlayerInfo_Implementation(const TArray<FString>& PlayerMessage)
 {
 	if (auto PC = GetWorld()->GetFirstPlayerController(); PC) {
 		if (auto HUD = PC->GetHUD<IStatInfoInterface>(); HUD) {
+			// convert TArray to TMap
+			TMap<FString, FString> Infos;
+			for (int loop = 0; loop < PlayerMessage.Num(); loop += 2) {
+				Infos.Add(PlayerMessage[loop], PlayerMessage[loop+1]);
+			}
+
 			HUD->OnStatsInfoCleanOrder();
-			HUD->OnStatsInfoReceived(PlayerMessage);
+			HUD->OnStatsInfoReceived(Infos);
 		}
 	}
 }

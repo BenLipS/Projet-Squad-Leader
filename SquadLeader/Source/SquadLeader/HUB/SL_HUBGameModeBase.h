@@ -38,5 +38,5 @@ protected:
 	void TestReadyness();
 	void RefreshPlayerInfo();
 
-	TMap<FString, FString> GetInfoAsStringPair(const TArray<AHUBPlayerParam*>& PlayerParam);
+	TArray<FString> GetInfoAsStringPair(const TArray<AHUBPlayerParam*>& PlayerParam);
 };
