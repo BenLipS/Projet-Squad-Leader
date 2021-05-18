@@ -65,7 +65,7 @@ void UGA_FireWeaponInstant::EndAbility(const FGameplayAbilitySpecHandle Handle, 
 void UGA_FireWeaponInstant::FireBullet()
 {
 	APlayerController* PC = CurrentActorInfo->PlayerController.Get();
-	const bool bIsLocal = PC->IsLocalPlayerController();
+	const bool bIsLocal = !IsValid(PC) || PC->IsLocalPlayerController();
 
 	// Too soon to shoot or is reloading
 	const constexpr float epsilon = 0.01; // Error tolerance
