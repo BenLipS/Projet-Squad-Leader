@@ -51,6 +51,12 @@ public:
 
 	void GameParamCopy(AGameParam* TargetParam);
 
+	UFUNCTION(BlueprintCallable)
+	bool IntParamExist(FString ParamName);
+
+	UFUNCTION(BlueprintCallable)
+	int GetIntParam(FString ParamName);
+
 	UFUNCTION()
 	TMap<FString, int> GetIntParams();
 	UFUNCTION()

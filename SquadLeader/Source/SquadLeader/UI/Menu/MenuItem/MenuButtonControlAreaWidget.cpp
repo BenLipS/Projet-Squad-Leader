@@ -50,6 +50,7 @@ void UMenuButtonControlAreaWidget::SetControlArealink(AControlArea* ControlAreaI
 		ControlAreaIn->OnOwnerChanged.AddDynamic(ControlAreaWidget, &UControlAreaInfoWidget::OnControlAreaOwnerChange);
 		ControlAreaIn->OnCapturerChanged.AddDynamic(ControlAreaWidget, &UControlAreaInfoWidget::OnControlAreaCapturerChange);
 		ControlAreaIn->OnPercentageChanged.AddDynamic(ControlAreaWidget, &UControlAreaInfoWidget::OnControlAreaPercentageChange);
+		ControlAreaWidget->OnControlAreaNameChange(ControlAreaIn->ControlAreaName);
 	}
 	if (ControlAreaOwner <= 0)
 	{

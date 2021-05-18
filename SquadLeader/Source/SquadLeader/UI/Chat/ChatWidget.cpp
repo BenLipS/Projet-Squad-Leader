@@ -5,6 +5,7 @@
 
 #include "SquadLeader/Soldiers/Players/SoldierPlayerController.h"
 
+#include "ChatEntryWidget.h"
 
 #include "Components/TextBlock.h"
 
@@ -65,16 +66,30 @@ void UChatWidget::ExitChat()
 		InputMode.SetConsumeCaptureMouseDown(false);
 		PC->SetInputMode(InputMode);
 	}
+	Background->SetVisibility(ESlateVisibility::Hidden);
+
+	if (IsValid(MessageContainer))
+	{
+		for (auto ChatElement : MessageContainer->GetAllChildren())
+		{
+			if (auto ChatItem = Cast<UChatEntryWidget>(ChatElement))
+			{
+				ChatItem->TryPlayFadeAnimation();
+			}
+		}
+	}
 }
 
 void UChatWidget::OnChatMessageReceived(const FString& message)
 {
-	auto newEntry = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass());
+	auto newEntry = WidgetTree->ConstructWidget<UChatEntryWidget>(ChatEntryClass);
 
-	newEntry->SetText(FText::FromString(message));
-
-	MessageContainer->AddChild(newEntry);
+	newEntry->SetEntryText(message);
+	auto slot = MessageContainer->AddChild(newEntry);
+	newEntry->SetStayTime(5.f);
+	newEntry->ChatOwner = this;
 	MessageContainer->ScrollToEnd();
+	GetWorld()->GetTimerManager().SetTimer(ScrollTimer, MessageContainer, &UScrollBox::ScrollToEnd, 0.01f);
 }
 
 void UChatWidget::OnChatInputPressed()
@@ -100,6 +115,19 @@ void UChatWidget::OnChatInputPressed()
 			MessageContainer->SetScrollBarVisibility(ESlateVisibility::Visible);
 
 			bIsChatOpen = true;
+
+			Background->SetVisibility(ESlateVisibility::HitTestInvisible);
+			if (IsValid(MessageContainer))
+			{
+				for (auto ChatElement : MessageContainer->GetAllChildren())
+				{
+					if (auto ChatItem = Cast<UChatEntryWidget>(ChatElement))
+					{
+						ChatItem->SetVisibility(ESlateVisibility::HitTestInvisible);
+						ChatItem->CancelFadeAnimation();
+					}
+				}
+			}
 		}
 	}
 }

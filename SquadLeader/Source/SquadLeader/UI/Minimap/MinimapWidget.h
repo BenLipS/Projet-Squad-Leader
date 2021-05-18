@@ -31,6 +31,14 @@ class SQUADLEADER_API UMinimapWidget : public USL_UserWidget, public IMinimapInt
 	GENERATED_BODY()
 
 protected:
+	static const int MAPSIZE = 33570;
+	static const int MAPCENTER_X = 25146;
+	static const int MAPCENTER_Y = 28150;
+	static const int MAPMIN_X = 8553;
+	static const int MAPMIN_Y = 11563;
+
+
+protected:
 	UPROPERTY()
 	UPointOfInterestWidget* PingPOI = nullptr;
 

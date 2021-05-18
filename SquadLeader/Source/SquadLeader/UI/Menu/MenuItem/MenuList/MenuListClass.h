@@ -62,4 +62,8 @@ protected:
 	//Button
 	UFUNCTION()
 	void OnClassButtonPressed();
+
+public:
+	UFUNCTION(BlueprintCallable)
+	SoldierClass GetCurrentClass();
 };

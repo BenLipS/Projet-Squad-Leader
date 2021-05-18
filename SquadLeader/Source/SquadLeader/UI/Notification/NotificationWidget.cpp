@@ -27,12 +27,7 @@ void UNotificationWidget::AddNotification(UNotificationWidgetElement* newWidget)
 	FNotificationWidgetSlot newItemSlot;
 	newItemSlot.Widget = newWidget;
 
-	newItemSlot.Slot = MainPanel->AddChildToCanvas(newItemSlot.Widget);
-
-	newItemSlot.Slot->SetAnchors(FAnchors(0.f, 0.f, 0.f, 0.f));
-	newItemSlot.Slot->SetPosition(FVector2D(0.f, 0.f));
-	newItemSlot.Slot->SetAlignment(FVector2D(0.f, 0.f));
-	newItemSlot.Slot->SetAutoSize(true);
+	newItemSlot.Slot = MainPanel->AddChildToVerticalBox(newItemSlot.Widget);
 
 	Items.EmplaceAt(0, newItemSlot);
 
@@ -44,16 +39,17 @@ void UNotificationWidget::UpdateNotificationsPosition()
 	while (MaxItem > 0 && Items.Num() > MaxItem)
 	{
 		auto remove = Items.Pop();
+		MainPanel->RemoveChild(remove.Widget);
 		WidgetTree->RemoveWidget(remove.Widget);
 	}
 
-	float YPosition = 0.f;
+	/*float YPosition = 0.f;
 
 	for (auto pair : Items)
 	{
-		pair.Slot->SetPosition(FVector2D(0.f, YPosition));
+		pair.Slot->SetPosition(FVector2D(400.f, YPosition));
 		YPosition += pair.Slot->GetSize().Y;
-	}
+	}*/
 }
 
 void UNotificationWidget::SetupDelegateToObject_Implementation(UObject* ObjectIn)
