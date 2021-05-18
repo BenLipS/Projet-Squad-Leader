@@ -197,6 +197,12 @@ protected:
 	virtual void ServerSetPawn(const int TeamID, const SoldierClass PlayerClass, const TArray<SoldierClass>& AIClass);
 	virtual void ServerSetPawn_Implementation(const int TeamID, const SoldierClass PlayerClass, const TArray<SoldierClass>& AIClass);
 	virtual bool ServerSetPawn_Validate(const int TeamID, const SoldierClass PlayerClass, const TArray<SoldierClass>& AIClass);
+	
+	/* Set Player Name On Server For This Controller */
+	UFUNCTION(Reliable, Server, WithValidation)
+	virtual void ServerSetPlayerName(const FString& name);
+	virtual void ServerSetPlayerName_Implementation(const FString& name);
+	virtual bool ServerSetPlayerName_Validate(const FString& name);
 
 //////////////// Cheat
 public:

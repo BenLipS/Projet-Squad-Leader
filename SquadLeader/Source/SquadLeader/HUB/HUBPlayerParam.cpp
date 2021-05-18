@@ -16,3 +16,24 @@ void AHUBPlayerParam::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 	DOREPLIFETIME_CONDITION_NOTIFY(AHUBPlayerParam, IsReady, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(AHUBPlayerParam, ChoosenTeam, COND_None, REPNOTIFY_Always);
 }
+
+
+void AHUBPlayerParam::SetPlayerId(FString NewId)
+{
+	PlayerID = NewId;
+}
+
+void AHUBPlayerParam::SetPlayerName(FString NewName)
+{
+	PlayerName = NewName;
+}
+
+void AHUBPlayerParam::SetIsReady(bool Readyness)
+{
+	IsReady = Readyness;
+}
+
+void AHUBPlayerParam::SetChoosenTeam(int TeamId)
+{
+	ChoosenTeam = TeamId;
+}
