@@ -9,9 +9,8 @@
 #include "AI/AIBasicController.h"
 #include "AI/InfluenceMap/InfluenceMapGrid.h"
 #include "MainMenu/PlayerParam/PlayerParam.h"
+#include "SquadLeader/Soldiers/Soldier.h"
 #include "SquadLeaderGameModeBase.generated.h"
-
-class ASoldier;
 
 UCLASS()
 class SQUADLEADER_API ASquadLeaderGameModeBase : public AGameModeBase

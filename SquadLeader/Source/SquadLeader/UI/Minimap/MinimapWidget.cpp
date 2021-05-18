@@ -114,8 +114,8 @@ void UMinimapWidget::NativeConstruct()
 	
 	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MaterialCollection, FName("Dimensions"), Dimensions);
 	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MaterialCollection, FName("Zoom"), 0.5f);
-	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MaterialCollection, FName("CenterMapX"), 10000.f);
-	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MaterialCollection, FName("CenterMapY"), 10000.f);
+	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MaterialCollection, FName("CenterMapX"), 25346.f);
+	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MaterialCollection, FName("CenterMapY"), 28350.f);
 
 }
 
@@ -292,7 +292,7 @@ void UMinimapWidget::OnUpdatePOIs()
 	}
 	else
 	{
-		CenterScreen = FVector2D{10000.f, 10000.f };
+		CenterScreen = FVector2D{25346.f, 28350.f };
 		const float DiffX = (PlayerPosition.X - CenterScreen.X) / Coeff;
 		const float DiffY = (PlayerPosition.Y - CenterScreen.Y) / Coeff;
 		const FVector2D DiffVec = { DiffY, -DiffX };
