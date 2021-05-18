@@ -152,6 +152,9 @@ void ASoldierPlayer::DeadTagChanged(const FGameplayTag CallbackTag, int32 NewCou
 
 		DeactivateFollowKillerCamera();
 		SoldierKiller = nullptr;
+
+		if (APlayerController* PC = Cast<APlayerController>(Controller); PC)
+			PC->SetControlRotation(GetCapsuleComponent()->GetComponentRotation());
 	}
 	else
 	{
