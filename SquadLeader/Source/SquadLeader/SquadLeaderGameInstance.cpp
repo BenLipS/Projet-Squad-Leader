@@ -77,7 +77,7 @@ void USquadLeaderGameInstance::LaunchGame()
         HttpCallChangeConnectedStatus(2); // notify that the client is joining a new game
     }
     //UGameplayStatics::OpenLevel({}, "HUB_Level", true, "?Listen");
-    UGameplayStatics::OpenLevel(this, "Factory_V2", true, "?Listen");
+    UGameplayStatics::OpenLevel(this, "Factory_V2_2", true, "?Listen");
 }
 
 void USquadLeaderGameInstance::SetGameParamToDefault()

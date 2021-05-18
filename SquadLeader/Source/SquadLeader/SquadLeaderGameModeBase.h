@@ -70,6 +70,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void CloseGame();
 
+	UFUNCTION(BlueprintImplementableEvent, Category = "End Game Cinematic")
+		void EndCinematic();
+
 //////////////// Respawn
 	UFUNCTION()
 	void DisplayRespawnHUD(ASoldierPlayer* _SoldierPlayer);
