@@ -101,6 +101,6 @@ public:
 	void SetPlayerParam(APlayerParam* _PlayerParam, AController* OwningController);
 	APlayerParam* GetPlayerParam();
 	
-	void SetPlayerName(FString Name);
-	const FString GetPlayerName();
+	void SetSoldierPlayerName(FString Name);
+	const FString GetSoldierPlayerName();
 };

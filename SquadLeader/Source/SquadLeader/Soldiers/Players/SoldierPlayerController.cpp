@@ -466,10 +466,22 @@ void ASoldierPlayerController::ClientDeterminePlayerParams_Implementation()
 	{
 		APlayerParam* ClientParam = GetGameInstance<USquadLeaderGameInstance>()->PlayerParam.GetDefaultObject();
 		ServerSetPawn(ClientParam->GetTeam(), ClientParam->GetPlayerClass(), ClientParam->GetAllAIClass());
+
+		ServerSetPlayerName(GetGameInstance<USquadLeaderGameInstance>()->GetPlayerName());
 	}
 }
 
 bool ASoldierPlayerController::ServerSetPawn_Validate(const int TeamID, const SoldierClass PlayerClass, const TArray<SoldierClass>& AIClass)
+{
+	return true;
+}
+
+void ASoldierPlayerController::ServerSetPlayerName_Implementation(const FString& name)
+{
+	GetPlayerState<ASoldierPlayerState>()->SetSoldierPlayerName(name);
+}
+
+bool ASoldierPlayerController::ServerSetPlayerName_Validate(const FString& name)
 {
 	return true;
 }
