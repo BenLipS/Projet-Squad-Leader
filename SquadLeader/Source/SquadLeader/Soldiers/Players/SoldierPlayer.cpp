@@ -95,7 +95,8 @@ void ASoldierPlayer::Tick(float DeltaTime)
 
 	if (bFollowKiller && SoldierKiller)
 	{
-		const FRotator LookAtRotation = UKismetMathLibrary::FindLookAtRotation(DeathLocation, SoldierKiller->GetActorLocation());
+		const FVector KillerPos = SoldierKiller->GetMesh() ? SoldierKiller->GetMesh()->GetComponentLocation() : SoldierKiller->GetActorLocation();
+		const FRotator LookAtRotation = UKismetMathLibrary::FindLookAtRotation(DeathLocation, KillerPos);
 		FollowKillerCamera->SetWorldRotation(LookAtRotation.Quaternion());
 		FollowKillerCamera->SetWorldLocation(DeathLocation); // Force the camera to be to the same position regardless the soldier
 	}

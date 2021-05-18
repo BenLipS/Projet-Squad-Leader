@@ -227,6 +227,15 @@ void ASquadLeaderGameModeBase::EndGame(ASoldierTeam* WinningTeam)
 			}
 		}
 
+		if (ASquadLeaderInitGameState* GS = Cast<ASquadLeaderInitGameState>(GameState); GS)
+		{
+			for (ASoldierTeam* SoldierTeam : GS->GetSoldierTeamCollection())
+			{
+				for (ASoldier* Soldier : SoldierTeam->GetSoldierList())
+					Soldier->LockControls();
+			}
+		}
+
 		FTimerHandle timerBeforeClosing;
 		GetWorld()->GetTimerManager().SetTimer(timerBeforeClosing, this,
 			&ASquadLeaderGameModeBase::CloseGame, 10.f);  // request to the server to end the game

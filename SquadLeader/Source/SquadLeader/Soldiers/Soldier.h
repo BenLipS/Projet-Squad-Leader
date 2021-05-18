@@ -66,13 +66,15 @@ class SQUADLEADER_API ASoldier : public ACharacter, public IAbilitySystemInterfa
 {
 	GENERATED_BODY()
 
+protected:
+	friend class ASquadLeaderGameModeBase;
+
 public:
 	UFUNCTION(BlueprintCallable)
 	static TArray<SoldierClass> GetAllPlayableClass();
 
 	UFUNCTION(BlueprintCallable)
 	static FString SoldierClassToStr(SoldierClass SoldierClassIn);
-
 
 public:
 	ASoldier(const FObjectInitializer& _ObjectInitializer);
