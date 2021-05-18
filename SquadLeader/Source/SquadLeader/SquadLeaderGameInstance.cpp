@@ -202,6 +202,16 @@ void USquadLeaderGameInstance::GetGameAvailable()
     }
 }
 
+void USquadLeaderGameInstance::SetLocalPlayerClass(SoldierClass NewClass)
+{
+    PlayerParam.GetDefaultObject()->SetPlayerClass(NewClass);
+}
+
+void USquadLeaderGameInstance::SetLocalAllAIClass(TArray<SoldierClass> NewClass)
+{
+    PlayerParam.GetDefaultObject()->SetAllAIClass(NewClass);
+}
+
 
 void USquadLeaderGameInstance::HttpCallPing()
 {

@@ -47,5 +47,6 @@ public:
 	const SoldierClass GetAIClass(int AINb);
 	const TArray<SoldierClass> GetAllAIClass() { return AIClass; };
 	void SetAIClass(SoldierClass NewClass, int AINb);
+	void SetAllAIClass(TArray<SoldierClass> NewClass) { AIClass = NewClass; };
 	const TSubclassOf<ASoldierAI> GetAISoldier(int AINb);
 };

@@ -116,9 +116,9 @@ void UClassSelectionMenuLayout::SynchronizeAllMenuItem(UPanelWidget* PanelIn)
 		{
 			SynchronizeAllMenuItem(MenuGroup);
 		}
-		else if (auto PlayerClassWidget = Cast<UMenuListClass>(Widget); PanelIn->GetName() == "PlayerClass" && IsValid(PlayerClassWidget))
+		else if (auto PlayerClassWidget = Cast<UMenuListClass>(Widget); Widget->GetName() == "PlayerClass" && IsValid(PlayerClassWidget))
 		{
-			PlayerClass = PlayerClassWidget;
+				PlayerClass = PlayerClassWidget;
 		}
 	}
 }

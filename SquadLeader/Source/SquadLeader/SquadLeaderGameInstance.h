@@ -107,6 +107,11 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TSubclassOf <APlayerParam> PlayerParam;
 
+	UFUNCTION(BlueprintCallable)
+	void SetLocalPlayerClass(SoldierClass NewClass);
+	UFUNCTION(BlueprintCallable)
+	void SetLocalAllAIClass(TArray<SoldierClass> NewClass);
+
 private:
 	FString GameID = "";  // only define if a game is create
 };
