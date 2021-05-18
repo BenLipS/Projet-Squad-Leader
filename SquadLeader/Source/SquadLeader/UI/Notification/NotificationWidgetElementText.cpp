@@ -7,4 +7,5 @@ void UNotificationWidgetElementText::InitText(FString newText)
 {
 	if(TextNotification)
 		TextNotification->SetText(FText::FromString(newText));
+	PlayAnimationForward(StayAndFade, 1.f);
 }

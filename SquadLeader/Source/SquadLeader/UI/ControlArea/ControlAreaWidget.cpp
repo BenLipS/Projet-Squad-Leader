@@ -7,6 +7,7 @@
 #include "../Interface/TicketDelegateInterface.h"
 
 #include "SquadLeader/GameState/SquadLeaderGameState.h"
+#include "SquadLeader/SquadLeaderGameInstance.h"
 #include "SquadLeader/Soldiers/SoldierTeam.h"
 #include "SquadLeader/Soldiers/Players/SoldierPlayerController.h"
 
@@ -66,6 +67,18 @@ void UControlAreaWidget::SynchronizeProperties()
 			newWidget->OnControlAreaCapturerChange(1);
 			newWidget->OnControlAreaPercentageChange(1.f);
 			AreaContainer->AddChildToHorizontalBox(newWidget);
+		}
+	}
+
+	if (auto GI = GetGameInstance<USquadLeaderGameInstance>(); GI)
+	{
+		if (IsValid(GI->GameParam))
+		{
+			if (auto GP = GI->GameParam->GetDefaultObject<AGameParam>(); GP)
+			{
+				OnAllyTicketChanged(GP->NbTickets);
+				OnEnnemyTicketChanged(GP->NbTickets);
+			}
 		}
 	}
 }

@@ -10,6 +10,8 @@
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
 
+#include "../ProgressBarStepWidget.h"
+
 #include "AmmoWidget.generated.h"
 
 /**
@@ -21,18 +23,19 @@ class SQUADLEADER_API UAmmoWidget : public USL_UserWidget, public IWeaponInterfa
 	GENERATED_BODY()
 	
 protected:
-	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	UProgressBar* ProgressBarAmmo;
+	/*UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UProgressBarStepWidget* ProgressBarAmmo;*/
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UTextBlock* TextAmmo;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	class UMaterialParameterCollection* MaterialCollection;
 
 	int Ammo = 0;
 	int MaxAmmo = 1;
 
 public:
-	UAmmoWidget(const FObjectInitializer& ObjectInitializer);
-
 	void SetupDelegateToObject_Implementation(UObject* ObjectIn) override;
 
 	//-----IWeaponInterface-----

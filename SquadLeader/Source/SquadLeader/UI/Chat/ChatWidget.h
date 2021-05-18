@@ -10,26 +10,35 @@
 
 #include "Components/EditableTextBox.h"
 #include "Components/ScrollBox.h"
+#include "Components/Image.h"
+#include "Engine/EngineTypes.h"
 
 #include "ChatWidget.generated.h"
 
-/**
- * 
- */
+class UChatEntryWidget;
+
 UCLASS()
 class SQUADLEADER_API UChatWidget : public USL_UserWidget, public IChatInterface
 {
 	GENERATED_BODY()
 
 protected:
+	FTimerHandle ScrollTimer;
+
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UEditableTextBox* ChatEntry;
 	
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UScrollBox* MessageContainer;
+	
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UImage* Background;
 
 	UPROPERTY(BlueprintReadOnly)
 	bool bIsChatOpen;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	TSubclassOf<UChatEntryWidget> ChatEntryClass;
 
 public:
 	UFUNCTION(BlueprintCallable)

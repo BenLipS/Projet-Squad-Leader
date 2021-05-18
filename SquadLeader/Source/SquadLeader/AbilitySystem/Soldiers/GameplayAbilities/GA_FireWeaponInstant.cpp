@@ -64,11 +64,8 @@ void UGA_FireWeaponInstant::EndAbility(const FGameplayAbilitySpecHandle Handle, 
 
 void UGA_FireWeaponInstant::FireBullet()
 {
-	if (APlayerController* PC = CurrentActorInfo->PlayerController.Get(); PC)
-	{
-		if (!PC->IsLocalPlayerController())
-			return;
-	}
+	APlayerController* PC = CurrentActorInfo->PlayerController.Get();
+	const bool bIsLocal = !IsValid(PC) || PC->IsLocalPlayerController();
 
 	// Too soon to shoot or is reloading
 	const constexpr float epsilon = 0.01; // Error tolerance
@@ -87,9 +84,18 @@ void UGA_FireWeaponInstant::FireBullet()
 	if (!SourceWeapon->HasAmmo() && !SourceWeapon->HasInfiniteAmmo())
 	{
 		UAkGameplayStatics::PostEventByName("Rifle_Out_of_ammo", SourceWeapon);//maybe play cliking sound here
-		ReloadWeapon();
+		if (bIsLocal)
+			ReloadWeapon();
 		return;
 	}
+
+	// Update line tracing
+	FGameplayAbilityTargetingLocationInfo TraceStartLocation;
+	TraceStartLocation.LiteralTransform = FTransform{ SourceWeapon->GetWeaponMesh()->GetSocketLocation(SourceWeapon->GetMuzzleAttachPoint()) };
+
+	LineTrace->SetStartLocation(TraceStartLocation);
+
+	FireAnimation(PredictFireHitResult());
 
 	// Wait for the next fire
 	TaskWaitDelay = UAbilityTask_WaitDelay::WaitDelay(this, SourceWeapon->GetTimeBetweenShots());
@@ -98,28 +104,8 @@ void UGA_FireWeaponInstant::FireBullet()
 
 	TimeOfLastShoot = UGameplayStatics::GetTimeSeconds(GetWorld());
 
-	// Update line tracing
-	FGameplayAbilityTargetingLocationInfo TraceStartLocation;
-	TraceStartLocation.LiteralTransform = FTransform{ SourceWeapon->GetWeaponMesh()->GetSocketLocation(SourceWeapon->GetMuzzleAttachPoint()) };
-
-	LineTrace->SetStartLocation(TraceStartLocation);
-
-	// Camera Shake
-	SourceSoldier->ShakeCamera(SourceSoldier->GetCameraShakeFireClass());
-
-	// Gameplay cue with predicted fire
-	UAbilitySystemSoldier* ASC = Cast<UAbilitySystemSoldier>(GetAbilitySystemComponentFromActorInfo());
-
-	FGameplayEffectContextHandle EffectContext = ASC->MakeEffectContext();
-	EffectContext.AddHitResult(PredictFireHitResult());
-
-	FGameplayCueParameters GC_Parameters;
-	GC_Parameters.Instigator = SourceSoldier;
-	GC_Parameters.SourceObject = SourceWeapon;
-	GC_Parameters.EffectContext = EffectContext;
-
-	DoAnimation(GC_Parameters);
-	//SourceSoldier->GetAbilitySystemComponent()->ExecuteGameplayCue(FGameplayTag::RequestGameplayTag(FName("GameplayCue.FireWeapon.Instant")), GC_Parameters);
+	if (!bIsLocal)
+		return;
 
 	// Wait target data
 	USL_WaitTargetDataUsingActor* TaskWaitTarget = USL_WaitTargetDataUsingActor::WaitTargetDataWithReusableActor(this, NAME_None, EGameplayTargetingConfirmation::Instant, LineTrace, true);
@@ -155,6 +141,26 @@ void UGA_FireWeaponInstant::HandleTargetData(const FGameplayAbilityTargetDataHan
 			ApplyDamages(Shield, BaseWeaponDamage);
 		}
 	}
+}
+
+void UGA_FireWeaponInstant::FireAnimation(const FHitResult& _HitResult)
+{
+	// Camera Shake
+	SourceSoldier->ShakeCamera(SourceSoldier->GetCameraShakeFireClass());
+
+	// Gameplay cue with predicted fire
+	UAbilitySystemSoldier* ASC = Cast<UAbilitySystemSoldier>(GetAbilitySystemComponentFromActorInfo());
+
+	FGameplayEffectContextHandle EffectContext = ASC->MakeEffectContext();
+	EffectContext.AddHitResult(_HitResult);
+
+	FGameplayCueParameters GC_Parameters;
+	GC_Parameters.Instigator = SourceSoldier;
+	GC_Parameters.SourceObject = SourceWeapon;
+	GC_Parameters.EffectContext = EffectContext;
+
+	//DoAnimation(GC_Parameters);
+	SourceSoldier->GetAbilitySystemComponent()->ExecuteGameplayCue(FGameplayTag::RequestGameplayTag(FName("GameplayCue.FireWeapon.Instant")), GC_Parameters);
 }
 
 void UGA_FireWeaponInstant::ApplyEffectsToSource()

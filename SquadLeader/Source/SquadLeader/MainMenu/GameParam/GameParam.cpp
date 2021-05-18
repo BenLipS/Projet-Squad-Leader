@@ -47,6 +47,27 @@ void AGameParam::GameParamCopy(AGameParam* TargetParam)
 	RespawnDuration = TargetParam->RespawnDuration;
 }
 
+bool AGameParam::IntParamExist(FString ParamName)
+{
+	auto paramList = GetIntParams();
+	if (paramList.Contains(ParamName))
+	{
+		return true;
+	}
+	return false;
+}
+
+int AGameParam::GetIntParam(FString ParamName)
+{
+	auto paramList = GetIntParams();
+	if (paramList.Contains(ParamName))
+	{
+		return paramList[ParamName];
+	}
+
+	return -1;
+}
+
 TMap<FString, int> AGameParam::GetIntParams()
 {
 	TMap<FString, int> ret;
