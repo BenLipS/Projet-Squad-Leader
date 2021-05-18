@@ -96,7 +96,11 @@ public:
 
 protected:
 	APlayerParam* PlayerParam;
+	FString PlayerName;
 public:
 	void SetPlayerParam(APlayerParam* _PlayerParam, AController* OwningController);
 	APlayerParam* GetPlayerParam();
+	
+	void SetPlayerName(FString Name);
+	const FString GetPlayerName();
 };

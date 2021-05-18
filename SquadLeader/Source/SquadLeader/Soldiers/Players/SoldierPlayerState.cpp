@@ -141,3 +141,13 @@ APlayerParam* ASoldierPlayerState::GetPlayerParam()
 {
 	return PlayerParam;
 }
+
+void ASoldierPlayerState::SetPlayerName(FString Name)
+{
+	PlayerName = Name;
+}
+
+const FString ASoldierPlayerState::GetPlayerName()
+{
+	return PlayerName;
+}
