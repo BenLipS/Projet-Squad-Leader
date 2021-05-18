@@ -75,7 +75,7 @@ void USquadLeaderGameInstance::LaunchGame()
         }
         HttpCallCreateNewGame();
     }
-    UGameplayStatics::OpenLevel({}, "HUB_Level", true, "?listen");
+    UGameplayStatics::OpenLevel(this, "HUB_Level", true, "?listen");
     //UGameplayStatics::OpenLevel(this, "Factory_V2", true, "?listen");
 }
 

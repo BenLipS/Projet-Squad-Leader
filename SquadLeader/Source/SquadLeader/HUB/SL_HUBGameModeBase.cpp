@@ -21,7 +21,10 @@ void ASL_HUBGameModeBase::RefreshPlayerInfo()
 {
 	for (auto PCIterator = GetWorld()->GetPlayerControllerIterator(); PCIterator; PCIterator++)
 	{
-		PCIterator->Get()->GetPlayerState<ASL_HUBPlayerState>()->ClientRefreshPlayerInfo(PlayersInfo);
+		auto PSS = PCIterator->Get();
+		auto PS = PSS->GetPlayerState<ASL_HUBPlayerState>();
+		if (PS)
+			PS->ClientRefreshPlayerInfo(PlayersInfo);
 	}
 }
 

@@ -27,7 +27,6 @@ public:
 
 protected:
 	AHUBPlayerParam* LocalHUBPlayerParam;
-	TArray<AHUBPlayerParam*> PlayerParamList;
 
 protected:
 	// function to call server
@@ -49,5 +48,5 @@ public:
 	void ClientRefreshPlayerInfo(const TArray<AHUBPlayerParam*>& PlayerParam);
 	void ClientRefreshPlayerInfo_Implementation(const TArray<AHUBPlayerParam*>& PlayerParam);
 protected:
-	TMap<FString, FString> GetInfoAsStringPair();
+	TMap<FString, FString> GetInfoAsStringPair(const TArray<AHUBPlayerParam*>& PlayerParam);
 };
