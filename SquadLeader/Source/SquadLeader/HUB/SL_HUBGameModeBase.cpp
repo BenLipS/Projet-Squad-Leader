@@ -94,9 +94,9 @@ void ASL_HUBGameModeBase::TestReadyness()
 		if (LastTestWasReady) {
 			TeleportAllPlayersToGame();
 		}
-		else {  // retest in 5s and save this test
+		else {  // retest and save this test
 			GetWorldTimerManager().SetTimer(timerTestReadyness, this,
-				&ASL_HUBGameModeBase::TestReadyness, 5.f);
+				&ASL_HUBGameModeBase::TestReadyness, WaitingTimeMenu);
 			LastTestWasReady = true;
 		}
 	}

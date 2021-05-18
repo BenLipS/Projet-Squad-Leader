@@ -20,6 +20,8 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, Category = "GameData")
 		int NbMaxPlayer = 6;
+	UPROPERTY(BlueprintReadOnly, Category = "GameData")
+		float WaitingTimeMenu = 2.f;
 
 private:
 	void TeleportAllPlayersToGame();  // non-seamless travel
