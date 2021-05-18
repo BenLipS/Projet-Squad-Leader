@@ -35,6 +35,9 @@ protected:
 protected:
 	virtual void SynchronizeProperties() override;
 
+	UFUNCTION(BlueprintCallable)
+	void SetButtonText(FString newText);
+
 private:
 	UFUNCTION()
 	void OnButtonPressed();

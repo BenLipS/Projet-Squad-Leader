@@ -101,12 +101,18 @@ void UWheelWidget::RemoveFromViewport()
 
 void UWheelWidget::OnOrderInputPressed()
 {
-	if (ASoldierPlayerController* PC = GetOwningPlayer<ASoldierPlayerController>(); PC)
+	if (auto PC = GetOwningPlayer(); PC)
 	{
+		FInputModeGameAndUI InputMode;
+		InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::LockAlways);
+		InputMode.SetWidgetToFocus(TakeWidget());
+		InputMode.SetHideCursorDuringCapture(false);
+
+		PC->SetInputMode(InputMode);
+
 		PC->SetShowMouseCursor(true);
 		PC->ClientIgnoreMoveInput(true);
 		PC->ClientIgnoreLookInput(true);
-
 		FVector2D Center = UWidgetLayoutLibrary::GetViewportSize(GetWorld()) / 2.0f;
 		PC->SetMouseLocation(Center.X, Center.Y);
 		SetVisibility(ESlateVisibility::Visible);
@@ -119,6 +125,12 @@ void UWheelWidget::OnOrderInputReleased()
 		SetVisibility(ESlateVisibility::Hidden);
 	if (ASoldierPlayerController* PC = GetOwningPlayer<ASoldierPlayerController>(); PC)
 	{
+		FInputModeGameOnly InputMode;
+
+		InputMode.SetConsumeCaptureMouseDown(false);
+
+		PC->SetInputMode(InputMode);
+
 		PC->SetShowMouseCursor(false);
 		PC->ClientIgnoreMoveInput(false);
 		PC->ClientIgnoreLookInput(false);

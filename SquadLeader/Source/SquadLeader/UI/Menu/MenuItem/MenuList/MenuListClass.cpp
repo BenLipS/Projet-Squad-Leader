@@ -77,12 +77,14 @@ void UMenuListClass::SetAssetFromClass(SoldierClass SoldierClassIn)
 
 void UMenuListClass::OnItemSelected()
 {
+	Super::OnItemSelected();
 	ListEntry->SetVisibility(ESlateVisibility::Visible);
 	bIsActive = true;
 }
 
 void UMenuListClass::OnItemDeselected()
 {
+	Super::OnItemDeselected();
 	ListEntry->SetVisibility(ESlateVisibility::Collapsed);
 	bIsActive = false;
 }
@@ -111,4 +113,9 @@ void UMenuListClass::OnClassButtonPressed()
 			OnItemSelected();
 		}
 	}
+}
+
+SoldierClass UMenuListClass::GetCurrentClass()
+{
+	return CurrentClass;
 }

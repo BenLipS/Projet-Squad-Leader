@@ -21,11 +21,21 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	bool bIsSelectGlobal = false;
 
+	UPROPERTY(BlueprintReadOnly)
+	bool bIsSelected = false;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString SelectChannel = "Default";
 
 	UFUNCTION(BlueprintCallable)
 	void SelectItem();
+
+	UFUNCTION(BlueprintCallable)
+	bool DeselectItem();
+
+public:
+	UFUNCTION()
+	bool IsSelected();
 
 	UFUNCTION()
 	virtual void OnItemSelected();

@@ -4,9 +4,9 @@
 #include "AmmoWidget.h"
 #include "../Interface/WeaponDelegateInterface.h"
 
-UAmmoWidget::UAmmoWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
-{
-}
+#include "Materials/MaterialParameterCollection.h"
+#include "Materials/MaterialParameterCollectionInstance.h"
+#include "Kismet/KismetMaterialLibrary.h"
 
 void UAmmoWidget::SetupDelegateToObject_Implementation(UObject* ObjectIn)
 {
@@ -19,12 +19,16 @@ void UAmmoWidget::SetupDelegateToObject_Implementation(UObject* ObjectIn)
 void UAmmoWidget::OnAmmoChanged(uint8 newValue)
 {
 	Ammo = newValue;
-	ProgressBarAmmo->SetPercent(float(Ammo) / MaxAmmo);
+	if (Ammo > MaxAmmo)
+	{
+		UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MaterialCollection, FName("MaxAmmo"), Ammo);
+	}
+	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MaterialCollection, FName("CurrentAmmo"), Ammo);
 	TextAmmo->SetText(FText::FromString(FString::FromInt(Ammo)));
 }
 
 void UAmmoWidget::OnMaxAmmoChanged(uint8 newValue)
 {
 	MaxAmmo = newValue;
-	ProgressBarAmmo->SetPercent(float(Ammo) / MaxAmmo);
+	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MaterialCollection, FName("MaxAmmo"), Ammo);
 }

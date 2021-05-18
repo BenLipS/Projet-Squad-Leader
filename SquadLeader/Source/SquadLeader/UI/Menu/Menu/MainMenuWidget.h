@@ -19,6 +19,9 @@ class SQUADLEADER_API UMainMenuWidget : public UMenuWidget, public IStatInfoDele
 public:
 	virtual void SetupDelegateToObject_Implementation(UObject* ObjectIn);
 
+protected:
+	virtual void SynchronizeProperties() override;
+
 //-----IStatInfoInterface-----
 public:
 	//	virtual void OnStatInfoReceived(FString Key, FString Value) override;
