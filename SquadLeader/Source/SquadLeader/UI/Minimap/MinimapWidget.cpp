@@ -29,7 +29,13 @@ void UMinimapWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 
 			UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MaterialCollection, FName("Y"), ActorPosition.Y);
 		}
+		else
+		{
 
+			UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MaterialCollection, FName("X"), MAPCENTER_X);
+
+			UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MaterialCollection, FName("Y"), MAPCENTER_Y);
+		}
 		auto ActorRotation = GetOwningPlayer()->GetPawn<ASoldier>()->GetMesh()->GetComponentRotation();
 		PlayerIconImage->SetRenderTransformAngle(ActorRotation.Yaw);
 	}
@@ -112,10 +118,10 @@ void UMinimapWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 	
-	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MaterialCollection, FName("Dimensions"), Dimensions);
+	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MaterialCollection, FName("Dimensions"), MAPSIZE);
 	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MaterialCollection, FName("Zoom"), 0.5f);
-	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MaterialCollection, FName("CenterMapX"), 25346.f);
-	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MaterialCollection, FName("CenterMapY"), 28350.f);
+	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MaterialCollection, FName("CenterMapX"), MAPCENTER_Y);
+	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MaterialCollection, FName("CenterMapY"), MAPCENTER_X);
 
 }
 
@@ -126,9 +132,11 @@ FReply UMinimapWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, cons
 	{
 		FVector2D PosMouse = InMouseEvent.GetScreenSpacePosition();
 		FVector2D PosMap = MapPanelContainer->GetTickSpaceGeometry().GetAbsolutePositionAtCoordinates(FVector2D::ZeroVector);
-		FVector2D SizeMap = MapPanelContainer->GetTickSpaceGeometry().GetAbsoluteSize();
-		posInWorld = (PosMouse - PosMap) / SizeMap * 20000.f;
-		posInWorld.Y = 20000.f - posInWorld.Y;
+		FVector2D SizeMiniMap = MapPanelContainer->GetTickSpaceGeometry().GetAbsoluteSize();
+		//posInWorld = (PosMouse - PosMap) / SizeMap * 20000.f;
+		posInWorld = (PosMouse - PosMap) / SizeMiniMap * MAPSIZE;
+		posInWorld.X += MAPMIN_Y;
+		posInWorld.Y = (MAPSIZE + MAPMIN_X) - posInWorld.Y;
 
 		FVector posIn3DWorld(posInWorld.Y, posInWorld.X, 0.f);
 
@@ -141,7 +149,6 @@ FReply UMinimapWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, cons
 }
 
 UMinimapWidget::UMinimapWidget(const FObjectInitializer& _ObjectInitializer) : USL_UserWidget(_ObjectInitializer),
-Dimensions{ 10'000.f },
 POIList{}
 {
 }
@@ -283,7 +290,7 @@ void UMinimapWidget::OnUpdatePOIs()
 		return;
 
 	const FVector2D PlayerPosition = FVector2D{ Player->GetActorLocation().X, Player->GetActorLocation().Y };
-	const float Coeff = Dimensions * UKismetMaterialLibrary::GetScalarParameterValue(GetWorld(), MaterialCollection, FName("Zoom")) / ScaleBoxMap->GetTickSpaceGeometry().GetLocalSize().Y; // Assume MinimapImage is 
+	const float Coeff = MAPSIZE * UKismetMaterialLibrary::GetScalarParameterValue(GetWorld(), MaterialCollection, FName("Zoom")) / ScaleBoxMap->GetTickSpaceGeometry().GetLocalSize().Y; // Assume MinimapImage is 
 	
 	FVector2D CenterScreen;
 	if (bIsPlayerCentered)
@@ -292,7 +299,7 @@ void UMinimapWidget::OnUpdatePOIs()
 	}
 	else
 	{
-		CenterScreen = FVector2D{25346.f, 28350.f };
+		CenterScreen = {MAPCENTER_X, MAPCENTER_Y };
 		const float DiffX = (PlayerPosition.X - CenterScreen.X) / Coeff;
 		const float DiffY = (PlayerPosition.Y - CenterScreen.Y) / Coeff;
 		const FVector2D DiffVec = { DiffY, -DiffX };
@@ -337,6 +344,7 @@ void UMinimapWidget::OnUpdatePOIs()
 		}
 	}
 
+	//OTHER POI
 	for (int32 i = 0; i < POIList.Num();)
 	{
 		UPointOfInterestWidget* POI = POIList[i];

@@ -43,7 +43,6 @@ void URespawnMenu::OnControlAreaAdded(AControlArea* _ControlArea)
 	{
 		auto newWidget = Cast<UMenuButtonControlAreaWidget>(LayoutRespawn->AddChildToRespawnBox(RespawnButtonClass));
 		newWidget->SetControlArealink(_ControlArea);
-
 	}
 }
 

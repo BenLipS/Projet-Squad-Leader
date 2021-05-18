@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "../SL_UserWidget.h"
+#include "Animation/WidgetAnimation.h"
 #include "NotificationWidgetElement.generated.h"
 
 /**
@@ -16,6 +17,9 @@ class SQUADLEADER_API UNotificationWidgetElement : public USL_UserWidget
 
 protected:
 	class UNotificationWidget* NotificationWidget;
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetAnim), Transient)
+	UWidgetAnimation* StayAndFade;
 	
 public:
 	UFUNCTION(BlueprintCallable)

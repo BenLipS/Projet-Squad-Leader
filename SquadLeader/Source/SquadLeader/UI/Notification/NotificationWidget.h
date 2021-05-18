@@ -11,6 +11,8 @@
 #include "Components/TextBlock.h"
 #include "Components/CanvasPanel.h"
 #include "Components/CanvasPanelSlot.h"
+#include "Components/VerticalBox.h"
+#include "Components/VerticalBoxSlot.h"
 #include "NotificationWidgetElement.h"
 
 #include "NotificationWidget.generated.h"
@@ -24,7 +26,7 @@ struct FNotificationWidgetSlot
 	GENERATED_BODY()
 
 	UNotificationWidgetElement* Widget;
-	UCanvasPanelSlot* Slot;
+	UVerticalBoxSlot* Slot;
 };
 
 UCLASS()
@@ -46,7 +48,7 @@ protected:
 	int MaxItem = 10;
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	class UCanvasPanel* MainPanel;
+	UVerticalBox* MainPanel;
 
 	void AddNotification(class UNotificationWidgetElement* newWidget);
 
