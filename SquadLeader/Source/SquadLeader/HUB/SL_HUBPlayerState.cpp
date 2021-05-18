@@ -19,7 +19,6 @@ void ASL_HUBPlayerState::BeginPlay()
 	ServerSetNewArrival(LocalHUBPlayerParam->GetPlayerID(), LocalHUBPlayerParam->GetPlayerName(), LocalHUBPlayerParam->GetIsReady(), LocalHUBPlayerParam->GetChoosenTeam());
 
 	// set IsInGame state to 2
-	auto GI = GetGameInstance<USquadLeaderGameInstance>();
 	GI->ChangeNetworkState(2);
 }
 
