@@ -30,10 +30,13 @@ public:
 	void RemovePlayer(const FString& PlayerID);
 
 protected:
+	UPROPERTY()
 	TArray<class AHUBPlayerParam*> PlayersInfo;
 
 	FTimerHandle timerTestReadyness;
 	bool LastTestWasReady = false;
 	void TestReadyness();
 	void RefreshPlayerInfo();
+
+	TMap<FString, FString> GetInfoAsStringPair(const TArray<AHUBPlayerParam*>& PlayerParam);
 };

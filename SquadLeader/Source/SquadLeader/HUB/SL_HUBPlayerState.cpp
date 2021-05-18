@@ -63,25 +63,12 @@ void ASL_HUBPlayerState::ServerRemovePlayerParam_Implementation(const FString& R
 		GM->RemovePlayer(RemovePlayerID);
 }
 
-void ASL_HUBPlayerState::ClientRefreshPlayerInfo_Implementation(const TArray<AHUBPlayerParam*>& PlayerParam)
+void ASL_HUBPlayerState::ClientRefreshPlayerInfo_Implementation(const TMap<FString, FString>& PlayerMessage)
 {
-
 	if (auto PC = GetWorld()->GetFirstPlayerController(); PC) {
 		if (auto HUD = PC->GetHUD<IStatInfoInterface>(); HUD) {
-			TMap<FString, FString> contentToPrint = GetInfoAsStringPair(PlayerParam);
-
 			HUD->OnStatsInfoCleanOrder();
-			HUD->OnStatsInfoReceived(contentToPrint);
+			HUD->OnStatsInfoReceived(PlayerMessage);
 		}
 	}
-}
-
-TMap<FString, FString> ASL_HUBPlayerState::GetInfoAsStringPair(const TArray<AHUBPlayerParam*>& PlayerParam)
-{
-	TMap<FString, FString> Infos;
-	for (auto& player : PlayerParam) {
-		if (player)
-			Infos.Add(FString::FromInt(player->GetIsReady()) + " " + player->GetPlayerName(), FString::FromInt(player->GetChoosenTeam()));
-	}
-	return Infos;
 }

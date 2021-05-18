@@ -19,14 +19,26 @@ void ASL_HUBGameModeBase::TeleportAllPlayersToGame() {
 
 void ASL_HUBGameModeBase::RefreshPlayerInfo()
 {
+	auto message = GetInfoAsStringPair(PlayersInfo);
 	for (auto PCIterator = GetWorld()->GetPlayerControllerIterator(); PCIterator; PCIterator++)
 	{
-		auto PSS = PCIterator->Get();
-		auto PS = PSS->GetPlayerState<ASL_HUBPlayerState>();
+		auto test = PCIterator->Get();
+		auto PS = test->GetPlayerState<ASL_HUBPlayerState>();
 		if (PS)
-			PS->ClientRefreshPlayerInfo(PlayersInfo);
+			PS->ClientRefreshPlayerInfo(message);
 	}
 }
+
+TMap<FString, FString> ASL_HUBGameModeBase::GetInfoAsStringPair(const TArray<AHUBPlayerParam*>& PlayerParam)
+{
+	TMap<FString, FString> Infos;
+	for (auto& player : PlayerParam) {
+		if (player)
+			Infos.Add(FString::FromInt(player->GetIsReady()) + " " + player->GetPlayerName(), FString::FromInt(player->GetChoosenTeam()));
+	}
+	return Infos;
+}
+
 
 void ASL_HUBGameModeBase::SetNewArrival(const FString& PlayerID, const FString& PlayerName, const bool IsReady, const int ChoosenTeam)
 {

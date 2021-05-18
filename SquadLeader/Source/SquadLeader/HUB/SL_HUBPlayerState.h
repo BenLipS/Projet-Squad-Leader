@@ -45,8 +45,6 @@ protected:
 public:
 	// function called by the server
 	UFUNCTION(Client, reliable)
-	void ClientRefreshPlayerInfo(const TArray<AHUBPlayerParam*>& PlayerParam);
-	void ClientRefreshPlayerInfo_Implementation(const TArray<AHUBPlayerParam*>& PlayerParam);
-protected:
-	TMap<FString, FString> GetInfoAsStringPair(const TArray<AHUBPlayerParam*>& PlayerParam);
+	void ClientRefreshPlayerInfo(const TMap<FString, FString>& PlayerMessage);
+	void ClientRefreshPlayerInfo_Implementation(const TMap<FString, FString>& PlayerMessage);
 };
