@@ -34,6 +34,16 @@
 								</Reference>
 							</ReferenceList>
 						</Action>
+						<Action Name="" ID="{273A64FA-8385-4570-B409-A64774FF1C0A}" ShortID="14671076">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="34"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Gameplay_Squad as Leader_Boucle 1_4-4_105BPM_107m_P4b" ID="{ECCB0FD4-B488-4F1B-8B9F-6586A6BBC902}" WorkUnitID="{8B83D110-378C-46D8-A889-78F45F5A58D5}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
 					</ChildrenList>
 				</Event>
 				<Event Name="Music_Menu_Stop" ID="{F8C55871-4B15-4DA1-9A1B-BABBE81DFCF4}">
@@ -80,6 +90,16 @@
 							<ReferenceList>
 								<Reference Name="Target">
 									<ObjectRef Name="Cinematic Victory" ID="{E0FD6477-632D-48A3-8CA5-1125AA2E9808}" WorkUnitID="{8B83D110-378C-46D8-A889-78F45F5A58D5}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+						<Action Name="" ID="{965210EE-E8C8-468F-9E5B-79D5BF27385D}" ShortID="983221619">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="34"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Gameplay_Squad as Leader_Boucle 1_4-4_105BPM_107m_P4b" ID="{ECCB0FD4-B488-4F1B-8B9F-6586A6BBC902}" WorkUnitID="{8B83D110-378C-46D8-A889-78F45F5A58D5}"/>
 								</Reference>
 							</ReferenceList>
 						</Action>
