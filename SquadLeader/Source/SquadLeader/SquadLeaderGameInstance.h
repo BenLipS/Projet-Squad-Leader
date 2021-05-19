@@ -62,6 +62,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void ChangeNetworkState(int NewState);
 
+	UFUNCTION(BlueprintCallable)
 	void CloseMatchMaking();
 	bool UpdateNetworkStatus(const int MatchResult, float GameDuration, int XP, int NbKillAI, int NbKillPlayer, int NbDeathByAI, int NbDeathByPlayer);
 
