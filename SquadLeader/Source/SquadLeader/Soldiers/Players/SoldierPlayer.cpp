@@ -288,8 +288,14 @@ void ASoldierPlayer::ClientNotifyEndGame_Implementation(const bool _HasWin)
 {
 	//UAkGameplayStatics::PostEventByName("Music_Gameplay_Stop", this);
 	UAkGameplayStatics::ExecuteActionOnPlayingID(AkActionOnEventType::Stop, PlayingId, 500);
-	if(_HasWin)UAkGameplayStatics::PostEventByName("Music_Cinematic_Victory", this);
-	else UAkGameplayStatics::PostEventByName("Music_Cinematic_Defeat", this);
+	if (_HasWin) {
+		UAkGameplayStatics::PostEventByName("Music_Cinematic_Victory", this);
+		EndWinCinematic();
+	}
+	else {
+		UAkGameplayStatics::PostEventByName("Music_Cinematic_Defeat", this);
+		EndLoseCinematic();
+	}
 }
 
 void ASoldierPlayer::LockControls()

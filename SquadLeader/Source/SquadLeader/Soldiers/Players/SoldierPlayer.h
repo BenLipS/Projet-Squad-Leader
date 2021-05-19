@@ -83,6 +83,12 @@ public:
 	void ClientNotifyEndGame(const bool _HasWin);
 	void ClientNotifyEndGame_Implementation(const bool _HasWin);
 
+	UFUNCTION(BlueprintImplementableEvent, Category = "End Game Cinematic")
+		void EndWinCinematic();
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "End Game Cinematic")
+		void EndLoseCinematic();
+
 //////////////// Controllers
 protected:
 	virtual void LockControls() override;

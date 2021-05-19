@@ -221,6 +221,7 @@ void ASquadLeaderGameModeBase::EndGame(ASoldierTeam* WinningTeam)
 						{
 							if (ASoldierPlayer* Player = Cast<ASoldierPlayer>(Soldier); Player)
 								Player->ClientNotifyEndGame(false);
+							
 						}
 					}
 				}
