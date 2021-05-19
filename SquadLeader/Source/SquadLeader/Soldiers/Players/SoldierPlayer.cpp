@@ -15,7 +15,7 @@
 #include "AkAudioEvent.h"
 #include "AkGameplayStatics.h"
 
-#include "AkAudioEvent.h"
+
 #include "AkGameplayStatics.h"
 
 ASoldierPlayer::ASoldierPlayer(const FObjectInitializer& _ObjectInitializer) : Super(_ObjectInitializer)
@@ -47,8 +47,7 @@ void ASoldierPlayer::BeginPlay()
 	if (!IsLocallyControlled())
 		return;
 
-	UAkGameplayStatics::PostEventByName("Music_Gameplay", this);
-
+	PlayingId = UAkGameplayStatics::PostEvent(NULL, this, 0, FOnAkPostEventCallback(), TArray<FAkExternalSourceInfo>(), true, "Music_Gameplay");
 	ensure(MaterialGlitchInterface);
 	ensure(MaterialBrokenGlassRightInterface);
 	ensure(MaterialBrokenGlassLeftInterface);
@@ -287,7 +286,8 @@ void ASoldierPlayer::ClientNotifyControlAreaTaken_Implementation(const bool _IsO
 
 void ASoldierPlayer::ClientNotifyEndGame_Implementation(const bool _HasWin)
 {
-	UAkGameplayStatics::PostEventByName("Music_Gameplay_Stop", this);
+	//UAkGameplayStatics::PostEventByName("Music_Gameplay_Stop", this);
+	UAkGameplayStatics::ExecuteActionOnPlayingID(AkActionOnEventType::Stop, PlayingId, 500);
 	if(_HasWin)UAkGameplayStatics::PostEventByName("Music_Cinematic_Victory", this);
 	else UAkGameplayStatics::PostEventByName("Music_Cinematic_Defeat", this);
 }

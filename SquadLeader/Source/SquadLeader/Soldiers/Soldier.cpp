@@ -726,9 +726,11 @@ void ASoldier::SpawnDefaultInventory()
 			FTransform::Identity, this, this, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 		NewWeapon->FinishSpawning(FTransform::Identity);
 
-		bool bEquipFirstWeapon = (i == 0);
-		AddWeaponToInventory(NewWeapon, bEquipFirstWeapon);
+		AddWeaponToInventory(NewWeapon, false);
 	}
+
+	if (Inventory.Weapons.Num() > 0)
+		EquipWeapon(Inventory.Weapons[0]);
 }
 
 void ASoldier::OnRep_Inventory()
@@ -931,6 +933,9 @@ void ASoldier::SetCurrentWeapon(ASL_Weapon* _NewWeapon, ASL_Weapon* _LastWeapon)
 	}
 
 	UpdateFOV(); // Because every weapon has its own FOV
+
+	if (CurrentWeapon)
+		CurrentWeapon->ForceUpdateAmmo();
 }
 
 void ASoldier::UnEquipWeapon(ASL_Weapon* _WeaponToUnEquip)

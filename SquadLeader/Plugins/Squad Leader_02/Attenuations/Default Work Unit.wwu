@@ -5,7 +5,7 @@
 			<ChildrenList>
 				<Attenuation Name="Player_Standard_Grenade" ID="{FA41FFEE-2E1B-463D-A50F-EF2D137A1356}" ShortID="213784594">
 					<PropertyList>
-						<Property Name="RadiusMax" Type="Real64" Value="20000"/>
+						<Property Name="RadiusMax" Type="Real64" Value="25000"/>
 					</PropertyList>
 					<CurveUsageInfoList>
 						<VolumeDryUsage>
@@ -22,13 +22,13 @@
 											<SegmentShape>Log2</SegmentShape>
 										</Point>
 										<Point>
-											<XPos>18772.1008571429</XPos>
+											<XPos>23465.1260714286</XPos>
 											<YPos>-15.6736</YPos>
 											<Flags>0</Flags>
 											<SegmentShape>Log1</SegmentShape>
 										</Point>
 										<Point>
-											<XPos>20000</XPos>
+											<XPos>25000</XPos>
 											<YPos>-200</YPos>
 											<Flags>37</Flags>
 										</Point>
@@ -56,13 +56,13 @@
 											<SegmentShape>Exp1</SegmentShape>
 										</Point>
 										<Point>
-											<XPos>17226.6438857143</XPos>
+											<XPos>21533.3048571429</XPos>
 											<YPos>42</YPos>
 											<Flags>0</Flags>
 											<SegmentShape>Exp1</SegmentShape>
 										</Point>
 										<Point>
-											<XPos>20000</XPos>
+											<XPos>25000</XPos>
 											<YPos>100</YPos>
 											<Flags>37</Flags>
 										</Point>
@@ -84,7 +84,7 @@
 											<SegmentShape>Log2</SegmentShape>
 										</Point>
 										<Point>
-											<XPos>20000</XPos>
+											<XPos>25000</XPos>
 											<YPos>52</YPos>
 											<Flags>37</Flags>
 										</Point>
@@ -102,7 +102,7 @@
 				</Attenuation>
 				<Attenuation Name="Fire Attenuation Global" ID="{09A75D97-37B0-4366-BEC4-D170C128B054}" ShortID="993370106">
 					<PropertyList>
-						<Property Name="RadiusMax" Type="Real64" Value="7000"/>
+						<Property Name="RadiusMax" Type="Real64" Value="14000"/>
 					</PropertyList>
 					<CurveUsageInfoList>
 						<VolumeDryUsage>
@@ -119,12 +119,12 @@
 											<SegmentShape>Log1</SegmentShape>
 										</Point>
 										<Point>
-											<XPos>952.07239</XPos>
-											<YPos>-16.92954</YPos>
+											<XPos>2048.84762</XPos>
+											<YPos>-13.56306</YPos>
 											<Flags>0</Flags>
 										</Point>
 										<Point>
-											<XPos>7000</XPos>
+											<XPos>14000</XPos>
 											<YPos>-200</YPos>
 											<Flags>37</Flags>
 										</Point>
@@ -152,13 +152,13 @@
 											<SegmentShape>Exp1</SegmentShape>
 										</Point>
 										<Point>
-											<XPos>5340.67358</XPos>
+											<XPos>10681.34716</XPos>
 											<YPos>26</YPos>
 											<Flags>0</Flags>
 											<SegmentShape>Exp1</SegmentShape>
 										</Point>
 										<Point>
-											<XPos>7000</XPos>
+											<XPos>14000</XPos>
 											<YPos>100</YPos>
 											<Flags>37</Flags>
 										</Point>
