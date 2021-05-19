@@ -107,6 +107,10 @@ protected:
 	UFUNCTION()
 	virtual void UnLockControls();
 
+public:
+	UFUNCTION()
+	virtual FString GetSoldierName() const;
+
 //////////////// Ability System
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ability System Component", meta = (AllowPrivateAccess = "true"))

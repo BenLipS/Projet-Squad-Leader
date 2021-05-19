@@ -228,6 +228,12 @@ UCameraComponent* ASoldierPlayer::GetFollowKillerCamera() const
 	return FollowKillerCamera;
 }
 
+FString ASoldierPlayer::GetSoldierName() const
+{
+	ASoldierPlayerState* PS = Cast<ASoldierPlayerState>(GetPlayerState());
+	return PS ? PS->GetSoldierPlayerName() : FString{""};
+}
+
 void ASoldierPlayer::ActivateFollowKillerCamera()
 {
 	CurrentCameraComponent->Deactivate();
