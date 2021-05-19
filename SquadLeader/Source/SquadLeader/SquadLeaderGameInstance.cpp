@@ -75,8 +75,8 @@ void USquadLeaderGameInstance::LaunchGame()
         }
         HttpCallCreateNewGame();
     }
-    //UGameplayStatics::OpenLevel(this, "HUB_Level", true, "?listen");
-    UGameplayStatics::OpenLevel(this, "Factory_V2", true, "?listen");
+    UGameplayStatics::OpenLevel(this, "HUB_Level", true, "?listen");
+    //UGameplayStatics::OpenLevel(this, "Factory_V2", true, "?listen");
 }
 
 void USquadLeaderGameInstance::SetGameParamToDefault()
@@ -200,6 +200,16 @@ void USquadLeaderGameInstance::GetGameAvailable()
     if (OnlineStatus) {
         HttpCallGetGame();
     }
+}
+
+void USquadLeaderGameInstance::SetLocalPlayerClass(SoldierClass NewClass)
+{
+    PlayerParam.GetDefaultObject()->SetPlayerClass(NewClass);
+}
+
+void USquadLeaderGameInstance::SetLocalAllAIClass(TArray<SoldierClass> NewClass)
+{
+    PlayerParam.GetDefaultObject()->SetAllAIClass(NewClass);
 }
 
 
