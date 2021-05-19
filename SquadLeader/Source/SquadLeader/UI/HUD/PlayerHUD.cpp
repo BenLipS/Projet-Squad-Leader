@@ -78,6 +78,9 @@ void APlayerHUD::BindSoldierTeamChanges()
 	{
 		for (ASoldierTeam* Team : GS->GetSoldierTeamCollection())
 		{
+			if (!Team)
+				continue;
+
 			// Get current soldiers
 			for (ASoldier* Soldier : Team->GetSoldierList())
 				if (IsValid(Soldier))
