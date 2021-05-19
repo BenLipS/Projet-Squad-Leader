@@ -32,10 +32,10 @@ class SQUADLEADER_API UMinimapWidget : public USL_UserWidget, public IMinimapInt
 
 protected:
 	static const int MAPSIZE = 33570;
-	static const int MAPCENTER_X = 25146;
-	static const int MAPCENTER_Y = 28150;
-	static const int MAPMIN_X = 8553;
-	static const int MAPMIN_Y = 11563;
+	static const int MAPCENTER_X = 25946;
+	static const int MAPCENTER_Y = 28950;
+	static const int MAPMIN_X = 9353;
+	static const int MAPMIN_Y = 12363;
 
 
 protected:
