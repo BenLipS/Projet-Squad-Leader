@@ -5,6 +5,7 @@
 #include "CooldownElementWidget.h"
 #include "Blueprint/WidgetTree.h"
 #include "SquadLeader/Soldiers/Players/SoldierPlayer.h"
+#include "SquadLeader/SquadleaderGameInstance.h"
 
 #include "../Interface/AbilityCooldownDelegateInterface.h"
 
@@ -53,9 +54,15 @@ void UAbilityCooldownWidgiet::AddAbilityID(ESoldierAbilityInputID Key, FString K
 
 		SoldierClass PlayerClass = SoldierClass::ASSAULT;
 
-		if (auto MyPlayerPawn = GetOwningPlayerPawn<ASoldierPlayer>(); IsValid(MyPlayerPawn))
+		if (auto GI = GetGameInstance<USquadLeaderGameInstance>(); GI)
 		{
-			PlayerClass = MyPlayerPawn->GetClass();
+			if (IsValid(GI->PlayerParam))
+			{
+				if (auto PP = GI->PlayerParam.GetDefaultObject(); PP)
+				{
+					PlayerClass = PP->GetPlayerClass();
+				}
+			}
 		}
 
 		if (CLassBrush.Contains(PlayerClass))
