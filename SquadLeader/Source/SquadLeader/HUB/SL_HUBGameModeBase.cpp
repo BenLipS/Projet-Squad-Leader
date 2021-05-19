@@ -34,8 +34,9 @@ TArray<FString> ASL_HUBGameModeBase::GetInfoAsStringPair(const TArray<AHUBPlayer
 	TArray<FString> Infos;
 	for (auto& player : PlayerParam) {
 		if (player) {
-			Infos.Add(FString::FromInt(player->GetIsReady()) + " " + player->GetPlayerName());
 			Infos.Add(FString::FromInt(player->GetChoosenTeam()));
+			Infos.Add(player->GetPlayerName());
+			Infos.Add(FString::FromInt(player->GetIsReady()));
 		}
 	}
 	return Infos;
@@ -84,11 +85,22 @@ void ASL_HUBGameModeBase::RemovePlayer(const FString& PlayerID)
 void ASL_HUBGameModeBase::TestReadyness()
 {
 	bool EverythingReady = true;
+	int Team1Members = 0;
+	int Team2Members = 0;
 	for (auto player : PlayersInfo) {
 		EverythingReady = player->GetIsReady() && EverythingReady;  // test all player readyness
+		if (player->GetChoosenTeam() == 1) {
+			Team1Members++;
+		}
+		else {
+			Team2Members++;
+		}
 	}
 
 	// test if teams are balance
+	if (Team1Members<Team2Members - 1 || Team1Members>Team2Members + 1) {
+		EverythingReady = false;
+	}
 
 	if (EverythingReady) {
 		if (LastTestWasReady) {

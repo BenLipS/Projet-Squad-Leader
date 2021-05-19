@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 
 #include "SL_HUD.h"
-
+#include "../Interface/HUBInterface.h"
 
 #include "HUBHUD.generated.h"
 
@@ -13,7 +13,8 @@
  * 
  */
 UCLASS()
-class SQUADLEADER_API AHUBHUD : public ASL_HUD
+class SQUADLEADER_API AHUBHUD : public ASL_HUD,
+	public IHUBInterface
 {
 	GENERATED_BODY()
 	
