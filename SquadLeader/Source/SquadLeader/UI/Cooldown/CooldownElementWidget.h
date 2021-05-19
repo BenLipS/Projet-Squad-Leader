@@ -11,9 +11,7 @@
 
 #include "CooldownElementWidget.generated.h"
 
-/**
- * 
- */
+
 UCLASS()
 class SQUADLEADER_API UCooldownElementWidget : public USL_UserWidget
 {
@@ -22,6 +20,9 @@ class SQUADLEADER_API UCooldownElementWidget : public USL_UserWidget
 protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UImage* ImageCooldown;
+
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UImage* Icon;
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UTextBlock* TextKey;
@@ -63,4 +64,7 @@ public:
 
 	UFUNCTION()
 	ESoldierAbilityInputID GetAbilityID();
+
+	UFUNCTION()
+	void SetIcon(USlateBrushAsset* BrushIn);
 };

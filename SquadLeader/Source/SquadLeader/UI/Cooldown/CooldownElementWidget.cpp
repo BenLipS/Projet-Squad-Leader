@@ -3,6 +3,7 @@
 
 #include "CooldownElementWidget.h"
 #include "Kismet/KismetTextLibrary.h"
+#include "Slate/SlateBrushAsset.h"
 
 void UCooldownElementWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
@@ -45,6 +46,8 @@ void UCooldownElementWidget::OnCooldownEnded()
 			ImageCooldown->SetBrushFromMaterial(mat);
 		}
 	}
+
+	Icon->SetOpacity(1.f);
 }
 
 void UCooldownElementWidget::LaunchPartialCooldown(float Timer, float MaxTimer)
@@ -54,6 +57,7 @@ void UCooldownElementWidget::LaunchPartialCooldown(float Timer, float MaxTimer)
 	bIsInCooldown = true;
 	MaxTimeRemaining = MaxTimer;
 	TextCooldown->SetVisibility(ESlateVisibility::HitTestInvisible);
+	Icon->SetOpacity(0.5f);
 }
 
 void UCooldownElementWidget::LaunchCooldown(float Timer)
@@ -65,6 +69,14 @@ void UCooldownElementWidget::LaunchCooldown(float Timer)
 ESoldierAbilityInputID UCooldownElementWidget::GetAbilityID()
 {
 	return AbilityID;
+}
+
+void UCooldownElementWidget::SetIcon(USlateBrushAsset* BrushIn)
+{
+	if (BrushIn)
+	{
+		Icon->SetBrushFromAsset(BrushIn);
+	}
 }
 
 void UCooldownElementWidget::InitState(ESoldierAbilityInputID newKey, FString KeyText)
