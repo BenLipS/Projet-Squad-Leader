@@ -8,13 +8,25 @@
 
 #include "SquadLeader/SquadLeader.h"
 
+#include "SquadLeader/Soldiers/Soldier.h"
 #include "Components/HorizontalBox.h"
 
 #include "AbilityCooldownWidgiet.generated.h"
 
-/**
- * 
- */
+USTRUCT()
+struct SQUADLEADER_API FSoldierIcon
+{
+	GENERATED_USTRUCT_BODY()
+
+		FSoldierIcon() = default;
+
+	UPROPERTY(EditAnywhere)
+	TMap<ESoldierAbilityInputID, USlateBrushAsset*> AbilityIcons;
+
+	// Consumable items ?
+	// Grenade ?
+};
+
 UCLASS()
 class SQUADLEADER_API UAbilityCooldownWidgiet : public USL_UserWidget, public IAbilityCooldownInterface
 {
@@ -29,6 +41,9 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class UCooldownElementWidget> WidgetElementClass;
+
+	UPROPERTY(EditAnywhere)
+	TMap<SoldierClass, FSoldierIcon> CLassBrush;
 
 public:
 	virtual void OnAbilityCooldownTriggered(float Timer, ESoldierAbilityInputID Key) override;

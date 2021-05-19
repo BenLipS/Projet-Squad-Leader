@@ -4,6 +4,8 @@
 #include "AbilityCooldownWidgiet.h"
 #include "CooldownElementWidget.h"
 #include "Blueprint/WidgetTree.h"
+#include "SquadLeader/Soldiers/Players/SoldierPlayer.h"
+#include "SquadLeader/SquadleaderGameInstance.h"
 
 #include "../Interface/AbilityCooldownDelegateInterface.h"
 
@@ -49,5 +51,26 @@ void UAbilityCooldownWidgiet::AddAbilityID(ESoldierAbilityInputID Key, FString K
 		newWidget->InitState(Key, KeyText);
 
 		CooldownBox->AddChildToHorizontalBox(newWidget);
+
+		SoldierClass PlayerClass = SoldierClass::ASSAULT;
+
+		if (auto GI = GetGameInstance<USquadLeaderGameInstance>(); GI)
+		{
+			if (IsValid(GI->PlayerParam))
+			{
+				if (auto PP = GI->PlayerParam.GetDefaultObject(); PP)
+				{
+					PlayerClass = PP->GetPlayerClass();
+				}
+			}
+		}
+
+		if (CLassBrush.Contains(PlayerClass))
+		{
+			if (CLassBrush[PlayerClass].AbilityIcons.Contains(Key))
+			{
+				newWidget->SetIcon(CLassBrush[PlayerClass].AbilityIcons[Key]);
+			}
+		}
 	}
 }
