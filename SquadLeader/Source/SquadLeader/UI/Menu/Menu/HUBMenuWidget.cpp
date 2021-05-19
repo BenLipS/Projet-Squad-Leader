@@ -20,6 +20,10 @@ void UHUBMenuWidget::InitFromGameparam(TSubclassOf<AGameParam> gameParam)
 
 void UHUBMenuWidget::SetupDelegateToObject_Implementation(UObject* ObjectIn)
 {
+	if (auto HUB = Cast<IHUBInterface>(ObjectIn); HUB)
+	{
+		HUB->AddHUBDelegate(this);
+	}
 }
 
 void UHUBMenuWidget::SynchronizeProperties()
@@ -41,4 +45,24 @@ void UHUBMenuWidget::SynchronizeProperties()
 		FVector2D Center = UWidgetLayoutLibrary::GetViewportSize(GetWorld()) / 2.0f;
 		PC->SetMouseLocation(Center.X, Center.Y);
 	}
+}
+
+void UHUBMenuWidget::ClearPlayerList1()
+{
+	Team1Players->OnStatsInfoCleanOrder();
+}
+
+void UHUBMenuWidget::ClearPlayerList2()
+{
+	Team2Players->OnStatsInfoCleanOrder();
+}
+
+void UHUBMenuWidget::AddPlayerList1(TMap<FString, FString> statsIn)
+{
+	Team1Players->OnStatsInfoReceived(statsIn);
+}
+
+void UHUBMenuWidget::AddPlayerList2(TMap<FString, FString> statsIn)
+{
+	Team2Players->OnStatsInfoReceived(statsIn);
 }

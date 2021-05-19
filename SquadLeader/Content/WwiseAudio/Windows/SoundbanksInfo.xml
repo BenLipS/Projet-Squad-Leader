@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <SoundBanksInfo Platform="Windows" BasePlatform="Windows" SchemaVersion="12" SoundbankVersion="140">
 	<RootPaths>
-		<ProjectRoot>E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\</ProjectRoot>
-		<SourceFilesRoot>E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\</SourceFilesRoot>
-		<SoundBanksRoot>E:\repo\projet-squad-leader\SquadLeader\Content\WwiseAudio\Windows\</SoundBanksRoot>
+		<ProjectRoot>E:\Unreal Projects\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\</ProjectRoot>
+		<SourceFilesRoot>E:\Unreal Projects\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\.cache\Windows\</SourceFilesRoot>
+		<SoundBanksRoot>E:\Unreal Projects\projet-squad-leader\SquadLeader\Content\WwiseAudio\Windows\</SoundBanksRoot>
 		<ExternalSourcesInputFile></ExternalSourcesInputFile>
-		<ExternalSourcesOutputRoot>E:\repo\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\GeneratedSoundBanks\Windows</ExternalSourcesOutputRoot>
+		<ExternalSourcesOutputRoot>E:\Unreal Projects\projet-squad-leader\SquadLeader\Plugins\Squad Leader_02\GeneratedSoundBanks\Windows</ExternalSourcesOutputRoot>
 	</RootPaths>
 	<DialogueEvents/>
 	<StreamedFiles/>
@@ -16,7 +16,7 @@
 			<ShortName>Init</ShortName>
 			<Path>Init.bnk</Path>
 		</SoundBank>
-		<SoundBank Id="4056684167" Language="SFX" Hash="3442736309">
+		<SoundBank Id="4056684167" Language="SFX" Hash="2831822978">
 			<ObjectPath>\SoundBanks\Default Work Unit\Master</ObjectPath>
 			<ShortName>Master</ShortName>
 			<Path>Master.bnk</Path>
