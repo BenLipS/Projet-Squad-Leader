@@ -7,6 +7,7 @@
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Components/PostProcessComponent.h"
 #include "Net/UnrealNetwork.h"
+#include "AkAudioEvent.h"
 #include "SoldierPlayer.generated.h"
 
 class AAISquadManager;
@@ -266,4 +267,7 @@ public:  // Respawn
 
 	UFUNCTION()
 	void OnSquadChanged(const TArray<FSoldierAIData>& newValue);
+
+	UPROPERTY(EditAnywhere, Category = "Wwise")
+	int32 PlayingId;
 };
