@@ -30,5 +30,5 @@ void UAmmoWidget::OnAmmoChanged(uint8 newValue)
 void UAmmoWidget::OnMaxAmmoChanged(uint8 newValue)
 {
 	MaxAmmo = newValue;
-	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MaterialCollection, FName("MaxAmmo"), Ammo);
+	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MaterialCollection, FName("MaxAmmo"), MaxAmmo);
 }

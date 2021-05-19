@@ -47,7 +47,7 @@ void UFlockingComponent::UpdateNeighbourhood()
 {
 	for (ASoldier* soldier : Cast<AAIGeneralController>(GetOwner())->GetSeenSoldier())
 	{
-		if (AAIGeneralController* AI = Cast<AAIGeneralController>(soldier->Controller); AI && soldier->GetTeam() == Cast<ASoldier>(Cast<AAIGeneralController>(GetOwner())->GetPawn())->GetTeam()  /*&& Cast<AAIGeneralController>(GetOwner())->GetObjectifLocation() == AI->GetObjectifLocation()*/)
+		if (AAIGeneralController* AI = Cast<AAIGeneralController>(soldier->Controller); AI && soldier->GetTeam() == Cast<ASoldier>(Cast<AAIGeneralController>(GetOwner())->GetPawn())->GetTeam() && SeenBoids.Num() < 20  /*&& Cast<AAIGeneralController>(GetOwner())->GetObjectifLocation() == AI->GetObjectifLocation()*/)
 			SeenBoids.Add(AI);
 	};
 }
