@@ -13,8 +13,13 @@ void ASL_HUBPlayerState::BeginPlay()
 	LocalHUBPlayerParam->SetPlayerId(GI->GetPlayerId());
 	LocalHUBPlayerParam->SetPlayerName(GI->GetPlayerName());
 	LocalHUBPlayerParam->SetIsReady(false);
-	LocalHUBPlayerParam->SetChoosenTeam(1);
-	GI->PlayerParam.GetDefaultObject()->SetTeam(1);
+	if (GI->PlayerParam.GetDefaultObject()->GetTeam() == 1 || GI->PlayerParam.GetDefaultObject()->GetTeam() == 2) {
+		LocalHUBPlayerParam->SetChoosenTeam(GI->PlayerParam.GetDefaultObject()->GetTeam());
+	}
+	else {
+		LocalHUBPlayerParam->SetChoosenTeam(1);
+		GI->PlayerParam.GetDefaultObject()->SetTeam(1);
+	}
 
 	ServerSetNewArrival(LocalHUBPlayerParam->GetPlayerID(), LocalHUBPlayerParam->GetPlayerName(), LocalHUBPlayerParam->GetIsReady(), LocalHUBPlayerParam->GetChoosenTeam());
 
@@ -30,7 +35,8 @@ void ASL_HUBPlayerState::ChangeTeam()
 		ServerUpdatePlayer(LocalHUBPlayerParam->GetPlayerID(), LocalHUBPlayerParam->GetPlayerName(), LocalHUBPlayerParam->GetIsReady(), LocalHUBPlayerParam->GetChoosenTeam());
 
 		auto GI = GetGameInstance<USquadLeaderGameInstance>();
-		GI->PlayerParam.GetDefaultObject()->SetTeam(NewTeamId);
+		auto localParam = GI->PlayerParam.GetDefaultObject();
+		localParam->SetTeam(NewTeamId);
 	}
 }
 
