@@ -39,8 +39,8 @@ void UGA_Aim::InputReleased(const FGameplayAbilitySpecHandle Handle, const FGame
 
 void UGA_Aim::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
-	ASoldier* Soldier = Cast<ASoldier>(ActorInfo->AvatarActor.Get());
-	Soldier->StopAiming();
+	if (ASoldier* Soldier = Cast<ASoldier>(ActorInfo->AvatarActor.Get()); Soldier)
+		Soldier->StopAiming();
 
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
