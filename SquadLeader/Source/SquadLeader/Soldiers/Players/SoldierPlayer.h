@@ -89,6 +89,9 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category = "End Game Cinematic")
 		void EndLoseCinematic();
 
+	UFUNCTION(BlueprintImplementableEvent, Category = "Start Game Cinematic")
+		void StartCinematic();
+
 //////////////// Controllers
 protected:
 	virtual void LockControls() override;

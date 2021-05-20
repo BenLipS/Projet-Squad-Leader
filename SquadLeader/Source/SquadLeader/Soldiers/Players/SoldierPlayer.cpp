@@ -83,6 +83,9 @@ void ASoldierPlayer::BeginPlay()
 	}
 
 	bHitMontageActivated = false;
+
+
+	StartCinematic();
 }
 
 void ASoldierPlayer::Tick(float DeltaTime)
