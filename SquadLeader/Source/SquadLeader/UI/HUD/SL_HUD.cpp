@@ -14,6 +14,8 @@ void ASL_HUD::InitHUD()
 			if (newEntry)
 			{
 				newEntry->AddToViewport();
+				bIsDisplayed = !bIsDisplayed;
+				SetHUDDisplay(!bIsDisplayed);
 				WidgetList.Add(newEntry);
 				newEntry->SetupDelegateToObject(this);
 			}
@@ -21,6 +23,41 @@ void ASL_HUD::InitHUD()
 	}
 
 	OnInitHUD();
+}
+
+void ASL_HUD::HideHUD()
+{
+	SetHUDDisplay(false);
+}
+
+void ASL_HUD::DisplayHUD()
+{
+	SetHUDDisplay(true);
+}
+
+void ASL_HUD::SetHUDDisplay(bool ShoulBeDisplayed)
+{
+	if (ShoulBeDisplayed != bIsDisplayed)
+	{
+		bIsDisplayed = ShoulBeDisplayed;
+
+		float renderOpacity = bIsDisplayed ? 1.f : 0.f;
+
+		for (USL_UserWidget* SL_Widget : WidgetList)
+		{
+			SL_Widget->SetRenderOpacity(renderOpacity);
+		}
+	}
+}
+
+bool ASL_HUD::IsDisplayed()
+{
+	return bIsDisplayed;
+}
+
+bool ASL_HUD::IsHiden()
+{
+	return !bIsDisplayed;
 }
 
 void ASL_HUD::OnInitHUD()
