@@ -18,11 +18,30 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Widget")
 	TArray<USL_UserWidget*> WidgetList;
 
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Widget")
+	bool bIsDisplayed = true;
+
 public:
 	ASL_HUD() = default;
 
 	//Must be called after it is created
 	void InitHUD();
+
+	UFUNCTION(BlueprintCallable)
+	void HideHUD();
+
+	UFUNCTION(BlueprintCallable)
+	void DisplayHUD();
+
+	UFUNCTION(BlueprintCallable)
+	void SetHUDDisplay(bool ShoulBeDisplayed);
+
+	UFUNCTION(BlueprintCallable)
+	bool IsDisplayed();
+
+	UFUNCTION(BlueprintCallable)
+	bool IsHiden();
+
 
 protected:
 	virtual void OnInitHUD();
